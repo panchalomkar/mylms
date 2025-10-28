@@ -1,0 +1,13 @@
+<div class="form-group">
+	<span class="mar-rgt {{#required}} control-label text-danger text-bold {{/required}}{{^required}} control-label {{/required}}">{{#required}} {{label}} * {{/required}}{{^required}} {{label}} {{/required}}</span>
+	<div class="input-group date" data-provide="datepicker-inline-plms">
+		<input {{#extradata}} 
+				id="{{id}}" name="{{name}}" style="{{style}}" class="{{class}}" readonly="{{readonly}}" 
+		{{/extradata}}>
+		<span class="input-group-text">
+			<i class="fa fa-calendar fa-1x"></i>
+		</span>
+	</div>
+	<div class="clearfix"></div>
+</div>
+<div class="clearfix"></div>

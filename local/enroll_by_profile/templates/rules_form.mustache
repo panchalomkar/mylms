@@ -1,0 +1,59 @@
+<div class="modal fade" id="enroll_by_profile_modal" role="dialog" tabindex="-1" aria-labelledby="enroll_by_profile_modal" aria-hidden="true" data-backdrop="static" data-keyboard="false" style="display: none;">
+	<div class="modal-backdrop fade"></div>
+	<div class="modal-dialog">
+		<div class="modal-content container">
+			<div class="modal-header">
+<h4 class="modal-title">{{#str}} addrule_title,local_enroll_by_profile {{/str}}</h4>
+			<a class="close" data-dismiss="modal"><i class="fa fa-times-circle"></i></a>
+				</div>
+			<div class="modal-body">
+				<div class="alert alert-danger fade out "><span class="close" data-dismiss="alert"><span>x</span></span>
+					<p id="alert_content"></p>
+				</div>
+				<div class="add-rule-loader-modal" id="wait">
+					<div class="loader-box">
+						<div class="loader-animation"></div>
+						<p>{{#str}} loader,local_enroll_by_profile {{/str}}</p>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+					{{#rules_form}}
+						<input readonly="readonly" name="editrule" id="id_editrule" type="hidden" />
+						<input readonly="readonly" name="conditions_num" id="id_conditions_num" type="hidden" value="1" />
+						<div class="container conditions-view panel" id="id_conditions_content">
+						{{> local_enroll_by_profile/newcondition_form }}
+						</div>
+						<div class="row add_condition_button contant-contains">
+							<a href="#" class="btn btn-sm btn-primary btn-add-cond" alt="{{#str}} addcond_title,local_enroll_by_profile {{/str}}" title="{{#str}} addcond_title,local_enroll_by_profile {{/str}}" data-target="#enroll_by_profile_modal">
+								<span class="title">{{#str}} addcond_title,local_enroll_by_profile {{/str}}</span>
+							</a>
+						</div>
+						<div class="row rule_statement contant-contains"></div>
+						<div class="row " id="category-type-div" >
+							<div class="col-md-12 contant-contains ">
+								<label class="col-md-12 category_type"><span>Category</span>
+									<select disabled="true" id="id_category_type" class="form-control">
+										<option value="0">-- Select Option --</option>
+										<option value="1">{{#str}} course,local_enroll_by_profile {{/str}}</option>
+										<option value="2">{{#str}} tenant,local_enroll_by_profile {{/str}}</option>
+										<option value="3">{{#str}} LP,local_enroll_by_profile {{/str}}</option>
+										<option value="4">{{#str}} cohort,local_enroll_by_profile {{/str}}</option>
+										<option value="5">{{#str}} role,local_enroll_by_profile {{/str}}</option>
+										<option value="6">{{#str}} learning_plans,local_enroll_by_profile {{/str}}</option>
+									</select>
+								</label>
+							</div>
+						</div>
+					{{/rules_form}}
+					</div>
+					<div class="col-md-6 mar-all rulelist" id="id_elements_content"></div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button id="saveelements" class="btn btn-primary">Save</button>
+				<button data-dismiss="modal" class="close_lms_mod btn btn-default" type="button" id="close_lms_mod">Back</button>
+			</div>
+		</div>
+	</div>
+</div>

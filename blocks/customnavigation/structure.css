@@ -1,0 +1,45 @@
+.navigation_tree{border:1px solid #ccc;padding:10px 10px 15px 10px;margin:5px 0px;}
+.sortable_container .sortable li div{border:1px solid #d4d4d4;-webkit-border-radius: 3px;-moz-border-radius: 3px;border-radius: 3px;cursor: move;border-color: #D4D4D4 #D4D4D4 #BCBCBC;margin: 0;padding: 3px;}
+.sortable_container a{text-decoration:none;}
+pre,code{font-size:12px;}
+pre{width:100%;overflow:auto;}
+.placeholder{outline:1px dashed #4183C4;}
+.mjs-nestedSortable-error{background: #fbe3e4;border-color: transparent;}
+.sortable_container ol{max-width: 450px;padding-left: 25px;}
+.sortable_container ol.sortable, .sortable_container ol.sortable ol{list-style-type: none;}
+.sortable_container li.mjs-nestedSortable-collapsed.mjs-nestedSortable-hovering div{border-color: #999;}
+.sortable_container .disclose, .expandEditor{cursor: pointer;width: 20px;display: none;}
+.sortable_container .sortable li.mjs-nestedSortable-collapsed > ol {display: none;}
+.sortable_container .sortable li.mjs-nestedSortable-branch > div > .disclose {display: inline-block;}
+.sortable_container .sortable span.ui-icon{display: inline-block;margin: 0;padding: 0;}
+.sortable_container .menuDiv{background: #EBEBEB;}
+.sortable_container .menuEdit{background: #FFF;}
+.sortable_container .itemTitle{vertical-align: middle;cursor: pointer;}
+.sortable_container .deleteMenu{float: right;cursor: pointer;}
+.sortable_container .sortable li{display:list-item;}
+
+#page-blocks-customnavigation-structure .select2-container--default .select2-selection--multiple .select2-selection__choice {
+       margin-right: 0px!important;
+}
+#page-blocks-customnavigation-structure .select2-container--default.select2-container--focus .select2-selection--multiple {
+        height:auto !important;
+        width: 120%;
+}
+#page-blocks-customnavigation-structure .select2-selection.select2-selection--multiple { 
+        height:auto !important;
+        width: 120%;
+}
+    
+@media (min-width: 401px){
+    .block_customnavigation_radio{
+        display: flex;
+    }
+}    
+#clearall {
+        color: $brand-primary;
+}
+
+#page-blocks-customnavigation-structure #icon-fonts ul li a:hover, #icon-fonts ul li a.selected {
+    background: $brand-primary;
+  }
+      

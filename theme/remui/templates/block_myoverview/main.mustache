@@ -1,0 +1,187 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Edwiser RemUI
+    @package theme_remui
+    @copyright (c) 2023 WisdmLabs (https://wisdmlabs.com/)
+    @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+{{!
+    @template block_myoverview/main
+
+    This template renders the main content area for the myoverview block.
+
+    Example context (json):
+    {}
+}}
+<style>
+.block_myoverview .card-text.content.block-content-area {
+        padding: 24px !important;
+    background: #fff;
+    border-radius: 12px;
+}
+.block_myoverview .dashboard-card {
+    padding: 0px !important;
+    box-shadow: 0px 9px 7px -4px grey;
+    border-radius: 15px;
+}
+.block_myoverview .dashboard-card .edw-course-img-wrapper.dashboard-card-img {
+    height: 127px;
+    border-radius: unset;
+}
+.block .block-cards .course-info-container {
+    padding: 11px !important;
+}
+
+.block-myoverview{
+   //   background: #FFFFFF !important;  
+.fourmenu li.nav-item{
+    background:#003152;
+   border-radius: 6px 6px 0 0;
+        overflow: hidden;
+    width: 110px;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+
+    a.nav-link.active::before {
+     display: none;
+    }
+
+    a.nav-link{
+      color:white !important;
+    }
+    [aria-current="true"]::after {
+      display: none !important;
+   
+   }
+}
+}
+   
+
+.nav-display-selector  a{
+      padding-top: 5px !important;
+    }
+.nav-display-selector
+ul{ gap:1px !important;
+border-radius: 10px;
+    overflow: hidden;
+    text-align: center;
+ li.nav-item{
+    background:#003152;
+    width: 35px;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    a.nav-link.active::before {
+     display: none;
+    }
+
+    a.nav-link{
+      color:white !important;
+      padding-top: 5px;
+    }
+    [aria-current="true"]::after {
+      display: none !important;
+   
+   }}
+
+    .nav-link[aria-current="true"] {
+ width: 190px;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    background-color: #ec9707;
+    color: #fff !important;
+    border-radius: 6px 6px 0 0;
+    padding-top:0px !important;
+}
+}
+
+.course-info-container .view-course-btn{
+   width: 100%;
+    background: #003152;
+    color: #fff;
+    border-color:#003152;
+}
+
+
+.fourmenu .nav-link.active, .path-course .fourmenu .nav-item.show .nav-link {
+border: none;
+}
+
+.block-myoverview [data-region="filter"] .nav-grouping-selector .nav {
+    gap: 5px !important;}
+.block-myoverview #sortingdropdown{padding: 4px !important;}
+/* Highlight active nav item */
+.fourmenu.nav-tabs .nav-link[aria-current="true"] {
+ padding-top:5px !important;
+ width: 190px;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    background-color: #ec9707;
+    color: #fff !important;
+    border-radius: 6px 6px 0 0;
+}
+
+
+/* Default (non-active) link style */
+.fourmenu.nav-tabs .nav-link {
+    font-weight: 500;
+    padding-bottom: 5px !important;
+    transition: all 0.2s ease;
+}
+.block-myoverview [data-region="filter"] .nav-grouping-selector{
+   border-bottom: none !important;
+}
+.block-myoverview [data-region="filter"] .all-filter-wrapper .nav-display-selector-wrapper .seeallmycourses {
+    display: none !important;
+}
+</style>
+<div id="block-myoverview-{{uniqid}}" class="block-myoverview block-cards" data-region="myoverview" role="navigation">
+
+    <div data-region="filter" class="d-flex flex-column p-mb-6"
+        aria-label="{{#str}} aria:controls, block_myoverview {{/str}}">
+        <div class="nav-grouping-selector d-flex">
+            {{> block_myoverview/nav-grouping-selector }}
+        </div>
+        <div class="d-flex justify-content-between align-items-center all-filter-wrapper">
+            <div class="d-flex nav-search-sort-selector align-self-start">
+                    {{> block_myoverview/nav-search-widget }}
+            </div>
+           
+        </div>
+    </div>
+
+    <div class="container-fluid p-0">
+        {{> block_myoverview/courses-view }}
+    </div>
+</div>
+{{#js}}
+require(
+[
+'jquery',
+'theme_remui/blockmyoverview',
+],
+function(
+$,
+Main
+) {
+var root = $('#block-myoverview-{{uniqid}}');
+Main.init(root,{{#cardanimationsetting}}"{{cardanimationsetting}}"{{/cardanimationsetting}}{{^cardanimationsetting}}"none"{{/cardanimationsetting}});
+});
+{{/js}}

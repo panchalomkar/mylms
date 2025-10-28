@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/enroll_by_profile/db" VERSION="20190613" COMMENT="XMLDB file for PLMS enroll all"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="local_enroll_by_profile" COMMENT="enroll all table retrofitted from MySQL">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="search sentence to show in the rule list."/>
+        <FIELD NAME="profile_field" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Array of  profile fields each with their respective conditions that comprise the rule."/>
+        <FIELD NAME="rulename" TYPE="char" LENGTH="250" NOTNULL="true" SEQUENCE="false" COMMENT="search sentence to show in the rule list."/>
+        <FIELD NAME="content" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Sentence to match the user on the db. Stored at time of creation/modification of the rule, to improve performance of the validation engine."/>
+        <FIELD NAME="category" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="type of assignation, to select the proper assignation method"/>
+        <FIELD NAME="selected_elements" TYPE="char" LENGTH="250" NOTNULL="true" SEQUENCE="false" COMMENT="elements to assign to targets."/>
+        <FIELD NAME="disable_rule" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="disable the rule"/>
+        <FIELD NAME="unenroll_rule" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="unenroll the rule"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_enrol_prof_user_rule" COMMENT="Table to store relation between user and rules they match">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="ruleid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+       <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
+        <INDEX NAME="ruleid" UNIQUE="false" FIELDS="ruleid"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>

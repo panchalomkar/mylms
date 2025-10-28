@@ -1,0 +1,21 @@
+.f-field-group {
+    &.input-text-wrapper , &.input-number-wrapper, &.input-password-wrapper, &.input-date-wrapper, &.input-email-wrapper, &.textarea-wrapper, &.input-file-wrapper {
+        &:not(.active)>label {
+            top: 0.5rem;
+        }
+        &.active {
+            &>label {
+                top: -1rem;
+            }
+        }
+    }
+    &.select-wrapper {
+        &>label {
+            top: -1rem;
+        }
+    }
+}
+.f-addon, input:not(.select-list-search), textarea, .select-container .selected-option {
+    border: 0px solid;
+    border-bottom: 1px solid #ccc;
+}

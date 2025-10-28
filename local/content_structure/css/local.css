@@ -1,0 +1,25 @@
+form.mform li.list-group-item{
+       border: 1px solid #ced4da;
+    margin-bottom: 10px;
+    box-shadow: 0px 3px 15px #e4e6eb;
+    border-radius: 4px;
+}
+form.mform li span.caret img{
+	        width: 6%;
+    margin: 0 20px;
+    border: 1px solid #999;
+    border-radius: 7px;
+}
+form.mform li span.caret{
+    font-size: 16px;
+    text-transform: uppercase;
+}
+form.mform li.list-group-item input{
+    margin: 0 15px;
+}
+form.mform li ul.nested{
+    margin-top: 15px;
+}
+form.mform li ul.nested li{
+    border: none;
+}

@@ -1,0 +1,135 @@
+<style>
+.rightb-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 15px;
+  font-family: "Inter", sans-serif;
+}
+
+.myprofile-header {
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+}
+
+.myprofile-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+  margin: 0;
+}
+
+.announcement-item {
+  padding: 4px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.announcement-item:last-child {
+  border-bottom: none;
+}
+
+.announcement-title {
+  font-size: 14px;
+  color: #222;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.announcement-item:last-child {
+  border-bottom: solid 1px lightgrey;
+}
+
+.announcement-title {
+  font-size: 14px;
+  color: #222;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height:9px;
+}
+
+.announcement-title i {
+  color: #ec9707;
+  font-size: 10px;
+}
+
+.announcement-time {
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.announcement-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+.announcement-footer a {
+     font-size: 10px;
+  color: #003152;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.add-topic {
+  margin-top: 10px;
+  text-align: right;
+}
+
+.add-topic a {
+  font-size: 13px;
+  color: #ec9707;
+  font-weight: 500;
+  text-decoration: none;
+}
+.add-topic a:hover {
+  text-decoration: underline;
+}
+</style>
+
+<div class="rightb-card">
+  <div class="myprofile-header d-flex justify-content-between align-items-center">
+    <h5 class="myprofile-title">
+      <i class="bi bi-megaphone mr-2"></i> Announcements
+    </h5>
+  </div>
+
+  {{#announcements}}
+    <div class="announcement-item">
+    <div class="row" style="align-items: center;">
+    <div class="col-md-2">
+           <svg fill="#000000" height="12px" width="25px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512.003 512.003" xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <path d="M507.284,248.364L12.35,0.898C8.894-0.826,4.721-0.007,2.153,2.86c-2.56,2.884-2.867,7.125-0.759,10.351l159.07,242.79 L1.393,498.792c-2.108,3.226-1.801,7.467,0.759,10.351c1.664,1.86,4.002,2.859,6.383,2.859c1.289,0,2.594-0.29,3.814-0.896 l494.933-247.467c2.893-1.451,4.719-4.403,4.719-7.637S510.176,249.815,507.284,248.364z"></path> </g> </g> </g></svg>
+</div>
+    <div class="col-md-10 p-0 m-0">
+      <div class="announcement-title">
+        <a style="font-size:12px" href="{{url}}">{{title}}</a>
+      </div>
+      <div class="announcement-time">{{timeago}}</div>
+    </div>
+    </div>
+      <div class="announcement-footer">
+        <a href="{{url}}">View full notification</a>
+      </div>
+    </div>
+  {{/announcements}}
+
+  {{^announcements}}
+    <p class="text-muted">No announcements available.</p>
+  {{/announcements}}
+<div class="text-end mt-2">
+  <a href="{{viewmoreurl}}" class="btn btn-sm btn-outline-primary" style="font-size: 9px !important;padding: 5px;">
+    View more
+  </a>
+</div>
+
+  {{#canaddtopic}}
+    <div class="add-topic">
+      <a href="{{addtopicurl}}"><i class="bi bi-plus-circle"></i> Add new topic</a>
+    </div>
+  {{/canaddtopic}}
+</div>

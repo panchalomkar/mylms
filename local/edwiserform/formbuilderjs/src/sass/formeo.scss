@@ -1,0 +1,198 @@
+@import 'base/variables';
+@import 'base/animation';
+@import 'base/mixins';
+@import 'base/icons';
+@import 'components/positioning';
+@import 'components/field-sort-fallback';
+.formeo {
+  * {
+    box-sizing: inherit;
+  }
+  /* added for only those buttons which is inside formbuilder */
+
+  @import 'base/bs';
+
+  @include clearfix;
+
+  &.formeo-editor {
+    &.tab-content {
+      border: 0;
+    }
+    @import 'components/stage';
+    @import 'components/controls';
+    @import 'components/setting-wrap';
+    @import 'base/rtl';
+    .stage-wrap {
+            display: none;
+        &.active {
+            display: block;
+        }
+    }
+    .form-wrapper {
+        position: fixed;
+        left: 110px;
+        bottom: 0px;
+        top: 100px;
+        overflow: auto;
+        width: auto;
+        padding: 15px;
+        transition: right 0.5s;
+        .form-settings-actions {
+            position: absolute;
+            opacity: 1;
+            top: 20px;
+            right: 20px;
+            &.control-count-1 {
+              width: calc(#{$action-btn-width} * 1);
+            }
+            &.control-count-2 {
+              width: calc(#{$action-btn-width} * 2);
+            }
+            &.control-count-3 {
+              width: calc(#{$action-btn-width} * 3);
+            }
+            &.control-count-4 {
+              width: calc(#{$action-btn-width} * 4);
+            }
+            &.hide-delete {
+              width: #{$action-btn-width};
+            }
+        }
+        .form-container {
+            height: 100% !important;
+            overflow: auto;
+            display: block;
+            padding: 25px 25px 40px;
+            background: white;
+        }
+        .form-settings-edit {
+            display: none;
+            float: left;
+            width: 100%;
+            background-color: white;
+            padding: 40px 25px;
+            margin: 0;
+        }
+    }
+    &.editing-form-settings {
+        .form-wrapper {
+            .form-container {
+                display: none;
+            }
+            .form-settings-edit {
+                display: block;
+            }
+        }
+    }
+    [class*='category-container-'] {
+      float: left;
+      width: 100%;
+      margin-top: 20px;
+      box-shadow: 1px 1px 3px rgba(0,0,0,.5);
+      &:first-child {
+        margin-top: 0px;
+      }
+      .category-settings {
+        padding: 0px;
+        transition: height 0.25s linear, margin 0.25s linear;
+        overflow: hidden;
+        padding: 0 10px;
+        margin: 0;
+      }
+      .category-label {
+        position: relative;
+        cursor: pointer;
+        user-select: none;
+        transition: background-color 0.25s linear;
+        i {
+          float: right;
+          margin: 0 5px;
+        }
+        &.collapsed {
+          i.fa-minus {
+            display: none;
+          }
+        }
+        &.collapsible {
+          i.fa-plus {
+            display: none;
+          }
+        }
+        &.collapsible + .category-settings {
+          margin: 10px 0;
+        }
+        &.collapsed + .category-settings {
+          height: 0;
+        }
+      }
+    }
+  }
+
+  &.formeo-render {
+    @import 'render';
+  }
+}
+
+.field-control {
+  @extend %field-control;
+
+  .svg-icon {
+    pointer-events: none;
+  }
+}
+
+.preview-form {
+  .render-form {
+      width: 100%;
+      color: #000000;
+      background-color: #ffffff;
+      margin: 0 auto;
+      padding: 40px;
+      overflow: auto;
+      .text-error {
+        position: absolute;
+      }
+      &.form-style-1 {
+        @import 'components/display-label';
+      }
+      &[class*='form-style-']:not(.form-style-1) {
+        color:#999;
+        @import 'components/form-style-common';
+      }
+      &.form-style-2 {
+        @import 'components/form-style-2';
+      }
+      &.form-style-3 {
+        @import 'components/form-style-3';
+      }
+      &.form-style-4 {
+        @import 'components/form-style-4';
+      }
+  }
+  @import 'components/preview';
+}
+
+@for $i from 0 through 25 {
+  .p-#{$i} {
+    padding: #{$i}px !important;
+  }
+  .px-#{$i} {
+    padding-left: #{$i}px !important;
+    padding-right: #{$i}px !important;
+  }
+  .py-#{$i} {
+    padding-top: #{$i}px !important;
+    padding-bottom: #{$i}px !important;
+  }
+  .m-#{$i} {
+    margin: #{$i}px !important;
+  }
+  .mx-#{$i} {
+    margin-left: #{$i}px !important;
+    margin-right: #{$i}px !important;
+  }
+  .my-#{$i} {
+    margin-top: #{$i}px !important;
+    margin-bottom: #{$i}px !important;
+  }
+}

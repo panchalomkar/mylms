@@ -1,0 +1,46 @@
+<?php 
+$string['numericfield'] = 'هذا ia حقل رقمي.';
+$string['pluginname'] = 'مكان جلسة ILT';
+$string['bu'] = 'هذا';
+$string['location'] = 'موقعك';
+$string['addlocation'] = 'أضف الموقع';
+$string['classroom'] = 'قاعة الدراسة';
+$string['capacity'] = 'سعة';
+$string['resource'] = 'مورد';
+$string['addresource'] = 'إضافة الموارد';
+$string['resourceqty'] = 'كمية الموارد';
+$string['missingbu'] = 'مفقود بو';
+$string['id'] = 'هوية شخصية';
+$string['deletevenuemanangement'] = 'حذف المكان';
+$string['addvenuemanangement'] = 'أضف مكان ILT جديد';
+$string['venuemanangementlist'] = 'قائمة مكان ILT';
+$string['venuemanangementname'] = 'مكان انعقاد دورة ILT';
+$string['missinglocation'] = 'موقع مفقود';
+$string['missingclassroom'] = 'فصول مفقودة';
+$string['missingcapacity'] = 'سعة مفقودة';
+$string['missingresource'] = 'المورد المفقود';
+$string['missingresourceqty'] = 'كمية الموارد المفقودة';
+$string['venuemanangementcsv'] = 'تحميل venuemanangement csv';
+$string['uploadusers'] = 'تحميل venuemanangement';
+$string['uploaduserspreview'] = 'تحميل معاينة venuemanangement';
+$string['uuoptype'] = 'نوع التحميل';
+$string['uuoptype_addinc'] = 'إضافة الكل ، إلحاق الرقم إلى أسماء المستخدمين إذا لزم الأمر';
+$string['uuoptype_addnew'] = 'إضافة جديد فقط ، تخطي المستخدمين الحاليين';
+$string['uuoptype_addupdate'] = 'إضافة جديد وتحديث المستخدمين الحاليين';
+$string['uuoptype_update'] = 'تحديث المستخدمين الحاليين فقط';
+$string['uploadusersresult'] = 'تحميل نتائج venuemanangement';
+$string['uploadusers_help'] = 'يمكن تحميل المستخدمين (والمسجلين اختياريًا في الدورات) عبر ملف نصي. يجب أن يكون تنسيق الملف كما يلي: * يحتوي كل سطر من الملف على سجل واحد * كل سجل عبارة عن سلسلة من البيانات مفصولة بفواصل (أو محددات أخرى) * يحتوي السجل الأول على قائمة من أسماء الحقول التي تحدد تنسيق بقية الملف * أسماء الحقول المطلوبة هي userid، venuemanangementno، issuedate، validupto';
+$string['rowpreviewnum'] = 'معاينة الصفوف';
+$string['csvdelimiter'] = 'محدد CSV';
+$string['encoding'] = 'التشفير';
+$string['usersupdated'] = 'تحديث المستخدمين';
+$string['errors'] = 'أخطاء';
+$string['uucsvline'] = 'خط CSV';
+$string['venuemanangement:managevenuemanangement'] = 'إدارة المكان';
+$string['venuemanangement:viewvenuemanangementlist'] = 'عرض قوائم مكان ILT';
+$string['venuemanangement:uploadvenuemanangement'] = 'تحميل ILT Venue من خلال CSV';
+$string['local/venuemanangement:managevenuemanangement'] = 'إدارة مكان ILT';
+$string['local/venuemanangement:viewvenuemanangementlist'] = 'عرض ILT Venue Lists';
+$string['local/venuemanangement:uploadvenuemanangement'] = 'تحميل ILT Venue من خلال CSV';
+
+

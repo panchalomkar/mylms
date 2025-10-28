@@ -1,0 +1,62 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_sitesetting/customise
+
+    Note: collapse/show functionality as well as check/uncheck functionality is 
+          developed using javascript (custom.js) file. Any change in HTML DOM 
+          structure can break these functionalities, so change cautiously.
+
+    @author: 2021 Akashy Pingale (akashy.p@paradisosolution.com)
+    @paradiso
+
+}}
+<div class="filterslist">
+    <div class="panel-heading">
+        <h5 class="panel-title">
+            <a href="#collapse10" class="plms-reports-dropdown collapsed" data-toggle="collapse" data-parent="#accordion">
+                {{#str}}country, local_people{{/str}}
+                <i class="reports-dropdown fa fa-angle-down collapsed"></i>
+            </a>
+        </h5>
+    </div>
+    <div id="collapse10" class="panel-collapse collapse">
+        <div class="panel-body">
+            <div class="row">
+                {{#country}}
+                    <a href="#" data-name="country" class="reset">{{#str}}clear, local_people{{/str}}</a>
+                {{/country}}
+                <div class="clr_button"></div>
+                <div class="col-md-12 searchbox select-option">
+                    <form id="form-country" method="post" action="">
+                        {{#country}}
+                            <input type="hidden" name="filter-true" class="filter-true" value="true">
+                        {{/country}}
+                        <div class="form-group">
+                            <select class="select custom-select form-control chosen-people" multiple="multiple" id="menucountryop" name="countryop[]">
+                            {{#countryopt}}
+                                <option value="{{{key}}}" {{{selected}}}>{{{value}}}</option>
+                            {{/countryopt}}
+                        </select>
+                        </div>
+                        <input type="hidden" name="multipleselectfilter" value="country">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

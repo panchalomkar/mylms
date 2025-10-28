@@ -1,0 +1,177 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_remui/ go1 iframe
+    Context variables required for this template:
+    * loginurl - onetime login url
+    * output - The core renderer for the page
+    Example context (json):
+    {
+        "loginurl": "url",       
+    }
+}}
+{{{ output.doctype }}}
+<html {{{ output.htmlattributes }}}>
+<head>
+    <title>{{{ output.page_title }}}</title>
+    <link rel="shortcut icon" href="{{{ output.favicon }}}" />
+    {{{ output.standard_head_html }}}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body {{{ bodyattributes }}}>
+
+<div id="page-wrapper">
+    <div id="page" class="container-fluid">
+        {{{ output.headerimage }}}
+
+        <div id="learningcontent">
+            {{{ output.full_header }}}
+
+            <div id="page-content" class="row {{#hasblocks}}alltwo-sections{{/hasblocks}} {{^hasblocks}}allone-section{{/hasblocks}}">
+                {{#login_url}}
+                    <div class="create-buttons cbtn_lp mb-3 p-0 col-md-12">
+                        <span class="course float-right p-0">
+                            {{#show_sync}}
+                            <a href="#" id="sync-courses" class="btn btn-primary" data-toggle="modal" data-target="#sync-coursepopup">
+                                <i class="fa fa-refresh tooltipelement_left" title="{{#str}}sync, local_goone{{/str}}"></i>
+                                <span>{{#str}}sync, local_goone{{/str}}</span>
+                            </a>
+                            {{/show_sync}}
+                        </span>                        
+                    </div>
+                    <iframe width="100%" height="900px" src="{{login_url}}" id="iFrame" style="border: none;"></iframe>
+                {{/login_url}}                
+            </div>
+        </div>
+    </div>
+</div>
+<div id="sync-coursepopup" class="modal in" tabindex="-1" aria-hidden="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div id="filters-modal" class="modal-content">
+            <div class="modal-header">
+            </div>
+            <div class="modal-body row" style="">
+                <span><i class="fa-solid fa-loader fa-5x"></i></span>
+                <div class='alert alert-info w-100'>
+                <label>{{#str}}sync_course_message, local_goone {{/str}}</label>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="download-course" class="modal in" tabindex="-1" aria-hidden="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div id="filters-modal" class="modal-content">
+            <div class="modal-header">
+            </div>
+            <div class="modal-body row" style="">
+                <span><i class="fa-solid fa-loader fa-5x"></i></span>
+                <label id="cmsg"><i class="fa fa-refresh" aria-hidden="true"></i>{{#str}}download_course_message, local_goone {{/str}} </label>
+                <ul><li><span id="course_title"></span>
+                <div class="count"><span id="course_count"></span>/<span id="total_courses_count"></span></div></li></ul>
+				<div class="progress">
+                    <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar"
+                    aria-valuenow="1" aria-valuemin="0" aria-valuemax="0" style="width:0%">
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{#showbacktotop}}
+<a href="#" id="back-to-top" class="btn btn-primary btn-lg" role="button" title="{{#str}}backtotop, theme_remui{{/str}}"><i class="fa fa-chevron-circle-up" aria-hidden="true"></i></a>
+{{/showbacktotop}}
+
+<section class="dialogflow-chatbot">
+        {{{output.show_chatboat_window}}}
+</section>
+
+<footer id="page-footer" class="p-y-1 bg-inverse hidden">
+
+    <div class="container-fluid">
+        <div id="course-footer">{{{ output.course_footer }}}</div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="tool_usertours-resettourcontainer d-inline-block"></div>
+            </div>
+        </div>
+                     
+        {{{ output.standard_footer_html }}}
+        {{{ output.standard_end_of_body_html }}}
+    </div>
+</footer>
+
+</body>
+</html>
+<script type="text/javascript">
+(function() {
+    $('#sync-courses').click(function(){
+        $.ajax({
+            method: 'POST',
+            dataType: 'json',
+            url: '{{sync_url}}',
+            success: function(res) {
+                courses=res.total_courses;
+                if(courses > 0){ 
+                    $('#course_title').html(res.course_title);                    $('#total_courses_count').html(res.total_courses);			$('.progress-bar').attr('aria-valuemax',res.total_courses);	   
+                    $('#course_count').html(1);
+                    $('#sync-coursepopup').modal('hide');
+                    //call download_course function();
+                    $('#download-course').modal('show');
+                    download_course(courses,1);                                     
+                }
+                else
+                {
+                    $('#cmsg').html(res.course_title);
+                    location.href="{{redirect_url}}";
+                }
+            },
+        })
+    });
+})();
+
+function download_course(total_course,coursecnt){ 
+    var object  = {};
+    object['action'] = '1';
+    newCourseCnt=coursecnt+1;
+    if(coursecnt <= total_course){
+        var request = $.ajax({
+            url: '{{sync_url}}',
+            dataType: 'json',
+            method:'POST',
+            data: object,
+            success: function (resp) {               
+                $('#course_title').html(resp.course_title);
+                if(total_course >= newCourseCnt)
+                    $('#course_count').html(newCourseCnt); //alert(newCourseCnt);
+				$('.progress-bar').css('width', newCourseCnt+'%').attr('aria-valuenow',newCourseCnt); 
+                download_course(total_course,newCourseCnt);              
+            }
+        });
+    }
+    else
+    {
+        location.href="{{redirect_url}}";
+    }
+}
+</script>

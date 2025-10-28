@@ -1,0 +1,37 @@
+.lmargin{
+    margin-left: -15px;
+}
+.thcolor{
+    color: #2d8dfe;
+}
+.trclass{
+    border-bottom: 1px solid #d5d5d5;
+}
+.removed{
+    margin-left: 10px;
+    text-decoration: underline;
+}
+.leftmar{
+    margin-left: -30px;
+}
+
+.activebtn{
+    padding-top: 20px;
+}
+
+.disnone{
+   display:none;
+}
+
+.space{
+    padding-top: 2px;
+}
+
+body:not(#page-local-paradiso_coursewizard-createcourse) ul.nav-tabs .nav-link{
+    height:31px !important;
+}
+
+#page-local-tenant_appearance-tenant_appearance h4{
+    border-bottom: 1px solid rgba(0,0,0,.1);
+    padding: 16px;
+}

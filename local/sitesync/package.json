@@ -1,0 +1,14 @@
+{
+    "name": "moodle-local_sitesync",
+    "devDependencies": {
+        "grunt": "^1.6.1",
+        "grunt-contrib-clean": "^2.0.1",
+        "grunt-contrib-sass": "^2.0.0",
+        "grunt-contrib-watch": "^1.1.0",
+        "grunt-load-gruntfile": "^0.0.2",
+        "node-sass": "^9.0.0"
+    },
+    "dependencies": {
+        "grunt-cli": "^1.5.0"
+    }
+}

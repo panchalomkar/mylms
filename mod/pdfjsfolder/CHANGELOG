@@ -1,0 +1,17 @@
+0.14  -  Changed direct links to links with forced download flag
+         set to make the choice one with known outcomes; either
+         view a PDF in the browser or download it.
+
+      -  Added next and previous fields in install.xml for Moodle
+         2.4 compatibility as well as a few other code tweaks.
+
+      -  Updated pdf.js to version 585a3d0.
+
+      -  Switching from separate page to inline and clicking
+         save and display now properly redirects to course page.
+
+0.13  -  Added option for additional direct PDF links primarily for
+         mobiles/tablets that PDF.js might not always work for due
+         to limited memory and/or processor speed.
+
+0.12  -  Beta release.

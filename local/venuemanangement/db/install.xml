@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/venuemanangement/db" VERSION="20131220" COMMENT="XMLDB file for Moodle local/venuemanangement"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+
+    <TABLE NAME="local_bu" COMMENT="This table saves information about an instance of venue locations in an lms.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="location" TYPE= "char" LENGTH="255"  NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="The unique id for this venue locations instance."/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="local_classroom" COMMENT="This table saves information about an instance of venue classroom in an lms.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="locationid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"  SEQUENCE="false"/>
+        <FIELD NAME="classroom" TYPE= "char" LENGTH="255"  NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="capacity" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"  SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="The unique id for this venue classroom instance."/>
+        <KEY NAME="foreignkey1" TYPE="foreign" FIELDS="locationid" REFTABLE="local_bu" REFFIELDS="id" COMMENT="id from local_bu table"/>
+      </KEYS>
+    </TABLE>
+    
+    <TABLE NAME="local_resource" COMMENT="This table saves resources of classrooms.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="classroomid" TYPE= "int" LENGTH="10"  NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="resource" TYPE="text" NOTNULL="true"  SEQUENCE="false"/>
+        <FIELD NAME="resourceqty" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"  SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="The unique id for this resource."/>
+        <KEY NAME="foreignkey1" TYPE="foreign" FIELDS="classroomid" REFTABLE="local_classroom" REFFIELDS="id" COMMENT="id from local_classroom table"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>

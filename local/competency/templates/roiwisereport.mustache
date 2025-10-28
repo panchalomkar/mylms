@@ -1,0 +1,256 @@
+
+<div class="row mt-3">
+    <div class="col-md-6">
+        <div class="form-group">
+        <label for="sel1">Select competency:</label>
+        <select class="form-control" id="maincom">
+        <option value="0">Select competency</option>
+        {{#studentdetails}}
+        <option value="{{id}}">{{title}}</option>
+        {{/studentdetails}}
+        
+        </select>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <button type="button" class="btn btn-primary mt-4 float-right" id="submitroi">ROI Calculation</button>
+    </div>
+
+</div>
+        
+ <table class="table mt-5">
+                <thead class="thead-dark">
+                    <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">First Name/Last Name</th>
+                    <th scope="col">Sub Competency</th>
+                    <th scope="col">Business Unit</th>
+                    <th scope="col">Pre-performance</th>
+                     <th scope="col">Post-performance</th>
+                    <th scope="col">Improvement %</th> 
+                    <th scope="col">Annual Salary </th>
+                    <th scope="col">Salary for ROI tenure (<span id="durationid"></span>)</th> 
+                    <th scope="col">ROI</th>
+                    <th scope="col">Impression</th>
+                    </tr>
+                </thead>
+                <tfoot class="thead-dark">
+                <tr>
+                <th></th>
+                <th></th>
+                 <th></th>
+                  <th></th>
+                   <th></th>
+                    <th></th>
+                     <th></th>
+                      <th></th>
+                       <th>Total Roi = </th>
+                <th><span id="finaleroiid"></span>%</th>
+                 <th></th>
+                </tr>
+                </tfoot>
+                <tbody id="viewroireport">
+
+
+                  
+                 
+                   
+                </tbody>
+            </table>
+
+
+
+    <div id="moodleroiform" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h4 class="modal-title">ROI and Calculate Form</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                <div id="response"></div> 
+                <form id="submit_form">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                        <label for="SelectBussinessUnit">Select Bussiness Unit :</label>
+                        <select class="form-control" name="department" id="buid">
+                       {{#getbudetail}}
+                        <option value="{{department}}">{{department}}</option>
+                        {{/getbudetail}}
+                        </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                        <label for="BUTotalBudget">BU Total Budget :</label>
+                        <input type="text" class="form-control" name="totalbudegt" id="totalbudegt" placeholder="Enter Budget">
+                        </div>
+                    </div>
+               
+                    <div class="form-row">
+                      
+                        <div class="form-group col-md-6">
+                        <label for="TrainingBudget">Training Budget :</label>
+                        <input type="text" class="form-control" name="trainingbudegt" id="trainingbudegt" placeholder="Enter Budget">
+                        </div>
+                          <div class="form-group col-md-6">
+                        <label for="SelectTraining">Select Sub Competency :</label>
+                        <select class="form-control" name="subcomid" id="subcomid">
+                        <option value="0">Select Training :</option>
+                       {{#subcompentancy}}
+                        <option value="{{comcid}}">{{comname}}</option>
+                        {{/subcompentancy}}
+                        </select>
+                        </div>
+                    </div>
+               
+              
+                    <div class="form-row">
+                    <div class="form-group col-md-6">
+                    <label for="exampleInputEmail1">Number of Employee :</label>
+                    <input type="text" class="form-control" name="noemployeeid" id="noemployeeid" placeholder="Enter Budget">
+                    </div>
+
+                    <div class="form-group col-md-6">
+                    <label for="exampleInputEmail1">Budget Per Employee :</label>
+                    <input type="text" class="form-control" name="budegtperempt" id="budegtperempt" placeholder="Enter Budget">
+                    </div>
+                    </div>
+
+                     <div class="form-group ">
+                    <label for="ROIPeriod :">ROI over period : </label>
+              
+                    <input type="Number" class="form-control" name="ROIoverperiodid" id="ROIoverperiodid" placeholder="Enter Month">
+                    </div>
+                   
+                    
+                    <div class="form-row">
+                    <div class="form-group col-md-6">
+                    <label for="exampleInputEmail1">Start date</label>
+                    <input type="date" class="form-control" name="roiperiodstartdate" id="roiperiodstartdate" placeholder="Start date">
+                    </div>
+                    <div class="form-group col-md-6">
+                    <label for="exampleInputEmail1">End date :</label>
+                    <input type="date" class="form-control" name="roiperiodenddate" id="roiperiodenddate" placeholder="End date">
+                    </div>
+                    </div>
+
+
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" id="submitdata">Save changes</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{{#js}}
+require(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, ajax, notification, str) {
+  $(document).ready(function(){
+    var show_btn=$('#submitroi');
+    
+      show_btn.click(function(){
+        $("#moodleroiform").modal('show');
+    })
+  });
+
+
+$("#maincom").change(function(){
+   var maincom_id = $(this).val();
+         $.ajax({
+                                  url: M.cfg.wwwroot + "/local/competency/getratingroi.php",
+                                  type: 'POST',
+                                  data: {maincom_id: maincom_id},
+                                  success: function (response) {
+                                         
+                                  $("#viewroireport").html(response);
+                                  }
+                              });
+
+});
+
+$("#maincom").change(function(){
+   var maincom_id = $(this).val();
+         $.ajax({
+                                  url: M.cfg.wwwroot + "/local/competency/getduration.php",
+                                  type: 'POST',
+                                  data: {maincom_id: maincom_id},
+                                  success: function (response) {
+                                  var res = $.parseJSON(response); 
+                                  $("#durationid").html(res.result);
+                                  $("#finaleroiid").html(res.fileroi);
+                                  }
+                              });
+
+});
+
+
+
+
+$("#subcomid").change(function(){
+    var maincom_id = $(this).val();
+     $.ajax({
+                                  url: M.cfg.wwwroot + "/local/competency/getnofusers.php",
+                                  type: 'POST',
+                                  data: {maincom_id: maincom_id},
+                                  success: function (response) {
+                                         console.log(response);
+                                        
+                                         $("#noemployeeid").val(response);
+                                             var noemployeeid = $('#noemployeeid').val();
+
+                                            var trainingbudegt = $('#trainingbudegt').val();
+                                     
+                                            var perempbudegt = parseInt(trainingbudegt) / parseInt(response);
+                                      
+                                        
+                                            $("#budegtperempt").val(perempbudegt);
+                                  }
+                              });
+});
+
+$("#submitdata").click(function(){
+    
+    var buid = $('#buid').val();
+    var totalbudegt = $('#totalbudegt').val();  
+    var subcomid = $('#subcomid').val();  
+    var trainingbudegt = $('#trainingbudegt').val(); 
+    var noemployeeid = $('#noemployeeid').val();   
+    var budegtperempt = $('#budegtperempt').val();
+    var ROIoverperiodid = $('#ROIoverperiodid').val();
+    var roiperiodstartdate = $('#roiperiodstartdate').val();
+    var roiperiodenddate = $('#roiperiodenddate').val();
+     if(buid == '' || totalbudegt == '' || subcomid == '' || trainingbudegt == '' || noemployeeid == '' || budegtperempt == '' || ROIoverperiodid == '' || roiperiodstartdate == '' || roiperiodenddate == '')  
+           {  
+                $('#response').html('<span class="text-danger">All Fields are required</span>');  
+                
+           }  
+           else  
+           {  
+                $.ajax({  
+                     url:"../competency/roidetailinsert.php",  
+                     method:"POST",  
+                     data:$('#submit_form').serialize(),  
+                     beforeSend:function(){  
+                          $('#response').html('<span class="text-info">Please wait...</span>'); 
+                           $('#passworderror').fadeOut("slow"); 
+                     },  
+                     success:function(data){  
+                          $('form').trigger("reset");
+                          $('#response').fadeIn().html(data);  
+                          setTimeout(function(){  
+                               $('#response').fadeOut("slow");  
+                               
+                          }, 5000);  
+                     }  
+                });  
+           }  
+
+});
+
+
+ })
+{{/js}}
+    

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/remuihomepage/db" VERSION="20220523" COMMENT="XMLDB file for Moodle local/remuihomepage/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="remuihomepage_sections" COMMENT="This table has the data of homepage section">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="sectid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Section id"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name of the section"/>
+        <FIELD NAME="deleted" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="deleted section"/>
+        <FIELD NAME="visible" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="sectio visibility"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"  SEQUENCE="false" COMMENT="time created"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="modified time"/>
+        <FIELD NAME="configdata" TYPE="text" LENGTH="1500" NOTNULL="false"  SEQUENCE="false" COMMENT="configdata"/>
+        <FIELD NAME="draftconfig" TYPE="text" LENGTH="1500" NOTNULL="false"  SEQUENCE="false" COMMENT="draft config"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>

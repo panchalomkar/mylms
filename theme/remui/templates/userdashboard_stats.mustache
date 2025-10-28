@@ -1,0 +1,407 @@
+<style>
+
+.block_course_overview, section.block_myoverview {
+    display: block;
+}
+.user_stat{
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.user_stat .card{
+    background: #fff;
+    border-radius: 15px;
+    padding: 10px;
+    width: 280px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: relative;
+}
+.stat_course_due .card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: relative;
+}
+.stat_course_due .card h3 {
+    font-size: 14px !important;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    gap: 10px;
+}
+.user_stat .card h3 {
+    font-size: 14px !important;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+
+
+
+
+.user_stat .completion {
+display: inline-block;
+    background: hsl(240 4.8% 95.9%);
+    color: #000;
+    border-radius: .3rem;
+    font-size: 12px;
+    margin-top: 5px;
+    font-weight: 600;
+    font-size: .875rem;
+    line-height: 1.25rem;
+}
+
+.user_stat .footer-stat{
+display: flex;
+justify-content: center;
+}
+
+
+
+/* Text Inside the Circle */
+.circular-progress .inner-circle span {
+font-size: 1.5rem;
+font-weight: bold;
+}
+
+    #user_course_stat {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      font-family: Arial, sans-serif;
+        justify-content:center;
+        padding:0px 68px 0px 72px;;
+    }
+#user_course_stat .circle {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+#user_course_stat .circle::before {
+  content: "";
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+#user_course_stat .legend {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-left: 1rem;
+
+}
+
+#user_course_stat .legend-item {
+  font-size: 16px;
+  font-weight: 600;
+  text-align: left;
+  
+}
+
+ .legend-item span {
+  display: inline-block;
+  width: 30px;
+      font-size: 20px !important;
+}
+
+.red { color: #e74c3c; }
+.yellow { color: #f1c40f; }
+.blue { color: #1abc9c; }
+.stat_course_date{
+.course-list { display:flex; flex-direction:column; gap:1rem; }
+.course-header { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;
+  font-size:0.875rem; font-weight:700; color:#4b5563; border-bottom:1px solid #e5e7eb; padding-bottom:0.5rem; }
+.course-row { display:grid; grid-template-columns:40px 1fr 1fr 1fr; gap:1rem; align-items:center; }
+.course-avatar { width:40px; height:40px; border-radius:50%; object-fit:cover; }
+.progress-container { display:flex; align-items:center; gap:0.5rem; }
+.progress-bar { flex:1; height:8px; background:#e5e7eb; border-radius:9999px; overflow:hidden; }
+.progress-fill { height:100%; transition:width 0.3s ease; }
+.progress-fill.green { background:#16a34a; }
+.progress-fill.yellow { background:#facc15; }
+.progress-fill.red { background:#ef4444; }
+.progress-label { font-size:0.75rem; padding:2px 6px; border-radius:4px; color:#fff; }
+.progress-label.yellow { color:#000; }
+.progress-label.green { background:#16a34a; }
+.progress-label.yellow { background:#facc15; }
+.progress-label.red { background:#ef4444; }
+.due-date { font-size:0.875rem;font-weight:400; color:#4b5563; }
+}
+.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:999; }
+.modal-content { background:#fff; padding:1rem; border-radius:0.5rem; width:60%; max-height:80%; overflow-y:auto; position:relative; }
+.hidden { display:none; }
+.close { position:absolute; top:1rem; right:1rem; font-size:1.5rem; cursor:pointer; }
+.modal {
+    display: flex; /* changed from none */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+.hidden { display: none; }
+
+.view-more-container { text-align:right; margin-top:0.5rem; }
+/* Card styling */
+.card.flex-fill {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    padding: 20px 15px;
+    margin-bottom: 20px;
+}
+
+.user_stat .card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    padding: 20px 15px;
+    margin-bottom: 20px;
+}
+
+.user_stat .card h3 i {
+    margin-right: 6px;
+    font-size: 18px;
+}
+
+.user_stat .circle-progress {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 10px;
+    position: relative;
+}
+
+.user_stat .circular-chart {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.user_stat .circle-bg {
+    fill: none;
+    stroke: #eee;
+    stroke-width: 3.8;
+}
+
+.user_stat .circle {
+    fill: none;
+    stroke-width: 3.8;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    transition: stroke-dasharray 0.6s ease;
+}
+
+.user_stat .percentage {
+  font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    font-size: 0.4rem;
+    line-height: 2rem;
+}
+.highcharts-credits{display:none !important;}
+#highcharts-he2tu4n-0{width:100% !important;}
+</style>
+
+<div class="user_stat mb-3">
+{{#stats}}
+  <div class="card flex-fill text-center p-4">
+      <h3 style="font-size:16px;" class="mb-5">
+          <i class="{{icon}}"></i> {{label}}
+      </h3>
+      <div class="circle-progress">
+          <svg viewBox="0 0 36 36" class="circular-chart">
+              <!-- Background Circle -->
+              <path class="circle-bg"
+                    d="M18 2.0845
+                       a 15.9155 15.9155 0 0 1 0 31.831
+                       a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              <!-- Progress Circle -->
+              <path class="circle" 
+                    stroke="{{color}}"
+                    stroke-dasharray="{{percentage}}, 100"
+                    d="M18 2.0845
+                       a 15.9155 15.9155 0 0 1 0 31.831
+                       a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              <!-- Center Text -->
+              <text x="18" y="18" fill="{{color}}" class="percentage">{{value}}{{total}}</text>
+          </svg>
+      </div>
+      <div class="footer-stat mt-2">
+          <div class="completion py-1 px-4" style="color:#000">{{percentage}}% Completion</div>
+      </div>
+  </div>
+{{/stats}}
+</div>
+
+<div class="stat_course_due  d-flex flex-row gap-2 col-md-12">
+{{#stat_course_due}}
+<div class="card flex-fill mb-4">
+    <h3 style="justify-content: space-between;">
+        <span><i class="{{icon}} mr-2"></i>{{label}}</span>
+    </h3>
+
+    <!-- Chart container -->
+    <div class="progress-wrapper-user-stat mt-3 d-flex" style="align-items: center;">
+        <div id="course-donut-{{id}}" style="width:50%; margin-right:30px; height:250px; "></div>
+
+        <!-- Legend -->
+        <div class="legend d-flex text-start flex-column justify-content-around" style="align-items: center; width:165px;">
+            <div class="legend-item mb-3 red"><span>{{notstarted}}</span><br>Not Started</div>
+            <div class="legend-item mb-3 yellow"><span>{{inprogress}}</span><br>In Progress</div>
+            <div class="legend-item mb-2 blue"><span>{{completed}}</span><br>Completed</div>
+        </div>
+    </div>
+</div>
+
+<script>
+Highcharts.chart('course-donut-{{id}}', {
+    chart: {
+        type: 'pie',
+        width: 250,  // width in pixels
+        height: 240, // height in pixels
+        events: {
+            render() {
+                const chart = this;
+                const series = chart.series[0];
+                let customLabel = chart.options.chart.custom?.label;
+//total removed
+                const label = customLabel.label;
+                const x = series.center[0] + chart.plotLeft;
+                const y = series.center[1] + chart.plotTop - (label.getBBox().height / 2);
+
+                label.attr({ x: x, y: y });
+                label.css({ fontSize: `${series.center[2] / 12}px` });
+            }
+        }
+    },
+    title: { text: '' },
+    tooltip: { pointFormat: '{series.name}: <b>{point.percentage:.0f}%</b>' },
+    legend: { enabled: false },
+    plotOptions: {
+        series: {
+            allowPointSelect: false,
+            cursor: 'pointer',
+            borderRadius: 8,
+            innerSize: '75%',
+            dataLabels: {
+                enabled: false,
+                distance: -30,
+                format: '{point.percentage:.0f}%',
+                style: { fontSize: '0.9em' }
+            }
+        }
+    },
+    series: [{
+        name: 'Courses',
+        colorByPoint: true,
+        data: [
+            { name: 'Not Started', y: {{notstarted}}, color: '#e74c3c' },
+            { name: 'In Progress', y: {{inprogress}}, color: '#f1c40f' },
+            { name: 'Completed', y: {{completed}}, color: '#1abc9c' }
+        ]
+    }]
+});
+
+</script>
+{{/stat_course_due}}
+
+{{#stat_course_date}}
+<div class="card flex-fill stat_course_date">
+  <h3><i class="{{icon}}"></i> {{label}}</h3>
+
+  <div class="course-list">
+    <div class="course-header">
+      <span>Courses</span>
+      <span>Progress %</span>
+      <span>Due Date</span>
+    </div>
+
+    {{#initialcourses}}
+    <div class="course-row">
+      <img src="{{image}}" alt="{{name}}" class="course-avatar">
+      <span class="due-date text-left"><a href="{{href}}">{{name}}</a></span>
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill {{progresscolor}}" style="width: {{progress}}%"></div>
+        </div>
+        <span class="progress-label {{progresscolor}}">{{progress}}%</span>
+      </div>
+      <span class="due-date">{{duedate}}</span>
+    </div>
+    {{/initialcourses}}
+
+  <div class="view-more-container">
+    <a href="javascript:void(0)" onclick="openCoursesModal()">View More</a>
+</div>
+<!-- Popup Modal (place outside the loop if possible) -->
+<div id="coursesModal" class="modal hidden">
+  <div class="modal-content">
+    <span class="close" onclick="closeCoursesModal()">&times;</span>
+
+    <!-- Header Row -->
+    <div class="course-list-popup">
+      <div class="course-header">
+        <span style="padding-right:75px;">Courses</span>
+        <span>Progress %</span>
+        <span>Due Date</span>
+      </div>
+
+      <!-- Course Rows -->
+      {{#allcourses}}
+      <div class="course-row pt-2" style="border-bottom: solid 1px #e7dfdf;padding-bottom: 5px;">
+        <img src="{{image}}" alt="{{name}}" class="course-avatar">
+        <span class="due-date" style="text-align:left;"><a style="font-size: 14px;color: #003152;text-transform: capitalize; font-weight: 400;" href="{{href}}">{{name}}</a></span>
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress-fill {{progresscolor}}" style="width: {{progress}}%"></div>
+          </div>
+          <span class="progress-label {{progresscolor}}">{{progress}}%</span>
+        </div>
+        <span class="due-date">{{duedate}}</span>
+      </div>
+      {{/allcourses}}
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" id="coursesPagination"></div>
+  </div>
+</div>
+  </div>
+</div>
+{{/stat_course_date}}
+
+</div>
+<script>
+function openCoursesModal() {
+    var modal = document.getElementById('coursesModal');
+    modal.classList.remove('hidden');
+}
+
+function closeCoursesModal() {
+    var modal = document.getElementById('coursesModal');
+    modal.classList.add('hidden');
+}
+</script>

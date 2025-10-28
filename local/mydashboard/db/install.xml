@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/mydashboard/db" VERSION="2022010300" COMMENT="XMLDB file for Moodle local/mydashboard" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
+    <TABLES>
+        <!-- form definition -->
+        <TABLE NAME="user_points_log" COMMENT="store user points">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User id"/>
+                <FIELD NAME="point_type" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Type of points credited"/>
+                <FIELD NAME="action" TYPE="char" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="action of points added, redeem, share"/>
+                <FIELD NAME="points" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Points"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Record inserted time"/>
+                <FIELD NAME="ip_addr" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Record inserted time"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="The unique id for Points log"/>
+            </KEYS>
+        </TABLE>
+        
+        <TABLE NAME="user_points" COMMENT="update user points">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User id"/>
+                <FIELD NAME="available_points" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Availble Points"/>
+                <FIELD NAME="total_points" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Availble Points"/>
+                <FIELD NAME="userrank" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="userrank"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Record inserted time"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Record updated time"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="The unique id for Points"/>
+            </KEYS>
+        </TABLE>
+        
+        <TABLE NAME="user_points_share" COMMENT="share user points">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="fromuserid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User id"/>
+                <FIELD NAME="touserid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User id"/>
+                <FIELD NAME="points" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="shared Points"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Record inserted time"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="The unique id for Points share"/>
+            </KEYS>
+        </TABLE>
+        
+        <TABLE NAME="user_scratchcard" COMMENT="get scratch card">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
+                <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" />
+                <FIELD NAME="card_type" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" />
+                <FIELD NAME="point" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
+                <FIELD NAME="redeemed" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Record inserted time"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="The unique id for SC"/>
+            </KEYS>
+        </TABLE>
+        
+        
+        <TABLE NAME="custom_level" COMMENT="Level info">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="level" TYPE="char" LENGTH="150" NOTNULL="false" SEQUENCE="false" />
+                <FIELD NAME="point" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" />
+                <FIELD NAME="grade" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" />
+                <FIELD NAME="icon" TYPE="char" LENGTH="250" NOTNULL="false" SEQUENCE="false" />
+                <FIELD NAME="companyid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" />
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Record inserted time"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="The unique id for SC"/>
+            </KEYS>
+        </TABLE>
+
+        <TABLE NAME="assign_cat_point" COMMENT="Assing category point info">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="categoryid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" />
+                <FIELD NAME="assignpoint" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" />
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" COMMENT="Record inserted time"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="The unique id for SC"/>
+            </KEYS>
+        </TABLE>
+
+         <TABLE NAME="assign_smeleader" COMMENT="Assing category point info">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="smeleader_id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" />
+                <FIELD NAME="roleid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" />
+                <FIELD NAME="categoryid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" />
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" COMMENT="Record inserted time"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="The unique id for SC"/>
+            </KEYS>
+        </TABLE>
+
+        <TABLE NAME="sme_leader_feedback" COMMENT="Level info">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="categoryid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" />
+                <FIELD NAME="smeleader_id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" />
+                <FIELD NAME="feedback_userid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" />
+                <FIELD NAME="feedback" TYPE="text" NOTNULL="true" SEQUENCE="false" />
+                <FIELD NAME="rate" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" />
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" COMMENT="Record inserted time"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="The unique id for SC"/>
+            </KEYS>
+        </TABLE>
+        
+    </TABLES>
+</XMLDB>

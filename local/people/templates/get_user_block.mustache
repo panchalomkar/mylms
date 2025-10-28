@@ -1,0 +1,106 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_sitesetting/customise
+
+    Note: collapse/show functionality as well as check/uncheck functionality is 
+          developed using javascript (custom.js) file. Any change in HTML DOM 
+          structure can break these functionalities, so change cautiously.
+
+    @author: 2021 Akashy Pingale (akashy.p@paradisosolution.com)
+    @paradiso
+
+}}
+<div class="col-sm-12 col-md-12 col-lg-12 col-xl-9 mar-no pad-no pad table-filters">
+    <div class="bg-grey-dark">
+      <div class="pad-btm pad-hor card">
+
+        <div class="row mar-btm">
+            <div class="filters-list">
+            {{#multifilter}}
+              {{#fields}}
+            <div class="btn btn-primary btn-sm reset" data-name="{{{fields}}}">
+                <span>{{{strfield}}}
+                <span class="remove-filter"><i class="fa fa-close"></i>
+                    </span>
+                </span>
+            </div>
+            {{/fields}}
+            {{/multifilter}}
+            </div>
+        </div>
+        {{#actionenroll}}<div class="alert alert-success">{{{enrollsuccess}}}</div>{{/actionenroll}}
+        <div class="content-form">
+          <div class="row">
+          </div>
+          <div class="row">
+          {{#count}}
+            <div class="total-records footer-total-records col-sm-8 pl-0">
+                {{{totalrecords}}}
+            </div>
+          {{/count}}
+          {{^count}}
+            <div class="total-records footer-total-records col-sm-8 pl-0"></div>
+          {{/count}}
+          {{#tenanthide}}
+              <input type="hidden" value="{{{host2service}}}" name="show_tenant_val" id="show_tenat_company_val">
+              <div class="col-sm-4 show_tenat_company_records">
+                 <input type="checkbox" value="{{{host2service}}}" name="show_tenant" id="show_tenat_company">
+                <label>{{#str}}multitenant_record, local_people{{/str}}</label>
+              </div>
+          {{/tenanthide}}
+          </div>
+
+          <form id="form-bulk-actions">
+            <div class="content-table table-responsive-sm">
+              {{#istableempty}}
+                <div class="alert alert-warning text-center">
+                  <span>{{#str}}users_not_found, local_people{{/str}}</span>
+                  {{#lcinvitebutton}}
+                    <button class="btn btn-round btn-primary" id="btn_invite_user">{{#str}}invite, local_people{{/str}}</button>
+                  {{/lcinvitebutton}}
+                </div>
+              {{/istableempty}}
+              {{#istable}}
+              {{>local_people/user_table}}    
+                
+              {{/istable}}  
+            </div>
+         </form>
+         </form>
+        </div>
+        <div class="col-sm-12 pagination-content">
+        {{#userperpage}}
+            <form method="POST" class="recordsperpage">
+                <div class="d-inline-block record-page">
+                    <span>{{#str}}recordsperpage, local_people{{/str}}</span>
+                </div>
+                <div class="d-inline-block">
+                    <select class="form-control" type="text" id="id_userperpage" name="userperpage" style="width:70px;">
+                        {{#options}}
+                          <option value="{{{key}}}" {{{selected}}}>{{{key}}}</option>
+                        {{/options}}
+                    </select>
+                </div>
+                </form>    
+        {{/userperpage}}
+        {{{pagingbar}}}
+        </div>
+
+      </div>
+    </div>
+</div>

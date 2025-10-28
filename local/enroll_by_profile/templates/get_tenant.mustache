@@ -1,0 +1,11 @@
+<div>
+	<h3 class="Get_title">{{#str}} GetTenant_title,local_enroll_by_profile {{/str}}</h3>
+	<div>
+		<select id="selected_tenant" class="form-control">
+			<option value="0">{{#str}} select_tenant,local_enroll_by_profile {{/str}}</option>
+			{{#data}}
+				<option value="{{la_elementid}}" {{active}}={{active}} >{{la_elementname}}</option>
+			{{/data}}
+		</select>
+	</div>
+</div>

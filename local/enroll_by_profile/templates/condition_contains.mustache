@@ -1,0 +1,13 @@
+{{!
+    @template local_enroll_by_profile/condition_contains
+
+    This template renders the content of the value filed in automation hub add rules form
+    This template is used for conditional cases : contains,beginswith,endswith,exactmatch 
+}}
+
+<label class="col-md-12 category_type">
+	<span id="id_input_title{{id}}" class="mar-rgt">{{#str}} value,local_enroll_by_profile {{/str}}</span>
+	<input type="text" name="textmatch{{id}}" id="id_content{{id}}" class="form-control content-value">
+	<span id="id_input_role_shortname_label" class="mar-rgt">{{#str}} role_shortname_label,local_enroll_by_profile {{/str}}</span>
+</label>
+<input type="hidden" id="id_negatedrule{{id}}" class="form-control" name="{{negatedconditional}}" value="{{negatedconditionalstring}}" />

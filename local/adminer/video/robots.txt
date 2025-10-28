@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://lxp-demo2.raptechsolutions.com//local/adminer/video/sitemap.xml

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/scheduler/db" VERSION="20200504" COMMENT="XMLDB file for core Moodle tables"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <TABLES>
+        <TABLE NAME="scheduler_slot" COMMENT="Moodle configuration variables">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="courseid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="u_timezone" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="slot_date" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="slot_start" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="slot_end" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="max_user" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+    
+        <TABLE NAME="scheduler_slot_book" COMMENT="Moodle configuration variables">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="courseid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="sch_slotid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="u_timezone" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="slot_date" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="slot_start" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="slot_end" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="own_start" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="own_end" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        
+    </TABLES>
+</XMLDB>

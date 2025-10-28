@@ -1,0 +1,200 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_sitesetting/customise
+
+    Note: collapse/show functionality as well as check/uncheck functionality is 
+          developed using javascript (custom.js) file. Any change in HTML DOM 
+          structure can break these functionalities, so change cautiously.
+
+    @author: 2021 Akashy Pingale (akashy.p@paradisosolution.com)
+    @paradiso
+
+}}
+<div class="search-filter-buttons col-sm-12 col-md-12 col-lg-12">
+<div class="row mar-btm header-search">
+      <div class="col-lg-3 col-md-6 searchbox px-0">
+        <div class="input-group custom-search-form">
+          
+          <input value="{{{search}}}" name="txt" id="txt" placeholder="{{#str}}Search..., local_people{{/str}}" class="form-control input-lg" type="text">
+          <span class="input-group-btn">
+            <button class="btn btn-white btn-fab btn-fab-mini {{{classbutton}}}" id="searchbutton">
+              <i class="fa fa-close close_icon_search"></i>
+            </button>
+          </span>
+        </div>
+    </div>
+
+    <div class="col-lg-2 col-md-6 content-companies px-0">
+          <div class="input-group">
+            {{^iscompanyselect}}
+              <select id="menucompany" class="select menucompany custom-select" name="company">
+              {{#companies}}
+                <option value="">{{#str}}company_choose,local_people{{/str}}</option>
+                <option value="NONE" {{none_selected}}>{{#str}}company_without,local_people{{/str}}</option>
+                  <optgroup label="{{#str}}company_all,local_people{{/str}}">
+                  <option value="ALL" {{all_selected}}>{{#str}}company_all_excluding_main,local_people{{/str}}</option>
+                  {{#tenants}}
+                    <option value="{{{id}}}" {{selected}}>{{{name}}}</option>
+                  {{/tenants}}
+                </optgroup>
+              {{/companies}}
+              </select>
+            {{/iscompanyselect}}
+              {{#iscompanyselect}}
+              {{#companies}}
+                <select name="company" class="chosen-people">
+                  <option value="{{{id}}}">{{{name}}}</option>
+                </select>
+              {{/companies}}
+              {{/iscompanyselect}} 
+            <span class="helptooltip">
+              <a target="_blank" aria-haspopup="true" aria-haspopup="true" href="{{{popupurl}}}">
+              </a>
+            <span>
+            </div>
+            </div>
+      <form id="form-clearall" method="post" action="{{{action}}}">
+        <input type="hidden" name="clearall" id="clearall" value="clearall">
+      </form>
+    <div class="col-lg-7 col-md-12 bulk-actions">
+    <div class="content-actions">
+       <a class="btn btn-primary btn_css btn-round btn-labeled fa-2x loadiframe create-user-top" data-toggle="modal" data-target="#exampleModal">
+       <i class="fa fa-user icon_css adduserform"></i>
+       {{#str}}new_user,local_people{{/str}}
+      </a>
+
+      <a id="enrol_user" class="button_disable bulk-action btn_css btn btn-primary btn-round btn-labeled fa-2x loadiframe" href="#">
+      <i class="fa fa-users icon_css"></i>
+      {{#str}}enrol_users,local_people{{/str}}
+      </a>
+
+      <a data-action="suspend" data-showmodal="0" class="button_disable btn-bulk-suspend_unsuspend btn_css btn-primary bulk-action btn btn-round btn-labeled loadiframe" href="#"> 
+      <i class="fa fa-user-times icon_css" aria-hidden="true"></i>
+        {{#str}}suspend, local_people{{/str}}
+      </a>
+
+      
+      <a data-action="cohortadd" data-showmodal="1" class="button_disable btn-bulk-action btn_css bulk-action btn btn-primary btn-round btn-labeled fa-2x loadiframe" href="#">
+      <i class="fa fa-bullseye icon_css"></i>
+      {{#str}}bulk_add_cohort, local_people{{/str}}
+      </a>
+
+      <button class="btn btn_css dropdown dropdown-toggle dropdwn_people" type="button" data-toggle="dropdown"></button>
+      <span class="caret"> 
+      <ul class="dropdown-menu dropdown-menu-right">
+
+      <li>
+      <a class="btn  btn-round bulk-action btn-labeled loadiframe" href="{{{uploadURL}}}">
+      <i class="fa fa-upload icon_css"></i>
+      {{#str}}bulk_upload, local_people{{/str}}
+      </a>
+      </li>
+
+      <li>
+      <a data-action="download" data-showmodal="0" class="button_disable btn-bulk-action  bulk-action btn  btn-round btn-labeled fa-2x loadiframe" href="#">
+      <i class="fa fa-download icon_css"></i>
+      {{#str}}bulk_download, local_people{{/str}}
+      </a>
+      </li>
+
+     <li> 
+     <a data-action="message" data-showmodal="1" class="button_disable btn-bulk-action  bulk-action btn  btn-round btn-labeled loadiframe" href="#">
+     <i class="fa fa-inbox icon_css"></i>
+     {{#str}}bulk_send_message, local_people{{/str}}
+     </a>
+     </li>
+
+    <li>
+    <a data-action="unlock" data-showmodal="0" class="button_disable btn-bulk-suspend_unsuspend bulk-action btn btn-round btn-labeled loadiframe" href="#">
+     <i class="fa fa-check icon_css" aria-hidden="true"></i>
+     {{#str}}enable, local_people{{/str}}
+    </a>
+    </li>
+
+    {{#capability}}
+    <li>
+     <a data-action="delete" data-showmodal="0" class="button_disable btn-bulk-action  bulk-action btn  btn-round btn-labeled loadiframe" href="#">
+     <i class="fa fa-trash icon_css" aria-hidden="true"></i>
+     {{#str}}bulk_delete, local_people{{/str}}
+     </a>
+    </li>
+    {{/capability}}
+    </ul>
+    </div>
+    </div>
+    </div>
+{{> local_people/register_form }}
+    {{#js}}
+require(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, ajax, notification, str) {
+
+  $('#ssbutton').click(function(){
+ 
+           var firstname = $('#firstname').val();  
+           var lastname = $('#lastname').val();  
+           var email = $('#email').val();  
+           if (email != '') {
+                if (IsEmail(email) === false) {
+                    $('#passworderror').html('<span class="text-danger">Entered Email is not Valid!!</span>');
+                    return false;
+                }
+           }
+          
+           var username = $('#username').val();
+           var pwd = $('#pwd').val();
+           if(firstname == '' || lastname == '' || email == '' || username == '' || pwd == '')  
+           {  
+                $('#response').html('<span class="text-danger">All Fields are required</span>');  
+                
+           }  
+           else  
+           {  
+                $.ajax({  
+                     url:"userinsert.php",  
+                     method:"POST",  
+                     data:$('#submit_form').serialize(),  
+                     beforeSend:function(){  
+                          $('#response').html('<span class="text-info">Please wait...</span>'); 
+                           $('#passworderror').fadeOut("slow"); 
+                     },  
+                     success:function(data){  
+                          $('form').trigger("reset");
+                          $('#response').fadeIn().html(data);  
+                          setTimeout(function(){  
+                               $('#response').fadeOut("slow");  
+                               
+                          }, 5000);  
+                     }  
+                });  
+           }  
+      }); 
+
+
+ function IsEmail(email) {
+            const regex =
+/^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+            if (!regex.test(email)) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+
+ })
+{{/js}}
+    

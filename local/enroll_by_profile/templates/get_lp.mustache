@@ -1,0 +1,12 @@
+<div>
+	<input type="text" placeholder="{{#str}} search_cat,local_enroll_by_profile {{/str}}" id="search_cat" class="form-control content-value col-md-4" />
+	<h3 class="Get_title">{{#str}} GetLP_title,local_enroll_by_profile {{/str}}</h3>
+	<div>
+		{{#data}}
+		<label class="form-checkbox form-normal form-icon-text form-plms col-md-6 pl-0 {{classactive}}"><span class="mar_left_display">{{elementname}}</span>
+			<input type="{{type}}" name="{{name}}" value="{{value}}" {{checked}} id="id_elements_{{elementid}}" />
+			</span>
+		</label>
+		{{/data}}
+	</div>
+</div>

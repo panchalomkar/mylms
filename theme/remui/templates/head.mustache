@@ -1,0 +1,154 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Edwiser RemUI
+    @package theme_remui
+    @copyright (c) 2023 WisdmLabs (https://wisdmlabs.com/)
+    @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+{{!
+    Page header.
+}}
+{{{ output.doctype }}}
+<html {{{ output.htmlattributes }}}>
+<head>
+    <title>{{{ output.page_title }}}</title>
+    <link rel="shortcut icon" href="{{{ output.favicon }}}" />
+    {{{ output.standard_head_html }}}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        {{#fonts}}
+            @import "https://fonts.googleapis.com/css?family={{.}}:100,200,300,400,500,600,700,800,900";
+        {{/fonts}}
+    </style>
+    
+<script>
+(function($) {
+    $(document).ready(function() {
+        $('.slider-hero').slick({
+            dots: true,
+            infinite: true,
+            cssEase: 'linear',
+            swipe: false,
+        });
+    });
+    
+});
+</script>
+ <script>
+function openNav() {
+  document.getElementById("mySidebar").style.width = "250px";
+  document.getElementById("main").style.marginLeft = "250px";
+}
+
+function closeNav() {
+  document.getElementById("mySidebar").style.width = "50px";
+  document.getElementById("main").style.marginLeft= "0";
+}
+</script >
+
+
+{{#js}}
+   $(document).ready(function() {
+    
+
+
+    // Check if dark mode is stored in localStorage
+    var darkMode = localStorage.getItem('darkMode');
+    if (darkMode === 'enabled') {
+      enableDarkMode();
+    }
+
+    // Handle click event
+    $('#darkmodeid').on('click', function() {
+      // Toggle dark mode
+      if ($('body').hasClass('dark-mode')) {
+        disableDarkMode();
+      } else {
+        enableDarkMode();
+      }
+    });
+
+    function enableDarkMode() {
+      // Enable dark mode
+      $('body').addClass('dark-mode');
+      // Store dark mode state in localStorage
+      localStorage.setItem('darkMode', 'enabled');
+    }
+
+    function disableDarkMode() {
+      // Disable dark mode
+      $('body').removeClass('dark-mode');
+      // Remove dark mode state from localStorage
+      localStorage.setItem('darkMode', 'disabled');
+    }
+
+    
+     $('.menu li').click(function(e) {
+ 
+      var selectedId = $(this).attr('id');
+      localStorage.setItem('selectedId', selectedId);
+
+      });  
+
+
+
+
+    $('.menu li:has(ul)').click(function(e) {
+        e.preventDefault();
+       
+
+      var selectedId = $(this).attr('id');
+      localStorage.setItem('selectedId', selectedId);
+
+        if($(this).hasClass('active')) {
+            $(this).removeClass('active');
+           // $(this).children('ul').slideUp(800);
+            
+        } else {
+          $('.menu li ul').slideUp(1000);
+            $('.menu li').removeClass('active');
+            $(this).addClass('active');
+            $(this).children('ul').slideDown(1000);
+             
+        }
+
+        $('.menu li ul li a').click(function() {
+            window.location.href = $(this).attr('href');
+          $(this).parent().addClass('selectedmenu').siblings().removeClass('selectedmenu');
+           var selectedLinkId = $(this).attr('id');
+            localStorage.setItem('selectedLinkId', selectedLinkId);
+        })
+    });
+
+   var selectedId = localStorage.getItem('selectedId');
+  var selectedLinkId = localStorage.getItem('selectedLinkId');
+            if (selectedLinkId) {
+                $("#" + selectedLinkId).parent().addClass('selectedmenu').siblings().removeClass('selectedmenu');
+            }
+    if(selectedId){
+        $("#" + selectedId).addClass('selectedactive').siblings().removeClass('selectedactive');
+      $("#" + selectedId).children('ul').slideDown();
+  
+    }else{
+      $("#mainmenu").children().addClass('selectedactive').siblings().removeClass('selectedactive');
+    }
+
+});
+{{/js}}
+
+
+</head>

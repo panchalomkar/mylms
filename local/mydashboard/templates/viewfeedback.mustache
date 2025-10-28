@@ -1,0 +1,65 @@
+<script language="JavaScript" src="https://code.jquery.com/jquery-3.7.0.js" type="text/javascript"></script>
+<div id="feedbackviewmodal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h4 class="modal-title">View Feedback</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+              
+
+             
+                    <div id="result-container">
+                     </div>
+       
+                
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{#js}}
+require(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, ajax, notification, str) {
+
+  $(document).ready(function(){
+    var show_btn=$('.viewcomments');
+    var show_btn=$('.viewcomments');
+    
+      show_btn.click(function(){
+        $("#feedbackviewmodal").modal('show');
+    })
+  });
+  
+  $(function() {
+          $('.viewcomments').on('click', function( e ) {
+            var smeuserid = $(this).attr("smeuserid");
+            var fdid = $(this).attr("value");
+            $.ajax({
+                                  url: M.cfg.wwwroot + "/local/mydashboard/getfeedback.php",
+                                  type: 'POST',
+                                  data: {smeuserid: smeuserid, fdid: fdid},
+                                  success: function (response) {
+                                         displayData(response);
+                                  }
+                              });
+          });
+
+        function displayData(data) {
+            // Clear existing content in the result container
+            $('#result-container').empty();
+
+            // Iterate through the data and append it to the result container
+            for (var i = 0; i < data.length; i++) {
+                $('#result-container').append(
+                    '<p>Username: ' + data[i].username + ' <br><hr> Email: ' + data[i].email + ' <br><hr> feedback: ' + data[i].feedback + ' <br><hr> Rating: ' + data[i].rating + '<br><hr> ' + data[i].feedbackdate + '</p>'
+                    );
+                // Adjust the property names based on your actual data structure
+            }
+            }
+
+      });
+ })
+{{/js}}

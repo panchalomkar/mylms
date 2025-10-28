@@ -1,0 +1,68 @@
+
+<style>
+
+.block_recentaccesscourses table.table {
+    border: 0;
+    padding: 0px !important;
+    margin: 0px;
+    overflow: hidden;
+    --bs-table-accent-bg: #fff;
+}
+.block_recentaccesscourses .edw-block-body {
+    border-radius: 15px;
+        display: flex;
+    justify-content: center;
+    tbody{border-left:none;border-right:none;}
+}
+.block_recentaccesscourses table.table td, 
+.block_recentaccesscourses table.table th {
+  text-align: center;
+}
+.block_recentaccesscourses table.table th {
+  font-size: 15px;
+}
+.block_recentaccesscourses .footer{display:none;}
+.block_recentaccesscourses .course-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: left;
+    width: 80%;
+}
+.block_recentaccesscourses .course-info img {
+      width: 35px;
+    height: 35px;
+ border-radius: 50%;
+  object-fit: cover;
+}
+.block_recentaccesscourses .course-details {
+  text-align: left;
+}
+</style>
+
+<table class="table" width="95%">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col" style="text-align: left; padding-left: 90px;" >Course Name</th>
+      <th scope="col">Progress</th>
+      <th scope="col" class="t4">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+  {{#recentaccesscoursedata}}
+    <tr>
+      <td>
+        <div class="course-info">
+          <img src="{{courseimage}}" alt="Course Image">
+          <div class="course-details">
+            <span style="font-size: 17px;">{{coursename}}</span><br>
+            <small class="text-muted" style="font-size: 11px;font-weight: 400;">Last Accessed: {{lastaccessdate}}</small>
+          </div>
+        </div>
+      </td>
+      <td class="d-flex gap-1">{{{progress}}}</td>
+      <td><a href="{{courseurl}}" type="button" class="btn btn-primary question">View Course</a></td>
+    </tr>
+  {{/recentaccesscoursedata}}
+  </tbody>
+</table>

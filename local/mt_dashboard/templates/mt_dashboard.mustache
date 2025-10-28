@@ -1,0 +1,134 @@
+{{#noticeok}}
+<div class='alert alert-success'>
+	{{{noticeok_message}}}
+</div>
+{{/noticeok}}
+
+{{#noticefail}}
+<div class='alert alert-warning'>
+	{{{noticefail_message}}}
+</div>
+{{/noticefail}}
+
+<div class='mt-dashboard-header'>
+<div class='row'>
+<div class='col page-heading"'>
+<h2> {{#str}}name,local_mt_dashboard{{/str}} </h2>
+</div>
+
+{{#is_admin}}
+	<div class='col managecompany'> 
+
+	{{#report_companies}}
+		<a href='{{{report_companies_url}}}' class='company-overview icon-margin-5'>
+		<i class='fa fa-list-alt'></i>
+		{{#str}}companies_overview,local_mt_dashboard{{/str}}
+		</a>
+	{{/report_companies}}
+
+		<a href='{{{edit_companies_url}}}' class='icon-margin-5'>
+		<i class='fa fa-cog'></i>
+		{{#str}}managecompanies,block_iomad_company_admin{{/str}}
+		</a>
+	</div>
+
+	<div class=''>
+		<a href='{{{company_edit_form}}}' class='pull-right editcompanieslink icon-margin-5'>
+		<i class='fa fa-plus-circle'></i>
+		{{#str}}addcompany,local_mt_dashboard{{/str}}
+		</a>
+	</div>
+
+{{/is_admin}}
+
+</div>
+
+<section id='iomad_company_selector'>
+	{{#selectedcompany}}
+	<div class='col-md-12 backtotenant index'>
+		<a href='{{{backlink}}}'>
+			<span class="fa fa-chevron-circle-left" aria-hidden="true"></span>
+			<span class="backtenant-message">{{#str}}backtenant,local_mt_dashboard{{/str}}</span>
+		</a>
+	</div>
+	{{/selectedcompany}}
+
+	{{#company_add}}
+
+		<form id='choosecompany' action='{{{action}}}' class="form-inline" method="get">
+			
+				<div class="">
+					<div class="search-mtn">
+						<div id="searchbox" class="searchbox" role="search">
+							<div class="input-group mb-3 mt-search input-group custom-search-form">
+								<div class="input-group-btn">
+									<div class="multisearch">
+									<span class="icons"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M17 17L12.3333 12.3333M13.8889 8.44444C13.8889 11.4513 11.4513 13.8889 8.44444 13.8889C5.43756 13.8889 3 11.4513 3 8.44444C3 5.43756 5.43756 3 8.44444 3C11.4513 3 13.8889 5.43756 13.8889 8.44444Z" stroke="#667185" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</span>
+                        				<input class="form-control " autocomplete="off" type="text" placeholder="Search for Company" aria-label="" onkeyup="" value="" id="search-mt" name="search-mt" for="search-mt">
+                    				</div>
+                    				<div class="getlist"></div>
+                    				<span class="input-group-btn search-lp"><i class="men men-search-phx header-txt i-search" aria-hidden="true"></i></span>
+                    			</div>
+                    		</div>
+                    	</div>
+                    </div>
+                </div>
+
+                <div class="">
+                	<label id="showsuspendedcompanies_label">
+                		<input id="showsuspendedcompanies" name="showsuspendedcompanies" type="checkbox" value="1" {{#showsuspended}} checked {{/showsuspended}} >{{#str}}show_suspended_companies,local_iomad{{/str}}</label>
+                		<input id="companyid" name="company" type="hidden" value="">
+                </div>
+			
+		</form>
+	{{/company_add}}
+
+</section>
+
+<div class='row'>
+	{{#page}}
+		{{#company_add}}
+			<div class='col-xl-3 col-xsm-1 col-sm-4 col-md-3 mtdash'>
+				<div class='mt_boxing_btn'>
+					<a href='{{{createnew}}}' class="mt_btn_color mt_btn_add">
+						<i class="fa fa-plus-circle"></i>
+						<p class="">Add Company</p>
+					</a>
+				</div>
+			</div>
+
+		{{/company_add}}
+	{{/page}}
+
+
+
+	{{#companylisting}}
+	<div class='col-xl-3 col-xsm-1 col-sm-4 col-md-3 mtdash'>
+		<div class='mt_boxing'>
+			<a href='{{{company_url}}}' class='mt_btn_color'>
+			  {{#logo_url}}
+                    <img src="{{{ logo_url }}}" class="navbar-brand-logo logo">
+                {{/logo_url}}
+				
+				<p class=''>{{{cname}}}</p>
+			</a>
+		</div>
+	</div>
+	{{/companylisting}}
+
+
+</div>
+
+
+<div class="col-sm-12 col-md-12 col-lg-12 pagidiv">
+<div class="pagination_mtn">
+	{{{pagination_data}}}
+</div>	
+</div>
+<div class="clearfix"></div>
+
+
+

@@ -1,0 +1,770 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_remui/admin_setting_tabs
+
+
+    Example context (json):
+    {
+        "tabs": [
+         {
+            "name": "tab1",
+            "active": 0,
+            "displayname": "Inactive tab1",
+            "html": "<p>Tab 1 content</p>"
+         },
+         {
+            "name": "tab2",
+            "active": 1,
+            "displayname": "Active tab2",
+            "html": "<p>Tab 2 content</p>"
+         }
+        ]
+    }
+}}
+
+<main>
+   {{#user_stats}}
+ <!--*******dashboard starts here *******-->
+
+   <div class="container-fluid">
+       <div class="row">
+           <div class="col-lg-4 p_card_ui mb-lg-5 mb-3">
+              <div class="py-3 py-lg-5">
+                  <div class="p-2 p-lg-2 pt-lg-3 border bdr-20 border-light border-3 h-100 profile_card_game" style="background: #ffffff !important">
+                      <div class="text-center mx-auto profiledetails__bgs ">
+                          <div class="profiledata">
+                              <img src="{{profileimage}}" class="wh-100 rounded-circle card-img-top" alt="User">
+                          </div>
+                          <div class="mx-auto d-inline-block mt-3">
+                              <h4 class="g_16 font-weight-bold d-flex align-items-center justify-content-center mb-2 pb-2">
+                                  {{fullname}}
+                              </h4>
+                              <h6 class="g_16 font-weight-bold">{{designation}}</h6>
+                              <div class="emailid g_16 ">{{email}}</div>
+                          </div>
+                      </div>
+                      <div class="card-innercont mt-3">
+                          <div class="row level-card">
+                              <div class="col-12">
+                              
+                                  <ul class="list-group list-group-flush">
+                                    <li class="list-group-item bg-transparent d-flex align-items-center justify-content-between px-0 py-2 mb-2 ">
+        <div class="d-flex align-items-center">
+           <span class="d-flex justify-content-center align-items-center img-dept">
+            <span data-toggle="tooltip" data-placement="top" title="Department" class="d-block rank ml-2">Dept</span>
+        </div>
+         <div><b>{{department}}</b></div>
+    </li>
+                                      <li class="list-group-item bg-transparent d-flex align-items-center justify-content-between px-0 py-2 mb-2 ">
+                                          <div class="d-flex align-items-center">
+                                              <!--                                           <i class="fa fa-id-card pe-2 themeColor"></i>-->
+
+                                             <span class="d-flex justify-content-center align-items-center img-empid">
+                                              <span data-toggle="tooltip" data-placement="top" title="Employ Id" class="d-block rank ml-2"> Employ Id</span>
+                                          </div>
+                                          <div><b>{{empcode}}</b></div>
+                                      </li>
+                           
+                                      <li class="list-group-item bg-transparent d-flex align-items-center justify-content-between px-0 py-2 mb-2 ">
+   <div class="d-flex align-items-center">                                              <!--                                           <i class="fa fa-phone pe-2 themeColor"></i>-->
+ <span class="d-flex justify-content-center align-items-center img-phone">
+                                              <span data-toggle="tooltip" data-placement="top" title="Contact"   class="d-block rank ml-2">Contact</span>
+                                          </div>
+                                          <div><b>{{phone}}</b></div>
+                                      </li>
+                                      <!-- three remove -->
+                                      <li class="list-group-item bg-transparent d-flex align-items-center justify-content-between px-0 py-2 mb-2 ">
+     <div class="d-flex align-items-center"> 
+    <span class="d-flex justify-content-center align-items-center img-nextl">
+        <span data-toggle="tooltip" data-placement="top" title="Next Level"
+            class="d-block rank ml-2">Next Level</span>
+    </div>
+    <div><b>{{nextlevel}}</b></div>
+</li>
+                                      <li class="list-group-item bg-transparent d-flex align-items-center justify-content-between px-0 py-2 mb-2 ">
+                                     <div class="d-flex align-items-center"> 
+ <span class="d-flex justify-content-center align-items-center img-nextp">
+                                              <span data-toggle="tooltip" data-placement="top" title="Points to Next Level"   class="d-block rank ml-2">Points to Next Level</span>
+                                          </div>
+                                          <div><b>{{points_needed}}</b></div>
+                                      </li>
+                                      <li class="list-group-item bg-transparent d-flex align-items-center justify-content-between px-0 py-2 mb-2 ">
+                                       <div class="d-flex align-items-center"> 
+  <span class="d-flex justify-content-center align-items-center img-avg">
+                                              <span data-toggle="tooltip" data-placement="top" title="Course Average % for Next Level"   class="d-block rank ml-2">Course Average % for Next Level</span>
+                                          </div>
+                                          <div><b>{{grade_needed}}</b></div>
+                                      </li>
+                                  </ul>
+                              </div>
+                              <div class="col-12">
+                                  <div class="level-card">
+                                      <!--<h3 class="card-title">Level</h3>-->
+                                      <!--                                   <div class="d-flex align-items-center justify-content-between pe-3">-->
+                                      <!--                                       <div class="w201 d-flex align-items-center align-items-center">-->
+                                      <!--&lt;!&ndash;                                           <i class="fa fa-envelope pe-2 themeColor"></i>&ndash;&gt;-->
+                                      <!--                                           <span class="d-flex justify-content-center align-items-center">-->
+                                      <!--                                               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32"><g fill="currentColor"><path d="M11.48 5.616c.383.153.635.524.635.937v7.503a1.01 1.01 0 0 1-2.02 0V9.21a.053.053 0 0 0-.09-.037a1.01 1.01 0 1 1-1.463-1.392l1.832-1.924a1.01 1.01 0 0 1 1.106-.241Zm9.35 1.948c-.179.009-.461.097-.779.475a1.01 1.01 0 1 1-1.546-1.3c.622-.74 1.402-1.151 2.224-1.192a2.742 2.742 0 0 1 2.073.81c1.1 1.097 1.236 2.969-.174 4.483c-.41.44-.907.96-1.41 1.485v.001l-.487.508a.125.125 0 0 0 .09.212h2.075a1.01 1.01 0 0 1 0 2.02h-4.05c-1.086 0-1.736-1.296-.959-2.152c.492-.542 1.221-1.305 1.917-2.033c.5-.523.982-1.027 1.346-1.418c.385-.413.485-.775.486-1.029a.902.902 0 0 0-.26-.647a.723.723 0 0 0-.546-.223ZM10.019 19.48a.898.898 0 1 1 1.18 1.206a.125.125 0 0 1-.037.01a1.01 1.01 0 0 0-.076 1.998a.899.899 0 1 1-1.113 1.134a1.01 1.01 0 1 0-1.925.612a2.918 2.918 0 1 0 5.105-2.649a.132.132 0 0 1 0-.16A2.918 2.918 0 1 0 8.2 18.602a1.01 1.01 0 1 0 1.82.877Zm10.469-1.221a1.01 1.01 0 0 0-1.96-.49l-1.058 4.245a1.01 1.01 0 0 0 .98 1.255h2.264c.069 0 .125.056.125.125v2.053a1.01 1.01 0 0 0 2.02 0V23.35c0-.06.042-.11.099-.127a1.01 1.01 0 0 0 0-1.928a.136.136 0 0 1-.1-.128v-.556a1.01 1.01 0 0 0-2.019 0v.513a.125.125 0 0 1-.125.125h-.811a.125.125 0 0 1-.121-.155l.706-2.835Z"/><path d="M6 1a5 5 0 0 0-5 5v20a5 5 0 0 0 5 5h20a5 5 0 0 0 5-5V6a5 5 0 0 0-5-5H6ZM3 6a3 3 0 0 1 3-3h20a3 3 0 0 1 3 3v20a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6Z"/></g></svg>-->
+                                      <!--                                           </span>-->
+                                      <!--                                           <span data-toggle="tooltip" data-placement="top" title="Contact"   class="d-block rank ml-2">Total Points</span>-->
+                                      <!--                                       </div>-->
+                                      <!--                                       <div class="rank"><b>{{total_points}}</b></div>-->
+                                      <!--                                   </div>-->
+                                      <!--                                   <div class="d-flex align-items-center justify-content-between pe-3">-->
+                                      <!--                                       <div class="rank py-2"> <i class="fa fa-envelope pe-2 themeColor"></i>Current Rank</div>-->
+                                      <!--                                       <div class="rank"><b>{{my_rank}}</b></div>-->
+                                      <!--                                   </div>-->
+                                      <!--                                   <div class="d-flex align-items-center justify-content-between pe-3">-->
+                                      <!--                                       <div class="rank py-2"><i class="fa fa-envelope pe-2 themeColor"></i> Next Level</div>-->
+                                      <!--                                       <div class="rank"><b>{{nextlevel}}</b></div>-->
+                                      <!--                                   </div>-->
+                                      <!--                                   <div class="d-flex align-items-center justify-content-between pe-3">-->
+                                      <!--                                       <div class="rank py-2"><i class="fa fa-envelope pe-2 themeColor"></i> Points to Next Level</div>-->
+                                      <!--                                       <div class="rank"><b>{{points_needed}}</b></div>-->
+                                      <!--                                   </div>-->
+                                      <!--                                   <div class="d-flex align-items-center justify-content-between pe-3">-->
+                                      <!--                                       <div class="rank py-2"><i class="fa fa-envelope pe-2 themeColor"></i> Course Average % for Next Level</div>-->
+                                      <!--                                       <div class="rank"><b>{{grade_needed}}</b></div>-->
+                                      <!--                                   </div>-->
+                                      <!-- <div class="mt-5">
+                                      <div class="d-flex align-items-center justify-content-between pe-3">
+                                      <div class="nextLevel"><i class="fa fa-envelope pe-2 themeColor"></i> Next Level</div>
+                                      <div class="nextLevel"><b>74%</b></div>
+                                      </div>
+                                      <div class="progress me-3">
+                                      <div class="progress-bar progress-bar-striped" role="progressbar" style="width: 74%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+                                      </div>
+                                      </div>-->
+                                  </div>
+
+                              </div>
+                          </div>
+                      </div>
+<div class="container pt-1 mb-1 card_achivement pb-1">
+<h3 class="d-flex justify-content-center align-items-center">Achivements</h3>
+    <div class="row">
+        <div class="col-4 p-1">
+               <div class="card text-center" style="height:6rem; border:none;">
+                   <span class="d-flex justify-content-center align-items-center img-point">
+                     </span>
+                      <div class="text-center"><b>{{total_points}}</b></div>
+                    <div class="mt-1">
+
+        <span data-toggle="tooltip" data-placement="top" title="Total Points"   class="d-block rank ml-2">Points</span>
+            
+                     </div>
+            </div>
+        </div>
+        <div class="col-4 p-1">
+         <div class="card text-center" style="height:6rem; border:none;">
+                   <span class="d-flex justify-content-center align-items-center img-next">
+                     </span>
+                       <div><b>0</b></div>
+                    <div class="mt-2">
+
+                   <span data-toggle="tooltip" data-placement="top" title="Badges"   class="d-block rank ml-2">Badges</span>
+
+                     </div>
+            </div>
+          </div>
+        <div class="col-4 p-1">
+                   <div class="card text-center" style="height:6rem; border:none;">
+
+                               <span class="d-flex justify-content-center align-items-center img-level">
+                     </span>
+                      <div><b>{{my_rank}}</b></div>
+                    <div class="mt-2">
+
+        <span data-toggle="tooltip" data-placement="top" title="Current Rank"   class="d-block rank ml-2">Level</span>
+           
+                     </div>
+            </div>
+        </div>
+    </div>
+</div>
+                     
+                  </div>
+              </div>
+           </div>
+
+           <div class="col-lg-8 mb-lg-5 mb-3">
+
+               <div class="px-3 px-lg-5 pt-3 pt-lg-5  h-100">
+                   <div class="borderBottom s">
+                       <div class="card myPoints myPoints_game">
+                           <div class="_stats-board mb-5 ">
+                               <figure class="mb-0 p-3">
+                                   <img src="images/giftbox1.png" class="card-img-top" alt="User">
+                               </figure>
+                               <div class="text-center mx-auto px-3 mypoints__bgs">
+                                   <div class="font-weight-bold text-center line-height-normal">
+                                       <h4 class="text-white mb-0 font-weight-bold font-size-27">My Points</h4>
+                                       <h4 class="text-white mb-0 available-points font-weight-bold coins font-size-27">{{available_points}}</h4>
+                                   </div>
+                               </div>
+                               <figure class="mb-0 _img-outofbox">
+                                   <img src="images/girl1.png" class="card-img-top" alt="User">
+                               </figure>
+                           </div>
+
+                           <div class="card-innercont">
+                               <div class="row">
+                                   <div class="col-lg-12">
+                                       <ul class="list-group list-unstyled list-group-flush grid grid-col-lg-4 mb-5">
+                                           <li class="_card-box-a h-100 text-center text-white p-3  line-height-4" style="height: auto !important;">
+                                               <span>
+                                                   <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"><g fill="currentColor"><path d="M15 2h-1c-2.828 0-4.243 0-5.121.879C8 3.757 8 5.172 8 8v8c0 2.828 0 4.243.879 5.121C9.757 22 11.172 22 14 22h1c2.828 0 4.243 0 5.121-.879C21 20.243 21 18.828 21 16V8c0-2.828 0-4.243-.879-5.121C19.243 2 17.828 2 15 2Z" opacity=".6"/><path d="M8 8c0-1.538 0-2.657.141-3.5H8c-2.357 0-3.536 0-4.268.732C3 5.964 3 7.143 3 9.5v5c0 2.357 0 3.535.732 4.268c.732.732 1.911.732 4.268.732h.141C8 18.657 8 17.538 8 16V8Z" opacity=".4"/><path fill-rule="evenodd" d="M14.53 11.47a.75.75 0 0 1 0 1.06l-2 2a.75.75 0 1 1-1.06-1.06l.72-.72H5a.75.75 0 0 1 0-1.5h7.19l-.72-.72a.75.75 0 1 1 1.06-1.06l2 2Z" clip-rule="evenodd"/></g></svg>
+                                               </span>
+                                               <h4 class="h3 mb-0 text-white">Login Points </h4>
+                                               <div class=" font-size-18  font-weight-600  text-white"><b>{{login_points}}</b></div>
+                                               </li>
+                                               <li class="_card-box-b h-100 text-center text-white p-3  line-height-4" style="height: auto !important;">
+                                               <span>
+                                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none"><path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M10.125 8.875a1.875 1.875 0 1 1 2.828 1.615c-.475.281-.953.708-.953 1.26V13"/><circle cx="12" cy="16" r="1" fill="currentColor"/><path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M7 3.338A9.954 9.954 0 0 1 12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12c0-1.821.487-3.53 1.338-5"/></g></svg>
+                                               </span>
+                                                <h4 class="h3 mb-0 text-white">Daily Quiz Points</h4>
+                                                <div class=" font-size-18  font-weight-600  text-white"><b>{{quiz_points}}</b></div>
+                                               </li>
+                                               <li class="_card-box-c h-100 text-center text-white p-3  line-height-4" style="height: auto !important;">
+                                               <span>
+                                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M6.804 15a1 1 0 0 0-1.366-.366l-1.732 1a1 1 0 0 0 1 1.732l1.732-1A1 1 0 0 0 6.804 15ZM3.706 8.366l1.732 1a1 1 0 1 0 1-1.732l-1.732-1a1 1 0 0 0-1 1.732ZM6 12a1 1 0 0 0-1-1H3a1 1 0 0 0 0 2h2a1 1 0 0 0 1-1Zm11.196-3a1 1 0 0 0 1.366.366l1.732-1a1 1 0 1 0-1-1.732l-1.732 1A1 1 0 0 0 17.196 9ZM15 6.804a1 1 0 0 0 1.366-.366l1-1.732a1 1 0 1 0-1.732-1l-1 1.732A1 1 0 0 0 15 6.804Zm5.294 8.83l-1.732-1a1 1 0 1 0-1 1.732l1.732 1a1 1 0 0 0 1-1.732Zm-3.928 1.928a1 1 0 1 0-1.732 1l1 1.732a1 1 0 1 0 1.732-1ZM21 11h-2a1 1 0 0 0 0 2h2a1 1 0 0 0 0-2Zm-9 7a1 1 0 0 0-1 1v2a1 1 0 0 0 2 0v-2a1 1 0 0 0-1-1Zm-3-.804a1 1 0 0 0-1.366.366l-1 1.732a1 1 0 0 0 1.732 1l1-1.732A1 1 0 0 0 9 17.196ZM12 2a1 1 0 0 0-1 1v2a1 1 0 0 0 2 0V3a1 1 0 0 0-1-1Z"/></svg>
+                                               </span>
+                                                <h4 class="h3 mb-0 text-white">Spin Wheel Points</h4>
+                                                <div class=" font-size-18  font-weight-600  text-white"><b>{{spinwheel_points}}</b></div>
+                                                </li>
+<!--                                            <li class="list-group-items text-center p-4  position-relative line-height-4 rounded-lg">-->
+                                                 <li class="_card-box-d h-100 text-center text-white p-3  line-height-4" style="height: auto !important;">
+                                                <span>
+                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721A48.339 48.339 0 0 1 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52a6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0"/></svg>
+                                                </span>
+                                                <h4 class="h3 mb-0 text-white">Reward Received</h4>
+                                                <div class=" font-size-18  font-weight-600  text-white"><b>{{rewards_received_points}}</b></div>
+                                                </li>
+                                                <li class="_card-box-e h-100 text-center text-white p-3  line-height-4" style="height: auto !important;">
+                                                <span>
+                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721A48.339 48.339 0 0 1 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52a6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0"/></svg>
+                                                </span>
+                                                  <h4 class="h3 mb-0 text-white">Leadership Point</h4>
+                                                   <div class=" font-size-18  font-weight-600  text-white"><b>{{admin_points}}</b></div>
+                                                       </li>
+                                       </ul>
+                                   </div>
+                                   <div class="col-lg-12 mb-5">
+                                       <div class="graph shadow-sm">
+                                           <!--<h4 class="card-title">My Points</h4>-->
+                                           <div class="line-chart-filled"><div id="chart_mypoints"></div></div>
+                                       </div>
+                                   </div>
+
+                                   <div class="col-lg-12">
+                                       <div style="text-align:center;" class="btngroup"> <a style="max-width:250px;" href="mypoint.php" class="btn btn-primary" style="float:right;">Points Log</a></div>
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+           </div>
+       </div>
+   </div>
+
+
+
+        <div class="container-fluid sectionHeading mydashboardbkp">
+
+         <!-- ======Profile details Section starts here====== -->
+          <div class="row profilePointZoneWrapper d-none">
+            <div class="col-lg-12">
+                <div class="shadow-sm p-3 profile_cont">
+                  <div class="row">
+                    <div class="text-center mx-auto profiledetails__bgs col-lg-4">
+                      <div class="profiledata">
+                        <img src="{{profileimage}}" class="wh-100 rounded-circle card-img-top" alt="User">
+                      </div>
+                      <div class="card-body">
+                        <h4 class="card-title flex align-items-center">
+                            <span class="mr-2">{{fullname}}</span>
+                            <img src="https://elearning.thegreenlms.com/pluginfile.php/1253/user/icon/f1" class="wh-100 rounded-circle card-img-top" alt="User">
+                        </h4>
+
+                        <h6 class="card-title">{{designation}}</h6>
+                        <div class="emailid">{{email}}</div>
+                      </div>
+                    </div>
+                    <div class="card-innercont col-lg-8">
+                      <div class="row">
+                          <div class="col-12">
+                              <ul class="list-group list-group-flush">
+                                <li class="list-group-items d-flex align-items-center justify-content-between ps-2 ps-2">
+                                <div class="w201 d-flex align-items-center align-items-center">
+                                <i class="fa fa-building pe-2 themeColor"></i>
+                                <span data-toggle="tooltip" data-placement="top" title="Department" class="d-block">
+                                Dept 
+                              </span>
+                              </div>
+                              <div><b>{{department}}</b></div>
+                              </li>
+                              <li class="list-group-items d-flex align-items-center justify-content-between ps-2">
+                              <div class="w201 d-flex align-items-center align-items-center">
+                              <i class="fa fa-id-card pe-2 themeColor"></i>
+                              <span data-toggle="tooltip" data-placement="top" title="Employ Id" class="d-block">
+                              Employ Id</span>
+                              </div>
+                              <div><b>{{empcode}}</b></div>
+                              </li>
+                              <li class="list-group-items d-flex align-items-center justify-content-between ps-2">
+                              <div class="w201 d-flex align-items-center align-items-center">
+                              <i class="fa fa-envelope pe-2 themeColor"></i>
+                              <span data-toggle="tooltip" data-placement="top" title="Email Id" class="d-block">
+                              Email Id</span>
+                              </div>
+                              <div><b>{{email}}</b></div>
+                              </li> 
+                              <li class="list-group-items d-flex align-items-center justify-content-between ps-2">
+                              <div class="w201 d-flex align-items-center align-items-center">
+                              <i class="fa fa-phone pe-2 themeColor"></i>
+                              <span data-toggle="tooltip" data-placement="top" title="Contact" class="d-block">
+                              Contact</span>
+                              </div>
+                              <div><b>{{phone}}</b></div>
+                              </li>
+                            </ul>
+                          </div>
+                          <div class="col-12">
+                            <div class="level-card">
+                              <!--<h3 class="card-title">Level</h3>-->
+                              <div class="d-flex align-items-center justify-content-between pe-3">
+                              <div class="rank py-2"><i class="fa fa-envelope pe-2 themeColor"></i> Total Points</div>
+                              <div class="rank"><b>{{total_points}}</b></div>
+                              </div>
+                              <div class="d-flex align-items-center justify-content-between pe-3">
+                              <div class="rank py-2"> <i class="fa fa-envelope pe-2 themeColor"></i>Current Rank</div>
+                              <div class="rank"><b>{{my_rank}}</b></div>
+                              </div>
+                              <div class="d-flex align-items-center justify-content-between pe-3">
+                              <div class="rank py-2"><i class="fa fa-envelope pe-2 themeColor"></i> Next Level</div>
+                              <div class="rank"><b>{{nextlevel}}</b></div>
+                              </div>
+                              <div class="d-flex align-items-center justify-content-between pe-3">
+                              <div class="rank py-2"><i class="fa fa-envelope pe-2 themeColor"></i> Points to Next Level</div>
+                              <div class="rank"><b>{{points_needed}}</b></div>
+                              </div> 
+                              <div class="d-flex align-items-center justify-content-between pe-3">
+                              <div class="rank py-2"><i class="fa fa-envelope pe-2 themeColor"></i> Course Average % for Next Level</div>
+                              <div class="rank"><b>{{grade_needed}}</b></div>
+                              </div> 
+                              <!-- <div class="mt-5">
+                              <div class="d-flex align-items-center justify-content-between pe-3">
+                              <div class="nextLevel"><i class="fa fa-envelope pe-2 themeColor"></i> Next Level</div>
+                              <div class="nextLevel"><b>74%</b></div>
+                              </div>
+                              <div class="progress me-3">
+                              <div class="progress-bar progress-bar-striped" role="progressbar" style="width: 74%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+                              </div>
+                              </div>-->
+                            </div>
+                            
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>            
+            </div>
+          </div>
+          <!-- ======Profile details Section end here====== -->
+
+          <!-- ======My Points Section starts here====== -->
+          <div class="d-none profilePointZoneWrapper">
+            <div class="col-lg-12">
+                 <div class="borderBottom profile_cont shadow-lg ">
+                  <div class="card myPoints">
+                    <div class="text-center mx-auto px-3 mb-3 mypoints__bg">
+                      <div class=" trophydata text-center">
+                        <img src="images/coins1.png" class="card-img-top rounded-circle wh-100 rounded-circle" alt="User">
+                      </div>
+                      <div class="card-body text-center">
+                      <h4 class="card-title">My Points</h4> 
+                      <h4 class="card-title available-points">{{available_points}}</h4>
+                      
+                      </div>
+                    </div>
+                    <div class="card-innercont">
+                      <div class="row">
+                        <div class="col-lg-6">
+                           <ul class="list-group list-group-flush">
+                              <li class="list-group-items d-flex align-items-center justify-content-between ps-2 pt-0">
+                                <div><i class="fa fa-sign-in pe-2 themeColor"></i> <span>Login Points </span></div>
+                                <div><b>{{login_points}}</b></div>
+                              </li>
+                              <li class="list-group-items d-flex align-items-center justify-content-between ps-2">
+                                <div><i class="fa fa-question pe-2 themeColor"></i><span>Daily Quiz Points</span></div>
+                                <div><b>{{quiz_points}}</b></div>
+                              </li>
+                              <li class="list-group-items d-flex align-items-center justify-content-between ps-2">
+                                <div><i class="fa fa-spinner pe-2 themeColor"></i><span>Spin Wheel Points</span></div>
+                                <div><b>{{spinwheel_points}}</b></div>
+                              </li>
+                              <li class="list-group-items d-flex align-items-center justify-content-between ps-2">
+                                <div><i class="fa fa-trophy pe-2 themeColor"></i><span>Reward Received<span></div>
+                                <div><b>{{rewards_received_points}}</b></div>
+                              </li>
+                            </ul>
+                            
+                        </div>
+                        <div class="col-lg-6">
+                          <div class="graph ">
+                            <!--<h4 class="card-title">My Points</h4>--> 
+                            <div class="line-chart-filled"><div id="chart_mypoints"></div></div>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                          <div style="text-align:center;" class="btngroup"> <a style="max-width:250px;" href="mypoint.php" class="btn btn-primary" style="float:right;">Points Log</a></div>
+                        </div>
+                      </div>
+                    </div>
+                   
+                  </div>
+                </div>     
+            </div>
+          </div>
+          <!-- ======My Points Section end here====== -->
+
+          <!-- ======Quiz Section starts here====== -->
+                        <h2 class="textShadows daily_logo  bold textShadows">Daily Quiz and Login Analytics</h2>
+          <div class=" bg-white profilePointZoneWrapper profilePointZoneWrapper_l">
+          <div class="row">
+            <div class="col-lg-12">
+               <div class="bg-white __shadow-sm block-m-b">
+                 <div class="__row g_d-container">
+                     <div class="g_col-1 text-center mt-4" >
+                         <h4 class="card-title_d _h3 font-weight-bold">Daily Quiz</h4>
+                         <div class="w-100 g_green-box">
+                            <div class="card quiz __quiz-card card-block text-center">
+                        
+                                 <div class="quizdata text-center mx-auto g-absolute-with-topout">
+                                     <figure>
+                                         <img src="images/bluequiz.png" class="rounded-circle card-img-top" alt="User">
+                                     </figure>
+                                 </div>
+                             
+                             <div class="w-100 mx-auto">
+                                 <a style="border: 1px solid #fff;" href="{{dailyquiz_url}}"
+                                    class="g_btn-primary px-4" type="button">Attempt Now</a>
+                             </div>
+                         </div>
+                        </div>
+                     </div>
+                     <div class="g_col-2">
+                         <div class="graph __card-block_text text-center">
+                             <h3 class="card-title textShadows font-weight-bold _h3">Points Graph</h3>
+                             <div class="line-chart-filled">
+                                 <div id="chart_quiz"></div>
+                             </div>
+                         </div>
+                     </div>
+                     {{! <div class="g_col-3 g_fixed-img-center">
+                         <div class="card quiz __quiz-card card-block text-center">
+                             <div class="d-flex align-items-center px-3 mb-3">
+                                 <div class="quizdata text-center mx-auto">
+                                     <img src="images/winner1.png" class="card-img-top" alt="User">
+                                 </div>
+                             </div>
+                         </div>
+                     </div> }}
+                </div>
+               </div>
+                
+            </div>
+          </div>
+          <!-- ======Quiz Section end here====== -->
+
+<!-- ======Daily Login Section starts here====== -->
+          <div class="row">
+            <div class="col-lg-12">
+
+                <div class="bg-white __shadow-sm block-m-b">
+                    <div class="__row g_d-container">
+                        <div class="g_col-1 text-center mt-4" >
+                            <h4 class="card-title_d _h3 font-weight-bold">Daily Login</h4>
+                            <div class="w-100 g_green-box">
+                                <div class="card quiz __quiz-card __card-block text-center">
+                                    <div class="d-flex align-items-center px-3">
+                                        <div class="quizdata text-center mx-auto">
+                                              <figure>
+                                         <img src="images/bluelogin.png" class="rounded-circle card-img-top" alt="User">
+                                     </figure>
+                                        </div>
+                                    </div>
+                                    <div class="w-100 mx-auto  mb-3">
+                                        <h2 class="card-title_1">{{login_points}}</h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="g_col-2">
+                            <div class="dl-points-graph">
+                                <div class="graph text-center">
+                                    <h3 class="card-title textShadows font-weight-bold _h3">Points Graph</h3>
+                                    <div class="line-chart-filled"><div id="chart_login"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                        {{! <div class="g_col-3 g_fixed-img-center">
+                            <div class="card quiz __quiz-card __card-block text-center">
+                                <div class="d-flex align-items-center jus">
+                                    <div class="quizdata text-center mx-auto">
+                                        <img src="images/smile1.png" class="card-img-top" alt="User">
+                                    </div>
+                                </div>
+                            </div>
+                        </div> }}
+                    </div>
+                </div>
+
+               <div class="bg-white shadow-sm block-m-b">
+                 <div class="d-none">
+                  <div class="col-lg-6">
+                   <div class="dl-points-graph card-block_text">
+                      <div class="graph">
+                        <h3 class="card-title textShadows">Points Graph</h3>
+                        <div class="line-chart-filled"><div id="chart_login"></div></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class=" daily-login-card h-100" style="background-image: linear-gradient(180deg, #1B625C, #34B0A5);">
+                      <div class="card myPoints">
+                        <div class="text-center mx-auto">
+                          <div class="trophydata text-center loginData">
+                            <img src="images/dailypoint.png" class="card-img-top rounded-circle" alt="User">
+                          </div>
+                          <h3 class="card-title">Daily Login</h3>
+                          <div class="card-body">
+                            <h2 class="card-title">{{login_points}}</h2>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                 </div>
+               </div>
+                
+            </div>
+          </div>
+          </div>
+          <!-- ======Daily Login Section end here====== -->
+
+        <!-- ======Daily Login Section starts here====== -->
+        <h2 class="reward_logo mt-5">Rewards and Redemption</h2>
+          <div class="row profilePointZoneWrapper profilePointZoneWrapper_l block-m-b">
+            <div class="col-lg-12 cardBlock__section">
+              <div class="dieBlock3__block">
+                <div class="dieBlock3__block__list" style="background:#003152;">
+                <div class="cart__cont">
+                    <div class="card-block-md">
+                    <div class="card__item">
+                        <div class="card__item--image" id="mainbox">
+                        <canvas id="canvas" width="180" height="180" >
+                            <p style="{color: white}" align="center">Sorry, your browser doesn't support canvas. Please try another.</p>
+                        </canvas> 
+                        </div>
+                        <h4 class="card-title text-white">Spin Wheel</h4>
+                        <div class="card__item--text" >Spin the wheel and luck your chance to get points benefit and redeem</div>
+                        <div class="btngroup card__item--btn">
+                        <button class="btn btn-info btn-block" type="button">{{{spinbutton}}}</button>
+                        </div>                    
+                    </div>
+                    </div>
+                </div>
+                </div>
+                  <div class="dieBlock3__block__list" style="background:#003152;">
+                    <div class=" cart__cont">
+                      <div class="card-block-md">
+                          <div class="card__item">
+                              <div class="line-chart-filled pollimg card__item--image">
+                              <img src="images/poll.png" alt="img" />
+                              </div>
+                              <h4 class="card-title text-white">Poll</h4>
+                              <div class="btngroup card__item--btn">
+                                  <a href="{{pollurl}}"  class="btn btn-info btn-block my-3 px-4 text-white" type="button">Take Poll</a>
+                              </div>
+                          </div>
+                      </div>
+                    </div>
+                </div>
+                  <div class="dieBlock3__block__list" style="background:#003152;">
+                    <div class="cart__cont">
+                      <div class="card-block-md">
+                          <div class="quizdata1 card__item--image">
+                              <img src="sunil/images/redeemption.png" class="card-img-top img-fluid" alt="User">
+                          </div>
+                          <h4 class="card-title text-white">Redeemption Zone</h4>
+                          <div class="btngroup card__item--btn">
+                          <a class="btn btn-info btn-block" id="redeem-point" data-toggle="modal" data-target="#redeemModal">
+                                      Point Redeem 
+                                  </a>
+                          <a class="btn btn-info btn-block" id="gift-reward" data-toggle="modal" data-target="#exampleModal">
+                                      Gift rewards 
+                                  </a>
+                          </div>
+                      </div>
+                    </div>
+                </div>
+            </div>                
+            </div>
+          </div>
+          <!-- ======Daily Login Section end here====== -->
+
+
+
+          <div class="row leader_board_bg  profilePointZoneWrapper ">
+               <h2 class="srcatch_logo textShadows bold textShadows">Scratch Card</h2>
+            <!--********Scratch Section starts here**********-->
+              <div class="col-lg-12 col-12_bx">
+              <div class="shadow-sm scratch block-m-b card-block_text">
+              <div class="card  pb-1">
+                <label style="margin-left:10px;">Available scratch card : <strong>{{scratchcounter}}</strong></label>
+                                
+              </div>
+                {{{scratchcards}}}
+              </div>
+              </div>
+
+<!--- top theree -->
+             <h2 class="leader_logo mt-5 textShadows bold">Leader Board</h2>
+
+ <div class="col-lg-12 col-12_bx mb-5">
+              <div class="shadow-sm nohover tableCustom leader_card block-m-b">
+                <table class="table ">
+    
+                  <tbody>
+                    {{{leaderboard_top}}}                           
+                  </tbody>
+                </table>
+              </div>
+         
+              <div class="shadow-sm nohover tableCustom block-m-b leader_table_d">
+                <table class="table leader_table ">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Rank</th>
+                      <th scope="col">Department</th>
+                      <th scope="col">Points</th>
+                      <th scope="col">Badges</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {{{leaderboard}}}                           
+                  </tbody>
+                </table>
+              </div>
+            </div>
+         </div>
+       </div>       
+       <!--*******dashboard ends here *******-->
+<!--MODAL -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Gift your rewards to friends (Avl Pts: {{available_points}})</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" id="searchtext">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="searchuser">Search</button>
+                    <div id="getmatch"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="sharepoints">Send</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!--MODAL redeem -->
+    <div class="modal fade" id="redeemModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Redeem (Avl Pts: {{available_points}})</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    
+                    <div id="redeemable"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="redeemnow">Redeem Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!--MODAL REDEEM -->
+
+<div class="modal fade" id="spindWheel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document" style="max-width:300px !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">You have won <strong id="spinpoint"></strong> point(s)</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div> 
+                <div class="modal-body" id="popupimage">
+                    
+                    
+                </div>
+               
+            </div>
+        </div>
+    </div>
+
+    <div id="testmodal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h4 class="modal-title">Message</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                  <label for="exampleFormControlTextarea1">Type text</label>
+                  <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" id="submitdata">Send <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    {{/user_stats}}
+    </main>

@@ -1,0 +1,336 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    Edwiser RemUI
+    @package theme_remui
+    @copyright (c) 2023 WisdmLabs (https://wisdmlabs.com/)
+    @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+
+}}
+{{!
+    @template theme_remui/coursefilters
+
+    Admin time setting template.
+
+    remui 2 column layout template.
+
+    Context variables required for this template:
+    * sitename - The name of the site
+    * output - The core renderer for the page
+    * bodyattributes - attributes for the body tag as a string of html attributes
+    * sidepreblocks - HTML for the blocks
+    * hasblocks - true if there are blocks on this page
+    * navdraweropen - true if the nav drawer should be open on page load
+    * regionmainsettingsmenu - HTML for the region main settings menu
+    * hasregionmainsettingsmenu - There is a region main settings menu on this page.
+
+    Example context (json):
+    {
+        "sitename": "Moodle",
+        "output": {
+            "doctype": "<!DOCTYPE html>",
+            "page_title": "Test page",
+            "favicon": "favicon.ico",
+            "main_content": "<h1>Headings make html validators happier</h1>"
+         },
+        "bodyattributes":"",
+        "sidepreblocks": "<h2>Blocks html goes here</h2>",
+        "hasblocks":true,
+        "navdraweropen":true,
+        "regionmainsettingsmenu": "",
+        "hasregionmainsettingsmenu": false
+    }
+}}
+<style>
+#page-course-index-category{
+.all-filters-wrapper{   
+ background: white;
+    padding: 15px;
+    border-radius: .75rem;
+    border: solid 1px hsl(214 32% 91%);
+
+.simplesearchform .input-group,.categoryfiltermenu .categoryfilter {background: #f8fafc;
+padding: 10px 20px;
+    background: #f8fafc !important;
+    max-width: 200px !important;
+    border-radius: 0.75rem;
+    max-height: 45px !important;
+}
+
+}}
+#course-archive-main-container .filters-wrapper .all-filters-wrapper .categoryfiltermenu .dropdown-toggle{max-width: 200px !important;}
+
+#page-course-index-category .filters-wrapper .simplesearchform {
+    width: 500px !important;
+}
+#page-course-index-category{
+#course-archive-main-container .filters-wrapper .simplesearchform .input-group{ min-width: 495px; padding: 9px 10px;
+    height: 45px !important;
+    border-radius: 0.75rem;}
+    .all-filters-wrapper .course-filters-wrapper .dropdown-toggle {background: #f8fafc;
+padding: 10px 20px !important;
+    background: #f8fafc !important;
+    max-width: 200px !important;
+    border-radius: 0.75rem !important;
+    max-height: 45px !important;
+}
+
+.course-catalog-header {
+  background-color: #f8fafc; /* very light gray like the image */
+ padding: 20px 15px;
+  border-radius: 8px;
+}
+
+.course-catalog-header .icon-wrapper {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #002d72, #1e88e5); /* deep blue gradient */
+}
+
+.course-catalog-header .catalog-title {
+  font-size: 2.8rem;
+ color: #002d72 !important;
+  letter-spacing: -0.5px;
+}
+
+.course-catalog-header .catalog-description {
+  max-width: 700px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+.simplesearchform .input-group:focus-within {
+    border: 2px solid #ec9707; /* your orange highlight */
+    border-radius: 6px; /* optional, to match input shape */
+    box-shadow: 0 0 5px rgba(236, 151, 7, 0.5); /* soft glow */
+}
+
+/* Remove double borders if Bootstrap already adds one */
+.simplesearchform .input-group input:focus {
+    box-shadow: none;
+    outline: none;
+}
+    
+#course-archive-main-container .filters-wrapper .all-filters-wrapper .categoryfiltermenu .dropdown-menu.show,#course-archive-main-container .edw-custom-dropdown-wrapper .dropdown-menu{
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+.categoryfiltermenu  .category-wrapper ul li {  padding: 5px;
+ list-style: none;}
+    }
+    .categoryfiltermenu  .category-wrapper ul li:hover{ background: #eff2f7;border-radius: 10px;}
+    .category-wrapper ul { 
+    padding: 0px 5px 0px !important;
+}
+
+#course-archive-main-container .filters-wrapper .all-filters-wrapper .categoryfiltermenu .category-wrapper {
+    padding: 10px 5px !important;
+}
+    
+    </style>
+
+    <div class="course-catalog-header text-center">
+  <div class="icon-wrapper mx-auto mb-4 d-flex align-items-center justify-content-center">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="lucide lucide-book-open text-white">
+      <path d="M12 7v14"></path>
+      <path
+        d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z">
+      </path>
+    </svg>
+  </div>
+
+  <h1 class="catalog-title fw-bold text-primary mb-3">Course Catalog</h1>
+  <p class="catalog-description text-muted mx-auto">
+    Discover your next learning adventure with our comprehensive collection of professional courses designed to advance your career and skills.
+  </p>
+</div>
+
+<div class="filters-wrapper" aria-label="Course Archive Page Filters">
+
+    <div class="d-flex  all-filters-wrapper">
+        <div class="d-flex course-filters-wrapper">
+            <div class="search-form-wrapper" title="{{#str}}search,core{{/str}}">
+                {{{searchhtml}}}
+            </div>
+            <div class="dropdown categoryfiltermenu">
+                <button class="btn dropdown-toggle categoryfilter form-control d-flex align-items-center justify-content-between p-py-2 p-px-4" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-filter w-4 h-4 mr-2" data-lov-id="src/components/CourseCatalogHeader.tsx:65:12" data-lov-name="Filter" data-component-path="src/components/CourseCatalogHeader.tsx" data-component-line="65" data-component-file="CourseCatalogHeader.tsx" data-component-name="Filter" data-component-content="%7B%22className%22%3A%22w-4%20h-4%20mr-2%22%7D"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                    <span class="h-semibold-6">{{#str}} allcategories , theme_remui {{/str}}</span>
+                </button>
+                <div class="dropdown-menu fullscreen-on-mobile" aria-labelledby="dropdownMenuButton">
+                    <div class="dropdown-header-mb justify-content-between align-items-center flex-gap-2 p-px-6 p-py-3">
+                        <span class="h-semibold-4">{{#str}} coursecategories, theme_remui {{/str}}</span>
+                        <button class="btn p-0 dropdown-close" title="{{#str}}close, theme_remui{{/str}}"><span class="edw-icon edw-icon-Cancel"></span></button>
+                    </div>
+                    {{{caegoryfilterhtml}}}
+                </div>
+            </div>
+
+            {{#coursesfilterscontext}}
+            <div class="btn-group edw-custom-dropdown-wrapper course-filters">
+
+                <div class="dropdown-toggle btn btn-sm d-flex align-items-center flex-gap-d5 p-p-2" id="" role="menuitem" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#" tabindex="-1" title="{{#str}} filters, theme_remui {{/str}}">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M3 7C3 6.44772 3.44772 6 4 6H20C20.5523 6 21 6.44772 21 7C21 7.55228 20.5523 8 20 8H4C3.44772 8 3 7.55228 3 7ZM6 12C6 11.4477 6.44772 11 7 11H17C17.5523 11 18 11.4477 18 12C18 12.5523 17.5523 13 17 13H7C6.44772 13 6 12.5523 6 12ZM9 17C9 16.4477 9.44772 16 10 16H14C14.5523 16 15 16.4477 15 17C15 17.5523 14.5523 18 14 18H10C9.44772 18 9 17.5523 9 17Z" fill="#000000"></path> </g></svg>
+                    <span class="p-mr-1 h-semibold-6 toggle-text" >
+                        {{#str}} filters, theme_remui {{/str}}
+                    </span>
+                    <span class="filter-count-label small-info-semibold d-none">3</span>
+                </div>
+
+                <div class="dropdown-menu dropdown-menu-right fullscreen-on-mobile">
+                    <div class="dropdown-header-mb justify-content-between align-items-center flex-gap-2 p-px-6 p-py-3">
+                        <span class="h-semibold-4">{{#str}} filters, theme_remui {{/str}}</span>
+                        <button class="btn p-0 dropdown-close" title="{{#str}}close, theme_remui{{/str}}"><span class="edw-icon edw-icon-Cancel"></span></button>
+                    </div>
+                    {{#isfilterinfoavailable}}
+                        <div class="p-pt-4 p-px-5 filter-empty-msg-wrapper">
+                            <p class="empty-msg p-p-2 small-info-semibold">{{#str}}filteremptymsg, theme_remui{{/str}}</p>
+                        </div>
+                    {{/isfilterinfoavailable}}
+
+                    {{^isfilterinfoavailable}}
+                     <form id="course-filter-form">
+                        <div class="p-pt-2d5 select-optgroup-wrapper grid-view">
+                            {{#coursesfilters}}
+                            <div class="select-optgroup d-flex flex-column">
+                                <span class="optgroup-label small-info-semibold p-py-1d5" title="{{filterlabel}}">{{{filterlabel}}}</span>
+                                {{#filteroptions}}
+                                    <label for="{{name}}" class="select-option m-0 text-link-regular d-flex align-items-center" title={{text}}>
+                                        <input type="checkbox" id="{{name}}" name={{name}} value="{{value}}" data-filtertype={{filtertype}} />
+                                        <span>{{{text}}} {{#count}}({{{count}}}){{/count}}</span>
+                                    </label>
+                                {{/filteroptions}}
+                            </div>
+                            {{/coursesfilters}}
+                        </div>
+                        <div class="filter-form-footer d-flex justify-content-end align-items-center flex-gap-2 p-px-6 p-py-4">
+                            <span class="small-info-semibold clear-btn">{{#str}} clear, theme_remui {{/str}}</span>
+                            <button class="btn btn-secondary btn-sm" type="submit">{{#str}} applyfilters, theme_remui {{/str}}</button>
+                        </div>
+                    </form>
+                    {{/isfilterinfoavailable}}
+                </div>
+            </div>
+            {{/coursesfilterscontext}}
+
+            <select id="categoryfilter" class="selectpicker categoryfiltermenu d-none" aria-haspopup="true" aria-expanded="false"
+                data-live-search="true" data-style="categoryfilter form-control">
+                <option value='all'>{{#str}} allcategories , theme_remui {{/str}}</option>
+                {{#categories}}
+                <option value='{{ id }}' class="selectoptions">{{{ title }}}</option>
+                {{/categories}}
+            </select>
+
+            <select id="sortfilter" class="selectpicker d-none" data-style="sortfilter form-control bg-transparent">
+                <option value='default'>{{#str}} sortdefault, theme_remui {{/str}}</option>
+                <option value='ASC'>{{#str}} sortascending, theme_remui {{/str}}</option>
+                <option value='DESC'>{{#str}} sortdescending, theme_remui {{/str}}</option>
+            </select>
+
+            {{{coursearchivefiltermenumorebutton}}}
+ {{#coursesortingcontext}}
+        <div class="btn-group edw-custom-dropdown-wrapper course-shorting">
+
+            <div class="dropdown-toggle btn btn-sm d-flex align-items-center flex-gap-d5 p-p-2" id="" role="menuitem" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#" tabindex="-1" aria-label="" title="">
+                <span class="edw-icon edw-icon-sort-arrow" aria-hidden="true"></span>
+                <span class="p-mr-1 h-semibold-6 toggle-text">{{#str}}newest, theme_remui{{/str}}</span>
+            </div>
+
+            <div class="dropdown-menu dropdown-menu-right">
+
+                <div class="p-py-2d5 d-flex flex-column flex-gap-d5 select-optgroup-wrapper">
+                    {{#coursesortings}}
+                    <div class="select-optgroup d-flex flex-column">
+                        {{#sortinglabel}}<span class="optgroup-label small-info-semibold p-py-1d5" title="{{sortinglabel}}">{{{sortinglabel}}}</span>{{/sortinglabel}}
+                        {{#sortingoptions}}
+                            <p data-value="{{value}}" class="select-option m-0 text-link-regular" title="{{text}}">{{{text}}}</p>
+                        {{/sortingoptions}}
+                    </div>
+                    {{/coursesortings}}
+                </div>
+            </div>
+        </div>
+        {{/coursesortingcontext}}
+        </div>
+
+        {{^latest_card}}
+        <div class=" btn-group view-buttons" data-toggle="buttons">
+           <div class="d-flex align-items-center justify-content-between flex-gap-2 p-pt-4">
+        <div class="course-counter h-semibold-5 m-0">
+            <!--<span class="course-number h-bold-5 m-0">0</span>&nbsp;<span>{{#str}} archivecoursecounttext, theme_remui {{/str}}</span>-->
+        </div>
+
+       
+
+    </div>
+            {{#viewoptions}}
+                {{#card}}
+                <a class="grid_btn btn togglebtn {{#viewactivebtn}} active btn-primary {{/viewactivebtn}} {{#hideavailableview}} d-none {{/hideavailableview}}" title="{{#str}}gridview,theme_remui{{/str}}"
+                    data-view="grid" tabindex="0" role="button">
+                    <span class="edw-icon edw-icon-Card-View" aria-hidden="true"></span>
+                </a>
+                {{/card}}
+                {{#list}}
+                <a class="list_btn btn togglebtn {{#hideavailableview}} d-none {{/hideavailableview}}" title="{{#str}}listview,theme_remui{{/str}}" data-view="list" tabindex="0"
+                    role="button">
+                    <span class="edw-icon edw-icon-List-View-08" aria-hidden="true"></span>
+                </a>
+                {{/list}}
+                {{#summary}}
+                <a class="summary_btn btn togglebtn {{#hideavailableview}} d-none{{/hideavailableview}}" title="{{#str}}summaryview,theme_remui{{/str}}" data-view="summary"
+                    tabindex="0" role="button">
+                    <span class="edw-icon edw-icon-Topic-View" aria-hidden="true"></span>
+                </a>
+                {{/summary}}
+            {{/viewoptions}}
+        </div>
+        {{/latest_card}}
+    </div>
+   <div class="row mb-4">
+{{#stats}}
+<div class="col-12 col-sm-6 col-lg-3 mb-3">
+    <div class="card text-center border mt-3" style="background: #fff;border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);">
+        <div class="card-body">
+            <div class="rounded-circle  mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:48px; height:48px;background:#e8eaee;">
+          <span class="stat-icon">
+    {{#icon_svg}}
+        {{{icon}}} <!-- render raw SVG -->
+    {{/icon_svg}}
+    {{^icon_svg}}
+        <i class="{{icon}}" style="font-size: 26px;font-weight: 500; color:#000;"></i> <!-- render class icon -->
+    {{/icon_svg}}
+      </span>
+
+            </div>
+            <p style="font-size: 2.25rem;line-height: 2.5rem; font-weight:700;">{{value}}</p>
+            <p class="m-0" style="font-size: 1rem;line-height: 1.5rem;font-weight:600;">{{label}}</p>
+            <p class="small text-muted" style="font-size: .860rem;line-height: 1.25rem;">{{description}}</p>
+        </div>
+    </div>
+</div>
+{{/stats}}
+</div>
+
+
+ 
+    <div class="category-description-container d-none p-mt-2">
+        <div class="category-description-wrapper p-mb-5">
+            {{{categorydesciption}}}
+        </div>
+        <a id="readmorebtn" class="d-none  readbtn text-link-semibold">{{#str}} showmore, theme_remui{{/str}}</a>
+        <a id="readlessbtn" class="d-none  readbtn text-link-semibold">{{#str}} showless, theme_remui{{/str}}</a>
+    </div>
+</div>

@@ -1,0 +1,29 @@
+@import 'font-awesome.css';
+
+.efb-tabcontent:not(#efb-cont-form-settings), .efb-editor-toolbar {
+	* {
+		box-sizing: border-box;
+	}
+}
+#efb-cont-form-settings {
+	.form-group {
+		.col-md-3 {
+			width: 33%;
+		}
+		.col-md-9 {
+			width: 66%;
+		}
+		.col-md-3, .col-md-9 {
+			margin: 0;
+			padding: 0;
+			display: inline-block;
+			vertical-align: top;
+		}
+	}
+	.text-danger {
+		float: right;
+	}
+}
+#efb-cont-form-settings .efb-email-show-tags .efb-email-tags ul {
+	margin: 0;
+}

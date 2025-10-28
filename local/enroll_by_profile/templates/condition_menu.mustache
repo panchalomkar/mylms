@@ -1,0 +1,18 @@
+{{!
+    @template local_enroll_by_profile/condition_insideinterval
+
+    This template renders the content of the value filed in automation hub add rules form
+    This template is used for conditional cases : insideinterval 
+}}
+
+<div class="col-md-12">
+	<label class="col-md-12 category_type">
+		<span id="id_input_title{{id}}" class="mar-rgt">{{#str}} value,local_enroll_by_profile {{/str}}</span>
+		<select name="content{{id}}" id="id_content{{id}}" class="form-control content-select">
+			{{#options}}
+			<option value="{{key}}">{{name}}</option>
+			{{/options}}
+		</select>
+	</label>
+</div>
+<input type="hidden" name="{{negatedconditional}}" id="id_negatedrule{{id}}" value="{{negatedconditionalstring}}" class="form-control">

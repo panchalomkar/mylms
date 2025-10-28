@@ -1,0 +1,67 @@
+#sync-coursepopup div#filters-modal{
+    background-color: transparent !important;
+    border: 0 !important;
+}
+#sync-coursepopup .modal-dialog,div#download-course .modal-dialog {
+    width: auto !important;
+    max-width: 40% !important;
+}
+#sync-coursepopup div#filters-modal .modal-header{
+    border: 0 !important;
+}
+
+#sync-coursepopup label p {
+    font-size: 14px;
+}
+
+div#download-course label {
+    border-bottom: 2px solid #eaeaea;
+    padding-bottom: 15px;
+    color: #1ba2dd;
+}
+
+div#download-course label i.fa{
+    font-size: 20px;
+    display: inline;
+    padding-right: 5px;
+}
+
+div#download-course label p {
+    font-size: 20px;
+    font-weight: 600!important;
+    text-transform: capitalize;
+    letter-spacing: 1px;
+    display: inline;
+    color: #1ba2dd;
+}
+div#download-course ul {
+    margin-top: 20px;
+    font-size: 15px;
+}
+div#download-course .progress {
+    width: 100%;
+    height: 20px;
+}
+div#download-course .modal-body.row {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 30px;
+}
+div#download-course span#course_title {
+    font-size: 14px;
+}
+div#download-course span#course_count {
+    color: #1ba2dd;
+}
+div#download-course .count{
+    display: inline-flex;
+    font-size: 14px!important;
+    gap: 5px;
+    padding-left: 10px;
+}
+@media screen and (max-width: 767px) {
+   #sync-coursepopup .modal-dialog,div#download-course .modal-dialog {
+    width: auto !important;
+    max-width: 90% !important;
+} 
+}

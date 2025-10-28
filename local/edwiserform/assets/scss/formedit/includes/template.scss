@@ -1,0 +1,111 @@
+#efb-cont-form-setup {
+    &.efb-tabcontent {
+        padding: 15px;
+        height: 100%;
+        margin: 0;
+    }
+}
+.efb-forms-setup {
+    padding: 0;
+    background: white;
+    height: 100%;
+    overflow-y: scroll;
+    .efb-forms-setup-title {
+        font-size: 24px;
+        padding: 40px 30px 2px 30px;
+        .efb-forms-setup-desc {
+            color: #666;
+            font-size: 16px;
+            margin: 0;
+        }
+    }
+}
+.efb-forms-setup-templates {
+    padding: 10px;
+    .efb-list {
+        display: flex;
+        flex-wrap: wrap;
+        vertical-align: baseline;
+        .template {
+            position: relative;
+            border: 1px solid rgba(0,0,0,0.1);
+            padding: 2%;
+            margin: 1%;
+            .template-active {
+                width: fit-content;
+                display: inline-block;
+                padding: 0 5px;
+                border-radius: 0;
+            }
+            .template-overlay {
+                position: absolute;
+                left: 0;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.7);
+                text-align: center;
+                .template-select, .template-loading {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                }
+                .template-loading {
+                    font-size: 2rem;
+                    color: white;
+                }
+            }
+            &:not(.active) {
+                .template-active {
+                    display: none !important;
+                }
+            }
+            &:not(:hover) {
+                .template-overlay {
+                    opacity: 0;
+                }
+            }
+            .template-overlay {
+                &:not(.loading) {
+                    .template-loading {
+                        display: none;
+                    }
+                }
+                &.loading {
+                    opacity: 1 !important;
+                    .template-select {
+                        display: none;
+                    }
+                }
+            }
+            .template-name {
+                font-size: 1.2rem;
+                font-weight: 500;
+            }
+            /* Extra large devices (large laptops and desktops, 1024px and up) */
+            @media only screen and (min-width: 800px) {
+                width: 32%;
+                &:nth-of-type(3n+1) {
+                    margin-left: 0;
+                }
+                &:nth-of-type(3n) {
+                    margin-right: 0;
+                }
+            }
+            /* Medium devices (landscape tablets, 768px and 1023px) */
+            @media only screen and (max-width: 799px) and (min-width: 480px) {
+                width: 49%;
+                &:nth-of-type(2n+1) {
+                    margin-left: 0;
+                }
+                &:nth-of-type(2n) {
+                    margin-right: 0;
+                }
+            }
+            @media only screen and (max-width: 479px) {
+                width: 100%;
+            }
+        }
+    }
+}

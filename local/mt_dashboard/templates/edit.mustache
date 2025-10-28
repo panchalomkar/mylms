@@ -1,0 +1,84 @@
+{{#noticeok}}
+<div class='alert alert-success'>
+	{{{noticeok_message}}}
+</div>
+{{/noticeok}}
+
+{{#noticefail}}
+<div class='alert alert-warning'>
+	{{{noticefail_message}}}
+</div>
+{{/noticefail}}
+
+{{#is_siteadmin}}
+	<div class="alert alert-warning">{{#str}} edit_msg,local_mt_dashboard {{/str}}
+		<span> 
+			<span class="tenanname font-weight-bold">{{{compnay_name}}}</span> 
+		</span>. {{#str}} edit_msg_end,local_mt_dashboard {{/str}}
+	</div>
+{{/is_siteadmin}}
+
+	<div class="mt-dashboard-header">
+		<div class="row">
+			<div class="col page-heading">
+				<h2>{{{compnay_name}}}</h2>
+				<div class="backtotenant clearfix">
+					<a href="{{{backlink}}}">
+						<span class="fa fa-chevron-circle-left" aria-hidden="true"></span>
+						<span class="backtenant-message">{{#str}} backtenant,local_mt_dashboard {{/str}}</span>
+					</a>
+				</div>
+			</div>
+		</div>
+		<div class="search-mtn company_search">
+			<div id="searchbox" class="searchbox" role="search">
+				<div class="input-group mb-3 mt-search input-group custom-search-form">
+					<div class="input-group-btn">                    
+						<div class="">
+                        	<input class="form-control " type="text" autocomplete="off" placeholder="Search for Company" aria-label="" onkeyup="" value="" id="search-mt" name="search-mt" for="search-mt">
+                    	</div>
+                    	<div class="getlist"></div>
+                    	<span class="input-group-btn search-lp">
+                    		<i class="men men-search-phx header-txt i-search" aria-hidden="true"></i>
+                    	</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   {{#no_company_selected}}
+   		<div class="alert alert-warning">{{#str}}nocompanyselected,block_iomad_company_admin {{/str}}</div>
+   {{/no_company_selected}}
+   {{^no_company_selected}}
+   		<article class="card block block_iomad_company_admin col-sm-12 mt_company_admin"> 
+   			<div class="card-text content">
+   				{{{tabhtml}}}
+   			<div class="iomadlink_container clearfix row">
+
+   			{{#tenant_menus}}
+   				<div class="col-sm-3 content_mt">
+   					<a href="{{{url_new}}}">
+   						<div class="iomadlink">
+   							<div class="iomadicon {{{menu_style}}}">
+   								<div class="fa fa-topic {{{icon}}}">
+   									<img src="{{{imgsrc}}}" alt="{{{imgsrcalt}}}"> 
+   								</div>
+	   							<div class="fa fa-action {{{icon_small}}}"> 
+	   							</div>
+   							</div>
+   						</div>
+   						<div class="actiondescription d-inline-block">{{{action}}}</div>
+   					</a>
+   				</div>
+   			{{/tenant_menus}}
+
+   			</div>	
+   			</div>
+		</article>
+
+		<div class="clearfix"></div>
+
+   {{/no_company_selected}}
+
+

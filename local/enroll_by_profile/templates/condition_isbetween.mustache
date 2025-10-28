@@ -1,0 +1,13 @@
+{{!
+    @template local_enroll_by_profile/condition_isbetween
+
+    This template renders the content of the value filed in automation hub add rules form
+    This template is used for conditional cases : isbetween 
+}}
+
+<div class="col-md-12">
+	{{#fields}}
+		{{> local_enroll_by_profile/fieldDataPicker }}
+	{{/fields}}
+</div>
+<input type="hidden" name="{{negatedconditional}}" id="id_negatedrule{{id}}" value="{{negatedconditionalstring}}" class="form-control">

@@ -1,0 +1,22 @@
+{{#show}}
+<div class='content-img pt-4'>
+<div class='row'>
+<div class='col-sm-12 col-md-12 col-lg-4'>
+	<label> {{#str}}select_image,local_coursewizard{{/str}} </label>
+</div>
+<div class='col-sm-12 col-md-12 col-lg-7 col-xl-7 coursewizard-list-images'>
+	<div class='row'>
+	{{#finfo}}
+		<div class='col-sm-6 col-md-4 col-lg-4 col-xl-4 d-sm-flex content-card'>
+			<div class='card card-img-wizard mr-1 ml-1'>
+				<a href='#' onclick='return false' class='img-courseswizard d-inline-block'>
+				<img src='{{{url}}}' alt='' class='card-img wizard-img img-fluid' data-contextid='{{{contextid}}}' data-itemid='{{{itemid}}}' data-filearea='{{{filearea}}}' data-component='{{{component}}}' data-filepath='{{{filepath}}}' data-filename='{{{filename}}}'>
+				</a>
+			</div>
+		</div>
+	{{/finfo}}
+	</div>
+</div>
+</div>
+</div>
+{{/show}}

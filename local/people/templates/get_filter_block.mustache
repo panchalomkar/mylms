@@ -1,0 +1,85 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_sitesetting/customise
+
+    Note: collapse/show functionality as well as check/uncheck functionality is 
+          developed using javascript (custom.js) file. Any change in HTML DOM 
+          structure can break these functionalities, so change cautiously.
+
+    @author: 2021 Akshay Pingale (akshay.p@paradisosolution.com)
+    @paradiso
+
+}}
+<div class="search-filter-buttons col-sm-12 col-md-12 col-lg-12 col-xl-3">
+    <div class="col-sm-12 col-md-12 report-left-block-acordeon px-0">
+     <div class="pad-all card filterpeople">
+      <div id="SearchParameters" class="hidden-xs hidden-sm">
+        <div class="row">
+          <div class="aply-filtter col-sm-12 px-0">   
+            <div class="content-apply col-sm-6">
+                <button class="btn btn-round" id="send" type="submit">
+                  {{#str}}apply_filter, local_people{{/str}}
+                  </button>
+              </div>
+        <div class="icon-filter col-sm-6 p-0">
+        <a class="clear-button d-inline-block" id="reset-form">
+            {{#str}}Clear_all_filter, local_people{{/str}}            
+        </a>
+    </div>
+</div>
+
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 content-filtter">
+    <div class="panel-group" id="accordion">
+      <div class="textfilter">
+        {{{userfullnamefilter}}}
+        {{{emailfilter}}}
+        {{{usernamefilter}}}
+      </div>
+      <div class="option-filters">
+        <div class="select-city">
+            {{{cityfilter}}}
+        </div>
+        <div class="select-country">
+            {{{countryfilter}}}
+        </div>
+        <div class="select-course">
+            {{{courserolefilter}}}
+            {{{systemrolefilter}}}
+            {{{authfilter}}}
+        </div>
+      </div>
+      <div class="radio-filters">
+        <div class="confirm-form">
+         {{{confirmedfilter}}}
+        </div>
+        <div class="suspend-form">
+         {{{suspendedfilter}}}
+        </div>
+      </div>
+      <div class="date-filters">
+       {{{firstaccessdfilter}}}
+       {{{lastaccessedfilter}}}
+       {{{lastmodifiedfilter}}}
+      </div>
+       </div>
+     </div>
+    </div>
+   </div>
+  </div>
+ </div>
+</div>

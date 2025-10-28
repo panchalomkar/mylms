@@ -1,0 +1,171 @@
+<style>
+#theme_remui-drawers-blocks{ 
+ .block-header {
+    display: none;
+}
+ .block-body-wrapper .block-content-area {
+  padding: 0;
+    margin: 0;
+}
+.block-body-wrapper .footer {
+    display: none;
+}
+}
+
+/* ====== PROFILE CARD STYLING ====== */
+.myprofile-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f9f9f9;
+      width: 100%;
+}
+
+.rightb-card {
+  background: #fff;
+  border-radius: 16px;
+     padding: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 420px;
+  transition: all 0.3s ease;
+}
+
+.rightb-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+}
+
+.myprofile-header {
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 8px;
+}
+
+.myprofile-title {
+  font-size: 15px;
+  font-weight: 400;
+  color: #333;
+  margin: 0;
+}
+
+.myprofile-body {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.profile-image img {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #eee;
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.profile-info .user-name {
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 4px;
+  text-transform: capitalize; /* ✅ Capitalize each word */
+  color: #222;
+}
+
+.profile-info .user-email {
+  font-size: 13px;
+  color: #777;
+  margin-bottom: 2px;
+  word-break: break-all;
+}
+
+
+
+.user-location {
+  font-size: 13px;
+  color: #666;
+}
+
+.myprofile-stats {
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+  margin-top: 24px;
+}
+
+.myprofile-stats .stat h5 {
+  font-weight: 700;
+  margin: 0;
+  font-size: 16px;
+}
+
+.myprofile-stats .stat p {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+}
+
+.divider {
+  width: 1px;
+  background-color: #e0e0e0;
+  height: 30px;
+  align-self: center;
+}
+
+.edit-icon {
+  font-size: 16px;
+  color: #666;
+  cursor: pointer;
+}
+</style>
+
+<div class="myprofile-container">
+  <div class="rightb-card">
+    <div class="myprofile-header d-flex justify-content-between align-items-center">
+      <h5 class="myprofile-title">
+        <i class="bi bi-person-circle mr-2"></i> My Profile
+      </h5>
+      <a href="{{editprofileurl}}" class="edit-profile-link"> <i class="fa fa-edit"></i></a>
+    </div>
+
+    <div class="myprofile-body">
+      <div class="profile-image me-3">
+        {{{ userpicture }}}
+      </div>
+      <div class="profile-info">
+        <h4 class="user-name">{{ userfullname }}</h4>
+        <p class="user-email">Manager</p>
+        <p class="user-location">
+          <i class="bi bi-geo-alt-fill text-primary"></i> {{ userlocation }}
+        </p>
+      </div>
+    </div>
+
+<div class="myprofile-stats d-flex align-items-center justify-content-center">
+  <div class="stat text-center mx-3">
+    <i class="bi bi-calendar-check fs-4 text-primary"></i>
+    <h5 class="mt-1 mb-0">00/00</h5>
+    <p class="mb-0">Attendance</p>
+  </div>
+
+  <div class="divider mx-2" style="width:1px; height:40px; background:#ddd;"></div>
+
+  <div class="stat text-center mx-3">
+    <i class="bi bi-star-fill fs-4 text-warning"></i>
+    <h5 class="mt-1 mb-0">{{mypoints}}</h5>
+    <p class="mb-0">Points</p>
+  </div>
+
+  <div class="divider mx-2" style="width:1px; height:40px; background:#ddd;"></div>
+
+  <div class="stat text-center mx-3">
+    <i class="bi bi-trophy-fill fs-4 text-success"></i>
+    <h5 class="mt-1 mb-0">{{myrank}}</h5>
+    <p class="mb-0">Rank</p>
+  </div>
+</div>
+
+  </div>
+</div>

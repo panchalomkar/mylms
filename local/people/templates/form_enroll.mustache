@@ -1,0 +1,73 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_sitesetting/customise
+
+    Note: collapse/show functionality as well as check/uncheck functionality is
+          developed using javascript (custom.js) file. Any change in HTML DOM
+          structure can break these functionalities, so change cautiously.
+
+    @author: 2021 Akashy Pingale (akashy.p@paradisosolution.com)
+    @paradiso
+
+}}
+<div id="message">
+    <form class="form-horizontal" method="POST" id="EnrolForm">
+      <div>
+         <div style="display: none;">
+            <input type="hidden" name="sesskey" value="{{{inputs}}}">
+            <input type="hidden" name="action" value="enroll">
+        </div>
+        <div class="form-group row fitem">
+            {{{select}}}
+        </div>
+        <div id="course_select_help">{{#str}}course_select_help, local_people{{/str}}</div>
+    </div>
+    <div class="form-group row fitem">
+        {{{multiselect}}}
+    </div>
+    <div class="form-group row fitem">
+        <div class="col-md-4">
+            <label class="label-control bmd-label-static">{{#str}}startdate, local_people{{/str}}</label>
+        </div>
+        <div class="col-sm-8 form-group is-filled startdate">
+            <input id="startdate" name="startdate" type="text" class="form-control" value="">
+            <div class="input-group-prepend">
+                <a class="visibleifjs" onclick="document.getElementById('startdate').focus();">
+                    <i class="fa fa-calendar"></i>
+                </a>
+            </div>
+            <button type="button" class="btn btn-secondary" id="clearstartdate">clear</button>
+        </div>
+    </div>
+    <div class="form-group row fitem">
+        <div class="col-md-4">
+            <label class="label-control bmd-label-static">{{#str}}enddate, local_people{{/str}}</label>
+        </div>
+        <div class="col-sm-8 form-group is-filled enddate">
+            <input id="enddate" name="enddate" type="text" class="form-control" value="">
+            <div class="input-group-prepend">
+                <a class="visibleifjs"  onclick="document.getElementById('enddate').focus();">
+                    <i class="fa fa-calendar"></i>
+                </a>
+            </div>
+            <button type="button" class="btn btn-secondary" id="clearenddate">clear</button>
+        </div>
+        <input type="hidden" name="action" value="enroll">
+    </div>
+</form>
+</div>

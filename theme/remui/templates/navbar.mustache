@@ -1,0 +1,421 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Edwiser RemUI
+    @package theme_remui
+    @copyright (c) 2023 WisdmLabs (https://wisdmlabs.com/)
+    @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+{{!
+
+    @template theme_remui/navbar
+
+    This template renders the top navbar.
+
+    Example context (json):
+    {
+        "output": {
+            "should_display_navbar_logo": true,
+            "get_compact_logo_url": "http://placekitten.com/50/50",
+            "custom_menu": "<li>..</li>",
+            "page_heading_menu": "<li>..</li>",
+            "search_box": "<div><input type='text'></div>",
+            "navbar_plugin_output": "<div class='dropdown'>Messaging</div>",
+            "user_menu": "<div class='dropdown'>John Doe</div>"
+        },
+        "config": {
+            "wwwroot": "#",
+            "homeurl": "/my/"
+        },
+        "sitename": "Moodle Site",
+        "mobileprimarynav": [
+            {
+                "text": "Dashboard",
+                "url": "/my",
+                "isactive": true
+            },
+            {
+                "text": "Site home",
+                "url": "/",
+                "isactive": false
+            },
+            {
+                "text": "My courses",
+                "url": "/course",
+                "isactive": false
+            }
+        ]
+    }
+}}
+<input type="checkbox" id="check">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> 
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+
+<script>
+$(document).ready(function($){
+$("#sidebar_btn").on('click',function(){
+  $("body").toggleClass("collapsed");
+  
+});
+});
+</script>
+<style>
+ .block-body-wrapper,.block_myoverview {
+    background: transparent !important;
+    border: none;
+}
+.tool-left-panel ul li {
+    a{font-size:12px; !important}
+    margin: 20px 0;
+    background: #003152;
+    padding: 5px;
+    border-radius: 5px;
+}
+/* Container should display panels side by side */
+.tool-left-panel,
+.sidebar {
+    float: left;
+}
+
+/* Tool panel (small icons only) */
+.tool-left-panel {
+        width: 30px;
+       background: #f6f8fc;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+    text-align: center;
+    z-index: 999;
+    position: fixed;
+    height:100vh;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    top:0;
+}
+
+.tool-left-panel ul {
+    list-style: none;
+   padding: 5px;
+    margin: 0;
+    background: #5770a391;
+}
+
+.tool-left-panel ul li {
+    margin: 20px 0;
+}
+
+.tool-left-panel ul li a {
+    color: #fff;
+    font-size: 12px;
+    display: block;
+    transition: color 0.3s ease;
+}
+
+.tool-left-panel ul li a:hover {
+    color: #ec9707; /* accent on hover */
+}
+
+/* Push main sidebar right */
+.sidebar {
+    margin-left: 60px; /* same as tool panel width */
+}
+.sidebar ul li {
+        padding-left: 10px;
+}
+@media (min-width: 576px) {
+    #page-wrapper {
+        height: 100%;
+        display: block !important;
+        /* flex-direction: column; */
+    }
+}
+ .sidebar span.icon.sitelogo{display: none;
+ img.icon{max-width:40px!important;min-height:35px!important;width: 35px !important;}
+ }
+ #check:checked~.sidebar a.navbar-brand{    margin-left: 148px !important;}
+ .rapkoala img.icon{max-width:50px!important;width:32px!important;max-height:32px!important;height:50px;}
+ .rapkoalaname img.icon {
+    max-width: 160px !important;
+    width: 105px !important;
+    max-height: 82px !important;
+    height: 15px;
+}
+.koala-container{ 
+    background: linear-gradient(45deg, #adbdf6, #93e19cd6);
+       margin-bottom: 10px;
+    border: none;
+    padding: 0px;
+    border-radius: 15px;}
+
+    #typing {
+   border-right: 2px solid #333;
+  white-space: nowrap;
+  overflow: hidden;
+  display: inline-block;
+  font-family: monospace;
+  font-size: 24px;
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink {
+  50% { border-color: transparent; }
+}
+</style>
+{{#sidebarurl}}
+<!--sidebar start-->
+
+<!-- Add the following script to your existing code add by ganesh-->
+<script>
+$(document).ready(function($) {
+    // Get the current page URL
+    var currentPageUrl = window.location.href;
+
+    // Iterate through each link in the sidebar and check if it matches the current URL
+    $(".sidebar li").each(function() {
+        var linkUrl = $(this).attr("href");
+
+        // Check if the link URL is part of the current page URL
+        if (currentPageUrl.indexOf(linkUrl) !== -1) {
+            // Add the 'active' class to the matching link
+            $(this).addClass("active");
+        }
+    });
+});
+</script>
+<!--sidebar end-->
+
+<!--mini tools -->
+<div class="tool-left-panel">
+    <ul>
+    <li> <div class="togsec" style="padding-right:4px;">
+     <label for="check" class="m-0">
+        <i class="fa fa-bars" id="sidebar_btn" style="font-size:12px;"></i>
+    </label>
+    </div></li>
+        <li><a href="#"><i class="fa fa-bell"></i></a></li>
+        <li><a href="#"><i class="fa fa-envelope"></i></a></li>
+        <li><a href="#"><i class="fa fa-cog"></i></a></li>
+        
+    </ul>
+</div>
+
+<div class="sidebar" style="padding: 19px 0px 0px 16px !important;margin-left: 10px;!important" >
+ <a href="{{{ config.homeurl }}}" class="navbar-brand" aria-label="{{ sitename }} - {{#str}}brandname, theme_remui{{/str}}" title="{{ sitename }}">
+   <span class="icon sitelogo">
+   {{#pix}}favicon, theme{{/pix}}
+</span>
+
+      
+        <span class="">  {{#output.get_branding_context}}
+            {{#logourl}}
+                <img src="{{ logourl }}" class="navbar-brand-logo mb-2 logo" style=" height: 100% ;">
+            {{/logourl}}
+
+            {{#logominiurl}}
+                <img src="{{ logominiurl }}" class="navbar-brand-logo logomini">
+            {{/logominiurl}}
+
+            {{#icononly}}
+                <span class="navbar-brand-logo icononly" style="color: {{color}};">
+                    <i class="fa fa-{{siteicon}}"></i>
+                </span>
+            {{/icononly}}
+
+            {{#iconwithsitename}}
+                <span class="navbar-brand-logo iconsitename" style="color: {{color}};">
+                    <i class="fa fa-{{siteicon}}"></i>&nbsp;
+                    {{{ sitename }}}
+                </span>
+            {{/iconwithsitename}}
+        {{/output.get_branding_context}}</span>
+    </a>
+ 
+    
+<div class="sidecontent mt-3">
+
+{{#admin}}
+<ul class="menu">
+   <li id="mainmenu">
+   <a href="{{dashboard}}"  title="Dasboard">
+                           <span class="icon"><i class="fa fa-tachometer" aria-hidden="true"></i></span> <span class="">Dashboard</span></a></li>
+
+   <li id="mainmenu1"> <a href="{{mycourse}}"  title="Courses catalogue">
+   <span class="icon"><i class="fa fa-archive" aria-hidden="true"></i></span> <span class="">Course Catalogue</span></a></li>
+<li id="mainmenu1111"> <a href="/local/goone/"  title="Courses catalogue">
+   <span class="icon"><i class="fa fa-archive" aria-hidden="true"></i></span> <span class="">Course Library</span></a></li>
+   <li id="mainmenu12"><a href="{{calender}}" title="Calendar">
+    <span class="icon"><i class="fa fa-calendar" aria-hidden="true"></i></span> <span class="">Calender</span></a></li>
+      <li id="mainmenu2"> <a href="{{manageusers}}"  title="Manage users">
+   <span class="icon"><i class="fa fa-users" aria-hidden="true"></i></span> <span class="">User List</span></a></li>
+      <li id="mainmenu3"> <a href="/local/my_team/index.php"  title="Teams">
+   <span class="icon"><i class="fa fa-sitemap" aria-hidden="true"></i></span> <span class="">My Team</span></a></li>
+      <li id="mainmenu4"> <a href="{{report&analytics}}"  title="Reports & Analytics">
+   <span class="icon"><i class="fa fa-line-chart" aria-hidden="true"></i></span> <span class="">Reports & Analytics</span></a></li>
+      <li id="mainmenu5"> <a href="{{builder}}"  title="Report builder">
+   <span class="icon"><i class="fa fa-area-chart" aria-hidden="true"></i></span> <span class="">Report builder</span></a></li>
+      <li id="mainmenu6"> <a href="{{sandileader}}"  title="Rewards Zone">
+   <span class="icon"><i class="fa fa-gamepad" aria-hidden="true"></i></span> <span class="">Rewards Zone</span></a></li>
+      <li id="mainmenu7"> <a href="{{learningpath}}"  title="Learning paths">
+   <span class="icon"><i class="fa fa-code-fork" aria-hidden="true"></i></span> <span class="">Learning Paths</span></a></li>
+         <li id="mainmenu8"> <a href="{{automationhub}}"  title="Rule Engine">
+   <span class="icon"><i class="fa fa-cogs" aria-hidden="true"></i></span> <span class="">Rules Engine</span></a></li>
+         <li id="mainmenu9"> <a href="{{multitenant}}"  title="Multi-Tenant">
+   <span class="icon"><i class="fa fa-sitemap" aria-hidden="true"></i></span> <span class="">Multi-Tenant</span></a></li>
+         <li id="mainmenu10"> <a href="{{performance}}"  title="Competency">
+   <span class="icon"><i class="fa fa-usb" aria-hidden="true"></i></span> <span class="">Competency</span></a></li>
+<li id="mainmenu113467"> <a href="/local/quizreport/"  title="Quiz Report">
+   <span class="icon"><i class="fa fa-pie-chart" aria-hidden="true"></i></span> <span class="">Quiz Report</span></a></li> 
+    <li id="mainmenu11345"> <a href="/local/content_structure/"  title="CMS">
+   <span class="icon"><i class="fa fa-file" aria-hidden="true"></i></span> <span class="">CMS</span></a></li>
+            <li id="mainmenu11"> <a href="{{adminsettings}}"  title="site administration">
+   <span class="icon"><i class="fa fa-cog" aria-hidden="true"></i></span> <span class="">Site Administration</span></a></li>
+   <li id="mainmenu1134523"> <a href="{{logouturl}}"  title="signout">
+   <span class="icon"><i class="fa fa-sign-out-alt" aria-hidden="true"></i></span> <span class="">Log Out</span></a></li>      
+</ul>
+                
+{{/admin}}
+
+
+
+
+
+
+{{#student}}
+<ul class="menu">
+   <li id="mainmenu"><a href="{{dashboard}}"  title="Dasboard">
+    <span class="icon"><i class="fa fa-tachometer" aria-hidden="true"></i></span> <span class="">Dashboard</span></a></li>
+
+   <li id="mainmenu1"> <a href="{{mycourse}}"  title="Courses catalogue">
+   <span class="icon"><i class="fa fa-archive" aria-hidden="true"></i></span> <span class="">Course Catalogue</span></a></li>
+   <li id="mainmenu12"><a href="{{calender}}" title="Calendar">
+    <span class="icon"><i class="fa fa-calendar" aria-hidden="true"></i></span> <span class="">Calender</span></a></li>
+  <li>  <a href="{{mygrade}}" title="My Grade">
+  <span class="icon"><i class="fa fa-square" aria-hidden="true"></i></span> <span class="">My Grade</span></a></li>
+  
+  <li><a href="{{calender}}" title="Calendar">
+                           <span class="icon"><i class="fa fa-calendar" aria-hidden="true"></i></span> <span class="">Calender</span></a></li>
+ <li id="mainmenu6"> <a href="{{sandileader}}"  title="Rewards Zone">
+   <span class="icon"><i class="fa fa-gamepad" aria-hidden="true"></i></span> <span class="">Rewards Zone</span></a></li>
+         <li id="mainmenu10"> <a href="{{performance}}"  title="Competency">
+   <span class="icon"><i class="fa fa-usb" aria-hidden="true"></i></span> <span class="">Competency</span></a></li>
+         <li id="mainmenu4"> <a href="{{report&analytics}}"  title="Reports & Analytics">
+   <span class="icon"><i class="fa fa-line-chart" aria-hidden="true"></i></span> <span class="">Reports & Analytics</span></a></li>
+ <li id="mainmenu1134523"> <a href="{{logouturl}}"  title="signout">
+   <span class="icon"><i class="fa fa-sign-out-alt" aria-hidden="true"></i></span> <span class="">Log Out</span></a></li>
+                 </ul>
+   
+{{/student}}
+
+
+{{#teacher}}
+<ul class="menu">
+       <li id="mainmenu"><a href="{{dashboard}}"  title="Dasboard">
+                           <span class="icon"><i class="fa fa-tachometer" aria-hidden="true"></i></span> <span class="">Dashboard</span></a></li>
+
+   <li id="mainmenu1"> <a href="{{mycourse}}"  title="Courses catalogue">
+   <span class="icon"><i class="fa fa-archive" aria-hidden="true"></i></span> <span class="">Course Catalogue</span></a></li>
+   <li id="mainmenu12"><a href="{{calender}}" title="Calendar">
+    <span class="icon"><i class="fa fa-calendar" aria-hidden="true"></i></span> <span class="">Calender</span></a></li>
+      <li id="mainmenu6"> <a href="{{sandileader}}"  title="Rewards Zone">
+   <span class="icon"><i class="fa fa-gamepad" aria-hidden="true"></i></span> <span class="">Rewards Zone</span></a></li>
+         <li id="mainmenu4"> <a href="{{report&analytics}}"  title="Reports & Analytics">
+   <span class="icon"><i class="fa fa-line-chart" aria-hidden="true"></i></span> <span class="">Reports & Analytics</span></a></li>
+ <li id="mainmenu1222"> <a href="/local/course_ai/"  title="Ai Dashboard">
+   <span class="icon"><i class="fa fa-desktop" aria-hidden="true"></i></span> <span class="">Ai Dashboard</span></a></li>
+   <li id="mainmenu1134523"> <a href="{{logouturl}}"  title="signout">
+   <span class="icon"><i class="fa fa-sign-out-alt" aria-hidden="true"></i></span> <span class="">Log Out</span></a></li>
+                 </ul>
+              
+{{/teacher}}
+ 
+{{#manager}}
+
+<ul class="menu">
+
+   <li id="mainmenu"><a href="{{dashboard}}"  title="Dasboard">
+                           <span class="icon"><i class="fa fa-tachometer" aria-hidden="true"></i></span> <span class="">Dashboard</span></a></li>
+
+   <li id="mainmenu1"> <a href="{{mycourse}}"  title="Courses catalogue">
+   <span class="icon"><i class="fa fa-archive" aria-hidden="true"></i></span> <span class="">Course Catalogue</span></a></li>
+   <li id="mainmenu12"><a href="{{calender}}" title="Calendar">
+    <span class="icon"><i class="fa fa-calendar" aria-hidden="true"></i></span> <span class="">Calender</span></a></li>
+      <li id="mainmenu2"> <a href="{{manageusers}}"  title="Manage users">
+   <span class="icon"><i class="fa fa-users" aria-hidden="true"></i></span> <span class="">User List</span></a></li>
+      <li id="mainmenu3"> <a href="{{myteam}}"  title="Teams">
+   <span class="icon"><i class="fa fa-sitemap" aria-hidden="true"></i></span> <span class="">My Team</span></a></li>
+      <li id="mainmenu4"> <a href="{{report&analytics}}"  title="Reports & Analytics">
+   <span class="icon"><i class="fa fa-line-chart" aria-hidden="true"></i></span> <span class="">Reports & Analytics</span></a></li>
+                 
+                          <li id="mainmenu9"> <a href="{{multitenant}}"  title="Multi-Tenant">
+   <span class="icon"><i class="fa fa-sitemap" aria-hidden="true"></i></span> <span class="">Multi-Tenant</span></a></li>
+ <li id="mainmenu1222"> <a href="/local/course_ai/"  title="Ai Dashboard">
+   <span class="icon"><i class="fa fa-desktop" aria-hidden="true"></i></span> <span class="">Ai Dashboard</span></a></li>
+   <li id="mainmenu1134523"> <a href="{{logouturl}}"  title="signout">
+   <span class="icon"><i class="fa fa-sign-out-alt" aria-hidden="true"></i></span> <span class="">Log Out</span></a></li>
+        </ul>       
+{{/manager}}
+</div>
+
+</div>
+<!--sidebar end-->
+{{/sidebarurl}}
+
+<nav id="mdb-navbar" class="navbar fixed-top navbar-expand {{navlayout}}  {{#homepagetransparentheader}}trasnparent-home-nav{{/homepagetransparentheader}}" aria-label="{{#str}}sitemenubar, admin{{/str}}">
+
+ 
+    <div>{{# output.edw_search_box }}
+                {{{ output.edw_search_box }}}
+            {{/output.edw_search_box}}</div>
+     
+    <div class="sub-nav">
+        <div class="navbar-toggler-wrapper">
+            <button class="navbar-toggler aabtn d-block d-lg-none border-0 h-100 p-0" data-toggler="drawers" data-action="toggle" data-target="theme_remui-drawers-primary">
+                <span class="edw-icon edw-icon-Mobile-menu"></span>
+                <span class="sr-only">{{#str}}sidepanel, core{{/str}}</span>
+            </button>
+        </div>
+
+        {{#primarymoremenu}}
+            <div class="primary-navigation">
+                {{> core/moremenu}}
+            </div>
+        {{/primarymoremenu}}
+
+        <!-- <ul class="navbar-nav d-none d-md-flex my-1 px-1">-->
+        <!-- page_heading_menu -->
+        <!-- {{{ output.page_heading_menu }}}-->
+        <!-- </ul> -->
+
+        <div id="usernavigation" class="navbar-nav ml-auto">
+            {{{ output.edit_switch }}}
+        </div>
+    </div>
+
+</nav>
+{{#show_license_notice}}
+{{{show_license_notice}}}
+{{/show_license_notice}}
+
+{{> theme_remui/primary-drawer-mobile }}
+

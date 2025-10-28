@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/videofile/db" VERSION="20130717" COMMENT="XMLDB file for Moodle mod/videofile"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="videofile" COMMENT="Default comment for videofile, please edit me">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="course"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Course videofile activity belongs to" PREVIOUS="id" NEXT="name"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances" PREVIOUS="course" NEXT="intro"/>
+        <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="General introduction of the videofile activity" PREVIOUS="name" NEXT="introformat"/>
+        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the intro field (MOODLE, HTML, MARKDOWN...)" PREVIOUS="intro" NEXT="width"/>
+        <FIELD NAME="width" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="800" SEQUENCE="false" COMMENT="Width of the video in pixels" PREVIOUS="introformat" NEXT="height"/>
+        <FIELD NAME="height" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="500" SEQUENCE="false" COMMENT="Height of the video in pixels" PREVIOUS="width" NEXT="responsive"/>
+        <FIELD NAME="responsive" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Nonzero if video should adapt to window size with width and height used as a proportions" PREVIOUS="height" NEXT="timecreated"/>
+
+        <FIELD NAME="video_type" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Save the type video used" PREVIOUS="responsive" NEXT="video"/>
+        <!-- Add By andres For video_url field -->
+        <FIELD NAME="video_url" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Url For use videos of youtube or vimeo" PREVIOUS="video_type" NEXT="timecreated"/>
+
+        <!--
+        /**
+         * Add field for save the minumun progress
+         * @author Andres
+         * @since April 18 of 2016
+         * @paradiso
+         */
+        -->
+        <FIELD NAME="videoprogress" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Minimum progress required for get complete the activity" PREVIOUS="video_type" NEXT="timecreated"/>
+
+        <!--
+        /**
+         * Add field for save the forward
+         * @author Andres
+         * @since April 19 of 2016
+         * @paradiso
+         */
+        -->
+        <FIELD NAME="forward" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="User can or not go forward in the video" PREVIOUS="video_type" NEXT="timecreated"/>
+
+
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="video" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timecreated"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
+      </INDEXES>
+    </TABLE>
+
+    <!--
+    /**
+     * @add table for reproduction attempts
+     * @author Andres
+     * @since 26/05/2015
+     * @paradiso
+     */
+    -->
+    <TABLE NAME="video_attempts" COMMENT="This table save the attempts of play video and the last second">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="user_id"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Id of the user" PREVIOUS="id" NEXT="cmid"/>
+        <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Id of the cm" PREVIOUS="userid" NEXT="second"/>
+        <FIELD NAME="second" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="second of the video" PREVIOUS="cmid" NEXT="percentage"/>
+        <FIELD NAME="percentage" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Percentage of progress of the total video" PREVIOUS="cmid" NEXT="timecreated"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="percentage" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timecreated"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>

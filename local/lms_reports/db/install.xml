@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/lms_reports/db" VERSION="20150520" COMMENT="XMLDB file for lms reports central"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+	<TABLES>
+		<TABLE NAME="local_lms_reports" COMMENT="Table for reporting cetral moodle" NEXT="lms_report_type">
+			<FIELDS>
+				<FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" COMMENT="Tracks consecutive for reports" NEXT="name"/>
+				<FIELD NAME="name" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Name of the Report" PREVIOUS="id" NEXT="summary"/>
+				<FIELD NAME="summary" TYPE="text" SEQUENCE="false" COMMENT="Name of the Report" PREVIOUS="name" NEXT="url"/>
+				<FIELD NAME="url" TYPE="char" LENGTH="355" NOTNULL="true" SEQUENCE="false" COMMENT="Url of the report (native or custom)" PREVIOUS="summary" NEXT="idcr"/>
+				<FIELD NAME="idcr" TYPE="int" LENGTH="11" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" DEFAULT="0" COMMENT="Id of the configurable report" PREVIOUS="url" NEXT="idtype"/>
+				<FIELD NAME="idtype" TYPE="int" LENGTH="11" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Id of the type of report" PREVIOUS="idcr" NEXT="iduser"/>
+				<FIELD NAME="iduser" TYPE="int" LENGTH="11" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" DEFAULT="1" COMMENT="Id of the user who created the report" PREVIOUS="idtype" NEXT="favorite"/>
+				<FIELD NAME="favorite" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" DEFAULT="0" COMMENT="Popular reports" PREVIOUS="iduser" NEXT="state"/>
+				<FIELD NAME="state" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" DEFAULT="1" COMMENT="Active (1) or inactive (0)" PREVIOUS="favorite" NEXT="order" />
+				<FIELD NAME="order" TYPE="int" LENGTH="3" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" DEFAULT="0" COMMENT="Order" PREVIOUS="state" />
+			</FIELDS>
+			<KEYS>
+				<KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+			</KEYS>
+		</TABLE>
+		<TABLE NAME="local_lms_report_type" COMMENT="The type of report" PREVIOUS="local_datahub_summary_logs">
+			<FIELDS>
+				<FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="name"/>
+				<FIELD NAME="name" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Name of the Report" PREVIOUS="id" NEXT="iduser"/>
+				<FIELD NAME="state" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" DEFAULT="1" COMMENT="Active (1) or inactive (0)" PREVIOUS="iduser" NEXT="order" />
+				<FIELD NAME="order" TYPE="int" LENGTH="3" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" DEFAULT="0" COMMENT="Order" PREVIOUS="state" />
+			</FIELDS>
+			<KEYS>
+				<KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+			</KEYS>
+		</TABLE>
+                
+                <TABLE NAME="local_reports_schedule" COMMENT="lms reports schedule" >
+			<FIELDS>
+				<FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="name"/>
+				<FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" NEXT="name"/>
+                                <FIELD NAME="report" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Name of the Report" PREVIOUS="id" NEXT=""/>
+                               <FIELD NAME="config" TYPE="text" LENGTH="long" NOTNULL="false" SEQUENCE="false" COMMENT="Configuration" PREVIOUS="" NEXT=""/>
+
+			</FIELDS>
+			<KEYS>
+				<KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+			</KEYS>
+		</TABLE>
+                
+                 
+                <TABLE NAME="local_reports_schtask" COMMENT="lms reports schedule TASK" >
+			<FIELDS>
+				<FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="name"/>
+                                <FIELD NAME="plugin" TYPE="char" LENGTH="160" NOTNULL="false" SEQUENCE="false" COMMENT="Plugin" PREVIOUS="id" NEXT=""/>
+                                <FIELD NAME="taskname" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="taskname" PREVIOUS="id" NEXT=""/>
+				<FIELD NAME="callfile" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="name of the filet" PREVIOUS="id" NEXT=""/>
+                                <FIELD NAME="callfunction" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="name of the filet" PREVIOUS="id" NEXT=""/>
+                                <FIELD NAME="lastruntime" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" NEXT="name"/>
+                                <FIELD NAME="nextruntime" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" NEXT="name"/>
+                                <FIELD NAME="blocking" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" NEXT="name"/>
+                                <FIELD NAME="minute" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="minute" PREVIOUS="id" NEXT=""/>
+                                <FIELD NAME="hour" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="hour" PREVIOUS="id" NEXT=""/>
+                                <FIELD NAME="day" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="day" PREVIOUS="id" NEXT=""/>
+                                <FIELD NAME="month" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="month" PREVIOUS="id" NEXT=""/>
+                                <FIELD NAME="dayofweek" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="dayofweek" PREVIOUS="id" NEXT=""/>
+                                <FIELD NAME="timezone" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="timezone" PREVIOUS="id" NEXT=""/>
+                                <FIELD NAME="runsremaining" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" NEXT="name"/>
+                                <FIELD NAME="startdate" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" NEXT="name"/>
+                                <FIELD NAME="enddate" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" NEXT="name"/>
+                                <FIELD NAME="customized" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" NEXT="name"/>
+                                <FIELD NAME="blocked" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" NEXT="name"/>
+                                    
+                                 
+			</FIELDS>
+			<KEYS>
+				<KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+			</KEYS>
+		</TABLE>
+                
+                 <TABLE NAME="local_reports_wkflo" COMMENT="workflow" >
+			<FIELDS>
+				<FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="name"/>
+				 <FIELD NAME="type" TYPE="char" LENGTH="127" NOTNULL="true" SEQUENCE="false" COMMENT="TYPE" PREVIOUS="id" NEXT=""/>
+                                 <FIELD NAME="subtype" TYPE="char" LENGTH="127" NOTNULL="false" SEQUENCE="false" COMMENT="TYPE" PREVIOUS="id" NEXT=""/>
+                                 <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" NEXT="name"/>
+                                 <FIELD NAME="data" TYPE="text" LENGTH="long" NOTNULL="false" SEQUENCE="false" COMMENT="data" PREVIOUS="" NEXT=""/>
+                                 <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" NEXT="name"/>
+                             
+
+			</FIELDS>
+			<KEYS>
+				<KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+			</KEYS>
+		</TABLE>
+                
+                
+                
+	</TABLES>
+</XMLDB>

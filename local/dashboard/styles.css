@@ -1,0 +1,16 @@
+.initials-circle {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    flex-flow: row wrap;
+    vertical-align: middle;
+    margin: 0 auto;
+    width: 128px; // Match user image size.
+height: 128px;
+    background: linear-gradient(-45deg, blue 0%, red 100%);
+    font-size: 3.5rem;
+    font-weight: 300;
+    color: white;
+    text-decoration: none !important;
+    border-radius: 50%;
+}

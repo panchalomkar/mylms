@@ -1,0 +1,104 @@
+.iomadboostboostlink, .iomadboostboostlinkreports {
+  font-family: Ubuntu;
+  font-size: 12px;
+  font-weight: normal;
+  text-align: center;
+  line-height: 120%;
+}
+.iomadboostboostlink a, .iomadboostboostlinkreports a {
+  color: #337ab7;
+  padding: 0 10px;
+}
+.iomadboostboost_block_title {
+  color: #d30000;
+  font-size: 14px;
+  text-transform: uppercase;
+  font-family: Ubuntu;
+  font-weight: normal;
+}
+
+#sitelogo {
+    float: left;
+    width:100px;
+    padding-bottom: 10px;
+}
+
+#siteheading {
+    float: left;
+    left: 100px;
+}
+
+#clientlogo {
+    float: right;
+    width: 100px;
+}
+#iomadboostboost_company_selector select {
+  display: inline;
+  width: auto;
+  margin-left: 10px;
+}
+.iomadboostboostlink_container {
+  background-color: #F7F7F7;
+  border: 1px solid #DDD;
+  margin-bottom: 15px;
+}
+@media (min-width: 992px) {
+  .iomadboostboostlink_container {
+    border-top-color: #F7F7F7;
+  }
+}
+.iomadboostboostlink_container > a {
+  display: block;
+  float: left;
+  margin: 10px;
+  min-height: 155px;
+}
+.iomadboostboostlink_container .iomadboostboostlink, .iomadboostboostlink_container .iomadboostboostlinkreports {
+  text-align: center;
+}
+.iomadboostboostlink_container .iomadboostboostlink .iomadboostboosticon, .iomadboostboostlink_container .iomadboostboostlink .iomadboostboosticonreports {
+  display: block;
+  position: relative;
+  margin: 10px 0;
+}
+.iomadboostboostlink_container .iomadboostboostlink .iomadboostboosticon .fa-topic, .iomadboostboostlink_container .iomadboostboostlinkreports .iomadboostboosticon .fa-topic {
+  font-size: 54px;
+  margin-bottom: 10px;
+  color: #666;
+}
+.iomadboostboostlink_container .iomadboostboostlink .iomadboostboosticon .fa-action, .iomadboostboostlink_container .iomadboostboostlinkreports .iomadboostboosticon .fa-action {
+  border-radius: 15px;
+  color: #FFFFFF;
+  background-color: #93d800;
+  font-size: 20px;
+  height: 30px;
+  line-height: 30px;
+  margin-left: -15px;
+  width: 30px;
+  position: absolute;
+  bottom: 0;
+}
+.iomadboostboostlink_container .iomadboostboostlink .linkname, .iomadboostboostlink_container .iomadboostboostlinkreports .linkname {
+  display: block;
+  width: 100%;
+}
+.block_iomadboostboost_reports .iomadboostboostlink_container {
+  border-top-color: #DDD;
+}
+div.iomadboostboostlink, div.iomadboostboostlinkreports {
+    min-height: 130px;
+    background-color: #ffec70;
+    background-color: #ddd;
+    border-radius: 5px;
+    box-shadow: 5px 5px 5px #888888;
+}
+.progress {
+    background-color: #666;
+}
+.progress-bar {
+    background-color: green;
+}
+
+#page-blocks-iomadboostboost_company_admin-company_groups_create_form #region-main {
+    height: 100%;
+}

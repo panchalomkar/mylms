@@ -1,0 +1,162 @@
+
+.bdr-20{
+    border-radius: 20px;
+}
+._stats-board{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 20px;
+    background: #5795A3;
+    /*background: linear-gradient(83deg, #134A82 0%, #BD2E40 100%);*/
+}
+.line-height-normal{
+    line-height: normal;
+}
+.font-size-27{
+    font-size: 27px;
+}
+._img-outofbox{
+    position:relative;
+    min-width: 160px;
+    height: 150px;
+}
+._img-outofbox img{
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
+.g_16{
+    font-size: 16px;
+}
+.g_20{
+    font-size: 20px;
+}
+
+
+.g_d-container{
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+}
+.g_col-1{
+    max-width:400px;
+    width: 100%;
+}
+.g_green-box{
+    /* border-radius: 1.875rem; */
+    position: relative;
+}
+.profilePointZoneWrapper .__shadow-sm .g_d-container .g_col-1 .g_green-box{
+    border-radius: 1.875rem !important;
+}
+.g_green-box .__quiz-card{
+    background: #1E897F !important;
+}
+.g_col-2{
+    max-width:700px;
+    width: 100%;
+}
+.g_col-3{
+    max-width: 180px;
+    width: 100%;
+}
+
+.g-absolute-with-topout{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+    height: 65px;
+}
+
+
+.g_btn-primary{
+    color: #ffffff !important;
+      background: #3b5099 !important;
+    border-radius: 2.5rem;
+    font-size: 1.25rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    padding: 0.29rem 1rem !important;
+}
+
+.g_fixed-img-center{
+    height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+
+.g_cardbox-a{
+    border-radius: 3.125rem !important;
+    background: #CD832C !important;
+}
+.g_cardbox-b{
+    border-radius: 3.125rem !important;
+    background: #3776A3 !important;
+}
+.g_cardbox-b .card__item--image img{
+    border: 3px solid #3776A3 !important;
+}
+.g_cardbox-c{
+    border-radius: 3.125rem !important;
+    background: #267E74 !important;
+}
+.g_cardbox-c .card__item--image img{
+    border: 3px solid #267E74 !important;
+}
+
+.myPoints .card-innercont .col-lg-12 .grid.grid-col-lg-4 .h3{
+    font-size: 0.8rem !important;
+}
+
+.myPoints .card-innercont .col-lg-12 .grid-col-lg-4 ._card-box-a{
+    background-color: #c33043;
+    background-image: linear-gradient(to right, #741826, #C33043);
+    border-radius: 5px; width: 20%;
+}
+
+.myPoints .card-innercont .col-lg-12 .grid-col-lg-4 ._card-box-b{
+    background-color: #1B625C;
+    background-image: linear-gradient(to right, #1B625C, #34B0A5);
+    border-radius: 5px;
+}
+
+.myPoints .card-innercont .col-lg-12 .grid-col-lg-4 ._card-box-c{
+    background-color: #7D574F;
+    background-image: linear-gradient(to right, #7D574F, #C88B79);
+    border-radius: 5px;
+}
+
+.myPoints .card-innercont .col-lg-12 .grid-col-lg-4 ._card-box-d{
+    background-color: #0E3D6E;
+    background-image: linear-gradient(to right, #0E3D6E, #144E86);
+    border-radius: 5px;
+}
+
+.grid{
+    flex-flow: row;
+    grid-column-gap: 0.8em;
+    grid-row-gap: 0.8em;
+    line-height: 0.8em;
+  }
+
+  #page-local-mydashboard-index #page.drawers {
+    padding-right: 21px;
+}
+#page-local-mydashboard-index.main-area-bg:not(.pagelayout-login) div[role="main"] {
+    padding: 0;
+}
+#page-local-mydashboard-index .card.myPoints {
+    border: 0;
+}
+#page.drawers {
+    padding-right: 21px;
+}
+

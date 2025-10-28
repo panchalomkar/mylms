@@ -1,0 +1,19 @@
+<div class="container"> 
+    <form id="socialimageupload" method="post" enctype="multipart/form-data">
+        <div id="socialerror" class="row"></div>
+        <div id="socialimageerror" class="row"></div>
+        <div class="form-group row">
+            <label for="socialfiles" class="col-sm-2 col-form-label">{{#str}} file {{/str}}</label>
+            <div class="col-sm-8" style="display:flex;">
+                <input type="file" class="form-control" id="socialfiles" accept="image/*" multiple />
+                <div class="uploadingloader" style="display: none;"><img style="width: 15%; margin-left: 20px;" src="{{ config.wwwroot }}/local/social_wall/image/loading_big.gif" /></div>
+            </div>
+            <div class="col-sm-8">
+                <div class="my-2">({{#str}}maxfilesizeallowed, local_social_wall, 5{{/str}})</div>
+            </div>
+            <div class="col-sm-8">
+                <input type="submit" class="btn btn-primary" id="socialimgsubmit" value="{{#str}} submit {{/str}}">
+            </div>
+        </div>
+    </form>
+</div>

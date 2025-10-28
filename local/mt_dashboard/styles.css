@@ -1,0 +1,490 @@
+#page-local-iomad-dashboard-index .mt_boxing {
+    padding: 40px 40px 18px 40px;
+    background: #fff;
+    box-shadow: 6px 0px 12px rgba(0, 0, 0, 0.06);
+    text-align: center;
+    margin-bottom: 0;
+    border: solid 1px #E4E7EC;
+    border-radius: 12px;
+}
+#page-local-iomad-dashboard-index .mt_boxing img {
+    width: 144px;
+    vertical-align: middle;
+    position: relative;
+    display: inline-block;
+    border-radius: 4px;
+    margin-top: 0px;
+    height: 144px;
+}
+#page-local-iomad-dashboard-index .mt_btn_add {
+    width: 220px;
+    height: 215px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+#page-local-iomad-dashboard-index .mt_btn_add i {
+    font-size: 4rem;
+    color: #ffffff;
+}
+#page-local-iomad-dashboard-index .mt_boxing_btn {
+    background: rgba(229, 229, 229, 0.3);
+    box-shadow: 6px 0px 18px rgba(0, 0, 0, 0.06);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#page-local-iomad-dashboard-index .search-mtn {
+     padding-left: 0;
+    width: 100%;
+    padding-right: 0;
+    margin-right: 0;
+    float: left;
+}
+#page-local-iomad-dashboard-index .search-mtn .search-lp i {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+#page-local-iomad-dashboard-index .search-mtn #search-mt {
+    width: 100%;
+    font-weight:500;
+    font-style: italic;
+    height: 36px!important;
+    border-radius: 5px;
+    font-size: 14px;
+    padding-left:9px;
+    border: 0;
+}
+#page-local-iomad-dashboard-index p.pagination_mtn {
+    float: right;
+}
+#page-local-iomad-dashboard-index .mt_boxing p {
+    line-height: initial;
+    margin: 0px;
+    padding-top: 15px;
+    font-size: 14px;
+    color: #373737;
+    font-weight:600;
+    text-align: left;
+}
+.mt-dashboard-header #iomad_company_selector {
+     margin-bottom: 20px;
+    margin-top: 0;
+    border-bottom: solid 1px #F0F2F5;
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+.mtdash {
+    margin-top: 18px;
+}
+#page-local-iomad-dashboard-index #showsuspendedcompanies_label input#showsuspendedcompanies {
+    margin-right: 12px;
+    margin-top: 0px !important;
+}
+#page-local-iomad-dashboard-index .pagination_mtn {
+    float: right;
+}
+#page-local-iomad-dashboard-index .pagination_mtn ul.pagination {
+    padding-right: 0;
+}
+#page-local-iomad-dashboard-index ul#ui-id-1.ui-autocomplete.ui-front {
+    border: 1px solid #ced4da;
+    width: 299px !important;
+    background: #fff;
+    padding: 0px !important;
+    max-height: 150px;
+    overflow-y: scroll;
+}
+#page-local-iomad-dashboard-index ul#ui-id-1.ui-autocomplete.ui-front li.ui-menu-item {
+    list-style: none;
+    padding: 10px 10px 10px 14px;
+}
+#page-local-iomad-dashboard-index .pagidiv {
+    padding-right: 8px;
+    padding-top: 30px;
+}
+#page-local-iomad-dashboard-index input#search-mt {
+    border-color: #D3D3D3;
+    color: #757575;
+    font-weight: 300;
+    font-style: italic;
+    font-size: 14px;
+}
+#page-local-iomad-dashboard-index label#showsuspendedcompanies_label {
+    padding-top: 9px;
+    line-height: 12px;
+    font-size: 14px;
+    font-weight: normal !important;
+    color: #000000;
+}
+#page-local-iomad-dashboard-index .mt_boxing_btn p {
+	font-size: 16px;
+	color: #8D8D8D;
+	margin-top: 20px;
+	font-size: 14px;
+}
+#page-local-iomad-dashboard-index .mt_btn_add {
+    width: 240px;
+    height: 233px;
+}
+#page-local-iomad-dashboard-index li.ui-menu-item:hover {
+    background: rgba(229, 229, 229, 0.3);
+    cursor: pointer;
+}
+#page-local-iomad-dashboard-index li.ui-menu-item a {
+    text-decoration: none;
+}
+#page-local-iomad-dashboard-index  .gobacktomain a.mt_btn_color {
+    font-size: 16px;
+    text-decoration: none;
+}
+#page-local-iomad-dashboard-index  i.wid.wid-icon-phback-to {
+    margin-right: 13px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+#page-local-iomad-dashboard-index .mt-dashboard-header .mt_boxing a.mt_btn_color:hover {
+    text-decoration: unset;
+}
+@media only screen and (max-width : 1600px) {
+    #page-local-iomad-dashboard-index .mt_boxing {
+        padding: 20px 20px 18px 20px;
+    }
+    #page-local-iomad-dashboard-index .mt_btn_add {
+        height:172px;
+    }
+    #page-local-iomad-dashboard-index .mt_boxing img {
+        width: 100%;
+        height: 100px;
+    }
+}
+@media only screen and (max-width : 1025px) {
+    #page-local-iomad-dashboard-index .mt_boxing {
+        padding: 25px 25px 20px 25px;
+    }
+    #page-local-iomad-dashboard-index .mt_boxing img {
+        width:100%;
+        height: 100px;
+    }
+    #page-local-iomad-dashboard-index .mt_btn_add {
+        height: 200px;
+    }
+    #page-local-iomad-dashboard-index input#search-mt {
+        width: 100% !important;
+    }
+    #page-local-iomad-dashboard-index ul#ui-id-1.ui-autocomplete.ui-front {
+        width: 200px !important;
+    }
+}
+@media only screen and (max-width : 992px) {
+    #page-local-iomad-dashboard-index .mt_boxing {
+        padding: 15px 15px 15px 15px;
+    }
+    #page-local-iomad-dashboard-index .mt_boxing img {
+        width: 100%;
+        height: 70px;
+    }
+    #page-local-iomad-dashboard-index .mt_btn_add {
+        height:128px;
+    }
+    #page-local-iomad-dashboard-index input#search-mt {
+        width: 100% !important;
+    }
+    #page-local-iomad-dashboard-index ul#ui-id-1.ui-autocomplete.ui-front {
+        width: 200px !important;
+    }
+    #page-local-iomad-dashboard-index ul#ui-id-1.ui-autocomplete.ui-front {
+        width: 174px !important;
+    }
+}
+
+@media only screen and (max-width : 767px) {
+    #page-local-iomad-dashboard-index .mt_boxing img {
+        width: 150px;
+        height: 130px;
+    }
+    #page-local-iomad-dashboard-index .pagination_mtn {
+        float: left;
+    }
+    #page-local-iomad-dashboard-index ul#ui-id-1.ui-autocomplete.ui-front {
+        width: 203px !important;
+    }
+    #page-local-iomad-dashboard-index .mt_boxing {
+        padding: 40px 15px 15px 15px;
+    }
+    #page-local-iomad-dashboard-index .mt_btn_add {
+        width: 320px;
+    }
+    #page-local-iomad-dashboard-index .mt_boxing p {
+        padding-top: 15px;
+    }
+    #page-local-iomad-dashboard-index label#showsuspendedcompanies_label {
+        font-size: 13px;
+    }
+}
+
+a.editcompanieslink i{
+    margin-right: 7px;
+}
+
+div.mtdash div.mt_boxing_btn a{
+    text-decoration: none;
+}
+
+ul.companylist {
+	border: 1px solid #ced4da;
+	padding: 0;
+	position: absolute;
+	width: 100%;
+	z-index: 999;
+	background: #fff;
+}
+ul.companylist li {
+	list-style: none;
+	margin-bottom: 0;
+	margin-top: 0;
+    font-size: .75rem;
+}
+ul.companylist li:hover {
+	background: #f5f5f5;
+	padding-top: 0;
+	padding-bottom: 0;
+}
+ul.companylist li a {
+	display: block;
+	list-style: none;
+	margin-bottom: 0;
+	margin-top: 0;
+	padding-left: 15px;
+	padding-top: 7px;
+	padding-bottom: 7px;
+	width: auto;
+    text-decoration: none !important;
+}
+.company_search{
+    margin-left: 15px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    width: auto !important;
+}
+.companylist li.back {
+	border-bottom: 1px solid #ddd;
+}
+
+.search-mtn .input-group-btn {
+	width: 100%;
+}
+
+body#page-blocks-iomad_company_admin-company_user_create_form .felement .btn-primary:not(.new-button) {
+	 margin: 5px;
+}
+ body#page-blocks-iomad_company_admin-company_user_create_form .felement .btn-cancel {
+	 margin: 5px;
+}
+ #page-local-iomad-dashboard-index .mt_btn_color.mt_btn_add .fa:before {
+	 font-size: larger;
+}
+ #page-local-iomad-dashboard-index .companylist li.back a {
+	 color: #414141;
+	 font-weight: 500;
+     font-size: .75rem;
+}
+
+
+#page-local-iomad-dashboard-index #page-content{
+    padding-top: 0 !important;
+}
+#page-local-iomad-dashboard-index #page-content .backtotenant a span.fa{
+    position: absolute;
+}
+#page-local-iomad-dashboard-index #page-content .backtotenant a span.fa:before {
+    font-size: 20px;
+    margin-right: 10px;
+        line-height: 29px;
+}
+#page-local-iomad-dashboard-index #page-content .backtotenant a span.backtenant-message{
+    height: 20px;
+    line-height: 20px;
+    vertical-align: middle;
+    margin-left: 25px;
+}
+#page-local-iomad-dashboard-index #page-content .backtotenant.index{ 
+    margin-bottom: 10px;
+}
+.mt_company_admin .iomadlink_container a .iomadlink img {
+    display: none;
+}
+
+.mt_company_admin .iomadlink_container .iomadlink .iomadicon .fa-action {
+    background-color: transparent;
+    color: $brand-primary;
+    font-size: 22px !important;
+}
+.card.block.mt_company_admin div.iomadlink_container {
+    padding-top: 36px;
+}
+.card.block.mt_company_admin .card-text.content .iomadlink_container {
+    border: none;
+}
+.card.block.mt_company_admin div {
+    background-color: transparent!important;
+}
+.card.block.mt_company_admin div.iomadlink_container div.content_mt {
+        margin-bottom: 28px;
+    border: solid 1px #D0D5DD;
+    border-radius: 8px;
+    padding: 21px 20px 20px 14px;
+    margin-right: 26px;
+}
+.card.block.mt_company_admin div.iomadlink_container div.content_mt div.iomadlink {
+    min-height: initial;
+    width: initial;
+    display: inline-block;
+}
+.card.block.mt_company_admin div.iomadlink_container div.content_mt div.iomadlink div.iomadicon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/*
+.card.block.mt_company_admin .iomadlink_container > div .iomadlink > div.iomadicon {
+    background-color: #fbebf0 !important;
+}*/
+.card.block.mt_company_admin .iomadlink_container>div .iomadlink>div.iomadicon {
+    width: 30px!important;
+    height: 30px!important;
+    /*background-color: #60a46f!important;*/
+    text-align: center;
+    vertical-align: middle;
+    border-radius:0;
+    margin: 0;
+}
+#page-local-iomad-dashboard-index .mt_boxing_btn {
+    border: 1px dashed #49604c !important;
+}
+#page-local-iomad-dashboard-index .mt_btn_add i {
+    font-size: 4rem;
+    color: #49604c;
+}
+.card.block.mt_company_admin .iomadlink_container .iomadlink .iomadicon .fa-action {
+    margin-left: 0;
+    position: static;
+}
+.mt_company_admin .iomadlink_container .iomadlink .iomadicon .fa-action {
+    background-color: transparent;
+    color: #f8f9fa;
+    font-size: 22px!important;
+}
+.card.block.mt_company_admin div.iomadlink_container div.content_mt div.actiondescription {
+  padding-left: 36px;
+    margin-top: 6px;
+    word-break: break-word;
+    word-wrap: break-word;
+    display: block !important;
+    line-height: 20px;
+}
+form#choosecompany {
+    display: flex;
+    justify-content: space-between;
+}
+.mt-dashboard-header #iomad_company_selector .form-inline label {
+    align-items: unset;
+    justify-content: left;
+}
+#page-local-iomad-dashboard-index footer#page-footer {
+    /* position:fixed; */
+    bottom: 0;
+    width: 100%;
+}
+
+#page-local-people-index.main-area-bg:not(.pagelayout-login) div[role="main"] {
+    padding: 0;
+}
+#page-local-people-index div.search-filter-buttons div.header-search div.custom-search-form i.men-search-phx {
+    position: absolute;
+    z-index: 4;
+    top: 4px;
+    right: 15px;
+    margin: auto;
+    padding: 7.5px;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 13px;
+}
+
+.men {
+    display: inline-block;
+    font: normal normal normal 14px/1 PlmsHome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.mt-dashboard-header {
+    padding: 10px;
+}
+.multisearch span.icons {
+    margin-left: 8px;
+    margin-top: 3px;
+}
+.multisearch {
+    display: flex;
+    border: solid 1px #D3D3D3;
+    border-radius: 5px;
+}
+.card.block.mt_company_admin div.iomadlink_container div.content_mt a {
+    color: #000;
+}
+table.companyuserstable.addremovetable.generaltable.generalbox.boxaligncenter {
+    border: 0 !important;
+    filter: none !important;
+}
+.companyuserstable.addremovetable td#buttonscell, .companyuserstable.addremovetable td#existingcell, .companyuserstable.addremovetable td#potentialcell {
+    border: 0;
+}
+.companyuserstable.addremovetable td#potentialcell, .companyuserstable.addremovetable td#existingcell{
+    padding: 0;
+
+}
+.companyuserstable.addremovetable select.form-control[size], .companyuserstable.addremovetable select.form-control[multiple] {
+    padding-right: 0;
+    box-shadow: -6px 0px 0px -1px rgba(0,0,0,0.10);
+    -webkit-box-shadow: -6px 0px 0px -1px rgba(0,0,0,0.10);
+    -moz-box-shadow: -6px 0px 0px -1px rgba(0,0,0,0.10);
+}
+.companyuserstable.addremovetable select.form-control[size] option, .companyuserstable.addremovetable select.form-control[multiple] option {
+    width: fit-content;
+    padding:0 14px;
+    width: 98%;
+    margin-top:18px;
+}
+.companyuserstable.addremovetable optgroup{
+    color: #101928;
+
+}
+.companyuserstable.addremovetable input#add {
+    margin-bottom: 9px;
+}
+.mt_company_admin a.nav-link {
+    color: #000;
+    font-size: 14px;
+}
+#page-local-iomad-dashboard-index .search-mtn #searchbox .input-group-btn .multisearch #search-mt {
+    border: 0;
+}
+div#potentialcourses_wrapper select#potentialcourses {
+    width: 100%;
+    padding: 10px;
+}
+#currentcourses_wrapper select#currentcourses {
+    width: 100%;
+    padding: 10px;
+}
+#searchcohortquery label.m-r-1 {
+    justify-content: flex-start;
+}
+#fitem_id_contextid select#id_contextid {
+    width: 100%;
+}

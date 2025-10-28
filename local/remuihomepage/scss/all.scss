@@ -1,0 +1,146 @@
+$gray-200 : #e9ecef !default;
+$gray-300 : #d5ddea !default;
+
+@import 'spacing';
+@import 'frontpage';
+@import 'frontpage-rtl';
+@import 'text';
+@import 'slick';
+
+.courses-slider:not(.slick-slider) {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill,minmax(250px,1fr));
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(250px,1fr);
+    overflow-x: auto;
+}
+.round {
+    border-radius: 50%!important;
+}
+.w-full,
+.w-p100 {
+    width: 100%;
+}
+.h-p100 {
+    height: 100%;
+}
+.slick-arrow {
+    width: 50px;
+    height: 50px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    span {
+        margin: 0;
+        color: white;
+    }
+}
+
+.editmodal.remuihomepage {
+    input[type="color"] {
+        max-width: 40px;
+    }
+}
+.slick-slider .slick-slide {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+.course-category-wrapper{
+    .courses-slider{
+        position: relative;
+        .empty-courses-container{
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            .empty-placeholder-image-lg{
+                width: 76px;
+            }
+        }
+    }
+}
+
+//homepage deprication tooltips
+ /* Tooltip container */
+
+ .home-sections{
+    .btn-group{
+        .deprication-tooltip{
+            .btn .edw-icon {
+                color: #FFC107;
+            }
+            .deprication-tooltiptext{
+                left:110%;
+                top: 0%;
+                transform: unset;
+                &::after {
+                    top: 4%;
+                    left: -3%;
+                    right: unset;
+                    margin-left: unset;
+                    transform: rotate(-270deg);
+                }
+            }
+        }
+    }
+    .carousel-inner{
+        .carousel-caption{
+            z-index: 0;
+        }
+    }
+ }
+ .deprication-tooltip {
+     position: relative;
+     display: inline-block;
+     color: green;
+
+     /* If you want dots under the hoverable text */
+     &:hover .btn .edw-icon {
+         color: #FFC107;
+     }
+     .deprication-tooltiptext {
+         width: 467px;
+         visibility: hidden;
+         background-color: #FEF8EE;
+         border: 1px solid #FFBD81;
+         color: #444444;
+         text-align: center;
+         border-radius: 6px;
+         /* Position the tooltip text */
+         position: absolute;
+         z-index: 1;
+         left: 50%;
+         top: 50%;
+         transform: translate(-108%, -50%);
+         /* Fade in tooltip */
+         opacity: 0;
+         transition: opacity .30s;
+         /* Tooltip arrow */
+         &::after {
+             content: "";
+             position: absolute;
+             top: 50%;
+             right: -3%;
+             transform: rotate(-88deg);
+             margin-left: -5px;
+             border-width: 7px;
+             border-style: solid;
+             border-color: #FFBD81 transparent transparent transparent;
+         }
+         .primary-text{
+            color: #DC3545;
+         }
+         .para-regular-1{
+            color: #444444;
+         }
+     }
+     /* Show the tooltip text when you mouse over the tooltip container */
+     &:hover .deprication-tooltiptext {
+        visibility: visible;
+         opacity: 1;
+
+     }
+ }

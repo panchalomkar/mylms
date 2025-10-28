@@ -1,0 +1,42 @@
+@import 'base/variables';
+@import 'base/mixins';
+
+.formeo {
+
+  @import 'base/bs';
+
+  @include clearfix;
+
+  &.formeo-editor {
+
+    @import 'base/rtl';
+  }
+
+  &.formeo-render {
+    @import 'render';
+    .text-error:not(.custom-validation-error) {
+      position: absolute;
+    }
+    &.form-style-1 {
+      @import 'base/display-label';
+    }
+    &[class*='form-style-']:not(.form-style-1) {
+      color:#999;
+      @import 'base/form-style-common';
+    }
+    &.form-style-2 {
+      margin-top: 1rem;
+      @import 'base/form-style-2';
+    }
+    &.form-style-3 {
+      @import 'base/form-style-3';
+    }
+    &.form-style-4 {
+      margin-top: 1rem;
+      @import 'base/form-style-4';
+    }
+    @include breakpoint(phone-lrg) {
+      margin-bottom: 1em;
+    }
+  }
+}

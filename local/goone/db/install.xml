@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/goone/db" VERSION="20220329" COMMENT="XMLDB file for PLMS Go1 Integration"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="goone_learning_object" COMMENT="Goone Learning Objects">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="course_id" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="course_sync" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="course_title" TYPE="text" LENGTH="250" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="course_description" TYPE="text" LENGTH="250" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="image" TYPE="text" LENGTH="250" NOTNULL="false" SEQUENCE="false"/>        
+        <FIELD NAME="created_on" TYPE="text" LENGTH="250" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="updated_on" TYPE="text" LENGTH="250" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="goone_learning_sync_limits" COMMENT="Goone sync limits">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="total_courses" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
+       <FIELD NAME="sync_offset" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="updated_on" TYPE="text" LENGTH="250" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>

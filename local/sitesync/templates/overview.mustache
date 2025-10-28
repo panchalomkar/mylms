@@ -1,0 +1,53 @@
+<div class="local_sitesync bg-white p-4">
+    <div class="alert alert-warning  fade show" role="alert">
+        {{#str}}user_syncinfo, local_sitesync{{/str}}
+    </div>
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#Connection" role="tab">{{#str}}tab_connection, local_sitesync{{/str}}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link " data-toggle="tab" href="#Sync" role="tab">{{#str}}tab_sync, local_sitesync{{/str}}</a>
+        </li>
+        {{#backupexist}}
+        <li class="nav-item">
+            <a class="nav-link " data-toggle="tab" href="#Backup" role="tab">{{#str}}tab_backup, local_sitesync{{/str}}</a>
+        </li>
+        {{/backupexist}}
+    </ul>
+
+    <div class="tab-content mt-3">
+        <div class="tab-pane active" id="Connection" role="tabpanel">
+            {{> local_sitesync/overview_connection_form }}
+        </div>
+        <div class="tab-pane " id="Sync" role="tabpanel">
+            {{> local_sitesync/overview_sync_form }}
+        </div>
+        <div class="tab-pane " id="Backup" role="tabpanel">
+            {{> local_sitesync/overview_backup }}
+        </div>
+    </div>
+    {{^feedbackcollected}}
+    <div class= "typeform-wrapper">
+        <button class="typeform-init-button d-none" data-tf-slider="vzSKgyhY" data-tf-on-submit="submit">open</button>
+        <script src="//embed.typeform.com/next/embed.js"></script>
+        <script>
+        // this function needs to be available on global scope (window)
+        function submit({ formId, responseId }) {
+            if(formId === 'vzSKgyhY') {
+                require(['local_sitesync/connection'], function(Connection) {
+                const configs = [
+                    {
+                        key: 'feedbackcollected',
+                        value: true,
+                        plugin: 'local_sitesync'
+                    },
+                ];
+                Connection.saveConfigs(configs);
+                });
+            }
+        }
+        </script>
+    </div>
+    {{/feedbackcollected}}
+</div>

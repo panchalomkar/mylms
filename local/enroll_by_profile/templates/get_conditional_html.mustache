@@ -1,0 +1,55 @@
+
+	<label class="col-md-12 category_type conditional-html">
+		<span>{{#str}} conditional,local_enroll_by_profile {{/str}}</span>
+	
+	<select id="id_conditional{{id}}" class="form-control select-conditional">
+		{{#text}}
+		<option value="0">{{#str}} select_option,local_enroll_by_profile {{/str}}</option>
+		<option value="contains">{{#str}} contains,local_enroll_by_profile {{/str}}</option>
+		<option value="exactmatch">{{#str}} exactmatch,local_enroll_by_profile {{/str}}</option>
+		{{/text}}
+
+		{{#numeric}}
+		<option value="0">{{#str}} select_option,local_enroll_by_profile {{/str}}</option>
+		<option value="equalsto">{{#str}} equalsto,local_enroll_by_profile {{/str}}</option>
+		<option value="greaterthan">{{#str}} greaterthan,local_enroll_by_profile {{/str}}</option>
+		<option value="lessthan">{{#str}} lessthan,local_enroll_by_profile {{/str}}</option>
+		<option value="insideinterval">{{#str}} isbetween,local_enroll_by_profile {{/str}}</option>
+		{{/numeric}}
+
+		{{#datetime}}
+		<option value="0">{{#str}} select_option,local_enroll_by_profile {{/str}}</option>
+		<option value="isbefore">{{#str}} lessthan,local_enroll_by_profile {{/str}}</option>
+		<option value="isafter">{{#str}} greaterthan,local_enroll_by_profile {{/str}}</option>
+		<option value="isbetween">{{#str}} isbetween,local_enroll_by_profile {{/str}}</option>
+		<option value="itson">{{#str}} equalsto,local_enroll_by_profile {{/str}}</option>
+		{{/datetime}}
+
+		{{#menu}}
+		<option value="0">{{#str}} select_option,local_enroll_by_profile {{/str}}</option>
+		<option value="isselected">{{#str}} isselected,local_enroll_by_profile {{/str}}</option>
+		{{/menu}}
+
+		{{#multiselect}}
+		<option value="0">{{#str}} select_option,local_enroll_by_profile {{/str}}</option>
+		<option value="hasanyselected">{{#str}} hasanyselected,local_enroll_by_profile {{/str}}</option>
+		<option value="hasselected">{{#str}} hasselected,local_enroll_by_profile {{/str}}</option>
+		{{/multiselect}}
+
+		{{#checkbox}}
+		<option value="0">{{#str}} select_option,local_enroll_by_profile {{/str}}</option>
+		<option value="ischecked">{{#str}} ischecked,local_enroll_by_profile {{/str}}</option>
+		<option value="isnotchecked">{{#str}} isnotchecked,local_enroll_by_profile {{/str}}</option>
+		{{/checkbox}}
+
+		{{#tenant}}
+		<option value="0">{{#str}} select_option,local_enroll_by_profile {{/str}}</option>
+		<option value="isselected">{{#str}} isselected,local_enroll_by_profile {{/str}}</option>
+		{{/tenant}}
+
+		{{#default}}
+		<option value="0">{{#str}} select_pffirst,local_enroll_by_profile {{/str}}</option>
+		{{/default}}
+
+	</select>
+	</label>

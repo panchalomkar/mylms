@@ -1,0 +1,229 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+:root {
+  --bodyFonts: 'Poppins', sans-serif;
+  --pinkColor: #009990;
+  --titleColor: #151515;
+  --bodyColor: #666666;
+  --lightblueColor: #b4302f;
+  --whiteColor: #ffffff;
+  --fontSize: 16px;
+  --transition: .5s;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+a,
+a:hover {
+  text-decoration: none !important;
+}
+
+section {
+  /*padding: 200px 0;*/
+}
+
+.owl-carousel .feature-screenshot {
+  margin-top: 150px;
+}
+
+
+.owl-carousel .thumbnail {
+  display: flex;
+  flex-direction: column;
+  margin: 75px 15px 10px 15px;
+}
+
+
+.owl-carousel .thumbnail figure {
+  margin: 0.1em;
+  width: 340px;
+  height: 240px;
+  background: #9f9f9f;
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  border-radius: 8px;
+}
+
+/* Common style */
+.owl-carousel .thumbnail figure img {
+  position: relative;
+  display: block;
+  opacity: 0.9;
+}
+
+
+.owl-carousel .thumbnail figure figcaption {
+  color: #fff;
+  font-size: 1.25em;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.owl-carousel .thumbnail figcaption h2 {
+  font-weight: 300;
+  margin: 1em;
+}
+
+.owl-carousel .thumbnail figure figcaption::before,
+.owl-carousel .thumbnail figure figcaption::after {
+  pointer-events: none;
+}
+
+.owl-carousel .thumbnail figure figcaption,
+.owl-carousel .thumbnail figure figcaption>a {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.owl-carousel .thumbnail figure figcaption>a {
+  z-index: 1000;
+  text-indent: 200%;
+  white-space: nowrap;
+  font-size: 0;
+  opacity: 0;
+}
+
+.owl-carousel .thumbnail figure h2 {
+  font-weight: 600;
+  margin: 1em;
+}
+
+.owl-carousel .thumbnail figure h2 span {
+  font-weight: 800;
+}
+
+figure.effect-steve {
+  z-index: auto;
+  background: #000;
+}
+
+figure.effect-steve:before {
+  box-shadow: 0 3px 30px rgba(0, 0, 0, 0.8);
+  opacity: 0;
+}
+
+figure.effect-steve figcaption {
+  z-index: 1;
+}
+
+figure.effect-steve img {
+  opacity: 1;
+  -webkit-transition: -webkit-transform 0.35s;
+  transition: transform 0.35s;
+  -webkit-transform: perspective(1000px) translate3d(0, 0, 0);
+  transform: perspective(1000px) translate3d(0, 0, 0);
+}
+
+figure.effect-steve h2,
+figure.effect-steve p {
+  background: var(--pinkColor);
+  color: #fff;
+}
+
+figure.effect-steve h2 {
+  position: absolute;
+  padding: 6px;
+  bottom: 10px;
+  width: 100%;
+}
+
+figure.effect-steve p {
+  margin-top: 1em;
+  padding: 0.5em;
+  font-weight: 800;
+  opacity: 0;
+  -webkit-transition: opacity 0.35s, -webkit-transform 0.35s;
+  transition: opacity 0.35s, transform 0.35s;
+}
+
+figure.effect-steve:hover:before {
+  opacity: 1;
+}
+
+figure.effect-steve:hover img {
+  -webkit-transform: perspective(1000px) translate3d(0, 0, 21px);
+  transform: perspective(1000px) translate3d(0, 0, 21px);
+}
+
+figure.effect-steve:hover h2:before {
+  opacity: 0;
+}
+
+figure.effect-steve:hover p {
+  opacity: 1;
+}
+
+.owl-carousel .thumbnail figure,
+figcaption,
+img {
+  z-index: 0;
+}
+
+.owl-carousel .thumbnail figure figcaption h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.owl-carousel .thumbnail figcaption p {
+  font-size: 14px;
+  font-weight: 300;
+  position: absolute;
+  bottom: 0;
+  margin: 0;
+  height: 50%;
+}
+
+figure:hover h2 {
+  background: #b4302f;
+  transition: transform 0.35s;
+  transform: translateY(-2.5em);
+  margin-bottom: 64px !important;
+}
+
+.snippet-posts .owl-theme .owl-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.snippet-posts .owl-carousel .owl-nav button.owl-next,
+.snippet-posts .owl-carousel .owl-nav button.owl-prev {
+  position: absolute;
+  height: 34px;
+  width: 34px;
+  border-radius: 50%;
+  color: inherit;
+  background: var(--pinkColor);
+  border: none;
+  z-index: 100;
+}
+
+.snippet-posts .owl-carousel .owl-nav button.owl-next:focus,
+.snippet-posts .owl-carousel .owl-nav button.owl-prev:focus {
+  outline: 0;
+}
+.snippet-posts .owl-theme .owl-prev i,
+.snippet-posts .owl-theme .owl-next i {
+  font-size: 16px;
+  color: #fff;
+}
+
+.snippet-posts .owl-theme .owl-prev {
+  left: 90%;
+}
+
+.snippet-posts .owl-theme .owl-next {
+  right: 2%;
+}

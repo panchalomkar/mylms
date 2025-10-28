@@ -1,0 +1,16 @@
+#page-local-edwiserform-view {
+	.efb-panel-btn, .efb-form-style-list .efb-form-style , .template .template-active{
+		height: unset;
+	}
+}
+
+.build-form {
+	.formeo .text-error {
+	    margin: 0 !important;
+    	font-size: 14px !important;
+	}
+}
+
+#page-footer {
+	display: none !important;
+}
