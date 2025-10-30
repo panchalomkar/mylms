@@ -1,0 +1,131 @@
+.f2fsessiongroup {
+    padding-bottom: 10px;
+}
+.f2fsession {
+    width: 100%;
+    border-bottom: 1px solid #ccc;
+}
+.f2fsession:last-child {
+    border-bottom: none;
+}
+.f2fsessiontime {
+    width: 80%;
+    display: inline-block;
+    vertical-align: top;
+    padding-top: 5px;
+}
+.f2finprogress .f2fsessiontime {
+    width: 100%;
+}
+.f2foptions {
+    width: 20%;
+    display: inline-block;
+    min-width: 60px;
+}
+.f2fsessionlinks,
+.f2fsessionnotice {
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 14px;
+    display: block;
+    padding: 3px;
+}
+.f2factivityname {
+    line-height: 1.5;
+}
+
+body.path-mod-ilt table.f2fsession td.c0 {
+    font-weight: bold;
+    width: 12%;
+}
+body.path-mod-ilt table.f2fsession {
+    width: 100%;
+}
+table.table90 {
+    width: 90%;
+}
+table.table50 {
+    width: 50%;
+    text-align: left;
+}
+table.inlinetable {
+    display: inline-table;
+    border: 0;
+}
+tr.highlight td.cell {
+    background-color: #afa;
+}
+a.f2fsessionlinks,
+td.f2fsessionnotice,
+span.f2fsessionnotice {
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 14px;
+}
+span.f2fonepointfive {
+    line-height: 1.5;
+}
+span.errorstring {
+    font-size: 12px;
+    line-height: 18px;
+}
+
+body#page-mod-ilt-view div#page-content table.sessions {
+    width: 100%;
+}
+
+body#page-mod-ilt-view div#page-content .formlocation {
+    float: right;
+    margin-bottom: 6px;
+}
+
+#page-mod-ilt-editattendees form#assignform label[for="addselect"],
+#page-mod-ilt-editattendees form#assignform label[for="users"] {
+    margin-right: 25px !important;
+}
+
+#page-mod-ilt-editattendees form#assignform input#id_courseusers ,
+#page-mod-ilt-editattendees form#assignform input#id_allusers {
+    position: absolute;
+    margin-top: .1rem;
+    margin-left: -1rem;
+}
+#page-mod-ilt-attendees .listlink .link {
+    text-decoration: underline;
+}
+
+
+
+#page-mod-ilt-view .Add_new_session{
+/*    background-color: #1ba2dd!important;*/
+    width: auto;
+    float: right;
+    padding: 10px;
+    border-radius: 3px;
+    margin-top: 17px;
+}
+#page-mod-ilt-view .addnewsession{
+    color: #ffffff !important;
+}
+#page-mod-ilt-view .prev_session, #page-mod-ilt-view h2.main{
+    padding-top: 15px;
+    border-top: 1px solid #e2d7d7;
+    font-size: 17px;
+    font-weight: 600;
+    padding-bottom: 4px;
+}
+#page-mod-ilt-view h2{
+    font-size: 17px !important;
+    font-weight: 600 !important;
+}
+#page-mod-ilt-view div #course_content div.menubar a.dropdown-toggle i{
+/*    color: #1ba2dd;*/
+}
+#page-mod-ilt-view .header{
+/*    color: #84c8e6;*/
+/*    background-color: #eff7ff;*/
+}
+#page-mod-ilt-view table tr{
+/*    border: 1px solid #f4f4f4;*/
+}
+

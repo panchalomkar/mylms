@@ -75,8 +75,8 @@ function local_incourse_render_course_index($course) {
                     'page'              => 'description',
                     'googlemeet'        => 'video_call',
                     'book'              => 'menu_book',
-                    'videofile'         => 'video_library',
-                    'pdf'               => 'picture_as_pdf',
+                    'videotime'         => 'video_library',
+                    'pdfjsfolder'               => 'picture_as_pdf',
                     'h5p'               => 'extension',
                     'choice'            => 'quiz',
                     default             => 'article',
@@ -97,7 +97,7 @@ function local_incourse_render_course_index($course) {
                 $iscompleted = ($completiondata && $completiondata->completionstate > 0);
                 $statusicon = $iscompleted
                     ? '<span class="material-icons text-green-400 text-sm ml-2 d-none">check_circle</span>'
-                    : '<span class="material-icons text-gray-500 text-sm ml-2">radio_button_unchecked</span>';
+                    : '<span class="material-icons text-gray-500 text-sm ml-2 d-none">radio_button_unchecked</span>';
 
                 $modurl = new moodle_url('/mod/' . $cm->modname . '/view.php', ['id' => $cm->id]);
                 $linktext = format_string($cm->get_formatted_name());

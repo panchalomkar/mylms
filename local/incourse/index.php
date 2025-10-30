@@ -20,7 +20,20 @@ echo $OUTPUT->header();
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+   .courseindex-active {
+    background: #2e3740 !important;
+    border-radius: 8px;
+        border: solid 1px hsl(45deg 93% 47% / 30%);
+}
 
+.courseindex-active span,
+.courseindex-active div,
+.courseindex-active a {
+    color: #fff !important;
+}
+
+    </style>
 <div id="full-leftright" class="flex h-screen bg-gray-100 dark:bg-gray-900">
 
     <!-- SIDEBAR -->
@@ -214,7 +227,7 @@ if (modname === 'pdfjsfolder') {
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-2xl font-semibold text-gray-800">Available PDFs</h2>
             </div>
-            <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 d-flex"style="    flex-direction: column-reverse;">
+            <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 d-flex">
                 ${pdfLinks.map(a => {
                     const title = a.innerText.trim();
                     const icon = a.querySelector('img')?.src || '';
@@ -224,7 +237,7 @@ if (modname === 'pdfjsfolder') {
                             <div class="bg-white rounded-full p-4 mb-4 shadow-inner">
                                 <img src="${icon}" class="w-10 h-10">
                             </div>
-                            <h3 class="text-lg font-semibold text-gray-800 mb-2">${title}</h3>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2" style="width: 220px;height: 30px; overflow: hidden;">${title}</h3>
                             <p class="text-sm text-gray-500 mb-4">Ready to read this PDF document</p>
                             <button class="flex items-center gap-2 bg-[#003152] text-white px-4 py-2 rounded-md hover:bg-[#00263d] transition">
                                 <span class="material-icons text-sm">picture_as_pdf</span> Open PDF
@@ -511,6 +524,76 @@ if (modname === 'scorm') {
 
     return;
 }
+if (modname === 'h5pactivity') {
+    const params = new URLSearchParams(link.href.split('?')[1]);
+    const cmid = params.get('id');
+
+    if (!cmid) {
+        console.error("H5P CMID missing");
+        return;
+    }
+
+    area.innerHTML = `
+        <div class="text-gray-400 p-8 text-center animate-pulse">
+            Loading H5P activity...
+        </div>
+    `;
+
+    try {
+        const base = (typeof M !== "undefined" && M.cfg) ? M.cfg.wwwroot : window.location.origin;
+        const response = await fetch(`${base}/local/incourse/fetch_h5p.php?id=${cmid}`);
+        const data = await response.json();
+
+        if (data.status === 'success' && data.embedurl) {
+
+            // ✅ Direct inline H5P view
+            area.innerHTML = `
+                <div class="flex items-center gap-3 mb-2 mt-2">
+                    <button id="backToCourse"
+                        class="flex items-center text-[#003152] hover:text-[#ec9707] font-medium transition d-none">
+                        <span class="material-icons mr-1 text-lg">arrow_back</span>
+                        Back to Course
+                    </button>
+                    <h2 class="text-lg font-semibold text-[#003152]">${data.h5pname}</h2>
+                </div>
+
+                <div id="h5pContainer"
+                    class="rounded-xl border border-gray-200 bg-white overflow-hidden shadow-md " style="width:93%;">
+                    <iframe
+                        src="${data.embedurl}"
+                        class="w-full h-[88vh] border-0 bg-white"
+                        allowfullscreen
+                        allow="fullscreen; autoplay; encrypted-media">
+                    </iframe>
+                </div>
+            `;
+
+            // ✅ Back to course
+            document.getElementById('backToCourse').addEventListener('click', () => {
+                window.location.reload();
+            });
+
+        } else {
+            area.innerHTML = `
+                <div class="text-center text-gray-500 p-8">
+                    <h2 class="text-lg font-semibold mb-2">H5P Launch Error</h2>
+                    <p>${data.message || 'Unable to load H5P package.'}</p>
+                </div>
+            `;
+        }
+    } catch (err) {
+        console.error('H5P load error:', err);
+        area.innerHTML = `
+            <div class="text-center text-red-500 p-8">
+                <p>Failed to load H5P activity.</p>
+            </div>
+        `;
+    }
+
+    return;
+}
+
+
 
 
 
@@ -522,96 +605,22 @@ if (modname === 'scorm') {
                 const main = doc.querySelector('#region-main') || doc.body;
                 area.innerHTML = main.innerHTML;
 
+// ✅ Helpers for saving progress
+function saveWatchTime(cmid, seconds) {
+    localStorage.setItem("video_time_" + cmid, seconds);
+}
+function getWatchTime(cmid) {
+    return parseFloat(localStorage.getItem("video_time_" + cmid)) || 0;
+}
+function markVideoCompleted(cmid) {
+    localStorage.setItem("video_completed_" + cmid, "1");
+}
+function isVideoCompleted(cmid) {
+    return localStorage.getItem("video_completed_" + cmid) === "1";
+}
 
-// if (modname === 'supervideo' || modname === 'videotime') {
-//     let playerWrap = area.querySelector('#videoWrap');
-//     if (!playerWrap) {
-//         playerWrap = document.createElement('div');
-//         playerWrap.id = 'videoWrap';
-//         area.innerHTML = '';
-//         area.appendChild(playerWrap);
-//     }
+if (modname === 'videotime') {
 
-//     // Clear previous content
-//     playerWrap.innerHTML = '';
-
-//     try {
-//         const cmid = link.dataset.cmid;
-//         const fetchUrl = modname === 'supervideo'
-//             ? `<?= $CFG->wwwroot ?>/local/incourse/fetch_supervideo.php?cmid=${cmid}`
-//             : `<?= $CFG->wwwroot ?>/local/incourse/fetch_videotime.php?cmid=${cmid}`;
-
-//         const response = await fetch(fetchUrl);
-//         const data = await response.json();
-
-//         if (!data.videourl) {
-//             area.innerHTML = '<div class="text-red-400 p-8">Video not found.</div>';
-//             return;
-//         }
-
-        
-
-//         // Check if URL is YouTube or local video
-//         if (data.videourl.includes('youtube.com') || data.videourl.includes('youtu.be')) {
-//             // YouTube Player
-//             let ytDiv = document.createElement('div');
-//             ytDiv.id = 'ytPlayer_' + cmid;
-//             playerWrap.appendChild(ytDiv);
-
-//             function extractVideoId(url) {
-//                 try {
-//                     const u = new URL(url);
-//                     if (u.hostname.includes('youtu.be')) return u.pathname.slice(1);
-//                     if (u.hostname.includes('youtube.com')) return u.searchParams.get('v');
-//                 } catch (e) {
-//                     console.warn('Invalid YouTube URL:', url);
-//                 }
-//                 return url;
-//             }
-
-//             function initYTPlayer() {
-//                 new YT.Player(ytDiv.id, {
-//                     videoId: extractVideoId(data.videourl),
-//                     playerVars: {
-//                         autoplay: data.autoplay || 0,
-//                         controls: data.showcontrols || 1,
-//                         rel: 0,
-//                         modestbranding: 1
-//                     },
-//                 });
-//             }
-
-//             if (!window.YT) {
-//                 const ytScript = document.createElement('script');
-//                 ytScript.src = "https://www.youtube.com/iframe_api";
-//                 document.body.appendChild(ytScript);
-//             }
-
-//             if (window.YT && YT.Player) {
-//                 initYTPlayer();
-//             } else {
-//                 window.onYouTubeIframeAPIReady = initYTPlayer;
-//             }
-
-//         } else {
-//             // Local HTML5 video
-//             const video = document.createElement('video');
-//             video.src = data.videourl;
-//             video.controls = true;
-//             video.autoplay = !!data.autoplay;
-//             video.style.width = '100%';
-//             video.style.maxHeight = '600px';
-//             video.className = 'vjs-tech';
-//             playerWrap.appendChild(video);
-//         }
-
-//     } catch (err) {
-//         console.error(err);
-//         area.innerHTML = '<div class="text-red-400 p-8">Failed to load video.</div>';
-//     }
-// }
-// below code delete -to do 
-if (modname === 'supervideo' || modname === 'videotime') {
     let playerWrap = area.querySelector('#videoWrap');
     if (!playerWrap) {
         playerWrap = document.createElement('div');
@@ -619,16 +628,21 @@ if (modname === 'supervideo' || modname === 'videotime') {
         area.innerHTML = '';
         area.appendChild(playerWrap);
     }
-
-    // Clear previous content
     playerWrap.innerHTML = '';
 
     try {
         const cmid = link.dataset.cmid;
-        const fetchUrl = modname === 'supervideo'
-            ? `<?= $CFG->wwwroot ?>/local/incourse/fetch_supervideo.php?cmid=${cmid}`
-            : `<?= $CFG->wwwroot ?>/local/incourse/fetch_videotime.php?cmid=${cmid}`;
 
+        const html = await fetch(link.href).then(r => r.text());
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        const title =
+            doc.querySelector('.page-header-headings h1')?.innerText?.trim() ||
+            doc.querySelector('.activityinstance .instancename')?.innerText?.trim() ||
+            'Video Session';
+
+        const fetchUrl = `<?= $CFG->wwwroot ?>/local/incourse/fetch_videotime.php?cmid=${cmid}`;
         const response = await fetch(fetchUrl);
         const data = await response.json();
 
@@ -637,59 +651,152 @@ if (modname === 'supervideo' || modname === 'videotime') {
             return;
         }
 
-        if (modname === 'supervideo') {
-            // YouTube Player (ID only)
-            let ytDiv = document.createElement('div');
+        const videoUrl = data.videourl;
+        const videoContainer = document.createElement('div');
+        videoContainer.className = 'rounded-xl overflow-hidden bg-black mb-6';
+        playerWrap.appendChild(videoContainer);
+
+        let videoEl = null;
+        let ytPlayer = null;
+
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'mt-6';
+        infoDiv.innerHTML = `
+            <div class="flex flex-col gap-2">
+                <span class="text-sm text-blue-700 font-medium">Video</span>
+                <h2 class="text-2xl font-semibold text-gray-900">${title}</h2>
+                <p id="videoDuration" class="text-gray-500 text-sm">Duration: calculating...</p>
+            </div>
+
+            <button id="continueBtn" 
+                class="mt-4 w-full bg-[#001F5B] hover:bg-[#003152] text-white font-medium py-3 rounded-lg flex items-center justify-center gap-2 transition">
+                <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                </svg>
+                <span id="btnText">Continue Watching</span>
+            </button>
+        `;
+        playerWrap.appendChild(infoDiv);
+
+        const durationEl = infoDiv.querySelector('#videoDuration');
+        const continueBtn = infoDiv.querySelector('#continueBtn');
+        const playIcon = infoDiv.querySelector('#playIcon');
+        const btnText = infoDiv.querySelector('#btnText');
+
+        // ✅ YOUTUBE VIDEO
+        if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+
+            const ytDiv = document.createElement('div');
             ytDiv.id = 'ytPlayer_' + cmid;
-            playerWrap.appendChild(ytDiv);
+            videoContainer.appendChild(ytDiv);
+
+            function extractVideoId(url) {
+                const u = new URL(url);
+                if (u.hostname.includes('youtu.be')) return u.pathname.slice(1);
+                return u.searchParams.get('v');
+            }
 
             function initYTPlayer() {
-                new YT.Player(ytDiv.id, {
-                    videoId: data.videourl,
-                    playerVars: {
-                        autoplay: data.autoplay || 0,
-                        controls: data.showcontrols || 1,
-                        rel: 0,
-                        modestbranding: 1
-                    },
+                ytPlayer = new YT.Player(ytDiv.id, {
+                    videoId: extractVideoId(videoUrl),
+                    playerVars: { autoplay: 0, controls: 1, rel: 0, modestbranding: 1 },
+                    events: {
+                        onReady: (event) => {
+                            const d = event.target.getDuration();
+                            durationEl.textContent = `Duration: ${Math.floor(d/60)}m ${(d%60).toFixed(0)}s`;
+
+                            // ✅ Click inside player always start from 0
+                            const iframe = ytDiv.querySelector('iframe');
+                            iframe?.contentWindow?.postMessage(JSON.stringify({
+                                event: "command",
+                                func: "seekTo",
+                                args: [0]
+                            }), "*");
+
+                            setInterval(() => {
+                                const t = ytPlayer.getCurrentTime();
+                                if (!isNaN(t)) saveWatchTime(cmid, t);
+                                if (t >= d - 3) markVideoCompleted(cmid);
+                            }, 5000);
+                        }
+                    }
                 });
             }
 
             if (!window.YT) {
-                const ytScript = document.createElement('script');
-                ytScript.src = "https://www.youtube.com/iframe_api";
-                document.body.appendChild(ytScript);
-            }
-
-            if (window.YT && YT.Player) {
-                initYTPlayer();
-            } else {
+                const tag = document.createElement('script');
+                tag.src = "https://www.youtube.com/iframe_api";
+                document.body.appendChild(tag);
                 window.onYouTubeIframeAPIReady = initYTPlayer;
-            }
+            } else initYTPlayer();
+
 
         } else {
-            // Local HTML5 video (videotime) with fallback
-            const video = document.createElement('video');
-            video.src = data.videourl;
-            video.controls = true;
-            video.autoplay = !!data.autoplay;
-            video.style.width = '100%';
-            video.style.maxHeight = '600px';
-            video.className = 'vjs-tech';
-            video.addEventListener('error', () => {
-                playerWrap.innerHTML = `
-                    <div class="text-red-400 p-8">
-                        Failed to play video. Please check the file or try a different browser.
-                    </div>`;
+            // ✅ LOCAL MP4 PLAYER
+            videoEl = document.createElement('video');
+            videoEl.src = videoUrl;
+            videoEl.controls = true;
+            videoEl.style.width = '100%';
+            videoEl.style.maxHeight = '600px';
+            videoContainer.appendChild(videoEl);
+
+            videoEl.addEventListener('loadedmetadata', () => {
+                const mins = Math.floor(videoEl.duration / 60);
+                const secs = Math.floor(videoEl.duration % 60).toString().padStart(2, '0');
+                durationEl.textContent = `Duration: ${mins}m ${secs}s`;
             });
-            playerWrap.appendChild(video);
+
+            // ✅ If user clicks video Play button → always reset to 0
+            videoEl.addEventListener("play", () => {
+                if (videoEl.currentTime > 2) videoEl.currentTime = 0;
+            });
+
+            videoEl.addEventListener("timeupdate", () => {
+                saveWatchTime(cmid, videoEl.currentTime);
+                if (videoEl.currentTime >= videoEl.duration - 3) markVideoCompleted(cmid);
+            });
         }
 
-      } catch (err) {
+        // ✅ Continue Button → Resume from saved time
+        continueBtn.addEventListener('click', () => {
+            const last = getWatchTime(cmid) || 0;
+
+            const pauseUI = () => {
+                playIcon.innerHTML = `<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>`;
+                btnText.textContent = "Pause Video";
+            };
+            const playUI = () => {
+                playIcon.innerHTML = `<path d="M8 5v14l11-7z"/>`;
+                btnText.textContent = "Continue Watching";
+            };
+
+            if (videoEl) {
+                if (videoEl.paused) {
+                    videoEl.currentTime = last;
+                    videoEl.play();
+                    pauseUI();
+                } else {
+                    videoEl.pause();
+                    playUI();
+                }
+            } else if (ytPlayer) {
+                if (ytPlayer.getPlayerState() !== 1) {
+                    ytPlayer.seekTo(last, true);
+                    ytPlayer.playVideo();
+                    pauseUI();
+                } else {
+                    ytPlayer.pauseVideo();
+                    playUI();
+                }
+            }
+        });
+
+    } catch (err) {
         console.error(err);
         area.innerHTML = '<div class="text-red-400 p-8">Failed to load video.</div>';
-       }
-       }
+    }
+}
+
 
 
             } catch (err) {
@@ -961,6 +1068,41 @@ if (modname === 'supervideo' || modname === 'videotime') {
     });
 }
   
+});
+// ✅ Highlight current clicked activity
+document.addEventListener("DOMContentLoaded", () => {
+
+    const links = document.querySelectorAll(".activity-link");
+
+    links.forEach(link => {
+        link.addEventListener("click", (e) => {
+
+            // Remove previous highlight
+            document.querySelectorAll(".courseindex-active").forEach(el => {
+                el.classList.remove("courseindex-active");
+            });
+
+            // Add highlight to clicked item
+            link.classList.add("courseindex-active");
+        });
+    });
+
+    // ✅ Auto highlight when coming from activity page (URL match)
+    const currentUrl = window.location.href;
+    links.forEach(link => {
+        if (link.href === currentUrl) {
+            link.classList.add("courseindex-active");
+
+            // auto open section so user sees it
+            let section = link.closest(".accordion-content");
+            if (section && section.classList.contains("hidden")) {
+                section.classList.remove("hidden");
+                let icon = section.previousElementSibling.querySelector(".material-icons");
+                if (icon) icon.style.transform = "rotate(90deg)";
+            }
+        }
+    });
+
 });
 
 
