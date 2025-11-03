@@ -1,81 +1,79 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 require_once('../../config.php');
 require_once('lib.php');
 require_once('addvenuemanangement_form.php');
-global $CFG, $PAGE;
+
+global $CFG, $PAGE, $DB;
+
 $PAGE->requires->jquery();
 $PAGE->requires->js("/local/venuemanangement/js/venue.js");
 
 $id = optional_param('id', 0, PARAM_INT);
-$locaionid = optional_param('locationid', 0, PARAM_INT);
+$locationid = optional_param('locationid', 0, PARAM_INT);
 
 require_login();
-//check capablity to access the page
-
-if (!empty($id)) {
-    $venuemanangement = $DB->get_record('local_classroom', array('id' => $id));
-    $local_bu = $DB->get_record('local_bu', array('id' => $venuemanangement->locationid));
-        
-    if (!empty($id) && empty($venuemanangement)) {
-        print_error('Can not find data record');
-    }
-}
-
-if (!empty($id) && empty($venuemanangement)) {
-    print_error('Can not find data record');
-}
 $context = context_system::instance();
 
-$PAGE->set_context($context);
-$returnurl = new moodle_url($CFG->wwwroot . '/local/venuemanangement/index.php');
-$PAGE->set_pagelayout('admin');
-$pageparams = array();
-if ($id) {
-    $pageparams = array('id' => $id);
-}
-$PAGE->set_url('/local/venuemanangement/addvenuemanangement.php', $pageparams);
+// Fetch record only when editing
+$venuemanangement = null;
+$local_bu = null;
 
-if (has_capability('local/venuemanangement:managevenue', $context)) {
+if (!empty($id)) {
 
-// First create the form.
-    $editform = new addvenuemanangement_form(NULL, array('venuemanangement' => $venuemanangement,'local_bu'=>$local_bu));
-    if ($editform->is_cancelled()) {
-        redirect($returnurl);
-    } else if ($data = $editform->get_data()) {
-        $data->locationid = $locaionid;
-        //print_object($data);
-        if (empty($venuemanangement->id)) {
-            create_venuemanangement($data);
-        } else {
-            // Save any changes to the files used in the editor.
-            $data->id = $venuemanangement->id;
-            update_venuemanangement($data);
-        }
+    $venuemanangement = $DB->get_record('local_classroom', ['id' => $id], '*', IGNORE_MISSING);
 
-        // Redirect user to newly created/updated course.
-        redirect($returnurl, 'Successfully Created / Updated');
+    if ($venuemanangement) {
+        $local_bu = $DB->get_record('local_bu', ['id' => $venuemanangement->locationid], '*', IGNORE_MISSING);
+    } else {
+        print_error('Unable to find venue/classroom record');
     }
+}
 
+$PAGE->set_context($context);
+$returnurl = new moodle_url('/local/venuemanangement/index.php');
+$PAGE->set_pagelayout('admin');
+$PAGE->set_url('/local/venuemanangement/addvenuemanangement.php', ['id' => $id]);
 
-
-    $title = "Add/Edit Classroom";
-    $PAGE->navbar->add($title);
-    $PAGE->set_title($title);
-    $PAGE->set_heading($title);
-    echo $OUTPUT->header();
-    echo $OUTPUT->heading($title);
-    echo '<div class = "card-box bord-all pad-all">';
-    $editform->display();
-    echo '</div>';
-} else {
+// Check capability
+if (!has_capability('local/venuemanangement:managevenue', $context)) {
     print_error('accessdenied', 'admin');
 }
-echo $OUTPUT->footer();
 
+// Build form
+$editform = new addvenuemanangement_form(null, ['venuemanangement' => $venuemanangement, 'local_bu' => $local_bu]);
+
+if ($editform->is_cancelled()) {
+
+    redirect($returnurl);
+
+} elseif ($data = $editform->get_data()) {
+
+    // Attach location id from request or form
+    if ($locationid) {
+        $data->locationid = $locationid;
+    }
+
+    if (empty($venuemanangement)) {
+        // New record
+        create_venuemanangement($data);
+    } else {
+        $data->id = $id;
+        update_venuemanangement($data);
+    }
+
+    redirect($returnurl, 'Successfully saved!');
+}
+
+// Page display
+$title = empty($id) ? "Add Classroom / Venue" : "Edit Classroom / Venue";
+$PAGE->set_title($title);
+$PAGE->set_heading($title);
+$PAGE->navbar->add($title);
+
+echo $OUTPUT->header();
+echo $OUTPUT->heading($title);
+echo '<div class="card-box bord-all pad-all">';
+$editform->display();
+echo '</div>';
+echo $OUTPUT->footer();

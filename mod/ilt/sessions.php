@@ -194,9 +194,14 @@ if ($fromform = $mform->get_data()) { // Form submitted.\
     $todb->duration = $fromform->duration;
     $todb->normalcost = $fromform->normalcost;
     $todb->discountcost = $fromform->discountcost;
-    if (has_capability('mod/ilt:configurecancellation', $context)) {
-        $todb->allowcancellations = $fromform->allowcancellations;
-    }
+ if (has_capability('mod/ilt:configurecancellation', $context)) {
+    $todb->allowcancellations = isset($fromform->allowcancellations)
+        ? $fromform->allowcancellations
+        : 0;
+} else {
+    $todb->allowcancellations = 0;
+}
+
     /*
     * @Author VaibhavG
     * @package  #10: ILT Custom work - Assign multiple instructors in ILT Session
@@ -331,9 +336,14 @@ if ($fromform = $mform->get_data()) { // Form submitted.\
     $toform->duration = $session->duration;
     $toform->normalcost = $session->normalcost;
     $toform->discountcost = $session->discountcost;
-    if (has_capability('mod/ilt:configurecancellation', $context)) {
-        $toform->allowcancellations = $session->allowcancellations;
-    }
+   if (has_capability('mod/ilt:configurecancellation', $context)) {
+    $todb->allowcancellations = isset($fromform->allowcancellations)
+        ? $fromform->allowcancellations
+        : 0;
+} else {
+    $todb->allowcancellations = 0;
+}
+
     /*
     * @Author VaibhavG
     * @package #10: ILT Custom work - Assign multiple instructors in ILT Session

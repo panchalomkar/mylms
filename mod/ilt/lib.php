@@ -1197,9 +1197,13 @@ function ilt_get_grade($userid, $courseid, $iltid) {
 function ilt_get_attendees($sessionid) {
     global $CFG, $DB;
 
-    $usernamefields = get_all_user_name_fields(true, 'u');
-    $records = $DB->get_records_sql("
-        SELECT u.id, {$usernamefields},
+
+$userfields = \core_user\fields::for_name()->with_prefix('u');
+$namefields = $userfields->get_sql('', false, '', 'fullname');
+
+$records = $DB->get_records_sql("
+    SELECT u.id, {$namefields},
+
             u.email,
             su.id AS submissionid,
             s.discountcost,

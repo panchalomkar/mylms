@@ -27,13 +27,18 @@ class addbu_form extends moodleform {
 
         // Form definition with new course defaults.
         $mform->addElement('header', 'general', get_string('general', 'form'));
-        $bu = $this->_customdata['bu']; // this contains the data of this form
-        //
-        $bu->bu = $bu->business_unit;
-        $bu->location = $bu->location;
+       $bu = $this->_customdata['bu'] ?? new stdClass(); // ensure object
 
-        $bulist = current($DB->get_record_sql("select param1 from {user_info_field} where shortname='businessunit'"));
-        $bulist_array= explode("\n", $bulist);
+// Initialize default properties if empty
+$bu->bu = $bu->bu ?? '';
+$bu->location = $bu->location ?? '';
+
+
+       $bulirecord = $DB->get_record_sql("SELECT param1 FROM {user_info_field} WHERE shortname = 'businessunit'");
+
+$bulist = $bulirecord->param1 ?? ''; // Prevent boolean false
+$bulist_array = !empty($bulist) ? explode("\n", $bulist) : [];
+
         
         $buoptions=array();
        // $buoptions[0]='Select';

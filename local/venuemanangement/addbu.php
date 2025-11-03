@@ -37,7 +37,9 @@ $PAGE->set_url('/local/venuemanangement/addvenuemanangement.php', $pageparams);
 if (has_capability('local/venuemanangement:managevenue', $context)) {
 
 // First create the form.
-    $editform = new addbu_form(NULL, array('bu' => $bu));
+    $bu = isset($bu) ? $bu : null; // avoid "Undefined variable" warning
+$editform = new addbu_form(null, ['bu' => $bu]);
+
     if ($editform->is_cancelled()) {
         redirect($cancelurl);
     } else if ($data = $editform->get_data()) {
