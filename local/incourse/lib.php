@@ -84,13 +84,13 @@ function local_incourse_render_course_index($course) {
 
                 // === Duration placeholders ===
                 $duration = '';
-                if (in_array($cm->modname, ['url', 'resource'])) {
-                    $duration = '5 min';
-                } elseif ($cm->modname === 'quiz') {
-                    $duration = '10 min';
-                } elseif ($cm->modname === 'assign') {
-                    $duration = '15 min';
-                }
+                // if (in_array($cm->modname, ['url', 'resource'])) {
+                //     $duration = '5 min';
+                // } elseif ($cm->modname === 'quiz') {
+                //     $duration = '10 min';
+                // } elseif ($cm->modname === 'assign') {
+                //     $duration = '15 min';
+                // }
 
                 // === Completion status ===
                 $completiondata = $completion->is_enabled($cm) ? $completion->get_data($cm) : null;

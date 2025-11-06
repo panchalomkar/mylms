@@ -1198,11 +1198,13 @@ function ilt_get_attendees($sessionid) {
     global $CFG, $DB;
 
 
-$userfields = \core_user\fields::for_name()->with_prefix('u');
-$namefields = $userfields->get_sql('', false, '', 'fullname');
+// Get the list of user fields for SQL queries (with table alias 'u').
+$userfields = \core_user\fields::for_name();
+$namefields = $userfields->get_sql('u', false, '', 'fullname');
+
 
 $records = $DB->get_records_sql("
-    SELECT u.id, {$namefields},
+    SELECT u.id, 8{$namefields->selects},
 
             u.email,
             su.id AS submissionid,

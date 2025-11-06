@@ -1,107 +1,73 @@
-{{!
-    This file is part of Moodle - http://moodle.org/
-
-    Moodle is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    Moodle is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-    Edwiser RemUI
-    @package theme_remui
-    @copyright (c) 2023 WisdmLabs (https://wisdmlabs.com/)
-    @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
-}}
-{{!
-    @template theme_remui/login
-
-    Login page template
-
-    Example context (json):
-    {
-        "output": {
-            "doctype": "<!DOCTYPE html>",
-            "page_title": "Login page",
-            "favicon": "favicon.ico",
-            "main_content": "<h1>Headers keep HTML validators happy</h1>"
-        }
-    }
-}}
 {{> theme_remui/head }}
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<style>
+body.loginright .login-custom-container{height: 100vh !important;
+    max-width: 100% !important;
+    border-radius: 0px !important;}
+        body.loginleft .login-custom-container{height: 100vh !important;
+    max-width: 100% !important;
+    border-radius: 0px !important;
+        flex-direction: row-reverse !important;}
+        body.loginright,body.loginleft{ .width70{width:65% !important;} 
+         .width30{width:35% !important;}}
+         #fgroup_id_buttonar .col-form-label ,#fgroup_id_buttonar .btn-cancel {display:none;}
+.felement {
+    width: 100%;
+    .fitem{ width: 100%;}
+    fieldset div{ width: 100%;}
+}
+#signup-form .fdescription{ display:none;}
+#signup-form  #id_submitbutton:hover{background:#ec9707 !important;}
+</style>
+<body {{{ bodyattributes }}} class="bg-[#0052cc] min-h-screen flex items-center justify-center font-[Poppins]">
 
-<body {{{ bodyattributes }}}>
 {{> core/local/toast/wrapper}}
 
-<div id="page-wrapper">
+<div id="page-wrapper" class="w-full">
+{{{ output.standard_top_of_body_html }}}
 
-    {{{ output.standard_top_of_body_html }}}
+<div class=" font-display flex items-center justify-center min-h-screen" style="background: linear-gradient(216.41deg, #003152 .65%, hsla(0, 0%, 100%, 0) 104.13%);">
+    <div class="login-custom-container flex flex-wrap lg:flex-nowrap w-full max-w-5xl mx-auto shadow-2xl rounded-[20px] overflow-hidden bg-white">
 
-    <div id="page" class="container-fluid mt-0">
-        <div id="page-content" class="row">
-            <div id="region-main-box" class="col-12">
-                <section id="region-main" class="col-12 h-100" aria-label="{{#str}}content{{/str}}">
-                <div class="login-wrapper">
-                    <div class="login-container">
-                        {{#logocontext}}
-                        {{#incontainer}}
-                        <div class="logo-area r-mb-16">
-                                {{#logourl}}
-                                    <img src="{{ logourl }}" class="navbar-brand-logo logo">
-                                {{/logourl}}
+        <!-- Left Panel -->
+        <div id="login-custom"  class="hidden width70 lg:flex lg:w-1/2 bg-cover bg-center relative" style="background-size: cover !important;background-position: center !important;">
+             
+            <div class="absolute inset-0 bg-black bg-opacity-50  p-8 flex flex-col justify-center text-white" style="justify-content: flex-start;">
+                <h1 class="text-3xl text-light font-bold mb-6">RAP LMS</h1>
 
-                                {{#logominiurl}}
-                                    <img src="{{ logominiurl }}" class="navbar-brand-logo logomini">
-                                {{/logominiurl}}
-
-                                {{#icononly}}
-                                    <span class="navbar-brand-logo icononly" style="color: {{color}};"><i class="fa fa-{{siteicon}}"></i></span>
-                                {{/icononly}}
-
-                                {{#iconwithsitename}}
-                                    <span class="navbar-brand-logo font-weight-bold iconsitename" style="color: {{color}};">
-                                        <i class="fa fa-{{siteicon}}"></i>&nbsp;
-                                        {{{ sitename }}}
-                                    </span>
-                                {{/iconwithsitename}}
-                        </div>
-                        {{/incontainer}}
-                        {{/logocontext}}
-                        {{{ output.main_content }}}
+                <div class="space-y-4 text-lg font-medium">
+                    <div class="flex gap-3">
+                        <span class="bg-blue-500 px-2 rounded text-sm font-bold" style="padding:4px;">1</span>
+                        <a href="#" class="text-light" style="border-radius: 5px; width: fit-content; padding: 0px 10px 0px 0px;">AI-driven personalized learning</a>
                     </div>
-                    {{#canshowdesc}}
-                    <div class="login-description-container">
-                        {{#logocontext}}
-                            {{^incontainer}}
-                            <div class="logo-area r-mb-4 bg-transparent">
-                                {{#logourl}}
-                                    <img src="{{ logourl }}" class="navbar-brand-logo logo">
-                                {{/logourl}}
+                    <div class="flex gap-3">
+                        <span class="bg-blue-500 px-2 rounded text-sm font-bold" style="padding:4px;">2</span>
+                        <a href="#" class="text-light" style=" border-radius: 5px; width: fit-content; padding: 0px 10px 0px 0px;">Seamless course and user management</a>
+                    </div>
+                </div>
 
-                                {{#logominiurl}}
-                                    <img src="{{ logominiurl }}" class="navbar-brand-logo logomini">
-                                {{/logominiurl}}
+            
+            </div>
+        </div>
 
-                                {{#icononly}}
-                                    <span class="navbar-brand-logo icononly" style="color: {{color}};"><i class="fa fa-{{siteicon}}"></i></span>
-                                {{/icononly}}
-
-                                {{#iconwithsitename}}
-                                    <span class="navbar-brand-logo font-weight-bold iconsitename" style="color: {{color}};">
-                                        <i class="fa fa-{{siteicon}}"></i>&nbsp;
-                                        {{{ sitename }}}
-                                    </span>
-                                {{/iconwithsitename}}
-                            </div>
-                            {{/incontainer}}
-                        {{/logocontext}}
-                        {{#brandlogotext}}
+        <!-- Right Panel -->
+        <section id="region-main" class="w-full width30 lg:w-1/2 bg-white py-10 px-8" style="overflow:auto; height:600px;">
+         <!-- Logo (optional) -->
+            <div class="text-center mb-3 mt-2 ">
+                {{#logocontext}}
+                {{#logourl}}
+                    <img src="{{logourl}}" class="mx-auto h-16 mb-2"/>
+                {{/logourl}}
+                {{#iconwithsitename}}
+                <div class="text-xl font-bold text-[#0052cc] flex justify-center items-center gap-2">
+                    <i class="fa fa-{{siteicon}}"></i> {{{sitename}}}
+                </div>
+                {{/iconwithsitename}}
+                {{/logocontext}}
+            </div>
+          {{#brandlogotext}}
                         <div class="login-description">
                             <div class="login-description-content" style="color: {{signuptextcolor}};">
                                 {{{brandlogotext}}}
@@ -110,37 +76,18 @@
                         <a id="readlessbtn" class="d-none  readbtn text-link-semibold" style="color: {{signuptextcolor}}">{{#str}} showless, theme_remui{{/str}}</a>
                         </div>
                         {{/brandlogotext}}
-                    </div>
-                    {{/canshowdesc}}
-                </div>
-                </section>
+
+            <!-- Moodle Login Form -->
+            <div class="space-y-4">
+                {{{ output.main_content }}}
             </div>
-        </div>
+
+  
+
+        </section>
     </div>
-    {{> theme_remui/footer }}
 </div>
 
+{{> theme_remui/footer }}
+</div>
 </body>
-</html>
-{{#js}}
-M.util.js_pending('theme_remui/loader');
-require(['theme_remui/loader'], function() {
-  M.util.js_complete('theme_remui/loader');
-    var summaryheight = $('.login-description-content').height();
-
-    if (summaryheight > 295 && $(window).width() < 576) {
-        $('.login-description').find('#readmorebtn').removeClass('d-none');
-        $('.login-description-content').addClass('summary-collapsed').removeClass('summary-expanded');
-    }
-    $('.login-description #readmorebtn').on('click', function() {
-        $('.login-description-content').addClass('summary-expanded').removeClass('summary-collapsed');
-        $('.login-description').find('#readmorebtn').addClass('d-none');
-        $('.login-description').find('#readlessbtn').removeClass('d-none');
-    });
-    $('.login-description #readlessbtn').on('click', function () {
-        $('.login-description-content').addClass('summary-collapsed').removeClass('summary-expanded');
-        $('.login-description').find('#readmorebtn').removeClass('d-none');
-        $('.login-description').find('#readlessbtn').addClass('d-none');
-    });
-});
-{{/js}}

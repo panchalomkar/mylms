@@ -51,6 +51,7 @@ $login-link-hover-color:$loginpanellinkhovercolor;
     }
 }
 .pagelayout-login {
+    #login-custom{background: $login-page-background;}
     #page {
         background: $login-page-background;
         z-index: 0;
