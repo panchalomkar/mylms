@@ -796,7 +796,358 @@ if (modname === 'videotime') {
         area.innerHTML = '<div class="text-red-400 p-8">Failed to load video.</div>';
     }
 }
+if (modname === 'quizs') {
+    const params = new URLSearchParams(link.href.split('?')[1]);
+    const cmid = params.get('id');
 
+    area.innerHTML = `
+        <div class="text-gray-400 p-8 text-center animate-pulse">
+            Loading Quiz details...
+        </div>
+    `;
+
+    try {
+        const base = (typeof M !== "undefined" && M.cfg) ? M.cfg.wwwroot : window.location.origin;
+        const response = await fetch(`${base}/local/incourse/fetch_quiz.php?cmid=${cmid}`);
+        const data = await response.json();
+
+        const minutes = data.timelimit ? Math.round(data.timelimit / 60) + " mins" : "No Limit";
+        const attempts = data.attempts;
+        const remaining = data.attempts_remaining === "Unlimited"
+            ? "Unlimited"
+            : `${data.attempts_remaining} remaining`;
+
+        area.innerHTML = `
+        <div class="flex flex-col items-center justify-center min-h-[80vh] text-center">
+
+            <!-- Icon -->
+            <div class="w-24 h-24  flex items-center justify-center mb-6">
+                <span style="font-size: 100px;" class="material-icons text-yellow-500 text-5xl">help_outline</span>
+            </div>
+
+            <!-- Badge -->
+            <span class="bg-blue-900 text-white px-4 py-1 rounded-full text-sm mb-2">Quiz</span>
+
+            <!-- Title -->
+            <h1 class="text-2xl font-bold text-gray-900 mb-1">${data.name}</h1>
+            <p class="text-gray-500 mb-8">${data.intro || 'Test your knowledge with this interactive quiz'}</p>
+
+            <!-- Info cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 w-full max-w-3xl">
+
+                <!-- Time Limit -->
+                <div class="bg-white shadow-sm rounded-md  flex flex-col items-center" style="width: 245px; padding: 1.5rem !important;">
+                    <span class="material-icons text-green-600 text-4xl mb-2">access_time</span>
+                    <p class="font-medium">Time Limit</p>
+                    <p class="text-gray-500 text-sm">${minutes}</p>
+                </div>
+
+                <!-- Grading Method -->
+                <div class="bg-white shadow-sm rounded-md  flex flex-col items-center"style="width: 245px; padding: 1.5rem !important;">
+                    <span class="material-icons text-yellow-500 text-4xl mb-2">grade</span>
+                    <p class="font-medium">Grading Method</p>
+                  <p class="text-gray-500 text-sm">${data.grademethod}</p>
+                </div>
+
+                <!-- Passing Grade -->
+                <div class="bg-white shadow-sm rounded-md  flex flex-col items-center"style="width: 245px; padding: 1.5rem !important;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-target w-8 h-8 mx-auto mb-2 text-orange-600" data-lov-id="src/components/CourseLanding.tsx:318:22" data-lov-name="Target" data-component-path="src/components/CourseLanding.tsx" data-component-line="318" data-component-file="CourseLanding.tsx" data-component-name="Target" data-component-content="%7B%22className%22%3A%22w-8%20h-8%20mx-auto%20mb-2%20text-orange-600%22%7D"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                    <p class="font-medium">Grade to Pass</p>
+                    <p class="text-gray-500 text-sm">${data.grade_to_pass} / 100</p>
+                </div>
+            </div>
+
+            <!-- Questions + Attempts -->
+            <div class="text-gray-700 mb-6" style="width: 55%;">
+                <p style="display: flex;justify-content: space-between;">Questions: <strong>${data.question_count}</strong></p>
+                <p style="display: flex;justify-content: space-between;">Attempts: <strong>${remaining}</strong></p>
+            </div>
+
+            <!-- Start Attempt -->
+            <button id="startQuizBtn"
+               style="width: 55%;" class="flex items-center justify-center gap-2 bg-[#003152] hover:bg-[#ec9707] text-white px-10 py-2 rounded-lg font-semibold transition">
+                <span class="material-icons">play_circle</span> Attempt Quiz
+            </button>
+        </div>
+        `;
+
+        document.getElementById('startQuizBtn').addEventListener('click', () => {
+            window.location.href = `${base}/mod/quiz/view.php?id=${cmid}`;
+        });
+
+    } catch (err) {
+        console.error("Quiz load error:", err);
+        area.innerHTML = `<div class="text-center text-red-500 p-8">Failed to load Quiz data.</div>`;
+    }
+
+    return;
+}
+// 🎯 GOONE Activity (same UI as H5P)
+if (modname === 'goone') {
+
+    const params = new URLSearchParams(link.href.split('?')[1]);
+    const cmid = params.get('id');
+
+    if (!cmid) {
+        console.error("Goone CMID missing");
+        return;
+    }
+
+    area.innerHTML = `
+        <div class="text-gray-400 p-8 text-center animate-pulse">
+            Loading Goone content...
+        </div>
+    `;
+
+    try {
+        const base = (typeof M !== "undefined" && M.cfg && M.cfg.wwwroot)
+            ? M.cfg.wwwroot
+            : window.location.origin;
+
+        // ✅ updated endpoint - now uses fetch_goone.php
+        const response = await fetch(`${base}/local/incourse/fetch_goone.php?courseid=${cmid}`);
+        const data = await response.json();
+
+        if (data?.status === 'success' && data?.launchurl) {
+
+            area.innerHTML = `
+                <div class="flex items-center gap-3 mb-2 mt-2">
+                    <button id="backToCourse"
+                        class="flex items-center text-[#003152] hover:text-[#ec9707] font-medium transition">
+                        <span class="material-icons mr-1 text-lg">arrow_back</span>
+                        Back to Course
+                    </button>
+                    <h2 class="text-lg font-semibold text-[#003152]">${data.name || 'Go1 Activity'}</h2>
+                </div>
+
+                <div id="gooneContainer"
+                    class="rounded-xl border border-gray-200 bg-white overflow-hidden shadow-md"
+                    style="width:93%;">
+                    <iframe
+                        src="${data.launchurl}"
+                        class="w-full h-[88vh] border-0 bg-white"
+                        allowfullscreen
+                        allow="fullscreen; autoplay; encrypted-media">
+                    </iframe>
+                </div>
+            `;
+
+            document.getElementById('backToCourse')?.addEventListener('click', () => {
+                window.location.reload();
+            });
+
+        } else {
+            area.innerHTML = `
+                <div class="text-center text-gray-500 p-8">
+                    <h2 class="text-lg font-semibold mb-2">Go1 Launch Error</h2>
+                    <p>${data?.message || 'Unable to load Go1 content.'}</p>
+                </div>
+            `;
+        }
+
+    } catch (err) {
+        console.error('Goone load error:', err);
+        area.innerHTML = `
+            <div class="text-center text-red-500 p-8">
+                <p>Failed to load Goone content.</p>
+            </div>
+        `;
+    }
+
+    return;
+}
+// 🧑‍🏫 Handle ILT (Instructor-Led Training) inline view
+if (modname === 'ilts') {
+    const params = new URLSearchParams(link.href.split('?')[1]);
+    const cmid = params.get('id');
+    if (!cmid) return console.error("ILT CMID missing");
+
+    area.innerHTML = `
+        <div class="text-gray-400 p-8 text-center animate-pulse">
+            <span class="material-icons text-4xl mb-2 text-[#003152]">event</span>
+            <p>Loading Instructor-Led Training sessions...</p>
+        </div>
+    `;
+
+   try {
+    const base = (typeof M !== "undefined" && M.cfg && M.cfg.wwwroot)
+        ? M.cfg.wwwroot
+        : window.location.origin;
+
+    const response = await fetch(`${base}/mod/ilt/view.php?id=${cmid}`);
+    const html = await response.text();
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    const mainBox = doc.querySelector('div[role="main"]');
+    if (!mainBox) throw new Error("No ILT session details found.");
+
+    const tables = mainBox.querySelectorAll("table");
+    const titles = mainBox.querySelectorAll("h2.prev_session");
+
+    const extractSessions = (table) => {
+        if (!table) return [];
+        return [...table.querySelectorAll("tbody tr")].map(row => {
+            const cells = row.querySelectorAll("td");
+            const signupHref = cells[7]?.querySelector("a.dropdown-item")?.getAttribute("href") || "";
+            const urlParams = new URLSearchParams(signupHref.split('?')[1] || '');
+            const sessionId = urlParams.get('s');
+            return {
+                name: cells[0]?.innerText.trim(),
+                instructor: cells[1]?.innerText.trim() || "— — —",
+                date: cells[3]?.innerText.trim(),
+                time: cells[4]?.innerText.trim(),
+                seats: cells[5]?.innerText.trim(),
+                status: cells[6]?.innerText.trim(),
+                signup: sessionId ? `${base}/mod/ilt/signup.php?s=${sessionId}&backtoallsessions=2` : ""
+            };
+        });
+    };
+
+    const upcoming = extractSessions(tables[0]);
+    const past = extractSessions(tables[1]);
+
+    area.innerHTML = `
+        <div class="p-3 bg-white rounded-2xl shadow-lg border border-gray-100 w-100">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="material-icons text-[#003152] text-3xl">event_available</span>
+                <h2 class="text-xl font-semibold text-[#003152]">Instructor-Led Training Sessions</h2>
+            </div>
+
+            <!-- Upcoming Sessions -->
+            <section class="mb-10">
+                <h3 class="text-lg font-semibold text-[#003152] mb-4 flex items-center gap-2">
+                    <span class="material-icons text-[#ec9707]">upcoming</span> 
+                    ${titles[0]?.innerText || 'Upcoming Sessions'}
+                </h3>
+                ${upcoming.length ? `
+                    <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+                        ${upcoming.map(s => `
+                            <div class="flex flex-col items-start justify-between gap-4 border rounded-2xl p-4 bg-white shadow-sm hover:shadow-md transition hover:-translate-y-1">
+                                <div class="flex items-center gap-4 flex-1">
+                                    <div>
+                                        <h4 class="text-lg gap-2 flex font-semibold text-[#003152] mb-3 items-center">
+                                            <span class="bg-[#003152]/10 p-2 rounded-full material-icons text-[#003152]">school</span> 
+                                            ${s.name}
+                                        </h4>
+                                        <p class="text-sm text-gray-600 flex items-center gap-1">
+                                            <span class="material-icons text-sm text-[#ec9707]">person</span> ${s.instructor}
+                                        </p>
+                                        <p class="text-sm text-gray-600 flex items-center gap-1">
+                                            <span class="material-icons text-sm text-[#ec9707]">calendar_month</span> ${s.date}
+                                        </p>
+                                        <p class="text-sm text-gray-600 flex items-center gap-1">
+                                            <span class="material-icons text-sm text-[#ec9707]">schedule</span> ${s.time}
+                                        </p>
+                                        <p class="text-sm text-gray-700 flex items-center gap-1">
+                                            <span class="material-icons text-sm text-[#ec9707]">event_seat</span>
+                                            <span class="font-medium">${s.seats || 'N/A'}</span> seats available
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-end gap-2 w-full">
+                                    <span class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full self-start">${s.status}</span>
+                                    ${s.signup ? `
+                                        <button 
+                                            data-url="${s.signup}"
+                                            class="signupBtn d-none flex items-center justify-center gap-1 bg-[#003152] hover:bg-[#ec9707] text-white px-4 py-2 rounded-md text-sm font-medium transition duration-300 w-full">
+                                            <span class="material-icons text-sm">how_to_reg</span> Sign Up
+                                        </button>` : ''}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : `<p class="text-gray-400 italic">No upcoming sessions.</p>`}
+            </section>
+
+            <!-- Past Sessions -->
+            <section>
+                <h3 class="text-lg font-semibold text-[#003152] mb-4 flex items-center gap-2">
+                    <span class="material-icons text-[#ec9707]">history</span> 
+                    ${titles[1]?.innerText || 'Past Sessions'}
+                </h3>
+                ${past.length ? `
+                    <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+                        ${past.map(s => `
+                            <div class="flex flex-col justify-between border rounded-2xl p-4 bg-gray-50 shadow-sm">
+                                <div>
+                                    <h4 class="text-gray-700 mb-3 gap-2 flex font-semibold items-center">
+                                        <span class="bg-[#003152]/10 p-2 rounded-full material-icons text-[#003152]">school</span> 
+                                        ${s.name}
+                                    </h4>
+                                    <p class="text-sm text-gray-600 flex items-center gap-1">
+                                        <span class="material-icons text-sm text-[#ec9707]">calendar_month</span> ${s.date}
+                                    </p>
+                                    <p class="text-sm text-gray-600 flex items-center gap-1">
+                                        <span class="material-icons text-sm text-[#ec9707]">schedule</span> ${s.time}
+                                    </p>
+                                </div>
+                                <span class="text-xs bg-gray-200 text-gray-600 px-3 py-1 rounded-full mt-3 self-start">${s.status}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : `<p class="text-gray-400 italic">No past sessions.</p>`}
+            </section>
+        </div>
+
+        <!-- Modal -->
+        <div id="iltModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden transition-opacity duration-300">
+            <div class="bg-white w-full max-w-2xl rounded-2xl shadow-xl overflow-auto max-h-[90vh] transform transition-transform scale-95">
+                <div class="flex justify-between items-center border-b px-6 py-4">
+                    <h3 class="text-lg font-semibold text-[#003152] flex items-center gap-2">
+                        <span class="material-icons">how_to_reg</span> Sign Up for Session
+                    </h3>
+                    <button id="closeIltModal" class="material-icons text-gray-500 hover:text-red-500">close</button>
+                </div>
+                <div id="iltModalBody" class="p-6 text-center text-gray-500">
+                    <span class="material-icons animate-spin text-3xl text-[#003152] mb-2">sync</span>
+                    <p>Loading sign-up form...</p>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // 🎬 Modal logic
+    const modal = document.getElementById("iltModal");
+    const modalBody = document.getElementById("iltModalBody");
+    const modalBox = modal.querySelector("div.bg-white");
+    document.getElementById("closeIltModal").addEventListener("click", () => {
+        modal.classList.add("hidden");
+        modalBox.classList.add("scale-95");
+    });
+
+    document.querySelectorAll(".signupBtn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            modal.classList.remove("hidden");
+            modalBox.classList.remove("scale-95");
+            modalBody.innerHTML = `
+                <div class="text-center py-10 text-gray-500">
+                    <span class="material-icons animate-spin text-3xl text-[#003152] mb-3">sync</span>
+                    <p>Loading sign-up form...</p>
+                </div>
+            `;
+            try {
+                const formRes = await fetch(btn.dataset.url);
+                if (!formRes.ok) throw new Error("Failed to fetch sign-up form");
+                const html = await formRes.text();
+                const doc = new DOMParser().parseFromString(html, "text/html");
+                const main = doc.querySelector('div[role="main"]');
+                modalBody.innerHTML = main ? main.innerHTML : `<p class='text-red-500'>Failed to load form.</p>`;
+            } catch (e) {
+                console.error(e);
+                modalBody.innerHTML = `
+                    <div class="text-center text-red-500 p-6">
+                        <span class="material-icons text-4xl mb-2">error_outline</span>
+                        <p>Failed to load sign-up form.</p>
+                    </div>
+                `;
+            }
+        });
+    });
+} catch (err) {
+    console.error(err);
+    area.innerHTML = `<p class="text-red-500 text-center p-6">Error loading ILT sessions.</p>`;
+}
+
+}
 
 
             } catch (err) {
