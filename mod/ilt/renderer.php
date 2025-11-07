@@ -164,7 +164,7 @@ class mod_ilt_renderer extends plugin_renderer_base {
               // New desin of the Options.
             $options = '';
             $options .= html_writer::start_tag('a', array('class' => '', 'href' => '#', 'data-toggle' => 'dropdown')); 
-            $options .=html_writer::tag('i','', array('class' => 'wid wid-dots'));  
+           $options .= html_writer::tag('i', '', array('class' => 'fa fa-ellipsis-h')); // horizontal dots  
             $options .= html_writer::end_tag('a'); 
 
             $options .= html_writer::start_tag('div', array('class' => 'dropdown-menu')); 

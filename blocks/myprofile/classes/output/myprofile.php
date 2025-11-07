@@ -119,6 +119,43 @@ class myprofile implements renderable, templatable {
             $data->mypoints = get_total_points($USER->id);
             $data->myrank = get_my_rank($USER->id);
         }
+
+        require_once($CFG->dirroot . '/mod/ilt/lib.php');
+// --- ✅ Fetch Attendance Data ---
+$attended = 0;
+$total = 0;
+$data->attendance = '00/00';
+
+if ($DB->get_manager()->table_exists('ilt_signups') && $DB->get_manager()->table_exists('ilt_signups_status')) {
+
+    // Total ILT sessions user has signed up for
+    $totalsql = "
+        SELECT COUNT(DISTINCT s.id)
+        FROM {ilt_signups} s
+        JOIN {ilt_signups_status} ss ON ss.signupid = s.id
+        WHERE s.userid = :userid
+          AND ss.superceded != 1
+    ";
+    $total = $DB->count_records_sql($totalsql, ['userid' => $USER->id]);
+
+    // Sessions attended (statuscode = 100, superceded = 0)
+    $attendsql = "
+        SELECT COUNT(DISTINCT s.id)
+        FROM {ilt_signups} s
+        JOIN {ilt_signups_status} ss ON ss.signupid = s.id
+        WHERE s.userid = :userid
+          AND ss.superceded = 0
+          AND ss.statuscode = 100
+    ";
+
+    $attended = $DB->count_records_sql($attendsql, [
+        'userid' => $USER->id
+    ]);
+
+    // Format output
+    $data->attendance = sprintf('%02d/%02d', $attended, $total);
+}
+
         return $data;
     }
 }

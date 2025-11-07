@@ -26,6 +26,8 @@
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once('lib.php');
+require_once($CFG->libdir . '/moodlelib.php'); // ✅ Add this line
+
 
 /* @Author VaibhavG
  * @desc include the ilt.js file to get classroom values according to it's location
@@ -53,16 +55,16 @@ $backtoallsessions  = optional_param('backtoallsessions', 0, PARAM_INT); // ILT 
 $user_type = 1; 
 
 if (!$session = ilt_get_session($s)) {
-    print_error('error:incorrectcoursemodulesession', 'ilt');
+    echo get_string('error:incorrectcoursemodulesession', 'ilt');
 }
 if (!$ilt = $DB->get_record('ilt', array('id' => $session->ilt))) {
-    print_error('error:incorrectiltid', 'ilt');
+    echo get_string('error:incorrectiltid', 'ilt');
 }
 if (!$course = $DB->get_record('course', array('id' => $ilt->course))) {
-    print_error('error:coursemisconfigured', 'ilt');
+    echo get_string('error:coursemisconfigured', 'ilt');
 }
 if (!$cm = get_coursemodule_from_instance('ilt', $ilt->id, $course->id)) {
-    print_error('error:incorrectcoursemodule', 'ilt');
+    echo get_string('error:incorrectcoursemodule', 'ilt');
 }
 
 // Check essential permissions.

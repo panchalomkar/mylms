@@ -119,7 +119,7 @@ function ilt_get_status($statuscode) {
 
     // Check code exists.
     if (!isset($statuses[$statuscode])) {
-        print_error('ILT status code does not exist: ' . $statuscode);
+        echo get_string('ILT status code does not exist: ' . $statuscode);
     }
 
     // Get code.
@@ -127,7 +127,7 @@ function ilt_get_status($statuscode) {
 
     // Check to make sure the status array looks to be up-to-date.
     if (constant('MDL_ILT_STATUS_' . strtoupper($string)) != $statuscode) {
-        print_error('ILT status code array does not appear to be up-to-date: ' . $statuscode);
+        echo get_string('ILT status code array does not appear to be up-to-date: ' . $statuscode);
     }
 
     return $string;
@@ -1853,7 +1853,7 @@ function ilt_user_signup($session, $ilt, $course, $discountcode,
     }
 
     if (!$success) {
-        print_error('error:couldnotupdateILTrecord', 'ilt');
+        echo get_string('error:couldnotupdateILTrecord', 'ilt');
         return false;
     }
 
@@ -1882,7 +1882,7 @@ function ilt_user_signup($session, $ilt, $course, $discountcode,
 
     // Update status.
     if (!ilt_update_signup_status($usersignup->id, $newstatus, $userid)) {
-        print_error('error:ILTfailedupdatestatus', 'ilt');
+        echo get_string('error:ILTfailedupdatestatus', 'ilt');
         return false;
     }
 
@@ -1933,12 +1933,12 @@ function ilt_user_signup($session, $ilt, $course, $discountcode,
         }
 
         if (!empty($error)) {
-            print_error($error, 'ilt');
+            echo get_string($error, 'ilt');
             return false;
         }
 
         if (!$DB->update_record('ilt_signups', $usersignup)) {
-            print_error('error:couldnotupdateILTrecord', 'ilt');
+            echo get_string('error:couldnotupdateILTrecord', 'ilt');
             return false;
         }
     }
@@ -2522,7 +2522,7 @@ function ilt_approve_requests($data) {
                 );
 
                 if (!$cm = get_coursemodule_from_instance('ilt', $ilt->id, $course->id)) {
-                    print_error('error:incorrectcoursemodule', 'ilt');
+                    echo get_string('error:incorrectcoursemodule', 'ilt');
                 }
 
                 $contextmodule = context_module::instance($cm->id);
@@ -3853,7 +3853,7 @@ function ilt_update_trainers($sessionid, $form) {
                 $newtrainer->sessionid = $sessionid;
 
                 if (!$DB->insert_record('ilt_session_roles', $newtrainer)) {
-                    print_error('error:couldnotaddtrainer', 'ilt');
+                    echo get_string('error:couldnotaddtrainer', 'ilt');
                     $transaction->force_transaction_rollback();
 
                     return false;
@@ -3876,7 +3876,7 @@ function ilt_update_trainers($sessionid, $form) {
             // Delete any remaining trainers.
             foreach ($trainers as $trainer) {
                 if (!$DB->delete_records('ilt_session_roles', array('sessionid' => $sessionid, 'roleid' => $roleid, 'userid' => $trainer->id))) {
-                    print_error('error:couldnotdeletetrainer', 'ilt');
+                    echo get_string('error:couldnotdeletetrainer', 'ilt');
                     $transaction->force_transaction_rollback();
                     return false;
                 }
@@ -3928,6 +3928,25 @@ function ilt_get_trainer_roles() {
     return $rolenames;
 }
 
+if (!function_exists('get_all_user_name_fields')) {
+    /**
+     * Compatibility wrapper for old Moodle/Totara versions
+     * that don't have get_all_user_name_fields().
+     *
+     * @param bool $prefix
+     * @param string $tableprefix
+     * @param string|null $alias
+     * @return string
+     */
+    function get_all_user_name_fields($prefix = false, $tableprefix = 'u', $alias = null) {
+        global $CFG;
+        $fields = array('firstname', 'lastname');
+        $fields = array_map(function($f) use ($tableprefix) {
+            return "{$tableprefix}.{$f}";
+        }, $fields);
+        return implode(',', $fields);
+    }
+}
 
 /**
  * Get all trainers associated with a session, optionally

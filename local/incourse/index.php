@@ -32,7 +32,10 @@ echo $OUTPUT->header();
 .courseindex-active a {
     color: #fff !important;
 }
-
+#iltModalBody a[title="Go back"],#iltModalBody .fdescription,#iltModalBody #id_cancel,#iltModalBody #fgroup_id_buttonar .col-form-label {display:none;}
+#iltModalBody #fgroup_id_buttonar .felement,#iltModalBody #fgroup_id_buttonar fieldset{display: flex;
+    justify-content: center;
+    width: 100%;}
     </style>
 <div id="full-leftright" class="flex h-screen bg-gray-100 dark:bg-gray-900">
 
@@ -143,7 +146,7 @@ echo $OUTPUT->header();
 
 <!-- PDF.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-
+$PAGE->requires->js(new moodle_url('/local/incourse/js/main.js'));
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     // 📜 Inline module content loader (certificates, lessons, etc.)
@@ -796,7 +799,7 @@ if (modname === 'videotime') {
         area.innerHTML = '<div class="text-red-400 p-8">Failed to load video.</div>';
     }
 }
-if (modname === 'quizs') {
+if (modname === 'quiz') {
     const params = new URLSearchParams(link.href.split('?')[1]);
     const cmid = params.get('id');
 
@@ -957,7 +960,7 @@ if (modname === 'goone') {
     return;
 }
 // 🧑‍🏫 Handle ILT (Instructor-Led Training) inline view
-if (modname === 'ilts') {
+if (modname === 'ilt') {
     const params = new URLSearchParams(link.href.split('?')[1]);
     const cmid = params.get('id');
     if (!cmid) return console.error("ILT CMID missing");
@@ -1048,7 +1051,7 @@ if (modname === 'ilts') {
                                     ${s.signup ? `
                                         <button 
                                             data-url="${s.signup}"
-                                            class="signupBtn d-none flex items-center justify-center gap-1 bg-[#003152] hover:bg-[#ec9707] text-white px-4 py-2 rounded-md text-sm font-medium transition duration-300 w-full">
+                                            class="signupBtn  flex items-center justify-center gap-1 bg-[#003152] hover:bg-[#ec9707] text-white px-4 py-2 rounded-md text-sm font-medium transition duration-300 w-full">
                                             <span class="material-icons text-sm">how_to_reg</span> Sign Up
                                         </button>` : ''}
                                 </div>
@@ -1097,7 +1100,7 @@ if (modname === 'ilts') {
                     </h3>
                     <button id="closeIltModal" class="material-icons text-gray-500 hover:text-red-500">close</button>
                 </div>
-                <div id="iltModalBody" class="p-6 text-center text-gray-500">
+                <div id="iltModalBody" class="p-4 text-center text-gray-500">
                     <span class="material-icons animate-spin text-3xl text-[#003152] mb-2">sync</span>
                     <p>Loading sign-up form...</p>
                 </div>
@@ -1114,34 +1117,130 @@ if (modname === 'ilts') {
         modalBox.classList.add("scale-95");
     });
 
-    document.querySelectorAll(".signupBtn").forEach(btn => {
-        btn.addEventListener("click", async () => {
-            modal.classList.remove("hidden");
-            modalBox.classList.remove("scale-95");
+ document.querySelectorAll(".signupBtn").forEach(btn => {
+    btn.addEventListener("click", async () => {
+        modal.classList.remove("hidden");
+        modalBox.classList.remove("scale-95");
+        modalBody.innerHTML = `
+            <div class="text-center py-10 text-gray-500">
+                <span class="material-icons animate-spin text-3xl text-[#003152] mb-3">sync</span>
+                <p>Loading sign-up form...</p>
+            </div>
+        `;
+
+        try {
+            const formRes = await fetch(btn.dataset.url);
+            if (!formRes.ok) throw new Error("Failed to fetch sign-up form");
+
+            const html = await formRes.text();
+            const doc = new DOMParser().parseFromString(html, "text/html");
+            const main = doc.querySelector('div[role="main"]');
+            modalBody.innerHTML = main ? main.innerHTML : `<p class='text-red-500'>Failed to load form.</p>`;
+
+            const form = modalBody.querySelector("form");
+            if (form) {
+                form.addEventListener("submit", async (e) => {
+                    e.preventDefault();
+
+                    const formData = new FormData(form);
+                    modalBody.innerHTML = `
+                        <div class="text-center py-10 text-gray-500">
+                            <span class="material-icons animate-spin text-3xl text-[#003152] mb-3">sync</span>
+                            <p>Booking your seat...</p>
+                        </div>
+                    `;
+
+                    try {
+                        const response = await fetch(form.action, {
+                            method: "POST",
+                            body: formData,
+                            credentials: "same-origin",
+                            redirect: "manual" // stop browser from following 303 automatically
+                        });
+
+                        // ✅ Detect Moodle 303 redirect = success
+                        if (response.status === 303 || response.type === "opaqueredirect") {
+                            modalBody.innerHTML = `
+                                <div class="text-center p-8 text-green-600 animate-fade-in">
+                                    <div class="flex items-center justify-center mb-4">
+                                        <div class="w-20 h-20 rounded-full border-4 border-green-500 flex items-center justify-center bg-green-50 animate-bounce">
+                                            <span class="material-icons text-5xl text-green-600">check</span>
+                                        </div>
+                                    </div>
+                                    <h3 class="text-2xl font-semibold mb-2">Congratulations!</h3>
+                                    <p class="text-green-700 text-base">Your seat has been successfully booked.</p>
+                                </div>
+                            `;
+
+                            // Change button to "Booked"
+                            btn.outerHTML = `
+                                <span class="flex items-center justify-center gap-1 bg-green-100 text-green-700 px-4 py-2 rounded-md text-sm font-semibold w-full">
+                                    <span class="material-icons text-base">event_available</span> Booked
+                                </span>
+                            `;
+
+                            // Auto close modal
+                            setTimeout(() => {
+                                modal.classList.add("hidden");
+                                modalBox.classList.add("scale-95");
+                            }, 1800);
+
+                        } else {
+                            // fallback: check HTML for success text
+                            const text = await response.text();
+                            if (/success|booked|enrolled|signed\s*up|registered/i.test(text)) {
+                                modalBody.innerHTML = `
+                                    <div class="text-center p-8 text-green-600 animate-fade-in">
+                                        <div class="flex items-center justify-center mb-4">
+                                            <div class="w-20 h-20 rounded-full border-4 border-green-500 flex items-center justify-center bg-green-50 animate-bounce">
+                                                <span class="material-icons text-5xl text-green-600">check</span>
+                                            </div>
+                                        </div>
+                                        <h3 class="text-2xl font-semibold mb-2">Congratulations!</h3>
+                                        <p class="text-green-700 text-base">Your seat has been successfully booked.</p>
+                                    </div>
+                                `;
+
+                                btn.outerHTML = `
+                                    <span class="flex items-center justify-center gap-1 bg-green-100 text-green-700 px-4 py-2 rounded-md text-sm font-semibold w-full">
+                                        <span class="material-icons text-base">event_available</span> Booked
+                                    </span>
+                                `;
+
+                                setTimeout(() => {
+                                    modal.classList.add("hidden");
+                                    modalBox.classList.add("scale-95");
+                                }, 1800);
+                            } else {
+                                throw new Error("Unexpected response");
+                            }
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        modalBody.innerHTML = `
+                            <div class="text-center p-8 text-red-600">
+                                <span class="material-icons text-6xl mb-3">error_outline</span>
+                                <h3 class="text-xl font-semibold mb-2">Submission Failed</h3>
+                                <p>Unable to complete booking. Please try again later.</p>
+                            </div>
+                        `;
+                    }
+                });
+            }
+
+        } catch (e) {
+            console.error(e);
             modalBody.innerHTML = `
-                <div class="text-center py-10 text-gray-500">
-                    <span class="material-icons animate-spin text-3xl text-[#003152] mb-3">sync</span>
-                    <p>Loading sign-up form...</p>
+                <div class="text-center text-red-500 p-6">
+                    <span class="material-icons text-4xl mb-2">error_outline</span>
+                    <p>Failed to load sign-up form.</p>
                 </div>
             `;
-            try {
-                const formRes = await fetch(btn.dataset.url);
-                if (!formRes.ok) throw new Error("Failed to fetch sign-up form");
-                const html = await formRes.text();
-                const doc = new DOMParser().parseFromString(html, "text/html");
-                const main = doc.querySelector('div[role="main"]');
-                modalBody.innerHTML = main ? main.innerHTML : `<p class='text-red-500'>Failed to load form.</p>`;
-            } catch (e) {
-                console.error(e);
-                modalBody.innerHTML = `
-                    <div class="text-center text-red-500 p-6">
-                        <span class="material-icons text-4xl mb-2">error_outline</span>
-                        <p>Failed to load sign-up form.</p>
-                    </div>
-                `;
-            }
-        });
+        }
     });
+});
+
+
 } catch (err) {
     console.error(err);
     area.innerHTML = `<p class="text-red-500 text-center p-6">Error loading ILT sessions.</p>`;

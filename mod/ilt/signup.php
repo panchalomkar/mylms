@@ -35,16 +35,16 @@ $s = required_param('s', PARAM_INT); // Facetoface session ID.
 $backtoallsessions = optional_param('backtoallsessions', 0, PARAM_INT);
 
 if (!$session = ilt_get_session($s)) {
-    print_error('error:incorrectcoursemodulesession', 'ilt');
+    echo get_string('error:incorrectcoursemodulesession', 'ilt');
 }
 if (!$ilt = $DB->get_record('ilt', array('id' => $session->ilt))) {
-    print_error('error:incorrectiltid', 'ilt');
+    echo get_string('error:incorrectiltid', 'ilt');
 }
 if (!$course = $DB->get_record('course', array('id' => $ilt->course))) {
-    print_error('error:coursemisconfigured', 'ilt');
+    echo get_string('error:coursemisconfigured', 'ilt');
 }
 if (!$cm = get_coursemodule_from_instance("ilt", $ilt->id, $course->id)) {
-    print_error('error:incorrectcoursemoduleid', 'ilt');
+    echo get_string('error:incorrectcoursemoduleid', 'ilt');
 }
 
 require_course_login($course, true, $cm);
@@ -96,7 +96,7 @@ if ($mform->is_cancelled()) {
 if ($fromform = $mform->get_data()) { // Form submitted.
 
     if (empty($fromform->submitbutton)) {
-        print_error('error:unknownbuttonclicked', 'ilt', $returnurl);
+        echo get_string('error:unknownbuttonclicked', 'ilt', $returnurl);
     }
 
     // User can not update Manager's email (depreciated functionality).
@@ -125,11 +125,11 @@ if ($fromform = $mform->get_data()) { // Form submitted.
     }
 
     if (!ilt_session_has_capacity($session, $context) && (!$session->allowoverbook)) {
-        print_error('sessionisfull', 'ilt', $returnurl);
+        echo get_string('sessionisfull', 'ilt', $returnurl);
     } else if (ilt_get_user_submissions($ilt->id, $USER->id)) {
-        print_error('alreadysignedup', 'ilt', $returnurl);
+        echo get_string('alreadysignedup', 'ilt', $returnurl);
     } else if (ilt_manager_needed($ilt) && !ilt_get_manageremail($USER->id)) {
-        print_error('error:manageremailaddressmissing', 'ilt', $returnurl);
+        echo get_string('error:manageremailaddressmissing', 'ilt', $returnurl);
     } else if ($submissionid = ilt_user_signup($session, $ilt, $course, $fromform->discountcode, $fromform->notificationtype, $statuscode)) {
 
         // Logging and events trigger.
@@ -163,7 +163,7 @@ if ($fromform = $mform->get_data()) { // Form submitted.
         $event->add_record_snapshot('ilt', $ilt);
         $event->trigger();
 
-        print_error('error:problemsigningup', 'ilt', $returnurl);
+        echo get_string('error:problemsigningup', 'ilt', $returnurl);
     }
 
     redirect($returnurl);
@@ -183,7 +183,7 @@ $viewattendees = has_capability('mod/ilt:viewattendees', $context);
 $signedup = ilt_check_signup($ilt->id);
 
 if ($signedup and $signedup != $session->id) {
-    print_error('error:signedupinothersession', 'ilt', $returnurl);
+    echo '<div class ="text-danger">'. get_string('error:signedupinothersession', 'ilt', $returnurl).'</div>';
 }
 
 echo $OUTPUT->box_start();
@@ -204,7 +204,7 @@ if ($session->datetimeknown && ilt_has_session_started($session, $timenow)) {
 }
 
 if (!$signedup && !ilt_session_has_capacity($session, $context) && (!$session->allowoverbook)) {
-    print_error('sessionisfull', 'ilt', $returnurl);
+    echo get_string('sessionisfull', 'ilt', $returnurl);
     echo $OUTPUT->box_end();
     echo $OUTPUT->footer($course);
     exit;
