@@ -913,3 +913,133 @@ body.limitedwidth {
         }
     }
 }
+#page-course-index-category{
+.all-filters-wrapper{   
+ background: white;
+    padding: 15px;
+    border-radius: .75rem;
+    border: solid 1px hsl(214 32% 91%);
+
+.simplesearchform .input-group,.categoryfiltermenu .categoryfilter {background: #f8fafc;
+padding: 10px 20px;
+    background: #f8fafc !important;
+    max-width: 200px !important;
+    border-radius: 0.75rem;
+    max-height: 45px !important;
+}
+
+}}
+#course-archive-main-container .filters-wrapper .all-filters-wrapper .categoryfiltermenu .dropdown-toggle{max-width: 200px !important;}
+
+#page-course-index-category .filters-wrapper .simplesearchform {
+    width: 330px !important;
+}
+#page-course-index-category{
+#course-archive-main-container .filters-wrapper .simplesearchform .input-group{ min-width: 330px; padding: 9px 10px;
+    height: 45px !important;
+    border-radius: 0.75rem;}
+    .all-filters-wrapper .course-filters-wrapper .dropdown-toggle {background: #f8fafc;
+padding: 10px 20px !important;
+    background: #f8fafc !important;
+    max-width: 200px !important;
+    border-radius: 0.75rem !important;
+    max-height: 45px !important;
+}
+
+.course-catalog-header {
+  background-color: #f8fafc; /* very light gray like the image */
+ padding: 20px 15px;
+  border-radius: 8px;
+}
+
+.course-catalog-header .icon-wrapper {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #002d72, #1e88e5); /* deep blue gradient */
+}
+
+.course-catalog-header .catalog-title {
+  font-size: 2.8rem;
+ color: #002d72 !important;
+  letter-spacing: -0.5px;
+}
+
+.course-catalog-header .catalog-description {
+  max-width: 700px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+.simplesearchform .input-group:focus-within {
+    border: 2px solid #ec9707; /* your orange highlight */
+    border-radius: 6px; /* optional, to match input shape */
+    box-shadow: 0 0 5px rgba(236, 151, 7, 0.5); /* soft glow */
+}
+
+/* Remove double borders if Bootstrap already adds one */
+.simplesearchform .input-group input:focus {
+    box-shadow: none;
+    outline: none;
+}
+    
+#course-archive-main-container .filters-wrapper .all-filters-wrapper .categoryfiltermenu .dropdown-menu.show,#course-archive-main-container .edw-custom-dropdown-wrapper .dropdown-menu{
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+.categoryfiltermenu  .category-wrapper ul li {  padding: 5px;
+ list-style: none;}
+    }
+    .categoryfiltermenu  .category-wrapper ul li:hover{ background: #eff2f7;border-radius: 10px;}
+    .category-wrapper ul { 
+    padding: 0px 5px 0px !important;
+}
+
+#course-archive-main-container .filters-wrapper .all-filters-wrapper .categoryfiltermenu .category-wrapper {
+    padding: 10px 5px !important;
+}
+#toggle-enrolled-courses-c{
+    .switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0;
+  right: 0; bottom: 0;
+  background-color: #ccc;
+  border-radius: 34px;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px; width: 18px;
+  left: 3px; bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #003152; /* your primary color */
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}}
+#toggle-enrolled-courses-c{    padding: 10px 20px !important;
+    background: #f8fafc !important;
+    max-width: 200px !important;
+    border-radius: 0.75rem !important;
+    max-height: 45px !important;
+    border: solid 1px lightgrey;}

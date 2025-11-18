@@ -1,6 +1,42 @@
 <?php
 defined('MOODLE_INTERNAL') || die();
 
+function local_incourse_get_completion_string($cm) {
+    if (empty($cm->completion)) {
+        return '';
+    }
+
+    $conditions = [];
+
+    // Manual completion
+    if ($cm->completion == COMPLETION_TRACKING_MANUAL) {
+        $conditions[] = "Mark as done";
+    }
+
+    // Automatic completion
+    if ($cm->completion == COMPLETION_TRACKING_AUTOMATIC) {
+
+        if (!empty($cm->completionview)) {
+            $conditions[] = "View to complete";
+        }
+
+        if (!empty($cm->completionusegrade)) {
+            $conditions[] = "Receive a grade to complete";
+        }
+
+        if (!empty($cm->completionpassgrade)) {
+            $conditions[] = "Achieve passing grade";
+        }
+    }
+
+    if (empty($conditions)) {
+        return '';
+    }
+
+    return "To do: " . implode(", ", $conditions);
+}
+
+
 function local_incourse_render_course_index($course) {
     global $OUTPUT, $DB;
 
@@ -11,146 +47,218 @@ function local_incourse_render_course_index($course) {
     $html = html_writer::start_tag('div', ['class' => 'space-y-2', 'id' => 'accordion-container']);
 
     foreach ($sections as $section) {
-        // Skip hidden sections or the "General / Announcements" section
+
         if (!$section->visible || $section->section == 0) {
             continue;
         }
 
         $sectionname = format_string($section->name ?: get_section_name($course, $section->section));
 
-        // === Calculate section progress ===
+        // === Calculate Section Progress ===
         $activities = !empty($section->sequence) ? explode(',', $section->sequence) : [];
         $total = count($activities);
         $completed = 0;
 
         foreach ($activities as $cmid) {
             $cmid = (int)$cmid;
-            if (empty($cmid) || !isset($modinfo->cms[$cmid])) continue;
+            if (!isset($modinfo->cms[$cmid])) continue;
+
             $cm = $modinfo->cms[$cmid];
-            if ($completion->is_enabled($cm) && $completion->get_data($cm)->completionstate > 0) {
+
+            if ($completion->is_enabled($cm) &&
+                $completion->get_data($cm)->completionstate > 0) {
                 $completed++;
             }
         }
 
-        $progress = ($total > 0) ? round(($completed / $total) * 100) : 0;
-        $progresswidth = $progress . '%';
+        $progress = $total > 0 ? round(($completed / $total) * 100) : 0;
 
-        // === Accordion Header ===
+        // === Section Header ===
         $html .= '
-        <div class="rounded-lg overflow-hidden mb-2 shadow" style="background: #1a305f;">
-            <button class="w-full flex items-center justify-between p-3 hover:bg-blue-800 transition accordion-header" data-section="' . $section->id . '">
+        <div class="rounded-lg overflow-hidden mb-2 shadow" style="background:#1a305f;">
+            <button class="w-full flex items-center justify-between p-3 hover:bg-blue-800 transition accordion-header"
+                data-section="' . $section->id . '">
+
                 <div class="flex items-center">
-                    <span class="material-icons ml-2 transform transition-transform duration-200">chevron_right</span>
-                    <span class="font-semibold">' . $sectionname . '</span>
+                    <span class="material-icons ml-2 transform transition-transform duration-200 section-icon">
+                        chevron_right
+                    </span>
+                    <span class="font-semibold ml-2">' . $sectionname . '</span>
                 </div>
+
                 <div class="flex items-center">
                     <span class="text-xs mr-2">' . $progress . '%</span>
                     <div class="w-10 bg-blue-800 rounded-full h-1.5">
-                        <div class="h-1.5 rounded-full" style="width:' . $progresswidth . ';background:#ec9707;"></div>
+                        <div class="h-1.5 rounded-full"
+                            style="width:' . $progress . '%; background:#ec9707;"></div>
                     </div>
                 </div>
             </button>
 
-            <!-- Accordion Content -->
             <div id="section-' . $section->id . '" class="accordion-content hidden bg-blue-950 p-3 pl-6">
         ';
 
-        // === Activities in section ===
-        if (!empty($section->sequence)) {
+        // === Activities List ===
+        if (!empty($activities)) {
             $html .= html_writer::start_tag('ul', ['class' => 'space-y-2']);
-            foreach ($activities as $cmid) {
-                $cmid = (int)$cmid;
-                if (empty($cmid) || !isset($modinfo->cms[$cmid])) continue;
-                $cm = $modinfo->cms[$cmid];
-                if (!$cm->uservisible) continue;
 
-                // === Icon for each module ===
-                $iconname = match ($cm->modname) {
-                    'assign'            => 'assignment',
-                    'quiz'              => 'quiz',
-                    'resource'          => 'picture_as_pdf',
-                    'customcert'        => 'workspace_premium',
-                    'iomadcertificate'  => 'workspace_premium',
-                    'url'               => 'play_circle',
-                    'page'              => 'description',
-                    'googlemeet'        => 'video_call',
-                    'book'              => 'menu_book',
-                    'videotime'         => 'video_library',
-                    'pdfjsfolder'               => 'picture_as_pdf',
-                    'h5p'               => 'extension',
-                    'choice'            => 'quiz',
-                    default             => 'article',
-                };
+     foreach ($activities as $cmid) {
 
-                // === Duration placeholders ===
-                $duration = '';
-                // if (in_array($cm->modname, ['url', 'resource'])) {
-                //     $duration = '5 min';
-                // } elseif ($cm->modname === 'quiz') {
-                //     $duration = '10 min';
-                // } elseif ($cm->modname === 'assign') {
-                //     $duration = '15 min';
-                // }
+    $cmid = (int)$cmid;
+    if (!isset($modinfo->cms[$cmid])) continue;
 
-                // === Completion status ===
-                $completiondata = $completion->is_enabled($cm) ? $completion->get_data($cm) : null;
-                $iscompleted = ($completiondata && $completiondata->completionstate > 0);
-                $statusicon = $iscompleted
-                    ? '<span class="material-icons text-green-400 text-sm ml-2 d-none">check_circle</span>'
-                    : '<span class="material-icons text-gray-500 text-sm ml-2 d-none">radio_button_unchecked</span>';
+    $cm = $modinfo->cms[$cmid];
+// === RESTRICTED ACTIVITIES FIX ===
+$restricted = false;
+$restrictioninfo = '';
 
-                $modurl = new moodle_url('/mod/' . $cm->modname . '/view.php', ['id' => $cm->id]);
-                $linktext = format_string($cm->get_formatted_name());
+$restricted = false;
+$restrictioninfo = '';
 
-                // === Activity Row ===
-                $html .= '
-                <li>
-                    <a href="' . $modurl . '" 
-   class="flex items-center p-2 rounded-lg hover:bg-blue-800 transition activity-link"
-   data-modname="' . $cm->modname . '" 
-   data-cmid="' . $cm->id . '">
+if (!$cm->uservisible) {
+    $restricted = true;
 
-                        <span class="material-icons mr-2 text-blue-300 text-base" style="background: #40537b;padding: 5px;border-radius: 50%;">' . $iconname . '</span>
-                        <div class="flex flex-col">
-                            <span class="text-sm font-medium flex items-center">' . $linktext . ' ' . $statusicon . '</span>
-                            ' . ($duration ? '<span class="text-xs text-gray-400">' . $duration . '</span>' : '') . '
-                        </div>
-                    </a>
-                </li>';
-            }
-            $html .= html_writer::end_tag('ul');
-        } else {
-            $html .= html_writer::tag('div', 'No activities in this section.', ['class' => 'text-xs text-gray-300']);
+    if (!empty($cm->availableinfo)) {
+
+        // Moodle formatted restriction HTML
+        $formatted = format_text($cm->availableinfo, FORMAT_HTML);
+
+        // --- Extract the restricted activity name (the dependency) ---
+        // Matches:
+        // The activity PDF Test is ...
+        // The activity "PDF Test" is ...
+        // The activity 'PDF Test' is ...
+        // The activity <span class="instancename">PDF Test</span> is ...
+        $pattern = '/The activity\s+(?:<[^>]+>)?["\']?([^"<>\']+)["\']?(?:<\/[^>]+>)?\s+is/i';
+
+        if (preg_match($pattern, $formatted, $match)) {
+            $dependencyname = trim($match[1]);
+
+            // Highlight the dependency activity name
+            $formatted = str_replace(
+                $dependencyname,
+                '<b>"' . $dependencyname . '"</b>',
+                $formatted
+            );
         }
 
-        $html .= '</div></div>'; // End accordion content
+        // --- Add material lock icon ---
+        $restrictioninfo = '
+            <div class="flex items-start gap-2 text-red-300 text-xs">
+                <span class="material-icons text-base"style="font-size: 15px;">lock</span>
+                <span>' . $formatted . '</span>
+            </div>
+        ';
+
+    } else {
+
+        // Default fallback restriction message
+        $restrictioninfo = '
+            <div class="flex items-start gap-2 text-red-300 text-xs">
+                <span class="material-icons text-base" style="font-size: 15px;">lock</span>
+                <span>You cannot access this activity yet.</span>
+            </div>
+        ';
+    }
+}
+
+
+
+    // Icons
+    $iconname = match ($cm->modname) {
+        'assign' => 'assignment',
+        'quiz' => 'quiz',
+        'resource' => 'picture_as_pdf',
+        'customcert','iomadcertificate' => 'workspace_premium',
+        'url' => 'play_circle',
+        'page' => 'description',
+        'googlemeet' => 'video_call',
+        'book' => 'menu_book',
+        'videotime' => 'video_library',
+        'pdfjsfolder' => 'picture_as_pdf',
+        'h5p' => 'extension',
+        default => 'article',
+    };
+
+    // Completion state
+    $completiondata = $completion->is_enabled($cm) ? $completion->get_data($cm) : null;
+    $iscompleted = ($completiondata && $completiondata->completionstate > 0);
+
+    $statusicon = $iscompleted
+        ? '<span style="font-size: 15px;" class="material-icons text-green-400 text-sm ">check_circle</span>'
+        : '<span style="font-size: 15px;" class="material-icons text-gray-500 text-sm ">radio_button_unchecked</span>';
+
+    $completionmsg = local_incourse_get_completion_string($cm);
+    $completionhtml = $completionmsg
+        ? '<span class="text-xs text-gray-400 mt-2 d-flex" style="align-items: center;gap: 4px;color:hsl(45 93% 47%);">' . $completionmsgg . '</span>'
+        : '';
+
+    $restrictionhtml = $restricted
+        ? '<span class="text-xs text-red-400">' . $restrictioninfo . '</span>'
+        : '';
+
+    $modurl = new moodle_url('/mod/' . $cm->modname . '/view.php', ['id' => $cm->id]);
+    $linktext = format_string($cm->get_formatted_name());
+
+    $html .= '
+    <li>
+        <a href="' . $modurl . '" 
+           class="flex items-center d-flex justify-content-between p-2 rounded-lg hover:bg-blue-800 transition '
+           . ($restricted ? 'pointer-events-none opacity-40' : 'activity-link') . '"
+           data-modname="' . $cm->modname . '" 
+           data-cmid="' . $cm->id . '">
+<div class="d-flex" style="align-items: center;">
+            <span class="material-icons mr-2 text-blue-300 text-base"
+                  style="background:#40537b;padding:5px;border-radius:50%;">' . $iconname . '</span>
+
+            <div class="flex flex-col">
+                <span class="text-sm font-medium flex items-center">'
+                    . $linktext . ' 
+                </span>
+
+                ' . $completionhtml . '
+                ' . $restrictionhtmll . '
+            </div>
+            </div>
+            <div>' . $statusicon . '</div>
+        </a>
+        
+    </li>';
+}
+
+
+            $html .= html_writer::end_tag('ul');
+        }
+
+        $html .= '</div></div>';
     }
 
     $html .= html_writer::end_tag('div');
 
-    // === Accordion JS ===
+    // === FIXED ACCORDION JS ===
     $html .= '
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".accordion-header").forEach(header => {
-        header.addEventListener("click", () => {
-            const sectionId = header.getAttribute("data-section");
-            const content = document.getElementById("section-" + sectionId);
-            const icon = header.querySelector(".material-icons");
-            const isOpen = !content.classList.contains("hidden");
+document.addEventListener("DOMContentLoaded", function() {
 
-            // Close all
+    const headers = document.querySelectorAll(".accordion-header");
+
+    headers.forEach(header => {
+        header.addEventListener("click", function(e) {
+
+            // Prevent activity links from closing accordion
+            if (e.target.closest(".activity-link")) return;
+
+            const id = header.dataset.section;
+            const content = document.getElementById("section-" + id);
+            const icon = header.querySelector(".section-icon");
+            const open = !content.classList.contains("hidden");
+
             document.querySelectorAll(".accordion-content").forEach(c => c.classList.add("hidden"));
-            document.querySelectorAll(".accordion-header .material-icons").forEach(i => {
-                i.style.transform = "rotate(0deg)";
-                i.style.transition = "transform 0.2s ease";
-            });
+            document.querySelectorAll(".section-icon").forEach(i => i.style.transform = "rotate(0deg)");
 
-            // Open selected
-            if (!isOpen) {
+            if (!open) {
                 content.classList.remove("hidden");
                 icon.style.transform = "rotate(90deg)";
-                icon.style.transition = "transform 0.2s ease";
             }
         });
     });

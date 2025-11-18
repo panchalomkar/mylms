@@ -1036,6 +1036,12 @@ if ($isadmin) {
             }
 require_once($CFG->libdir . '/completionlib.php');
 
+$context = context_course::instance($course->id);
+$isenrolled = is_enrolled($context, $USER->id);
+
+$coursesarray[$count]['isenrolled'] = $isenrolled ? 1 : 0;
+
+
 // --- Get completion object for the course ---
 $completion = new \completion_info($course);
 

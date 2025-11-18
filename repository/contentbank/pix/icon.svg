@@ -1,17 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 23.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 74 51" style="enable-background:new 0 0 74 51;" xml:space="preserve" preserveAspectRatio="xMinYMid meet">
-<style type="text/css">
-	.st0{fill:#F98012;}
-	.st1{fill:#333333;}
-</style>
-<g>
-	<path class="st0" d="M61.9,50.3V27.4c0-4.8-2-7.2-5.9-7.2c-4,0-5.9,2.4-5.9,7.2v22.9H38.4V27.4c0-4.8-1.9-7.2-5.8-7.2
-		c-4,0-5.9,2.4-5.9,7.2v22.9H15V26.1c0-5,1.7-8.8,5.2-11.3c3-2.3,7.2-3.4,12.4-3.4c5.3,0,9.2,1.4,11.6,4.1c2.2-2.7,6.1-4.1,11.8-4.1
-		c5.2,0,9.3,1.1,12.4,3.4c3.5,2.6,5.2,6.3,5.2,11.3v24.3H61.9z"/>
-	<path class="st1" d="M37.6,9.5l11.6-8.5L49,0.6C28.1,3.1,18.6,4.9,0.7,15.4l0.2,0.5l1.4,0c-0.1,1.4-0.4,5-0.1,10.4
-		c-2,5.8,0,9.7,1.8,14c0.3-4.4,0.3-9.3-1.1-14.1c-0.3-5.3,0-8.8,0.1-10.2L14.9,16c0,0-0.1,3.6,0.4,7c10.7,3.7,21.4,0,27.1-9.2
-		C40.7,11.9,37.6,9.5,37.6,9.5z"/>
-</g>
-</svg>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Transformed by: SVG Repo Mixer Tools -->
+<svg version="1.0" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800px" height="800px" viewBox="0 0 64 64" enable-background="new 0 0 64 64" xml:space="preserve" fill="#000000">
+<g id="SVGRepo_bgCarrier" stroke-width="0"/>
+<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+<g id="SVGRepo_iconCarrier"> <g> <circle fill="#ec9707" cx="32" cy="14" r="3"/> <path fill="#ec9707" d="M4,25h56c1.794,0,3.368-1.194,3.852-2.922c0.484-1.728-0.242-3.566-1.775-4.497l-28-17 C33.438,0.193,32.719,0,32,0s-1.438,0.193-2.076,0.581l-28,17c-1.533,0.931-2.26,2.77-1.775,4.497C0.632,23.806,2.206,25,4,25z M32,9c2.762,0,5,2.238,5,5s-2.238,5-5,5s-5-2.238-5-5S29.238,9,32,9z"/> <rect x="34" y="27" fill="#ec9707" width="8" height="25"/> <rect x="46" y="27" fill="#ec9707" width="8" height="25"/> <rect x="22" y="27" fill="#ec9707" width="8" height="25"/> <rect x="10" y="27" fill="#ec9707" width="8" height="25"/> <path fill="#ec9707" d="M4,58h56c0-2.209-1.791-4-4-4H8C5.791,54,4,55.791,4,58z"/> <path fill="#ec9707" d="M63.445,60H0.555C0.211,60.591,0,61.268,0,62v2h64v-2C64,61.268,63.789,60.591,63.445,60z"/> </g> </g>
+</svg>

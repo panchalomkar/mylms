@@ -1736,3 +1736,22 @@ body.collapsed #page{ padding-left:5em !important;}
 #page-local-incourse-index div[role="main"] {
     width: 100% !important;
 }
+
+.file-picker .nav.nav-tabs-bleft .nav-item .nav-link {
+    /* background: #ec9707 !important; */
+    border-radius: 10px;
+    margin: 4px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border-left: 4px solid #fff0;
+    gap: 8px;
+}
+.moodle-dialogue .moodle-dialogue-content.moodle-dialogue-wrap {
+    background-color: #FFF;
+    border: 0 solid transparent;
+    border-radius: .5rem;
+    outline: 0;
+   overflow: hidden;
+}

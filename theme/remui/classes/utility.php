@@ -951,6 +951,9 @@ class utility {
 
             $coursedata['instructorcount'] = $course['instructorcount'];
             $coursedata['lessoncount'] = $course['lessoncount'];
+            
+            $coursedata['isenrolled'] = !empty($course['isenrolled']) ? 1 : 0;
+
 // ✅ Safely handle both object and array course data
 $progress = 0;
 $progresscolor = '#ec9707';
