@@ -26,7 +26,7 @@ echo $OUTPUT->header();
     border-radius: 8px;
         border: solid 1px hsl(45deg 93% 47% / 30%);
 }
-
+.accordion-header-active{ background:rgb(30 64 175)!important;}
 .courseindex-active span,
 .courseindex-active div,
 .courseindex-active a {
@@ -99,8 +99,13 @@ echo $OUTPUT->header();
     <main id="half-content" class="flex-1 flex flex-col">
         <!-- Course Header -->
         <div class="p-8 bg-light rounded-b-lg shadow-sm">
-            <h1 class="text-3xl font-bold text-text-light dark:text-text-dark">
-                <?php echo format_string($course->fullname); ?>
+      
+            <h1 class="text-3xl font-bold text-text-light dark:text-text-dark d-flex gap-3" style="align-items: center;">
+                     <a href="<?php echo $CFG->wwwroot; ?>/my" 
+       class="flex items-center justify-center w-5 h-5 p-3 rounded-full bg-[#003152] text-white hover:bg-[#00253d] transition"
+       title="Back to Dashboard">
+        <span class="material-icons">undo</span>
+    </a>   <?php echo format_string($course->fullname); ?>
             </h1>
 
             <?php if (!empty(trim(strip_tags($course->summary)))): ?>
@@ -134,6 +139,9 @@ echo $OUTPUT->header();
         </div>
 
         <!-- Dynamic Content Area -->
+           <div id="content-area1" >
+            
+        </div>
         <div id="content-area" class="flex-grow flex flex-col items-center justify-center text-center p-8">
             <span class="material-icons text-6xl text-gray-400 mb-4">play_circle</span>
             <h2 class="text-2xl font-semibold text-text-light dark:text-text-dark">Select a lesson to begin</h2>
@@ -146,21 +154,83 @@ echo $OUTPUT->header();
 
 <!-- PDF.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-$PAGE->requires->js(new moodle_url('/local/incourse/js/main.js'));
+<?php
+$PAGE->requires->js(new moodle_url('/local/incourse/js/main.js'));?>
 <script>
+
+// ----  REQUIRED FOR ARROWS TO WORK ----
+let activityOrder = [];
+let activityIndexMap = {};
+
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".activity-link").forEach((a, index) => {
+        let cmid = a.dataset.cmid;
+        activityOrder.push({
+            cmid: cmid,
+            modname: a.dataset.modname,
+            href: a.href
+        });
+        activityIndexMap[cmid] = index;
+    });
+});
+
+// Build Previous/Next Navigation HTML
+function getNavigationHTML(currentCmid) {
+    const index = activityIndexMap[currentCmid];
+    const prev = index > 0 ? activityOrder[index - 1] : null;
+    const next = index < activityOrder.length - 1 ? activityOrder[index + 1] : null;
+
+    return `
+        <div class="flex justify-between items-center w-full px-4 py-3 border-b mb-4 bg-white rounded-md shadow-sm">
+            <button 
+                ${prev ? '' : 'disabled'}
+                data-nav="${prev ? prev.cmid : ''}"
+                class="nav-btn flex items-center gap-2 text-[#003152] disabled:opacity-30 font-medium">
+                <span class="material-icons">arrow_back</span> Previous
+            </button>
+
+            <button 
+                ${next ? '' : 'disabled'}
+                data-nav="${next ? next.cmid : ''}"
+                class="nav-btn flex items-center gap-2 text-[#003152] disabled:opacity-30 font-medium">
+                Next <span class="material-icons">arrow_forward</span>
+            </button>
+        </div>
+    `;
+}
+
+// ----  WORKING CLICK HANDLER FOR NEXT/PREV ----
+document.addEventListener("click", function(e) {
+    const btn = e.target.closest(".nav-btn");
+    if (!btn) return;
+
+    const target = btn.dataset.nav;
+    if (!target) return;
+
+    const nextLink = document.querySelector(`.activity-link[data-cmid="${target}"]`);
+    if (nextLink) nextLink.click();
+});
+
+
+// -----------------------------------------
+
+
 document.addEventListener('DOMContentLoaded', () => {
-    // 📜 Inline module content loader (certificates, lessons, etc.)
+
+    // 📜 Inline module content loader
     document.querySelectorAll('.activity-link').forEach(link => {
+        
         link.addEventListener('click', async e => {
             e.preventDefault();
             const area = document.getElementById('content-area');
+            const area1 = document.getElementById('content-area1');
             const modname = link.dataset.modname;
             const cmid = link.dataset.cmid;
-            
-            area.innerHTML = '<div class="text-gray-400 p-8">Loading Content...</div>';
 
+            area.innerHTML = ` <div class="text-gray-400 p-8">Loading Content...</div> `;
+             area1.innerHTML = ` ${getNavigationHTML(cmid)} `;
             try {
-                // 🎓 Handle customcert or iomadcertificate (inline certificate viewer)
+
                 if (modname === 'customcert' || modname === 'iomadcertificate') {
                     const baseUrl = link.href.split('?')[0];
                     const params = new URLSearchParams(link.href.split('?')[1]);
@@ -181,10 +251,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     await page.render({ canvasContext: context, viewport }).promise;
                     const imgUrl = canvas.toDataURL('image/png');
 
-                    // ✅ Keep inline certificate + download icon
                     area.innerHTML = `
-                        <div class="relative w-full rounded-lg overflow-hidden flex flex-col items-center justify-center"
-                             style="padding:60px 0;background:#fff;border:2px solid #ec9707;">
+                        <div class="relative w-full rounded-lg overflow-hidden flex flex-col items-center justify-center"   style="padding:60px 0;background:#fff;border:2px solid #ec9707;">
                             <div class="absolute top-3 right-3 z-10">
                                 <a href="${pdfUrl}" class="flex items-center gap-1 px-4 py-2 bg-[#ec9707] text-white rounded-md hover:bg-[#d38305]" target="_blank" download>
                                     <span class="material-icons text-sm">download</span>Download PDF
@@ -1519,42 +1587,95 @@ if (modname === 'ilt') {
 }
   
 });
-// ✅ Highlight current clicked activity
+// ✅ Highlight current clicked activity + accordion + auto-scroll (safe)
 document.addEventListener("DOMContentLoaded", () => {
 
     const links = document.querySelectorAll(".activity-link");
 
     links.forEach(link => {
-        link.addEventListener("click", (e) => {
+        link.addEventListener("click", () => {
 
             // Remove previous highlight
-            document.querySelectorAll(".courseindex-active").forEach(el => {
-                el.classList.remove("courseindex-active");
-            });
+            document.querySelectorAll(".courseindex-active")
+                .forEach(el => el.classList.remove("courseindex-active"));
 
             // Add highlight to clicked item
             link.classList.add("courseindex-active");
+
+            //  Auto-open its accordion section
+            let section = link.closest(".accordion-content");
+            if (section && section.classList.contains("hidden")) {
+                section.classList.remove("hidden");
+
+                let icon = section.previousElementSibling.querySelector(".material-icons");
+                if (icon) icon.style.transform = "rotate(90deg)";
+            }
+
+            //  Highlight accordion header
+            let header = section ? section.previousElementSibling : null;
+            if (header) {
+                document.querySelectorAll(".accordion-header-active")
+                    .forEach(h => h.classList.remove("accordion-header-active"));
+
+                header.classList.add("accordion-header-active");
+            }
+
+            //  SAFE AUTO SCROLL (NO FOOTER SPACE)
+            setTimeout(() => safeScroll(link), 80);
+
         });
     });
 
-    // ✅ Auto highlight when coming from activity page (URL match)
+
+    //  Auto highlight when loading activity page
     const currentUrl = window.location.href;
     links.forEach(link => {
         if (link.href === currentUrl) {
             link.classList.add("courseindex-active");
 
-            // auto open section so user sees it
             let section = link.closest(".accordion-content");
             if (section && section.classList.contains("hidden")) {
                 section.classList.remove("hidden");
+
                 let icon = section.previousElementSibling.querySelector(".material-icons");
                 if (icon) icon.style.transform = "rotate(90deg)";
             }
+
+            let header = section ? section.previousElementSibling : null;
+            if (header) {
+                document.querySelectorAll(".accordion-header-active")
+                    .forEach(h => h.classList.remove("accordion-header-active"));
+                header.classList.add("accordion-header-active");
+            }
+
+            //  SAFE SCROLL ON LOAD
+            setTimeout(() => safeScroll(link), 120);
         }
     });
 
 });
 
+
+// --------------------------------------------
+//  SAFE SCROLL FUNCTION — NO BOTTOM GAP
+// --------------------------------------------
+function safeScroll(element) {
+    const container = document.querySelector(".your-left-panel-container-selector");
+
+    // If not in scroll container → normal safe scroll
+    if (!container) {
+        element.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        return;
+    }
+
+    // Safe scroll inside fixed-height panel
+    const offsetTop = element.offsetTop - container.offsetHeight / 3;
+
+    container.scrollTo({
+        top: offsetTop,
+        behavior: "smooth"
+    });
+}
 
 </script>
 

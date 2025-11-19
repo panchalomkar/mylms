@@ -106,20 +106,52 @@ public function userdashboard_stats($user,$filter = 'all') {
 
         // --- Activities ---
         $modinfo = get_fast_modinfo($course);
-        foreach ($modinfo->get_cms() as $cm) {
-            if (!$cm->uservisible || (isset($cm->sectionnum) && $cm->sectionnum == 0)) {
-                continue;
-            }
+        // foreach ($modinfo->get_cms() as $cm) {
+        //     if (!$cm->uservisible || (isset($cm->sectionnum) && $cm->sectionnum == 0)) {
+        //         continue;
+        //     }
 
-            $totalactivities++;
-            if (!empty($cm->completion) && $cm->completion > 0) {
-                $modcompletion = $completion->get_data($cm, false, $user->id);
-                if (!empty($modcompletion->completionstate) && $modcompletion->completionstate != COMPLETION_INCOMPLETE) {
-                    $completedactivities++;
-                }
-            }
+        //     $totalactivities++;
+        //     if (!empty($cm->completion) && $cm->completion > 0) {
+        //         $modcompletion = $completion->get_data($cm, false, $user->id);
+        //         if (!empty($modcompletion->completionstate) && $modcompletion->completionstate != COMPLETION_INCOMPLETE) {
+        //             $completedactivities++;
+        //         }
+        //     }
+        // }
+
+      foreach ($modinfo->get_cms() as $cm) {
+
+    if (isset($cm->sectionnum) && $cm->sectionnum == 0) {
+        continue;
+    }
+    if ($cm->modname === 'forum' && $cm->instance == $course->newsforum) {
+        continue;
+    }
+    // $cm->deletioninprogress == 1 OR $cm->is_deleted() TRUE
+    // ----------------------------------------------------------
+    if (!empty($cm->deletioninprogress) || (method_exists($cm, 'is_deleted') && $cm->is_deleted())) {
+        continue;
+    }
+    if (!$cm->is_visible_on_course_page()) {
+        continue;
+    }
+    $totalactivities++;
+    // ----------------------------------------------------------
+    // ✅ Count completion progress if activity supports completion
+    // ----------------------------------------------------------
+    if (!empty($cm->completion) && $cm->completion > 0) {
+        $modcompletion = $completion->get_data($cm, false, $user->id);
+
+        if (!empty($modcompletion->completionstate) &&
+            $modcompletion->completionstate != COMPLETION_INCOMPLETE) {
+            $completedactivities++;
         }
- // --- ✅ Certificates (CustomCert + IomadCertificate) ---
+    }
+   }
+
+
+           // --- ✅ Certificates (CustomCert + IomadCertificate) ---
         // Custom Certificates
         if ($DB->get_manager()->table_exists('customcert')) {
             $customcerts = $DB->get_records('customcert', ['course' => $course->id]);

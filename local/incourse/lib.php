@@ -108,6 +108,11 @@ function local_incourse_render_course_index($course) {
     if (!isset($modinfo->cms[$cmid])) continue;
 
     $cm = $modinfo->cms[$cmid];
+      // ❌ Skip deleted modules
+    if (!empty($cm->deletioninprogress) ||
+        (method_exists($cm, 'is_deleted') && $cm->is_deleted())) {
+        continue;
+    }
 // === RESTRICTED ACTIVITIES FIX ===
 $restricted = false;
 $restrictioninfo = '';
@@ -190,7 +195,7 @@ if (!$cm->uservisible) {
 
     $completionmsg = local_incourse_get_completion_string($cm);
     $completionhtml = $completionmsg
-        ? '<span class="text-xs text-gray-400 mt-2 d-flex" style="align-items: center;gap: 4px;color:hsl(45 93% 47%);">' . $completionmsgg . '</span>'
+        ? '<span class="text-xs text-gray-400 mt-2 d-flex" style="align-items: center;gap: 4px;color:hsl(45 93% 47%);">' . $completionmsg . '</span>'
         : '';
 
     $restrictionhtml = $restricted
@@ -217,7 +222,7 @@ if (!$cm->uservisible) {
                 </span>
 
                 ' . $completionhtml . '
-                ' . $restrictionhtmll . '
+                ' . $restrictionhtml . '
             </div>
             </div>
             <div>' . $statusicon . '</div>
