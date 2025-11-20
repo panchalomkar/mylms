@@ -27,12 +27,12 @@ class mycertficate implements renderable, templatable {
             if (!$cert) continue;
 
             $cm = get_coursemodule_from_instance('customcert', $cert->id, $cert->course, false, MUST_EXIST);
-            $url = new moodle_url('/mod/customcert/view.php', ['id' => $cm->id]);
+              $url = new moodle_url('/mod/customcert/view.php', ['id' => $cm->id,'downloadown' => 1]);
 
             $certificates[] = [
                 'name' => $cert->name,
                 'lastaccessed' => $this->time_ago($issue->timecreated),
-                'url' => $url->out(),
+                'url' => $url->out(false),
                 'type' => 'customcert'
             ];
         }
@@ -45,12 +45,12 @@ class mycertficate implements renderable, templatable {
                 if (!$cert) continue;
 
                 $cm = get_coursemodule_from_instance('iomadcertificate', $cert->id, $cert->course, false, MUST_EXIST);
-                $url = new moodle_url('/mod/iomadcertificate/view.php', ['id' => $cm->id]);
+                      $url = new moodle_url('/mod/iomadcertificate/view.php', ['id' => $cm->id,'action' => 'get']);
 
                 $certificates[] = [
                     'name' => $cert->name,
                     'lastaccessed' => $this->time_ago($issue->timecreated),
-                    'url' => $url->out(),
+                    'url' => $url->out(false),
                     'type' => 'iomad'
                 ];
             }

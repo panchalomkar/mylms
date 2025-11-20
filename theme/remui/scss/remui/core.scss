@@ -1755,3 +1755,8 @@ body.collapsed #page{ padding-left:5em !important;}
     outline: 0;
    overflow: hidden;
 }
+  input[type="checkbox"]:not(.custom-control-input):not(:checked):after {
+          display:block !important;
+      }
+
+  

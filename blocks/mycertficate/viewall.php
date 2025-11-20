@@ -38,7 +38,11 @@ foreach ($customcerts as $issue) {
     $cert = $DB->get_record('customcert', ['id' => $issue->customcertid]);
     if (!$cert) continue;
     $cm = get_coursemodule_from_instance('customcert', $cert->id, $cert->course, false, MUST_EXIST);
-    $url = new moodle_url('/mod/customcert/view.php', ['id' => $cm->id]);
+   $url = new moodle_url('/mod/customcert/view.php', [
+    'id' => $cm->id,
+    'downloadown' => 1
+]);
+
     $certificates[] = [
         'name' => $cert->name,
         'issued' => date('d M Y', $issue->timecreated),
@@ -54,7 +58,11 @@ if ($DB->get_manager()->table_exists('iomadcertificate_issues')) {
         $cert = $DB->get_record('iomadcertificate', ['id' => $issue->iomadcertificateid]);
         if (!$cert) continue;
         $cm = get_coursemodule_from_instance('iomadcertificate', $cert->id, $cert->course, false, MUST_EXIST);
-        $url = new moodle_url('/mod/iomadcertificate/view.php', ['id' => $cm->id]);
+        $url = new moodle_url('/mod/iomadcertificate/view.php', [
+    'id' => $cm->id,
+    'action' => 'get'
+]);
+
         $certificates[] = [
             'name' => $cert->name,
             'issued' => date('d M Y', $issue->timecreated),

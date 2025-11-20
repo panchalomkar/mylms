@@ -63,9 +63,9 @@ foreach($authsequence as $authname) {
 require_logout();
 
 // IOMAD - We want the company/theme to persist.
-if (!empty($currentcompanyid)) {
-    $company = $DB->get_record('company', array('id' => $currentcompanyid));
-    $redirect .= "?id=" . $company->id . "&code=" . $company->shortname;
-}
-
+// if (!empty($currentcompanyid)) {
+//     $company = $DB->get_record('company', array('id' => $currentcompanyid));
+//     $redirect .= "?id=" . $company->id . "&code=" . $company->shortname;
+// }
+$redirect = get_login_url();
 redirect($redirect);

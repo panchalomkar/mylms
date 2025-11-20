@@ -60,7 +60,7 @@
         ]
     }
 }}
-<input type="checkbox" id="check">
+<input class="navcheckbox" type="checkbox" id="check">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> 
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/accessibility.js"></script>
@@ -75,6 +75,9 @@ $("#sidebar_btn").on('click',function(){
 });
 </script>
 <style>
+ input[type="checkbox"].navcheckbox:not(.custom-control-input):not(:checked):after {
+          display:none !important;
+      }
  .block-body-wrapper,.block_myoverview {
     background: transparent !important;
     border: none;
