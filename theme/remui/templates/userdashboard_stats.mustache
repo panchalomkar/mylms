@@ -56,7 +56,6 @@ display: inline-block;
     font-size: 12px;
     margin-top: 5px;
     font-weight: 600;
-    font-size: .875rem;
     line-height: 1.25rem;
 }
 
@@ -223,6 +222,131 @@ font-weight: bold;
 }
 .highcharts-credits{display:none !important;}
 #highcharts-he2tu4n-0{width:100% !important;}
+
+@media (max-width: 1500px) and (min-width: 1100px) {
+
+    .user_stat {
+        gap: 15px;
+    }
+
+    .user_stat .card {
+        width: 200px;
+        padding: 12px;
+    }
+
+    #user_course_stat {
+        gap: 1.5rem;
+        padding: 0px 40px;
+    }
+
+    #user_course_stat .circle {
+        width: 130px;
+        height: 130px;
+    }
+
+    #user_course_stat .legend-item {
+        font-size: 14px;
+    }
+    
+.edw-course-card-grid {
+    gap: 35px;
+}
+}
+
+
+/* 1100px to 992px */
+@media (max-width: 1100px) and (min-width: 992px) {
+
+    .user_stat {
+        gap: 12px;
+    }
+
+    .user_stat .card {
+        width: 240px;
+        padding: 12px;
+    }
+
+    #user_course_stat {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+    }
+
+    #user_course_stat .legend {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-left: 0;
+    }
+
+    #user_course_stat .circle {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+/* Tablets (max-width: 991px) */
+@media (max-width: 991px) {
+
+    .user_stat .card {
+        width: 220px;
+    }
+
+    #user_course_stat {
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    #user_course_stat .legend-item {
+        font-size: 13px;
+    }
+}
+
+/* Small screens */
+@media (max-width: 768px) {
+
+    .user_stat {
+        gap: 10px;
+    }
+
+    .user_stat .card {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    #user_course_stat .circle {
+        width: 110px;
+        height: 110px;
+    }
+
+    .modal-content {
+        width: 90%;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+
+    .user_stat .card {
+        width: 100%;
+        padding: 15px;
+    }
+
+    #user_course_stat .circle {
+        width: 100px;
+        height: 100px;
+    }
+
+    #user_course_stat .legend-item {
+        font-size: 12px;
+    }
+
+    .course-row {
+        grid-template-columns: 30px 1fr;
+    }
+}
+.cst{overflow:visible !important;}
 </style>
 
 <div class="user_stat mb-3">
@@ -265,7 +389,7 @@ font-weight: bold;
 
     <!-- Chart container -->
     <div class="progress-wrapper-user-stat mt-3 d-flex" style="align-items: center;">
-        <div id="course-donut-{{id}}" style="width:50%; margin-right:30px; height:250px; "></div>
+        <div class="cst" id="course-donut-{{id}}" style="width:50%; margin-right:30px; height:250px; "></div>
 
         <!-- Legend -->
         <div class="legend d-flex text-start flex-column justify-content-around" style="align-items: center; width:165px;">

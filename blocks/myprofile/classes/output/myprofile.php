@@ -62,6 +62,18 @@ class myprofile implements renderable, templatable {
         global $USER, $OUTPUT, $DB, $CFG;
    require_once($CFG->dirroot . '/local/mydashboard/lib.php'); // 🔗 Reuse same functions
         $data = new \stdClass();
+// --- ✅ Fetch custom profile field: designation ---
+$designation = '';
+$customfield = $DB->get_record('user_info_data', [
+    'userid' => $USER->id,
+    'fieldid' => $DB->get_field('user_info_field', 'id', ['shortname' => 'designation'])
+]);
+
+if (!empty($customfield) && !empty($customfield->data)) {
+    $designation = $customfield->data;
+}
+
+$data->designation = $designation ?: '';
 
         // --- Basic User Info ---
         $data->userpicture = $OUTPUT->user_picture($USER, ['class' => 'userpicture']);
@@ -103,7 +115,7 @@ class myprofile implements renderable, templatable {
         } else if (!empty($countryname)) {
             $data->userlocation = $countryname;
         } else {
-            $data->userlocation = get_string('notset', 'moodle'); // Moodle-friendly fallback
+            $data->userlocation = ''; // Moodle-friendly fallback
         }
 
         // --- Edit Profile Link ---

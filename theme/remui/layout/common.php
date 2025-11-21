@@ -336,7 +336,10 @@ $templatecontext = [
     'feedback_loading_image' => $OUTPUT->image_url('a/loading', 'core'),
     'licensestatus_forfeedback' => ($lcontroller->get_data_from_db() == 'available') ? 1 : 0,
     'homepagedepricationmodal' => $homepagedepricationmodal,
-    'activetenant' => show_active_tenant_menu()
+    'activetenant' => show_active_tenant_menu(),
+     'notificationss' => $CFG->wwwroot . "/message/output/popup/notifications.php",
+    'mail' => $CFG->wwwroot ."/local/mail/view.php?t=inbox",
+    'usersetting' => $CFG->wwwroot . "/user/profile.php?id=$USER->id"
 ];
 
 if (isloggedin() && isset($primarymenu['edwisermenu'])) {

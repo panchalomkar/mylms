@@ -1759,4 +1759,9 @@ body.collapsed #page{ padding-left:5em !important;}
           display:block !important;
       }
 
-  
+  nav#mdb-navbar {
+     background: transparent;
+    border: none;
+    width: fit-content;
+    left: 95%;
+}

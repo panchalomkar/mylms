@@ -136,10 +136,12 @@
       </div>
       <div class="profile-info">
         <h4 class="user-name">{{ userfullname }}</h4>
-        <p class="user-email">Manager</p>
+        <p class="user-email">{{ designation }}</p>
+        {{#userlocation}}
         <p class="user-location">
           <i class="bi bi-geo-alt-fill text-primary"></i> {{ userlocation }}
         </p>
+        {{/userlocation}}
       </div>
     </div>
 

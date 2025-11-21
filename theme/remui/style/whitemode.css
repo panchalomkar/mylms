@@ -9478,12 +9478,7 @@ a.mail-navbar-menu-item i.icon {
 #page-admincontrol fieldset.collapsible {
     font-size: .75rem;
 }
-nav#mdb-navbar {
-     background: transparent;
-    border: none;
-    width: fit-content;
-    left: 95%;
-}
+
 .moodle-dialogue {
     width: 60% !important;
     margin: 0 auto;

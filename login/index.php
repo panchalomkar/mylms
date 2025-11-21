@@ -268,40 +268,49 @@ if ($frm and isset($frm->username)) {                             // Login WITH 
         }
 
         // Check if the company in the session is still correct.
-        if ($DB->get_manager()->table_exists('company') &&
-            !has_capability('block/iomad_company_admin:company_view_all', context_system::instance())) {
-            $currenteditingcompany = 0;
-            $currentcompany = [];
-            if (!empty($SESSION->currenteditingcompany)) {
-                $currenteditingcompany = $SESSION->currenteditingcompany;
-                $currentcompany = $SESSION->company;
-            }
-            if (empty($currenteditingcompany)  ||
-                !company::check_valid_user($currenteditingcompany, $user->id)) {
-                // Check if the user is in multiple companies.
-                if ($DB->count_records_sql("SELECT COUNT(DISTINCT companyid) FROM {company_users} WHERE userid = :userid", ['userid' => $user->id]) == 1) {
-                    if ($mycompany = company::by_userid($user->id, true)) {
-                        $mycompanyrec = $DB->get_record('company', ['id' => $mycompany->id]);
-                        if ($currenteditingcompany != $mycompany->id) {
-                            if (!empty($currentcompany)) {
-                                $currentcompanyobj = new company($currentcompany->id);
-                                $currentwwwroot = $currentcompanyobj->get_wwwroot();
-                            } else {
-                                $currentwwwroot = $CFG->wwwroot;
-                            }
-                            $mywwwroot = $mycompany->get_wwwroot();
-                            if ($mywwwroot != $currentwwwroot) {
-                                $SESSION->currenteditingcompany = $mycompany->id;
-                                $SESSION->company = $mycompanyrec;
-                                $SESSION->theme = $mycompanyrec->theme;
+   // Always use main tenant by default (company ID = 1)
+$maintenantid = 1;
 
-                                redirect ($mywwwroot);
-                            }
-                        }
-                    }
+if ($DB->get_manager()->table_exists('company') &&
+    !has_capability('block/iomad_company_admin:company_view_all', context_system::instance())) {
+
+    global $PAGE;
+
+    $currenturl = $PAGE->url->out(false);
+    $blockadminpage = '/blocks/iomad_company_admin/index.php';
+
+    $maincompany = $DB->get_record('company', ['id' => $maintenantid]);
+
+    if ($maincompany) {
+
+        if (empty($SESSION->currenteditingcompany) || $SESSION->currenteditingcompany != $maintenantid) {
+
+            $SESSION->currenteditingcompany = $maintenantid;
+            $SESSION->company = $maincompany;
+
+            // 🔥 IMPORTANT: do NOT use company theme
+            $SESSION->theme = 'remui';   // or unset($SESSION->theme);
+
+            $canredirect = (strpos($currenturl, $blockadminpage) === false);
+
+            if ($canredirect) {
+                if (!empty($SESSION->company)) {
+                    $currentcompanyobj = new company($SESSION->company->id);
+                    $currentwwwroot = $currentcompanyobj->get_wwwroot();
+                } else {
+                    $currentwwwroot = $CFG->wwwroot;
+                }
+
+                $mainwwwroot = (new company($maintenantid))->get_wwwroot();
+
+                if ($mainwwwroot != $currentwwwroot) {
+                    redirect($mainwwwroot);
                 }
             }
         }
+    }
+}
+
 
     /// Let's get them all set up.
         complete_user_login($user);
