@@ -26,7 +26,7 @@ $attempts_remaining = ($attempts_allowed > 0)
 // ✅ Quiz grade settings
 $grade_item = $DB->get_record('grade_items', ['iteminstance' => $quiz->id, 'itemmodule' => 'quiz']);
 $maxgrade   = $grade_item->grademax;
-$grade_to_pass = $grade_item->gradepass;
+$grade_to_pass = $grade_item->gradepass*10;
 
 // ✅ Get user latest grade
 $grades = grade_get_grades($cm->course, 'mod', 'quiz', $quiz->id, $USER->id);

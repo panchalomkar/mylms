@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const imgUrl = canvas.toDataURL('image/png');
 
                     area.innerHTML = `
-                        <div class="relative w-full rounded-lg overflow-hidden flex flex-col items-center justify-center"   style="padding:60px 0;background:#fff;border:2px solid #ec9707;">
+                        <div class="relative w-full rounded-lg overflow-hidden flex flex-col items-center justify-center"   style="padding:60px 0;background:#fff;">
                             <div class="absolute top-3 right-3 z-10">
                                 <a href="${pdfUrl}" class="flex items-center gap-1 px-4 py-2 bg-[#ec9707] text-white rounded-md hover:bg-[#d38305]" target="_blank" download>
                                     <span class="material-icons text-sm">download</span>Download PDF
@@ -264,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                  <path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"></path>
                                  <circle cx="12" cy="8" r="6"></circle>
                             </svg>
-                            <div style="background:#fff;width:60%;border-radius:12px;border:solid 4px #ec9707;padding:0;">
+                            <div style="background:#fff;width:60%;border-radius:12px;padding:0;">
                                 <img src="${imgUrl}" alt="Certificate" style="width:100%;border-radius:8px;"/>
                             </div>
                         </div>`;
@@ -595,6 +595,117 @@ if (modname === 'scorm') {
 
     return;
 }
+// Handle Zoom inline view
+if (modname === 'zoom') {
+    area.innerHTML = '<div class="text-gray-400 p-8 text-center">Loading Zoom Meeting...</div>';
+
+    try {
+        const html = await fetch(link.href).then(r => r.text());
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        // Title
+        const title =
+            doc.querySelector('.page-header-headings h1')?.innerText.trim() ||
+            'Zoom Meeting';
+
+        // Start Time
+        const startTime =
+            doc.querySelector('#zoom_schedule-meetingtime .cell.c1')?.innerText.trim() || '';
+
+        // Duration
+        const duration =
+            doc.querySelector('#zoom_schedule-duration .cell.c1')?.innerText.trim() || '';
+
+        // Host
+        const host =
+            doc.querySelector('#zoom_schedule-host .cell.c1')?.innerText.trim() || '';
+
+        // Status
+        const status =
+            doc.querySelector('#zoom_schedule-status .cell.c1')?.innerText.trim() || '';
+
+        // Extract join link
+        let zoomJoinLink = '';
+        const showMoreBody = doc.querySelector('#show-more-body');
+
+        if (showMoreBody) {
+            const text = showMoreBody.innerText;
+            const match = text.match(/https:\/\/[\w./?=&-]+/);
+            if (match) zoomJoinLink = match[0];
+        }
+
+        // Build UI
+        area.innerHTML = `
+            <div class="flex flex-col items-center justify-center min-h-[60vh] text-center">
+
+                <!-- Main Icon -->
+                <div class="bg-gray-200 rounded-full p-5 mb-5">
+                    <span class="material-icons text-gray-700 text-4xl">videocam</span>
+                </div>
+
+                <div class="px-4 py-1 rounded-full bg-blue-100 text-[#003152] text-sm font-medium mb-4">
+                    Zoom Meeting
+                </div>
+
+                <h2 class="text-gray-900 mb-2"
+                    style="font-size: 1.5rem !important; line-height: 2rem; font-weight: 600 !important;">
+                    ${title}
+                </h2>
+
+                ${startTime ? `<p class="text-gray-500 mb-6">${startTime}</p>` : ''}
+
+                <!-- 🔥 Three Boxes Layout -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 w-full max-w-3xl">
+
+                    <!-- Duration Box -->
+                    <div class="bg-white shadow-sm rounded-md flex flex-col items-center px-6 py-4">
+                        <span class="material-icons text-green-600 text-4xl mb-2">schedule</span>
+                        <p class="font-medium">Duration</p>
+                        <p class="text-gray-500 text-sm">${duration || '—'}</p>
+                    </div>
+
+                    <!-- Status Box -->
+                    <div class="bg-white shadow-sm rounded-md flex flex-col items-center px-6 py-4">
+                        <span class="material-icons text-yellow-600 text-4xl mb-2">event_available</span>
+                        <p class="font-medium">Status</p>
+                        <p class="text-gray-500 text-sm">${status || '—'}</p>
+                    </div>
+
+                    <!-- Host Box -->
+                    <div class="bg-white shadow-sm rounded-md flex flex-col items-center px-6 py-4">
+                        <span class="material-icons text-blue-600 text-4xl mb-2">person</span>
+                        <p class="font-medium">Host</p>
+                        <p class="text-gray-500 text-sm">${host || '—'}</p>
+                    </div>
+
+                </div>
+
+                <!-- Join Button -->
+                ${zoomJoinLink ? `
+                    <a href="${zoomJoinLink}" target="_blank"
+                        class="inline-flex items-center gap-2 bg-[#003152] hover:bg-[#ec9707] text-white px-5 py-2 rounded-md font-medium transition mb-4">
+                        <span class="material-icons text-white text-base">videocam</span>
+                        Join Zoom Meeting
+                    </a>
+                ` : `
+                    <p class="text-gray-500">Meeting has not started yet</p>
+                `}
+            </div>
+        `;
+
+    } catch (err) {
+        console.error('Zoom load error:', err);
+        area.innerHTML = `
+            <div class="text-center text-red-500 p-8">
+                <p>Failed to load Zoom meeting details.</p>
+            </div>`;
+    }
+
+    return;
+}
+
+
 if (modname === 'h5pactivity') {
     const params = new URLSearchParams(link.href.split('?')[1]);
     const cmid = params.get('id');
