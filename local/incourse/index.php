@@ -981,89 +981,291 @@ if (modname === 'videotime') {
 if (modname === 'quiz') {
     const params = new URLSearchParams(link.href.split('?')[1]);
     const cmid = params.get('id');
+    const base = (typeof M !== "undefined" && M.cfg) ? M.cfg.wwwroot : window.location.origin;
 
+    // small helper to create element from HTML
+    const elFrom = (html) => {
+        const div = document.createElement('div');
+        div.innerHTML = html.trim();
+        return div.firstElementChild;
+    };
+
+    // show loading skeleton
     area.innerHTML = `
         <div class="text-gray-400 p-8 text-center animate-pulse">
-            Loading Quiz details...
+            Loading quiz details...
         </div>
     `;
 
     try {
-        const base = (typeof M !== "undefined" && M.cfg) ? M.cfg.wwwroot : window.location.origin;
         const response = await fetch(`${base}/local/incourse/fetch_quiz.php?cmid=${cmid}`);
         const data = await response.json();
 
+        // compute dynamic values
         const minutes = data.timelimit ? Math.round(data.timelimit / 60) + " mins" : "No Limit";
-        const attempts = data.attempts;
         const remaining = data.attempts_remaining === "Unlimited"
             ? "Unlimited"
             : `${data.attempts_remaining} remaining`;
 
+        // SEB / Proctor
+        const isSEB = data.seb_enabled == 1;
+        const isProctor = data.proctoring_enabled == 1;
+
+        // choose start URL depending on mode
+        let startURL = `${base}/mod/quiz/view.php?id=${cmid}`;
+        if (isProctor) startURL = `${base}/local/proctor/start.php?cmid=${cmid}`;
+        else if (isSEB) startURL = `${base}/mod/quiz/accessrule/seb/start.php?cmid=${cmid}`;
+
+        // build attempts HTML (table with marks+grade)
+        let attemptsHTML = "";
+        if (!data.attempts_list || data.attempts_list.length === 0) {
+            attemptsHTML = `<p class="text-gray-500 text-center py-4">No previous attempts found.</p>`;
+        } else {
+            attemptsHTML = `
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-gray-200 text-gray-600">
+                            <th class="py-2">Attempt</th>
+                            <th class="py-2">State</th>
+                            <th class="py-2">Marks</th>
+                            <th class="py-2">Grade</th>
+                            <th class="py-2 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="[&>tr]:border-b [&>tr]:border-gray-200" style="border:none;">
+            `;
+
+            data.attempts_list.forEach(a => {
+                attemptsHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="py-3 font-medium">
+                            Attempt ${a.attemptnum}
+                            <div class="text-gray-400 text-xs mt-1 flex items-center gap-1">
+                                <span class="material-symbols-outlined" style="font-size:12px;">calendar_today</span>
+                                ${a.completed}
+                            </div>
+                        </td>
+
+                        <td class="py-3">
+                            <div class="inline-flex items-center gap-2">
+                                <span class="inline-flex items-center text-white bg-[#2ac48e] px-2 py-0.5 rounded-full text-sm">
+                                    <span class="material-symbols-outlined" style="font-size:14px;">check_circle</span>
+                                    Finished
+                                </span>
+                            </div>
+                        </td>
+
+                        <td class="py-3">${a.marks}</td>
+                        <td class="py-3">${a.grade} / 100</td>
+
+                        <td class="py-3 text-right">
+                            <a href="${a.reviewurl}" class="px-4 py-1 rounded-lg border text-sm hover:bg-gray-100 inline-block">
+                                Review
+                            </a>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            attemptsHTML += `
+                    </tbody>
+                </table>
+
+                <div class="mt-4 bg-gray-50 p-3 rounded-lg text-sm flex border-2 gap-2 items-center">
+                    <span class="text-gray-600">Highest Grade:</span>
+                    <span class="font-bold text-gray-800">${data.highest_grade} / 100.00</span>
+                </div>
+            `;
+        }
+
+        // FINAL UI markup (cards + attempts + CTA). Note the start button has id="openStartModalBtn"
         area.innerHTML = `
-        <div class="flex flex-col items-center justify-center min-h-[80vh] text-center">
+        <div class="p-6 md:p-10">
 
-            <!-- Icon -->
-            <div class="w-24 h-24  flex items-center justify-center mb-6">
-                <span style="font-size: 100px;" class="material-icons text-yellow-500 text-5xl">help_outline</span>
-            </div>
-
-            <!-- Badge -->
-            <span class="bg-blue-900 text-white px-4 py-1 rounded-full text-sm mb-2">Quiz</span>
-
-            <!-- Title -->
-            <h1 class="text-2xl font-bold text-gray-900 mb-1">${data.name}</h1>
-            <p class="text-gray-500 mb-8">${data.intro || 'Test your knowledge with this interactive quiz'}</p>
-
-            <!-- Info cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 w-full max-w-3xl">
+            <!-- TOP STAT CARDS -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10">
 
                 <!-- Time Limit -->
-                <div class="bg-white shadow-sm rounded-md  flex flex-col items-center" style="width: 245px; padding: 1.5rem !important;">
-                    <span class="material-icons text-green-600 text-4xl mb-2">access_time</span>
-                    <p class="font-medium">Time Limit</p>
-                    <p class="text-gray-500 text-sm">${minutes}</p>
+                <div class="bg-[#f0f8ff] p-4 rounded-xl shadow flex items-center gap-3 border">
+                    <div class="w-12 h-12 rounded-xl bg-[#003152] flex items-center justify-center">
+                      <span class="material-symbols-outlined text-white text-3xl">schedule</span>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Time Limit</p>
+                        <p class="text-xl font-bold">${minutes}</p>
+                    </div>
                 </div>
 
                 <!-- Grading Method -->
-                <div class="bg-white shadow-sm rounded-md  flex flex-col items-center"style="width: 245px; padding: 1.5rem !important;">
-                    <span class="material-icons text-yellow-500 text-4xl mb-2">grade</span>
-                    <p class="font-medium">Grading Method</p>
-                  <p class="text-gray-500 text-sm">${data.grademethod}</p>
+                <div class="bg-[#ebfaf4] p-4 rounded-xl shadow flex items-center gap-3 border">
+                    <div class="w-12 h-12 rounded-xl bg-[#2ac48e] flex items-center justify-center">
+                        <span class="material-symbols-outlined text-white text-3xl">trending_up</span>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Grading Method</p>
+                        <p class="text-xl font-bold">${data.grademethod}</p>
+                    </div>
                 </div>
 
-                <!-- Passing Grade -->
-                <div class="bg-white shadow-sm rounded-md  flex flex-col items-center"style="width: 245px; padding: 1.5rem !important;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-target w-8 h-8 mx-auto mb-2 text-orange-600" data-lov-id="src/components/CourseLanding.tsx:318:22" data-lov-name="Target" data-component-path="src/components/CourseLanding.tsx" data-component-line="318" data-component-file="CourseLanding.tsx" data-component-name="Target" data-component-content="%7B%22className%22%3A%22w-8%20h-8%20mx-auto%20mb-2%20text-orange-600%22%7D"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
-                    <p class="font-medium">Grade to Pass</p>
-                    <p class="text-gray-500 text-sm">${data.grade_to_pass} / 100</p>
+                <!-- Grade to Pass -->
+                <div class="bg-[#fff5e8] p-4 rounded-xl shadow flex items-center gap-3 border">
+                    <div class="w-12 h-12 rounded-xl bg-[#fd9602] flex items-center justify-center">
+           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-target w-8 h-8 mx-auto text-white" data-lov-id="src/components/CourseLanding.tsx:318:22" data-lov-name="Target" data-component-path="src/components/CourseLanding.tsx" data-component-line="318" data-component-file="CourseLanding.tsx" data-component-name="Target" data-component-content="%7B%22className%22%3A%22w-8%20h-8%20mx-auto%20mb-2%20text-orange-600%22%7D"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Grade to Pass</p>
+                        <p class="text-xl font-bold">${data.grade_to_pass} / 100</p>
+                    </div>
                 </div>
+
+                <!-- Attempts -->
+                <div class="bg-[#fff8f4] p-4 rounded-xl shadow flex items-center gap-3 border">
+                    <div class="w-12 h-12 rounded-xl bg-[#fcb684] flex items-center justify-center">
+                        <span class="material-symbols-outlined text-white text-3xl">autorenew</span>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Attempts Allowed</p>
+                        <p class="text-xl font-bold">${remaining}</p>
+                    </div>
+                </div>
+
             </div>
 
-            <!-- Questions + Attempts -->
-            <div class="text-gray-700 mb-6" style="width: 55%;">
-                <p style="display: flex;justify-content: space-between;">Questions: <strong>${data.question_count}</strong></p>
-                <p style="display: flex;justify-content: space-between;">Attempts: <strong>${remaining}</strong></p>
+            <!-- SUMMARY OF PREVIOUS ATTEMPTS -->
+            <div class="bg-white p-6 rounded-xl shadow mb-10 border">
+                <h2 class="text-lg text-left font-bold mb-4">Summary of Previous Attempts</h2>
+                ${attemptsHTML}
             </div>
 
-            <!-- Start Attempt -->
-            <button id="startQuizBtn"
-               style="width: 55%;" class="flex items-center justify-center gap-2 bg-[#003152] hover:bg-[#ec9707] text-white px-10 py-2 rounded-lg font-semibold transition">
-                <span class="material-icons">play_circle</span> Attempt Quiz
-            </button>
+            <!-- READY TO TRY AGAIN SECTION -->
+            <div class="bg-white p-6 rounded-xl shadow border text-center">
+                <h2 class="text-2xl font-bold mb-2">Ready to Try Again?</h2>
+                <p class="text-gray-500 mb-6">Click the button below to start a new attempt.</p>
+
+                <button id="openStartModalBtn"
+                    class="inline-flex items-center gap-2 bg-[#003152] hover:bg-[#0b2f49] text-white px-6 py-3 rounded-lg text-lg font-semibold transition">
+                    <span class="material-symbols-outlined">sync</span>
+                    ${data.attempts_remaining != 0 ? "Start / Re-attempt Quiz" : "Review Attempts Only"}
+                </button>
+            </div>
+
         </div>
         `;
 
-        document.getElementById('startQuizBtn').addEventListener('click', () => {
-            window.location.href = `${base}/mod/quiz/view.php?id=${cmid}`;
+        // ---------- Modal creation function ----------
+        function showStartModal({ title, timelabel, timelimitText, description, startUrl }) {
+
+            // if modal exists remove it first
+            const existing = document.getElementById('quizStartModal');
+            if (existing) existing.remove();
+
+            const modalHtml = `
+            <div id="quizStartModal" class="fixed inset-0 z-50 flex items-center justify-center p-6">
+                <div class="absolute inset-0 bg-black opacity-40"></div>
+
+                <div role="dialog" aria-modal="true" aria-labelledby="quizStartTitle" class="relative bg-white w-full max-w-md rounded-xl shadow-2xl p-4 md:p-10">
+                    <button id="closeModalBtn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700">
+                        <span class="material-symbols-outlined" style="font-size:24px;">close</span>
+                    </button>
+
+                    <div class="flex flex-col items-center text-center">
+                        <!-- circular icon -->
+                        <div class="w-20 h-20 rounded-full bg-[#003152] flex items-center justify-center mb-4 shadow-lg">
+                            <span class="material-symbols-outlined text-white text-4xl" style="font-size: 45px;">schedule</span>
+                        </div>
+
+                        <h2 id="quizStartTitle" class="text-2xl md:text-3xl font-bold text-[#0b2f49] mb-4">${title}</h2>
+
+                        <!-- time box -->
+                        <div class="mb-4">
+                            <div class="inline-block rounded-xl border border-[#f3d3b0] bg-[#fff5e8] px-6 py-4">
+                                <div class="d-flex flex-row gap-1"><div class="text-4xl font-extrabold text-[#fd9602]">${timelabel}</div><span class="d-flex" style="    align-items: anchor-center;">Minutes</span></div>
+                                <div class="text-sm text-gray-500">Time Limit</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 text-left">
+                            <div class="border-l-4 border-[#fde8c9] bg-[#fff8f0] p-4 rounded-lg text-sm text-gray-700">
+                                ${description}
+                            </div>
+                        </div>
+
+                        <div class="w-full flex items-center justify-between gap-4 mt-4">
+                            <button id="modalCancelBtn" class="flex-1 px-4 py-3 border rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>
+                            <button id="modalStartBtn" class="flex-1 px-4 py-3 bg-[#003152] text-white rounded-lg hover:bg-[#0b2f49]">Start Attempt</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+
+            const modalEl = elFrom(modalHtml);
+            document.body.appendChild(modalEl);
+
+            // focus management
+            const startBtn = modalEl.querySelector('#modalStartBtn');
+            const cancelBtn = modalEl.querySelector('#modalCancelBtn');
+            const closeBtn = modalEl.querySelector('#closeModalBtn');
+
+            // handlers
+            cancelBtn.addEventListener('click', () => modalEl.remove());
+            closeBtn.addEventListener('click', () => modalEl.remove());
+            modalEl.addEventListener('click', (e) => {
+                if (e.target === modalEl) modalEl.remove();
+            });
+
+            // keyboard: Esc to close
+            const escHandler = (e) => {
+                if (e.key === 'Escape') {
+                    modalEl.remove();
+                    document.removeEventListener('keydown', escHandler);
+                }
+            };
+            document.addEventListener('keydown', escHandler);
+
+            // Start action — navigate to real start url
+         startBtn.addEventListener('click', () => {
+
+    const encoded = encodeURIComponent(startUrl);
+    const goto = `${base}/local/incourse/custom_quiz_start.php?cmid=${cmid}&attempt=${data.next_attempt}&start=${encoded}`;
+
+    window.location.href = goto;
+   });
+
+
+            // autofocus start button
+            startBtn.focus();
+        }
+
+        // open modal with dynamic data when Start clicked
+        document.getElementById('openStartModalBtn').addEventListener('click', () => {
+            // description from your UI, can be customized
+            const desc = `Your quiz attempt will begin immediately upon confirmation. The timer will count down continuously and cannot be paused. Please ensure you're ready before proceeding.`;
+          showStartModal({
+    title: 'Start Your Quiz Attempt',
+    timelabel: (data.timelimit ? Math.round(data.timelimit / 60) : 'No limit'),
+    timelimitText: minutes,
+    description: desc,
+    startUrl: startURL // IMPORTANT — rename to startUrl
+});
+
         });
 
-    } catch (err) {
-        console.error("Quiz load error:", err);
-        area.innerHTML = `<div class="text-center text-red-500 p-8">Failed to load Quiz data.</div>`;
+    } catch (error) {
+        console.error("Quiz load error:", error);
+        area.innerHTML = `
+            <div class="text-red-500 p-6 text-center">
+                Failed to load quiz info.
+            </div>
+        `;
     }
 
     return;
 }
+
+
+
 // 🎯 GOONE Activity (same UI as H5P)
 if (modname === 'goone') {
 

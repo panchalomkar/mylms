@@ -1,211 +1,86 @@
-<?php
-defined('MOODLE_INTERNAL') || die();
-function local_incourse_get_completion_string(cm_info $cm) {
+if (modname === 'quiz') {
+    const params = new URLSearchParams(link.href.split('?')[1]);
+    const cmid = params.get('id');
 
-    // No completion tracking → no text
-    if (empty($cm->completion)) {
-        return '';
-    }
+    area.innerHTML = `
+        <div class="text-gray-400 p-8 text-center animate-pulse">
+            Loading Quiz details...
+        </div>
+    `;
 
-    $conditions = [];
+    try {
+        const base = (typeof M !== "undefined" && M.cfg) ? M.cfg.wwwroot : window.location.origin;
+        const response = await fetch(`${base}/local/incourse/fetch_quiz.php?cmid=${cmid}`);
+        const data = await response.json();
 
-    // MANUAL COMPLETION
-    if ($cm->completion == COMPLETION_TRACKING_MANUAL) {
-        $conditions[] = "Mark as done to complete";
-    }
+        const minutes = data.timelimit ? Math.round(data.timelimit / 60) + " mins" : "No Limit";
+        const attempts = data.attempts;
+        const remaining = data.attempts_remaining === "Unlimited"
+            ? "Unlimited"
+            : `${data.attempts_remaining} remaining`;
 
-    // AUTOMATIC COMPLETION
-    if ($cm->completion == COMPLETION_TRACKING_AUTOMATIC) {
+        area.innerHTML = `
+        <div class="flex flex-col items-center justify-center min-h-[80vh] text-center">
 
-        if (!empty($cm->completionview)) {
-            $conditions[] = "View to complete";
-        }
+            <!-- Icon -->
+            <div class="w-24 h-24  flex items-center justify-center mb-6">
+                <span style="font-size: 100px;" class="material-icons text-yellow-500 text-5xl">help_outline</span>
+            </div>
 
-        if (!empty($cm->completionusegrade)) {
-            $conditions[] = "Receive a grade to complete";
-        }
+            <!-- Badge -->
+            <span class="bg-blue-900 text-white px-4 py-1 rounded-full text-sm mb-2">Quiz</span>
 
-        if (!empty($cm->completionpassgrade)) {
-            $conditions[] = "Achieve passing grade";
-        }
+            <!-- Title -->
+            <h1 class="text-2xl font-bold text-gray-900 mb-1">${data.name}</h1>
+            <p class="text-gray-500 mb-8">${data.intro || 'Test your knowledge with this interactive quiz'}</p>
 
-        if (!empty($cm->completionexpected)) {
-            $conditions[] = "Complete before deadline";
-        }
-    }
+            <!-- Info cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 w-full max-w-3xl">
 
-    if (empty($conditions)) {
-        return '';
-    }
-
-    return "To do: " . implode(", ", $conditions);
-}
-
-function local_incourse_render_course_index($course) {
-    global $OUTPUT, $DB;
-
-    $modinfo = get_fast_modinfo($course);
-    $sections = $modinfo->get_section_info_all();
-    $completion = new completion_info($course);
-
-    $html = html_writer::start_tag('div', ['class' => 'space-y-2', 'id' => 'accordion-container']);
-
-    foreach ($sections as $section) {
-
-        if (!$section->visible || $section->section == 0) {
-            continue;
-        }
-
-        $sectionname = format_string($section->name ?: get_section_name($course, $section->section));
-
-        // === Calculate Section Progress ===
-        $activities = !empty($section->sequence) ? explode(',', $section->sequence) : [];
-        $total = count($activities);
-        $completed = 0;
-
-        foreach ($activities as $cmid) {
-            $cmid = (int)$cmid;
-            if (!isset($modinfo->cms[$cmid])) continue;
-
-            $cm = $modinfo->cms[$cmid];
-
-            if ($completion->is_enabled($cm) &&
-                $completion->get_data($cm)->completionstate > 0) {
-                $completed++;
-            }
-        }
-
-        $progress = $total > 0 ? round(($completed / $total) * 100) : 0;
-
-        // === Section Header ===
-        $html .= '
-        <div class="rounded-lg overflow-hidden mb-2 shadow" style="background:#1a305f;">
-            <button class="w-full flex items-center justify-between p-3 hover:bg-blue-800 transition accordion-header"
-                data-section="' . $section->id . '">
-
-                <div class="flex items-center">
-                    <span class="material-icons ml-2 transform transition-transform duration-200 section-icon">
-                        chevron_right
-                    </span>
-                    <span class="font-semibold ml-2">' . $sectionname . '</span>
+                <!-- Time Limit -->
+                <div class="bg-white shadow-sm rounded-md  flex flex-col items-center" style="width: 245px; padding: 1.5rem !important;">
+                    <span class="material-icons text-green-600 text-4xl mb-2">access_time</span>
+                    <p class="font-medium">Time Limit</p>
+                    <p class="text-gray-500 text-sm">${minutes}</p>
                 </div>
 
-                <div class="flex items-center">
-                    <span class="text-xs mr-2">' . $progress . '%</span>
-                    <div class="w-10 bg-blue-800 rounded-full h-1.5">
-                        <div class="h-1.5 rounded-full"
-                            style="width:' . $progress . '%; background:#ec9707;"></div>
-                    </div>
+                <!-- Grading Method -->
+                <div class="bg-white shadow-sm rounded-md  flex flex-col items-center"style="width: 245px; padding: 1.5rem !important;">
+                    <span class="material-icons text-yellow-500 text-4xl mb-2">grade</span>
+                    <p class="font-medium">Grading Method</p>
+                  <p class="text-gray-500 text-sm">${data.grademethod}</p>
                 </div>
+
+                <!-- Passing Grade -->
+                <div class="bg-white shadow-sm rounded-md  flex flex-col items-center"style="width: 245px; padding: 1.5rem !important;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-target w-8 h-8 mx-auto mb-2 text-orange-600" data-lov-id="src/components/CourseLanding.tsx:318:22" data-lov-name="Target" data-component-path="src/components/CourseLanding.tsx" data-component-line="318" data-component-file="CourseLanding.tsx" data-component-name="Target" data-component-content="%7B%22className%22%3A%22w-8%20h-8%20mx-auto%20mb-2%20text-orange-600%22%7D"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                    <p class="font-medium">Grade to Pass</p>
+                    <p class="text-gray-500 text-sm">${data.grade_to_pass} / 100</p>
+                </div>
+            </div>
+
+            <!-- Questions + Attempts -->
+            <div class="text-gray-700 mb-6" style="width: 55%;">
+                <p style="display: flex;justify-content: space-between;">Questions: <strong>${data.question_count}</strong></p>
+                <p style="display: flex;justify-content: space-between;">Attempts: <strong>${remaining}</strong></p>
+            </div>
+
+            <!-- Start Attempt -->
+            <button id="startQuizBtn"
+               style="width: 55%;" class="flex items-center justify-center gap-2 bg-[#003152] hover:bg-[#ec9707] text-white px-10 py-2 rounded-lg font-semibold transition">
+                <span class="material-icons">play_circle</span> Attempt Quiz
             </button>
+        </div>
+        `;
 
-            <div id="section-' . $section->id . '" class="accordion-content hidden bg-blue-950 p-3 pl-6">
-        ';
+        document.getElementById('startQuizBtn').addEventListener('click', () => {
+            window.location.href = `${base}/mod/quiz/view.php?id=${cmid}`;
+        });
 
-        // === Activities List ===
-        if (!empty($activities)) {
-            $html .= html_writer::start_tag('ul', ['class' => 'space-y-2']);
-
-            foreach ($activities as $cmid) {
-
-                $cmid = (int)$cmid;
-                if (!isset($modinfo->cms[$cmid])) continue;
-
-                $cm = $modinfo->cms[$cmid];
-                if (!$cm->uservisible) continue;
-
-                // Icons
-                $iconname = match ($cm->modname) {
-                    'assign' => 'assignment',
-                    'quiz' => 'quiz',
-                    'resource' => 'picture_as_pdf',
-                    'customcert','iomadcertificate' => 'workspace_premium',
-                    'url' => 'play_circle',
-                    'page' => 'description',
-                    'googlemeet' => 'video_call',
-                    'book' => 'menu_book',
-                    'videotime' => 'video_library',
-                    'pdfjsfolder' => 'picture_as_pdf',
-                    'h5p' => 'extension',
-                    default => 'article',
-                };
-
-                // Completion state
-                $completiondata = $completion->is_enabled($cm) ? $completion->get_data($cm) : null;
-                $iscompleted = ($completiondata && $completiondata->completionstate > 0);
-
-                $statusicon = $iscompleted
-                    ? '<span class="material-icons text-green-400 text-sm ml-2">check_circle</span>'
-                    : '<span class="material-icons text-gray-500 text-sm ml-2">radio_button_unchecked</span>';
-
-                // Completion rules text
-                $completionmsg = local_incourse_get_completion_string($cm);
-                $completionhtml = $completionmsg
-                    ? '<span class="text-xs text-gray-400">' . $completionmsg . '</span>'
-                    : '';
-
-                $modurl = new moodle_url('/mod/' . $cm->modname . '/view.php', ['id' => $cm->id]);
-                $linktext = format_string($cm->get_formatted_name());
-
-                // Activity row HTML
-                $html .= '
-                <li>
-                     <a href="' . $modurl . '" 
-   class="flex items-center p-2 rounded-lg hover:bg-blue-800 transition activity-link"
-   data-modname="' . $cm->modname . '" 
-   data-cmid="' . $cm->id . '">
-
-                        <span class="material-icons mr-2 text-blue-300 text-base"
-                              style="background:#40537b;padding:5px;border-radius:50%;">' . $iconname . '</span>
-
-                        <div class="flex flex-col">
-                            <span class="text-sm font-medium flex items-center">'
-                                . $linktext . ' ' . $statusicon . '
-                            </span>
-
-                            ' . $completionhtml . '
-                        </div>
-                    </a>
-                </li>';
-            }
-
-            $html .= html_writer::end_tag('ul');
-        }
-
-        $html .= '</div></div>';
+    } catch (err) {
+        console.error("Quiz load error:", err);
+        area.innerHTML = `<div class="text-center text-red-500 p-8">Failed to load Quiz data.</div>`;
     }
 
-    $html .= html_writer::end_tag('div');
-
-    // === FIXED ACCORDION JS ===
-    $html .= '
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-
-    const headers = document.querySelectorAll(".accordion-header");
-
-    headers.forEach(header => {
-        header.addEventListener("click", function(e) {
-
-            // Prevent activity links from closing accordion
-            if (e.target.closest(".activity-link")) return;
-
-            const id = header.dataset.section;
-            const content = document.getElementById("section-" + id);
-            const icon = header.querySelector(".section-icon");
-            const open = !content.classList.contains("hidden");
-
-            document.querySelectorAll(".accordion-content").forEach(c => c.classList.add("hidden"));
-            document.querySelectorAll(".section-icon").forEach(i => i.style.transform = "rotate(0deg)");
-
-            if (!open) {
-                content.classList.remove("hidden");
-                icon.style.transform = "rotate(90deg)";
-            }
-        });
-    });
-});
-</script>';
-
-    return $html;
+    return;
 }
