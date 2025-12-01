@@ -1148,6 +1148,7 @@ if (modname === 'quiz') {
                     <span class="material-symbols-outlined">sync</span>
                     ${data.attempts_remaining != 0 ? "Start / Re-attempt Quiz" : "Review Attempts Only"}
                 </button>
+                
             </div>
 
         </div>
@@ -1162,38 +1163,38 @@ if (modname === 'quiz') {
 
             const modalHtml = `
             <div id="quizStartModal" class="fixed inset-0 z-50 flex items-center justify-center p-6">
-                <div class="absolute inset-0 bg-black opacity-40"></div>
+                <div class="absolute inset-0 bg-black opacity-60"></div>
 
-                <div role="dialog" aria-modal="true" aria-labelledby="quizStartTitle" class="relative bg-white w-full max-w-md rounded-xl shadow-2xl p-4 md:p-10">
+                <div role="dialog" aria-modal="true" aria-labelledby="quizStartTitle" class="relative bg-white w-full max-w-md rounded-xl shadow-2xl p-3 md:p-10">
                     <button id="closeModalBtn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700">
                         <span class="material-symbols-outlined" style="font-size:24px;">close</span>
                     </button>
 
                     <div class="flex flex-col items-center text-center">
                         <!-- circular icon -->
-                        <div class="w-20 h-20 rounded-full bg-[#003152] flex items-center justify-center mb-4 shadow-lg">
-                            <span class="material-symbols-outlined text-white text-4xl" style="font-size: 45px;">schedule</span>
+                        <div class="w-12 h-12 rounded-full bg-[#003152] flex items-center justify-center mb-2 shadow-lg">
+                            <span class="material-symbols-outlined text-white text-4xl">schedule</span>
                         </div>
 
-                        <h2 id="quizStartTitle" class="text-2xl md:text-3xl font-bold text-[#0b2f49] mb-4">${title}</h2>
+                        <h2 id="quizStartTitle" class="text-2xl md:text-2xl font-bold text-[#0b2f49] mb-2">${title}</h2>
 
                         <!-- time box -->
                         <div class="mb-4">
-                            <div class="inline-block rounded-xl border border-[#f3d3b0] bg-[#fff5e8] px-6 py-4">
-                                <div class="d-flex flex-row gap-1"><div class="text-4xl font-extrabold text-[#fd9602]">${timelabel}</div><span class="d-flex" style="    align-items: anchor-center;">Minutes</span></div>
+                            <div class="inline-block rounded-xl border border-[#f3d3b0] bg-[#fff5e8] px-2 py-1">
+                                <div class="d-flex flex-row gap-1"><div class="text-2xl font-extrabold text-[#fd9602]">${timelabel}</div><span class="d-flex" style="    align-items: anchor-center;">Minutes</span></div>
                                 <div class="text-sm text-gray-500">Time Limit</div>
                             </div>
                         </div>
 
                         <div class="mb-4 text-left">
-                            <div class="border-l-4 border-[#fde8c9] bg-[#fff8f0] p-4 rounded-lg text-sm text-gray-700">
+                            <div class="border-l-4 border-[#fde8c9] bg-[#fff8f0] p-2 rounded-lg text-sm text-gray-700">
                                 ${description}
                             </div>
                         </div>
 
-                        <div class="w-full flex items-center justify-between gap-4 mt-4">
-                            <button id="modalCancelBtn" class="flex-1 px-4 py-3 border rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>
-                            <button id="modalStartBtn" class="flex-1 px-4 py-3 bg-[#003152] text-white rounded-lg hover:bg-[#0b2f49]">Start Attempt</button>
+                        <div class="w-full flex items-center justify-between gap-4 mt-2">
+                            <button id="modalCancelBtn" class="flex-1 px-2 py-2 border rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>
+                            <button id="modalStartBtn" class="flex-1 px-2 py-2 bg-[#003152] text-white rounded-lg hover:bg-[#0b2f49]">Start Attempt</button>
                         </div>
                     </div>
                 </div>
@@ -1225,13 +1226,38 @@ if (modname === 'quiz') {
             document.addEventListener('keydown', escHandler);
 
             // Start action — navigate to real start url
-         startBtn.addEventListener('click', () => {
+startBtn.addEventListener("click", () => {
 
-    const encoded = encodeURIComponent(startUrl);
-    const goto = `${base}/local/incourse/custom_quiz_start.php?cmid=${cmid}&attempt=${data.next_attempt}&start=${encoded}`;
+    const base = M.cfg.wwwroot;
 
-    window.location.href = goto;
-   });
+    // 1️⃣ If user has an IN-PROGRESS attempt → resume
+    if (data.inprogress_attemptid && data.inprogress_attemptid > 0) {
+
+        let url = `${base}/mod/quiz/attempt.php?attempt=${data.inprogress_attemptid}&cmid=${cmid}`;
+        window.location.href = url;
+        return;
+    }
+
+    // 2️⃣ If this is a NEW attempt → use startattempt.php (IMPORTANT!)
+    let url = "";
+
+    if (data.proctoring_enabled == 1) {
+
+        url = `${base}/local/proctor/start.php?cmid=${cmid}`;
+
+    } else if (data.seb_enabled == 1) {
+
+        url = `${base}/mod/quiz/accessrule/seb/start.php?cmid=${cmid}`;
+
+    } else {
+
+        // ⭐ Correct Moodle flow for fresh attempt
+        url = `${base}/mod/quiz/startattempt.php?cmid=${cmid}&sesskey=${M.cfg.sesskey}`;
+    }
+
+    window.location.href = url;
+});
+
 
 
             // autofocus start button
@@ -1240,17 +1266,33 @@ if (modname === 'quiz') {
 
         // open modal with dynamic data when Start clicked
         document.getElementById('openStartModalBtn').addEventListener('click', () => {
-            // description from your UI, can be customized
-            const desc = `Your quiz attempt will begin immediately upon confirmation. The timer will count down continuously and cannot be paused. Please ensure you're ready before proceeding.`;
-          showStartModal({
-    title: 'Start Your Quiz Attempt',
-    timelabel: (data.timelimit ? Math.round(data.timelimit / 60) : 'No limit'),
-    timelimitText: minutes,
-    description: desc,
-    startUrl: startURL // IMPORTANT — rename to startUrl
+
+    const desc = `Your quiz attempt will begin immediately upon confirmation. The timer will run continuously.`;
+
+    // If NO previous attempts → Show special First-Time Popup
+    if (data.first_attemptid == 0) {
+
+        showStartModal({
+            title: 'Start Your First Quiz Attempt',
+            timelabel: (data.timelimit ? Math.round(data.timelimit / 60) : 'No Limit'),
+            timelimitText: minutes,
+            description: `This is your first time attempting this quiz. Once you begin, the timer cannot be paused.`,
+            startUrl: startURL + `&attempt=${data.next_attempt}` // first attempt = attempt 1
+        });
+
+    } else {
+
+        // Normal re-attempt modal
+        showStartModal({
+            title: 'Start Your Quiz Attempt',
+            timelabel: (data.timelimit ? Math.round(data.timelimit / 60) : 'No Limit'),
+            timelimitText: minutes,
+            description: desc,
+            startUrl: startURL + `&attempt=${data.next_attempt}`
+        });
+    }
 });
 
-        });
 
     } catch (error) {
         console.error("Quiz load error:", error);

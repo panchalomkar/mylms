@@ -76,7 +76,7 @@ if (!empty($customfield) && !empty($customfield->data)) {
 $data->designation = $designation ?: '';
 
         // --- Basic User Info ---
-        $data->userpicture = $OUTPUT->user_picture($USER, ['class' => 'userpicture']);
+       $data->userpicture = $OUTPUT->user_picture($USER, ['size' => 100]);
         $data->userfullname = ucwords(fullname($USER)); // Capitalize each word
         $data->useremail = s($USER->email);
 

@@ -1,86 +1,197 @@
-if (modname === 'quiz') {
-    const params = new URLSearchParams(link.href.split('?')[1]);
-    const cmid = params.get('id');
+<?php
+require_once('../../config.php');
+require_login();
 
-    area.innerHTML = `
-        <div class="text-gray-400 p-8 text-center animate-pulse">
-            Loading Quiz details...
+$cmid    = required_param('cmid', PARAM_INT);
+$attempt = required_param('attempt', PARAM_INT);
+$start   = required_param('start', PARAM_RAW); // encoded start URL
+
+$starturl = urldecode($start);
+
+// --- Load quiz attempt, question, timer details from Moodle core APIs ---
+// You can replace the placeholders with real data from:
+// quiz_start_new_attempt(), quiz_attempt::create(), $attemptobj->get_question_attempt()
+//
+// For now using dummy question to show UI:
+
+$questiontext = "What is the capital of France?";
+$options = ["London", "Paris", "Berlin", "Madrid"];
+$questionnumber = 2;
+$totalquestions = 4;
+
+$remaining_seconds = 105; // Example: 1:45 minutes
+$answered = 0;
+$unanswered = 4;
+$flagged = 0;
+
+$PAGE->set_url('/local/incourse/custom_quiz_start.php');
+$PAGE->set_context(context_system::instance());
+$PAGE->set_title("Quiz Attempt");
+$PAGE->set_pagelayout('base');
+
+// Load Tailwind + Material Symbols
+echo $OUTPUT->header();
+?>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<div class="w-full px-4 md:px-10 py-6">
+
+    <!-- TOP BAR -->
+    <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined">arrow_back</span>
+            <span class="text-xl font-semibold">Quiz</span>
+            <span class="text-gray-500 ml-2">Question <?php echo $questionnumber; ?> of <?php echo $totalquestions; ?></span>
         </div>
-    `;
 
-    try {
-        const base = (typeof M !== "undefined" && M.cfg) ? M.cfg.wwwroot : window.location.origin;
-        const response = await fetch(`${base}/local/incourse/fetch_quiz.php?cmid=${cmid}`);
-        const data = await response.json();
+        <button class="px-3 py-2 flex items-center gap-2 rounded-lg border">
+            <span class="material-symbols-outlined">list_alt</span> Summary
+        </button>
+    </div>
 
-        const minutes = data.timelimit ? Math.round(data.timelimit / 60) + " mins" : "No Limit";
-        const attempts = data.attempts;
-        const remaining = data.attempts_remaining === "Unlimited"
-            ? "Unlimited"
-            : `${data.attempts_remaining} remaining`;
+    <!-- PROGRESS BAR -->
+    <div class="h-2 w-full bg-gray-200 rounded-full mb-6">
+        <div class="bg-blue-600 h-2 rounded-full" style="width: 0%;"></div>
+    </div>
 
-        area.innerHTML = `
-        <div class="flex flex-col items-center justify-center min-h-[80vh] text-center">
+    <!-- MAIN LAYOUT -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-            <!-- Icon -->
-            <div class="w-24 h-24  flex items-center justify-center mb-6">
-                <span style="font-size: 100px;" class="material-icons text-yellow-500 text-5xl">help_outline</span>
+        <!-- LEFT: QUESTION -->
+        <div class="md:col-span-2 bg-white shadow p-6 rounded-xl">
+
+            <h2 class="text-2xl font-bold mb-4">Question <?php echo $questionnumber; ?></h2>
+            <p class="text-gray-500 mb-6">Marked out of 1.00</p>
+
+            <h3 class="text-lg font-semibold mb-4"><?php echo $questiontext; ?></h3>
+
+            <!-- OPTIONS -->
+            <div class="space-y-4">
+                <?php foreach ($options as $o) { ?>
+                    <label class="flex items-center gap-3 border rounded-lg px-4 py-3 hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="answer" class="h-5 w-5" />
+                        <span class="text-lg"><?php echo $o; ?></span>
+                    </label>
+                <?php } ?>
             </div>
 
-            <!-- Badge -->
-            <span class="bg-blue-900 text-white px-4 py-1 rounded-full text-sm mb-2">Quiz</span>
-
-            <!-- Title -->
-            <h1 class="text-2xl font-bold text-gray-900 mb-1">${data.name}</h1>
-            <p class="text-gray-500 mb-8">${data.intro || 'Test your knowledge with this interactive quiz'}</p>
-
-            <!-- Info cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 w-full max-w-3xl">
-
-                <!-- Time Limit -->
-                <div class="bg-white shadow-sm rounded-md  flex flex-col items-center" style="width: 245px; padding: 1.5rem !important;">
-                    <span class="material-icons text-green-600 text-4xl mb-2">access_time</span>
-                    <p class="font-medium">Time Limit</p>
-                    <p class="text-gray-500 text-sm">${minutes}</p>
-                </div>
-
-                <!-- Grading Method -->
-                <div class="bg-white shadow-sm rounded-md  flex flex-col items-center"style="width: 245px; padding: 1.5rem !important;">
-                    <span class="material-icons text-yellow-500 text-4xl mb-2">grade</span>
-                    <p class="font-medium">Grading Method</p>
-                  <p class="text-gray-500 text-sm">${data.grademethod}</p>
-                </div>
-
-                <!-- Passing Grade -->
-                <div class="bg-white shadow-sm rounded-md  flex flex-col items-center"style="width: 245px; padding: 1.5rem !important;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-target w-8 h-8 mx-auto mb-2 text-orange-600" data-lov-id="src/components/CourseLanding.tsx:318:22" data-lov-name="Target" data-component-path="src/components/CourseLanding.tsx" data-component-line="318" data-component-file="CourseLanding.tsx" data-component-name="Target" data-component-content="%7B%22className%22%3A%22w-8%20h-8%20mx-auto%20mb-2%20text-orange-600%22%7D"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
-                    <p class="font-medium">Grade to Pass</p>
-                    <p class="text-gray-500 text-sm">${data.grade_to_pass} / 100</p>
-                </div>
+            <div class="flex justify-between mt-8">
+                <button class="px-4 py-2 border rounded-lg">← Previous</button>
+                <button class="px-6 py-2 bg-blue-700 text-white rounded-lg">Next →</button>
             </div>
-
-            <!-- Questions + Attempts -->
-            <div class="text-gray-700 mb-6" style="width: 55%;">
-                <p style="display: flex;justify-content: space-between;">Questions: <strong>${data.question_count}</strong></p>
-                <p style="display: flex;justify-content: space-between;">Attempts: <strong>${remaining}</strong></p>
-            </div>
-
-            <!-- Start Attempt -->
-            <button id="startQuizBtn"
-               style="width: 55%;" class="flex items-center justify-center gap-2 bg-[#003152] hover:bg-[#ec9707] text-white px-10 py-2 rounded-lg font-semibold transition">
-                <span class="material-icons">play_circle</span> Attempt Quiz
-            </button>
         </div>
-        `;
 
-        document.getElementById('startQuizBtn').addEventListener('click', () => {
-            window.location.href = `${base}/mod/quiz/view.php?id=${cmid}`;
-        });
+        <!-- RIGHT SIDEBAR -->
+        <div class="space-y-6">
 
-    } catch (err) {
-        console.error("Quiz load error:", err);
-        area.innerHTML = `<div class="text-center text-red-500 p-8">Failed to load Quiz data.</div>`;
-    }
+            <!-- TIMER BOX -->
+            <div class="bg-white shadow rounded-xl p-6 text-center">
+                <h3 class="text-lg font-semibold mb-3 flex items-center gap-2 justify-center">
+                    <span class="material-symbols-outlined text-blue-600">schedule</span>
+                    Time Remaining
+                </h3>
 
-    return;
-}
+                <div class="relative w-40 h-40 mx-auto">
+                    <svg class="w-full h-full" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="45" stroke="#ffe4cd" stroke-width="10" fill="none"/>
+                        <circle id="timerCircle" cx="50" cy="50" r="45"
+                                stroke="#ec9707" stroke-width="10" fill="none"
+                                stroke-dasharray="283" stroke-dashoffset="40"
+                                stroke-linecap="round"/>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-3xl font-bold text-[#ec9707]">
+                        01:45
+                        <div class="text-sm text-gray-500 mt-1">88% left</div>
+                    </div>
+                </div>
+
+                <div class="mt-3 bg-orange-100 text-orange-600 px-4 py-2 rounded-lg">
+                    ⚠️ Hurry up!
+                </div>
+            </div>
+
+            <!-- QUIZ NAVIGATION -->
+            <div class="bg-white shadow rounded-xl p-6">
+                <h3 class="text-lg font-semibold mb-4">Quiz Navigation</h3>
+
+                <div class="grid grid-cols-4 gap-3 mb-4">
+                    <?php for ($i = 1; $i <= $totalquestions; $i++) { ?>
+                        <div class="py-2 rounded-lg border text-center cursor-pointer 
+                            <?php echo $i == $questionnumber ? 'bg-blue-700 text-white' : 'hover:bg-gray-100'; ?>">
+                            <?php echo $i; ?>
+                        </div>
+                    <?php } ?>
+                </div>
+
+                <div class="space-y-2 text-sm">
+                    <p><span class="inline-block w-3 h-3 bg-green-500 rounded-full"></span> Answered: <?php echo $answered; ?></p>
+                    <p><span class="inline-block w-3 h-3 bg-gray-400 rounded-full"></span> Unanswered: <?php echo $unanswered; ?></p>
+                    <p><span class="inline-block w-3 h-3 bg-yellow-500 rounded-full"></span> Flagged: <?php echo $flagged; ?></p>
+                </div>
+
+                <button class="mt-5 w-full bg-blue-700 hover:bg-blue-800 text-white py-3 rounded-lg">
+                    Finish Attempt
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<?php
+echo $OUTPUT->footer();
+?>
+
+
+extra code 
+
+ <form method="post" action="<?php echo $attemptobj->processattempt_url()->out(false); ?>">
+                <input type="hidden" name="slot" value="<?php echo $slot; ?>">
+                <input type="hidden" name="sesskey" value="<?php echo sesskey(); ?>">
+
+                <div class="space-y-4">
+                    <?php 
+                    $inputname = "q{$slot}";
+                    $answers = $question->answers;
+                    $i = 0;
+
+                    foreach ($answers as $ans): ?>
+                        <label class="flex items-center gap-3 border rounded-lg px-4 py-3 hover:bg-gray-50 cursor-pointer">
+                            <input 
+                                type="radio" 
+                                name="<?php echo $inputname; ?>" 
+                                value="<?php echo $ans->id; ?>" 
+                                class="h-5 w-5"
+                                <?php echo $qa->get_last_qt_data()['answer'] == $ans->id ? 'checked' : ''; ?>
+                            />
+                            <span class="text-lg"><?php echo format_text($ans->answer, FORMAT_HTML); ?></span>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
+
+                <div class="flex justify-between mt-8">
+
+                    <!-- PREVIOUS -->
+                    <?php if ($questionnumber > 1): ?>
+                    <a href="<?php echo $attemptobj->navigate_to_url($slot, -1)->out(false); ?>">
+                        <button type="button" class="px-4 py-2 border rounded-lg">← Previous</button>
+                    </a>
+                    <?php else: ?>
+                        <div></div>
+                    <?php endif; ?>
+
+                    <!-- NEXT -->
+                    <?php if ($questionnumber < $totalquestions): ?>
+                    <a href="<?php echo $attemptobj->navigate_to_url($slot, +1)->out(false); ?>">
+                        <button type="button" class="px-6 py-2 bg-blue-700 text-white rounded-lg">Next →</button>
+                    </a>
+                    <?php else: ?>
+                    <a href="<?php echo $attemptobj->summary_url()->out(false); ?>">
+                        <button type="button" class="px-6 py-2 bg-blue-700 text-white rounded-lg">Finish →</button>
+                    </a>
+                    <?php endif; ?>
+
+                </div>
+            </form>
