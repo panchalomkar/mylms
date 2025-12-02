@@ -150,14 +150,14 @@ function safe_count($val) {
 <body class="bg-background-light dark:bg-background-dark font-display">
 <div class="min-h-screen">
 <header class="bg-card-light dark:bg-card-dark shadow-sm top-0 z-10 border-b border-border-light dark:border-border-dark" style="z-index: 1">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto px- sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-16">
       <h1 class="text-xl font-bold text-text-light dark:text-text-dark">My Team</h1>
     </div>
   </div>
 </header>
 
-<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<main class="max-w-7xl mx-auto px-6 sm:px-6 lg:px-8 py-8">
   <div class="mb-1">
     <a href="index.php" class="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
       <span class="material-icons mr-2 text-base">arrow_back</span> Back to My Team
@@ -173,7 +173,7 @@ function safe_count($val) {
       </div>
     </div>
 
-    <div id="teamCards" class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6">
+    <div id="teamCards" class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-3">
       <?php
       if (!empty($data)) {
           foreach ($data as $d) {
@@ -212,11 +212,11 @@ function safe_count($val) {
               // level color class
               $level_class = ($level >= 5) ? 'bg-level-gold' : (($level >= 3) ? 'bg-level-silver' : 'bg-level-bronze');
               ?>
-              <div class="bg-background-light dark:bg-background-dark p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-border-light dark:border-border-dark relative overflow-hidden group team-card" data-name="<?php echo htmlspecialchars($d->firstname . ' ' . $d->lastname); ?>">
+              <div class="bg-background-light dark:bg-background-dark p-2 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-border-light dark:border-border-dark relative overflow-hidden group team-card" data-name="<?php echo htmlspecialchars($d->firstname . ' ' . $d->lastname); ?>">
                 
                 <div class="flex flex-col sm:flex-row items-center gap-6 z-10 static">
                   <div class="relative flex-shrink-0">
-                    <img alt="<?php echo htmlspecialchars(fullname($d)); ?>" class="h-24 w-24 rounded-full object-cover border-4 border-primary shadow-lg transform group-hover:scale-105 transition-transform duration-300" src="<?php echo $imageurl; ?>"/>
+                    <img alt="<?php echo htmlspecialchars(fullname($d)); ?>" class="h-20 w-20 rounded-full object-cover border-4 border-primary shadow-lg transform group-hover:scale-105 transition-transform duration-300" src="<?php echo $imageurl; ?>"/>
                     <div class="absolute -bottom-1 -right-1 <?php echo $level_class; ?> text-white text-xs font-bold px-3 py-1 rounded-full shadow-md border-2 border-white dark:border-card-dark transform rotate-6 group-hover:rotate-0 transition-transform duration-300">
                       Level <?php echo $level; ?>
                     </div>
@@ -234,53 +234,53 @@ function safe_count($val) {
                         <?php endif; ?>
                       </div>
 
-                      <a class="d-none mt-4 sm:mt-0 text-sm font-medium text-white bg-primary hover:bg-blue-700 rounded-full px-6 py-2 shadow-lg transition-all duration-300 transform hover:scale-105" href="<?php echo new moodle_url('/local/my_team/index.php', ['uid' => $d->id]); ?>">View Team</a>
+                      <a class=" mt-4 sm:mt-0 text-sm font-medium text-white bg-primary hover:bg-blue-700 rounded-full px-6 py-2 shadow-lg transition-all duration-300 transform hover:scale-105" href="<?php echo new moodle_url('/local/my_team/index.php', ['uid' => $d->id]); ?>">View Team</a>
                     </div>
 
-                    <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark text-left mt-1">
-                      <span class="material-icons text-sm align-middle mr-1">email</span> <?php echo htmlspecialchars($d->email); ?>
+                    <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark text-left mt-1" style="    font-size: 12px;">
+                      <span class="material-icons text-sm align-middle mr-1" style="    font-size: 12px;">email</span> <?php echo htmlspecialchars($d->email); ?>
                     </p>
-                    <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark text-left mt-1">
-                      <span class="material-icons text-sm align-middle mr-1">business</span> Department: <?php echo htmlspecialchars($d->department); ?>
+                    <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark text-left mt-1" style="    font-size: 12px;">
+                      <span class="material-icons text-sm align-middle mr-1" style="    font-size: 12px;">business</span> Department: <?php echo htmlspecialchars($d->department); ?>
                     </p>
                   </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-3 pt-3 border-t border-border-light dark:border-border-dark">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-1 pt-3 border-t border-border-light dark:border-border-dark">
                   <!-- Courses Enrolled -->
-                  <div class="flex flex-col items-center text-center">
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-2 overflow-hidden">
+                  <div class="flex flex-col items-center text-center text-progress-enrolled">
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
                       <div class="progress-bar-fill bg-progress-enrolled" style="width:100%;"></div>
                     </div>
-                    <p class="text-lg font-bold text-progress-enrolled"><?php echo $enrolled_count; ?></p>
-                    <p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Courses Enrolled</p>
+                    <p class="text-lg font-bold text-primary" style="cursor:pointer;line-height: normal;"><?php echo $enrolled_count; ?></p>
+                    <p class="text-xs text-text-secondary-light dark:text-text-secondary-dark mt-1" style="cursor:pointer;">Courses Enrolled</p>
                   </div>
 
                   <!-- Not Started -->
-                  <div class="flex flex-col items-center text-center">
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-2 overflow-hidden">
+                  <div class="flex flex-col items-center text-center text-progress-not-started">
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3  overflow-hidden">
                       <div class="progress-bar-fill bg-progress-not-started" style="width:<?php echo $pct_notstarted; ?>%;"></div>
                     </div>
-                    <p class="text-lg font-bold text-progress-not-started"><?php echo $notstarted_count; ?></p>
-                    <p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Not Started</p>
+                    <p class="text-lg font-bold text-muted" style="cursor:pointer;line-height: normal;"><?php echo $notstarted_count; ?></p>
+                    <p class="text-xs text-text-secondary-light dark:text-text-secondary-dark mt-1" style="cursor:pointer;">Not Started</p>
                   </div>
 
                   <!-- In-progress -->
-                  <div class="flex flex-col items-center text-center">
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-2 overflow-hidden">
+                  <div class="flex flex-col items-center text-center text-progress-in-progress">
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3  overflow-hidden">
                       <div class="progress-bar-fill bg-progress-in-progress" style="width:<?php echo $pct_inprogress; ?>%;"></div>
                     </div>
-                    <p class="text-lg font-bold text-progress-in-progress"><?php echo $inprogress_count; ?></p>
-                    <p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">In-progress</p>
+                    <p class="text-lg font-bold text-danger" style="cursor:pointer;line-height: normal;"><?php echo $inprogress_count; ?></p>
+                    <p class="text-xs text-text-secondary-light dark:text-text-secondary-dark mt-1" style="cursor:pointer;">In-progress</p>
                   </div>
 
                   <!-- Completed -->
-                  <div class="flex flex-col items-center text-center">
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-2 overflow-hidden">
+                  <div class="flex flex-col items-center text-center text-progress-completed">
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3  overflow-hidden">
                       <div class="progress-bar-fill bg-progress-completed" style="width:<?php echo $pct_completed; ?>%;"></div>
                     </div>
-                    <p class="text-lg font-bold text-progress-completed"><?php echo $completed_count; ?></p>
-                    <p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Completed</p>
+                    <p class="text-lg font-bold text-success"style="cursor:pointer;line-height: normal;"><?php echo $completed_count; ?></p>
+                    <p class="text-xs text-text-secondary-light dark:text-text-secondary-dark mt-1" style="cursor:pointer;">Completed</p>
                   </div>
                 </div>
               </div>

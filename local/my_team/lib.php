@@ -377,22 +377,24 @@ function get_user_sub_division($userid) {
 
     return $records->data;
 }
-
 function get_user_enrolled_courses($userid) {
     global $DB;
 
-    $SQL = "SELECT DISTINCT c.id AS courseid, c.fullname
-            FROM mdl_user u
-            JOIN mdl_user_enrolments ue ON ue.userid = u.id
-            JOIN mdl_enrol e ON e.id = ue.enrolid
-            JOIN mdl_role_assignments ra ON ra.userid = u.id
-            JOIN mdl_context ct ON ct.id = ra.contextid AND ct.contextlevel = 50
-            JOIN mdl_course c ON c.id = ct.instanceid AND e.courseid = c.id
-            JOIN mdl_role r ON r.id = ra.roleid AND r.shortname = 'student'
-            WHERE e.status = 0 AND u.suspended = 0 AND u.deleted = 0
-              AND (ue.timeend = 0 OR ue.timeend > UNIX_TIMESTAMP(NOW())) AND ue.status = 0 AND u.id = $userid";
+    $sql = "SELECT DISTINCT c.id AS courseid, c.fullname
+            FROM {user} u
+            JOIN {user_enrolments} ue ON ue.userid = u.id
+            JOIN {enrol} e ON e.id = ue.enrolid
+            JOIN {role_assignments} ra ON ra.userid = u.id
+            JOIN {context} ct ON ct.id = ra.contextid AND ct.contextlevel = 50
+            JOIN {course} c ON c.id = ct.instanceid AND e.courseid = c.id
+            JOIN {role} r ON r.id = ra.roleid AND r.shortname = 'student'
+            WHERE e.status = 0 
+              AND u.suspended = 0 AND u.deleted = 0
+              AND (ue.timeend = 0 OR ue.timeend > ?
+              ) AND ue.status = 0 
+              AND u.id = ?";
 
-    return $records = $DB->get_records_sql($SQL);
+    return $DB->get_records_sql($sql, [time(), $userid]);
 }
 
 function get_user_inprogress_courses($userid) {
