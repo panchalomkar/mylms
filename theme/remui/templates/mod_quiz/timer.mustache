@@ -1,0 +1,11 @@
+
+<div id="quiz-timer-wrapper" class="bg-[#003152] text-white px-4 py-2 rounded-lg font-bold text-center d-none">
+    <div id="quiz-timer" class="quiz-timer-inner py-1 px-2 ms-auto" role="timer" aria-atomic="true" aria-relevant="text">
+        {{#str}} timeleft, quiz {{/str}}
+        <span id="quiz-time-left"></span>
+    </div>
+    <span class="material-symbols-outlined align-middle mr-1">schedule</span>
+    <button type="button" class="btn btn-secondary btn-small ms-1" id="toggle-timer" aria-controls="quiz-timer" aria-describedby="quiz-timer">
+        {{#str}} hide, core {{/str}}
+    </button>
+</div>

@@ -54,52 +54,44 @@ class core_question_renderer extends plugin_renderer_base {
      *      value that gets displayed as Information. Null means no number is displayed.
      * @return string HTML representation of the question.
      */
-    public function question(question_attempt $qa, qbehaviour_renderer $behaviouroutput,
-            qtype_renderer $qtoutput, question_display_options $options, $number) {
+// updated by omkar 
+public function question(question_attempt $qa, qbehaviour_renderer $behaviouroutput,
+        qtype_renderer $qtoutput, question_display_options $options, $number) {
 
-        // If not already set, record the questionidentifier.
-        $options = clone($options);
-        if (!$options->has_question_identifier()) {
-            $options->questionidentifier = $this->question_number_text($number);
-        }
-
-        $output = '';
-        $output .= html_writer::start_tag('div', array(
-            'id' => $qa->get_outer_question_div_unique_id(),
-            'class' => implode(' ', array(
-                'que',
-                $qa->get_question(false)->get_type_name(),
-                $qa->get_behaviour_name(),
-                $qa->get_state_class($options->correctness && $qa->has_marks()),
-            ))
-        ));
-
-        $output .= html_writer::tag('div',
-                $this->info($qa, $behaviouroutput, $qtoutput, $options, $number),
-                array('class' => 'info'));
-
-        $output .= html_writer::start_tag('div', array('class' => 'content'));
-
-        $output .= html_writer::tag('div',
-                $this->add_part_heading($qtoutput->formulation_heading(),
-                    $this->formulation($qa, $behaviouroutput, $qtoutput, $options)),
-                array('class' => 'formulation clearfix'));
-        $output .= html_writer::nonempty_tag('div',
-                $this->add_part_heading(get_string('feedback', 'question'),
-                    $this->outcome($qa, $behaviouroutput, $qtoutput, $options)),
-                array('class' => 'outcome clearfix'));
-        $output .= html_writer::nonempty_tag('div',
-                $this->add_part_heading(get_string('comments', 'question'),
-                    $this->manual_comment($qa, $behaviouroutput, $qtoutput, $options)),
-                array('class' => 'comment clearfix'));
-        $output .= html_writer::nonempty_tag('div',
-                $this->response_history($qa, $behaviouroutput, $qtoutput, $options),
-                array('class' => 'history clearfix border p-2'));
-
-        $output .= html_writer::end_tag('div');
-        $output .= html_writer::end_tag('div');
-        return $output;
+    $options = clone($options);
+    if (!$options->has_question_identifier()) {
+        $options->questionidentifier = $this->question_number_text($number);
     }
+
+    // Collect all raw HTML fragments
+    $data = [
+        'id' => $qa->get_outer_question_div_unique_id(),
+        'classlist' => implode(' ', [
+            'que',
+            $qa->get_question(false)->get_type_name(),
+            $qa->get_behaviour_name(),
+            $qa->get_state_class($options->correctness && $qa->has_marks()),
+        ]),
+        'info' => $this->info($qa, $behaviouroutput, $qtoutput, $options, $number),
+        'formulation' => $this->add_part_heading(
+            $qtoutput->formulation_heading(),
+            $this->formulation($qa, $behaviouroutput, $qtoutput, $options)
+        ),
+        'feedback' => $this->add_part_heading(
+            get_string('feedback', 'question'),
+            $this->outcome($qa, $behaviouroutput, $qtoutput, $options)
+        ),
+        'comment' => $this->add_part_heading(
+            get_string('comments', 'question'),
+            $this->manual_comment($qa, $behaviouroutput, $qtoutput, $options)
+        ),
+        'history' => $this->response_history($qa, $behaviouroutput, $qtoutput, $options),
+    ];
+
+   return $this->render_from_template('core_question/question', $data);
+
+}
+
 
     /**
      * Generate the information bit of the question display that contains the

@@ -348,147 +348,83 @@ class renderer extends plugin_renderer_base {
      *
      * @param navigation_panel_base $panel
      */
-public function navigation_panel(navigation_panel_base $panel) {
-    global $PAGE;
+    public function navigation_panel(navigation_panel_base $panel) {
 
-    // Load Material Symbols.
-    $PAGE->requires->css(new moodle_url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:wght@400;600&display=swap'));
+        $output = '';
+        $userpicture = $panel->user_picture();
+        if ($userpicture) {
+            $fullname = fullname($userpicture->user);
+            if ($userpicture->size) {
+                $fullname = html_writer::div($fullname);
+            }
+            $output .= html_writer::tag('div', $this->render($userpicture) . $fullname,
+                    ['id' => 'user-picture', 'class' => 'clearfix']);
+        }
+        $output .= $panel->render_before_button_bits($this);
 
-    // Container card.
-    $output = html_writer::start_tag('div', [
-        'class' => 'w-full bg-white shadow-md rounded-2xl p-5 mt-4 quiz-nav-card border border-gray-100'
-    ]);
-  // Other nav section (autosave info, etc.)
-    $output .= html_writer::tag('div','',
-        ['class' => 'othernav']
-    );
+        $bcc = $panel->get_button_container_class();
+        $output .= html_writer::start_tag('div', ['class' => "qn_buttons clearfix $bcc"]);
+        foreach ($panel->get_question_buttons() as $button) {
+            $output .= $this->render($button);
+        }
+        $output .= html_writer::end_tag('div');
 
-    // Title.
-    $output .= html_writer::tag('div',
-        '<span class="font-semibold text-lg text-gray-800">Quiz Navigation</span>',
-        ['class' => 'mb-4']
-    );
+        $output .= html_writer::tag('div', $panel->render_end_bits($this),
+                ['class' => 'othernav']);
 
-    // Question buttons grid.
-    $output .= html_writer::start_tag('div', [
-        'class' => 'flex gap-3 mb-4 flex-wrap'
-    ]);
+        $this->page->requires->js_init_call('M.mod_quiz.nav.init', null, false,
+                quiz_get_js_module());
 
-    $buttons = $panel->get_question_buttons();
-    foreach ($buttons as $button) {
-        $output .= $this->render($button);
+        return $output;
     }
 
-    $output .= html_writer::end_tag('div');
+    /**
+     * Display a quiz navigation button.
+     *
+     * @param navigation_question_button $button
+     * @return string HTML fragment.
+     */
+    protected function render_navigation_question_button(navigation_question_button $button) {
+        $classes = ['qnbutton', $button->stateclass, $button->navmethod, 'btn'];
+        $extrainfo = [];
 
-    // Stats (Answered / Unanswered / Flagged)
-    $answered = 0;
-    $unanswered = 0;
-    $flagged = 0;
-
-    foreach ($buttons as $b) {
-        if (!empty($b->flagged)) {
-            $flagged++;
+        if ($button->currentpage) {
+            $classes[] = 'thispage';
+            $extrainfo[] = get_string('onthispage', 'quiz');
         }
 
-        if (isset($b->stateclass) && in_array($b->stateclass, ['answersaved', 'complete', 'correct', 'incorrect', 'partial'])) {
-            $answered++;
-        } else { // notyetanswered
-            $unanswered++;
+        // Flagged?
+        if ($button->flagged) {
+            $classes[] = 'flagged';
+            $flaglabel = get_string('flagged', 'question');
+        } else {
+            $flaglabel = '';
+        }
+        $extrainfo[] = html_writer::tag('span', $flaglabel, ['class' => 'flagstate']);
+
+        if ($button->isrealquestion) {
+            $qnostring = 'questionnonav';
+        } else {
+            $qnostring = 'questionnonavinfo';
+        }
+
+        $tooltip = get_string('questionx', 'question', s($button->number)) . ' - ' . $button->statestring;
+
+        $a = new stdClass();
+        $a->number = s($button->number);
+        $a->attributes = implode(' ', $extrainfo);
+        $tagcontents = html_writer::tag('span', '', ['class' => 'thispageholder']) .
+                html_writer::tag('span', '', ['class' => 'trafficlight']) .
+                get_string($qnostring, 'quiz', $a);
+        $tagattributes = ['class' => implode(' ', $classes), 'id' => $button->id,
+                'title' => $tooltip, 'data-quiz-page' => $button->page];
+
+        if ($button->url) {
+            return html_writer::link($button->url, $tagcontents, $tagattributes);
+        } else {
+            return html_writer::tag('span', $tagcontents, $tagattributes);
         }
     }
-
-    // Stats below number palette
-    $output .= '
-        <div class="space-y-2 text-sm mt-3">
-            <div class="flex items-center gap-2">
-                <span class="w-3 h-3 rounded-sm bg-green-500 inline-block"></span>
-                <span class="text-gray-700">Answered: '.$answered.'</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <span class="w-3 h-3 rounded-sm bg-gray-300 inline-block"></span>
-                <span class="text-gray-700">Unanswered: '.$unanswered.'</span>
-            </div>
-         <div class="flex items-center gap-2">
-            <i class="fas fa-flag" style="color:#f97316;"></i>
-            <span class="text-gray-700">Flagged: '.$flagged.'</span>
-        </div>
-        </div>
-    ';
-
-// Get original button HTML.
-$finishhtml = $panel->render_end_bits($this);
-
-// Extract ONLY the URL from <a> or <button>.
-preg_match('/href="([^"]+)"/', $finishhtml, $match);
-$finishurl = $match[1] ?? '#';
-
-// Build a clean button yourself — no original styles, no "...".
-$finishbutton = html_writer::tag(
-    'a',
-    '<span class="material-symbols-rounded mr-1">check_circle</span>Finish Attempt',
-    [
-        'href' => $finishurl,
-        'class' =>
-            'px-4 py-2 bg-[#003152] text-white rounded-full font-semibold 
-             flex items-center justify-center gap-2 hover:brightness-110 transition-all'
-    ]
-);
-
-$output .= html_writer::tag('div', $finishbutton, ['class' => 'mt-5']);
-
-
-
-  
-    $output .= html_writer::end_tag('div');
-
-    return $output;
-}
-
-/* --------------------------
-   INDIVIDUAL QUESTION BUTTON (Number Palette)
------------------------------*/
-protected function render_navigation_question_button(navigation_question_button $button) {
-
-    // Default color
-    $bg = 'bg-gray-200 text-gray-700';
-
-    // Color logic for answered questions
-    if (isset($button->stateclass) && in_array($button->stateclass, ['answersaved', 'complete', 'correct', 'incorrect', 'partial'])) {
-        $bg = 'bg-green-500 text-white';
-    }
-
-    // Flagged questions
-    if ($button->flagged) {
-        $bg = 'bg-orange-500 text-white';
-    }
-
-    // Highlight current question with #003152 and white text
-    if ($button->currentpage) {
-        $bg = 'bg-[#003152] text-white';
-        $border=" border: double;";
-    }
-
-    $commonclasses = "w-10 h-10 flex items-center justify-center rounded-xl font-semibold 
-                      shadow-sm transition-all hover:scale-105 cursor-pointer $bg";
-
-    $content = html_writer::tag('span', $button->number);
-
-    if ($button->url) {
-        return html_writer::link($button->url, $content, [
-            'class' => $commonclasses,
-            'data-quiz-page' => $button->page,
-            'title' => $button->statestring,
-            'style' => $border ?? ''
-        ]);
-    }
-
-    return html_writer::tag('span', $content, [
-        'class' => $commonclasses,
-        'title' => $button->statestring
-    ]);
-}
-
 
     /**
      * Display a quiz navigation heading.
@@ -611,112 +547,129 @@ protected function render_navigation_question_button(navigation_question_button 
         return $output;
     }
 public function during_attempt_progress($attemptobj, $page): string {
-    global $DB;
+  global $DB;
 
     $output = '';
 
-    // All question slots
+    $curr = $page + 1; // Current question number
     $slots = $attemptobj->get_slots();
     $total = count($slots);
+    $percent = round(($curr / $total) * 100);
 
-    // Count answered questions
-    $answered = 0;
-    foreach ($slots as $slot) {
-        $state = $attemptobj->get_question_state($slot);
-       $stateclass = $state->get_state_class(true);
+    // Get quiz ID from attempt object
+    $quizid = $attemptobj->get_quizid();
 
-   if (in_array($stateclass, [
-    'answersaved', 'complete', 'correct', 'incorrect', 'partial'
-    ])) {
-    $answered++;
-   }
-
-    }
-
-    // Calculate percentage
-    $percent = $total > 0 ? round(($answered / $total) * 100) : 0;
-
-    // Get quiz name
-    $quiz = $DB->get_record('quiz', ['id' => $attemptobj->get_quizid()], 'id,name');
+    // Fetch quiz record
+    $quiz = $DB->get_record('quiz', ['id' => $quizid], 'id,name');
     $quizname = $quiz ? $quiz->name : 'Quiz';
 
-    // Current question number
-    $curr = $page + 1;
-
-    // ---------------- WRAPPER ----------------
-    $output .= html_writer::start_div('quiz-progress-b', [
-        'style' => 'padding:12px 20px;margin-bottom:15px;'
-    ]);
-
-    // ------------- TOP ROW -------------
-    $output .= html_writer::start_div('quiz-progress-row', [
-        'style' => 'display:flex;align-items:center;gap:15px;margin-bottom:10px;'
-    ]);
-
-    // Back button
-    $output .= html_writer::start_div('btn p-2 btn-secondary', [
-        'style' => 'display:flex;align-items:center;gap:6px;'
-    ]);
-
-    $output .= html_writer::link(
-        $attemptobj->view_url(),
-        html_writer::tag('span', 'undo', [
-            'class' => 'material-symbols-outlined',
-            'style' => 'font-size:20px;color:#374151;'
-        ]) . ' ' . get_string('back'),
+    // Wrapper box
+    $output .= html_writer::start_div(
+        'quiz-progress-b',
         [
-            'style' => 'display:flex;align-items:center;font-size:14px;color:#374151;text-decoration:none;',
-            'class' => 'hover:underline'
+            'style' =>
+                'background:#ffffff;padding:12px 20px;margin-bottom:15px;
+                 border-radius:10px;border:1px solid #e5e7eb;
+                 box-shadow:0 1px 2px rgba(0,0,0,0.05);'
         ]
     );
 
-    $output .= html_writer::end_div();
-
-    // Middle: Quiz name & question number
-    $output .= html_writer::tag(
-        'div',
-        "<strong style='font-size: 20px;'>$quizname</strong>
-         <strong class='text-muted'> Question $curr</strong> of 
-         <strong class='text-muted'>$total</strong>",
-        ['style' => 'font-size:14px;font-weight:500;color:#111827;']
+    // --- TOP ROW (Back button | Question info | Percentage) ---
+    $output .= html_writer::start_div(
+        'quiz-progress-row',
+        [
+            'style' =>
+                'display:flex;align-items:center;gap:15px;
+                 margin-bottom:10px;'
+        ]
     );
 
-    $output .= html_writer::end_div(); // end top row
+    // Back button (Material Icon)
+// Back button container
+$output .= html_writer::start_div('btn p-2 btn-secondary', [
+    'style' => 'display:flex;align-items:center;gap:6px;'
+]);
 
-    // ------------- PROGRESS BAR -------------
-    $output .= html_writer::start_div('progress-inner', [
-        'style' => 'display:flex;align-items: center; margin-top:5px;'
-    ]);
-
-    // Outer bar
-    $output .= html_writer::start_div('progress-outer', [
-        'style' =>
-            'width:100%;height:10px;background:#e5e7eb;
-             border-radius:50px;overflow:hidden;'
-    ]);
-
-    // Inner bar width = ANSWERED %
-    $output .= html_writer::tag('div', '', [
-        'style' =>
-            "height:100%;width:{$percent}%;
-             background:#3b82f6;transition:width .4s ease;
-             border-radius:50px;"
-    ]);
-
-    $output .= html_writer::end_div(); // progress outer
-
-    // Percent Right
-    $output .= html_writer::tag('span', "$percent", [
-        'style' => 'font-size:14px;font-weight:600;color:#2563eb;margin-left:8px;'
-    ]);
-
-    $output .= html_writer::tag('span', 'percent', [
+// Wrap both icon and text in one clickable link
+$output .= html_writer::link(
+    $attemptobj->view_url(), // URL to go back
+    html_writer::tag('span', 'undo', [
         'class' => 'material-symbols-outlined',
-        'style' => 'font-size:18px;color:#2563eb;'
-    ]);
+        'style' => 'font-size:20px;color:#374151;'
+    ]) . ' ' . get_string('back'),
+    [
+        'style' => 'display:flex;align-items:center;font-size:14px;color:#374151;text-decoration:none;',
+        'class' => 'hover:underline'
+    ]
+);
 
-    $output .= html_writer::end_div(); // progress inner
+$output .= html_writer::end_div();
 
+
+    
+
+ // Middle: Quiz name + Question X of Y
+    $output .= html_writer::tag(
+        'div',
+        "<strong>$quizname</strong>  <strong class='text-muted'>  Question $curr</strong> of <strong class='text-muted's>$total</strong>",
+        [
+            'style' => 'font-size:14px;font-weight:500;color:#111827;'
+        ]
+    );
+
+
+   
+    $output .= html_writer::end_div();
+
+    $output .= html_writer::end_div(); // END TOP ROW
+
+    // --- PROGRESS BAR BELOW ---
+    $output .= html_writer::start_div(
+        'progress-inner',
+        [
+            'style' =>
+                'display:flex;align-items: center;'
+        ]
+    );
+    $output .= html_writer::start_div(
+        'progress-outer',
+        [
+            'style' =>
+                'width:100%;height:10px;background:#e5e7eb;
+                 border-radius:50px;overflow:hidden;'
+        ]
+    );
+  
+    $output .= html_writer::tag(
+        'div',
+        '',
+        [
+            'style' =>
+                "height:100%;width:{$percent}%;
+                 background:#3b82f6;transition:width .4s ease;
+                 border-radius:50px;"
+        ]
+    );
+
+    $output .= html_writer::end_div(); // progress-outer
+        // Right: Percentage with icon
+     $output .= html_writer::tag(
+        'span',
+        "$percent",
+        [
+            'style' =>
+                'font-size:14px;font-weight:600;color:#2563eb;'
+        ]
+    );
+    $output .= html_writer::tag(
+        'span',
+        'percent',
+        [
+            'class' => 'material-symbols-outlined',
+            'style' => 'font-size:18px;color:#2563eb;'
+        ]
+    );
+     $output .= html_writer::end_div(); // wrapper
     $output .= html_writer::end_div(); // wrapper
 
     return $output;

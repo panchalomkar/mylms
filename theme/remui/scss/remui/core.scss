@@ -1765,3 +1765,26 @@ body.collapsed #page{ padding-left:5em !important;}
     width: fit-content;
     left: 92%;
 }
+
+.path-mod-quiz #page-wrapper #page {
+    padding-left: 4em !important;
+    padding-right: 4em !important;
+}
+.path-mod-quiz  #mod_quiz_navblock .block-header-wrapper {display: none !important;}
+.path-mod-quiz #block-region-side-pre .block-body-wrapper {
+    /* margin-top: 0px; */
+    margin-bottom: 0;
+    padding: 0px !important;
+    margin: 0px !important;
+    border: none !important;
+}
+
+.question-custom-d .formulation .ablock{
+tbody[role="presentation"]{border:none;}
+tr[role="presentation"]{display: flex; align-items: center;}
+td[role="presentation"] .form-select {padding: 5px 30px 5px 10px;}
+}
+
+.question-custom-d .qtext{padding: 10px;
+    border-radius: 5px;
+    box-shadow: 5px 5px 11px -4px #ec9707;}

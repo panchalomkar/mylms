@@ -433,9 +433,25 @@ class quiz_settings {
      *
      * @return moodle_url the URL of this quiz's view page.
      */
-    public function view_url() {
+    // public function view_url() {
+    //     return new moodle_url('/mod/quiz/view.php', ['id' => $this->cm->id]);
+    // }
+// added by omkar
+
+public function view_url() {
+    global $COURSE, $USER, $CFG;
+
+    $context = \context_course::instance($COURSE->id);
+
+    // Admin / Manager → Use original quiz URL
+    if (is_siteadmin($USER) || has_capability('mod/quiz:manage', $context)) {
         return new moodle_url('/mod/quiz/view.php', ['id' => $this->cm->id]);
     }
+
+    // Students → Custom page (IMPORTANT: include /lms5/)
+    return new moodle_url($CFG->wwwroot . '/local/incourse/index.php', ['id' => $COURSE->id]);
+}
+
 
     /**
      * Get the URL of this quiz's edit questions page.

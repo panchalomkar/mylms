@@ -177,23 +177,17 @@ function safe_count($val) {
       <?php
       if (!empty($data)) {
           foreach ($data as $d) {
-              // get counts & arrays
-              $enrolled_arr = get_user_enrolled_courses($d->id);
-              $enrolled_count = safe_count($enrolled_arr);
+         $summary = get_user_course_summary($d->id);
 
-              $inprogress_arr = get_user_inprogress_courses($d->id);
-              $inprogress_count = safe_count($inprogress_arr);
+$enrolled_count   = $summary['enrolled'];
+$notstarted_count = $summary['notstarted'];
+$inprogress_count = $summary['inprogress'];
+$completed_count  = $summary['completed'];
 
-              $completed_arr = get_user_completed_courses($d->id);
-              $completed_count = safe_count($completed_arr);
+$pct_notstarted = ($enrolled_count > 0) ? round(($notstarted_count / $enrolled_count) * 100) : 0;
+$pct_inprogress = ($enrolled_count > 0) ? round(($inprogress_count / $enrolled_count) * 100) : 0;
+$pct_completed  = ($enrolled_count > 0) ? round(($completed_count / $enrolled_count) * 100) : 0;
 
-              $notstarted_count = get_user_not_started_course_count($d->id);
-              $notstarted_count = (int)$notstarted_count;
-
-              // percentages
-              $pct_inprogress = ($enrolled_count > 0) ? round(($inprogress_count / $enrolled_count) * 100) : 0;
-              $pct_completed = ($enrolled_count > 0) ? round(($completed_count / $enrolled_count) * 100) : 0;
-              $pct_notstarted = ($enrolled_count > 0) ? round(($notstarted_count / $enrolled_count) * 100) : 0;
 
               // image
               $usercontext = context_user::instance($d->id);

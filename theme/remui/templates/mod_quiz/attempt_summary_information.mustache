@@ -1,0 +1,10 @@
+<div class="bg-[#fff8f4] border-l-4 border-[#fd9602] rounded-lg p-4 mb-4 shadow-sm">
+    <h3 class="font-bold text-[#003152] mb-2">Attempt Summary</h3>
+
+    <ul class="list-disc pl-5 text-gray-700">
+        <li>Total Questions: {{question_count}}</li>
+        <li>Highest Grade: {{highest_grade}}</li>
+        <li>Attempts Remaining: {{attempts_remaining}}</li>
+        <li>Time Limit: {{#timelimit}}{{timelimit}} sec{{/timelimit}}{{^timelimit}}No Limit{{/timelimit}}</li>
+    </ul>
+</div>

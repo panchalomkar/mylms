@@ -175,7 +175,7 @@ $adminurl = [
     'managecohort' => $CFG->wwwroot . "/cohort/index.php",
     'leaderboard' => $CFG->wwwroot . "/blocks/xp/index.php/ladder/1",
 
-    'myteam' => $CFG->wwwroot . "/local/my_team/index_1.php",
+    'myteam' => $CFG->wwwroot . "/local/my_team/index.php",
     'learningpath' => $CFG->wwwroot . "/local/learningpaths",
     'adminsettings' => $CFG->wwwroot . "/admin/search.php",
     'multitenant' => $CFG->wwwroot . "/local/mt_dashboard/index.php?company=0&tabid=&showsuspendedcompanies=/",

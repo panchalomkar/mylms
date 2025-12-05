@@ -28,11 +28,7 @@ use mod_quiz\quiz_attempt;
 
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
-?>
-<!-- added by omkar -->
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com"></script>
-<?php
+
 // Look for old-style URLs, such as may be in the logs, and redirect them to startattemtp.php.
 if ($id = optional_param('id', 0, PARAM_INT)) {
     redirect($CFG->wwwroot . '/mod/quiz/startattempt.php?cmid=' . $id . '&sesskey=' . sesskey());
@@ -133,8 +129,6 @@ if ($attemptobj->is_own_preview()) {
 // Initialise the JavaScript.
 $headtags = $attemptobj->get_html_head_contributions($page);
 $PAGE->requires->js_init_call('M.mod_quiz.init_attempt_form', null, false, quiz_get_js_module());
-$PAGE->requires->js_call_amd('mod_quiz/custom_circle', 'init');
-
 \core\session\manager::keepalive(); // Try to prevent sessions expiring during quiz attempts.
 
 // Arrange for the navigation to be displayed in the first region on the page.
@@ -146,7 +140,6 @@ $headtags = $attemptobj->get_html_head_contributions($page);
 $PAGE->set_title($attemptobj->attempt_page_title($page));
 $PAGE->add_body_class('limitedwidth');
 $PAGE->set_heading($attemptobj->get_course()->fullname);
-
 if ($PAGE->pagelayout !== 'secure') {
     $PAGE->activityheader->disable();
 }
@@ -155,5 +148,9 @@ if ($attemptobj->is_last_page($page)) {
 } else {
     $nextpage = $page + 1;
 }
-
+?> 
+<!-- added by omkar -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<?php
 echo $output->attempt_page($attemptobj, $page, $accessmanager, $messages, $slots, $id, $nextpage);

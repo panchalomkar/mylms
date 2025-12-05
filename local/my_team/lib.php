@@ -261,6 +261,61 @@ function search_team_users() {
         'users' => $users
     );
 }
+function get_user_course_summary($userid) {
+    global $DB, $CFG;
+    require_once($CFG->libdir . '/completionlib.php');
+
+    $enrolled_courses = enrol_get_users_courses($userid, true, 'id, fullname, visible');
+
+    $summary = [
+        'enrolled'   => 0,
+        'notstarted' => 0,
+        'inprogress' => 0,
+        'completed'  => 0,
+    ];
+
+    foreach ($enrolled_courses as $course) {
+        if (!$course->visible) {
+            continue;
+        }
+
+        $completion = new completion_info($course);
+        if (!$completion->is_enabled()) {
+            continue;
+        }
+
+        $modinfo = get_fast_modinfo($course->id, $userid);
+        $cms = $modinfo->get_cms();
+
+        $total = 0;
+        $completed_modules = 0;
+
+        foreach ($cms as $cm) {
+            if (!$cm->uservisible || !$cm->completion || empty($cm->id)) {
+                continue;
+            }
+
+            $total++;
+            $cmcompletion = $completion->get_data($cm, true, $userid);
+            if ($cmcompletion->completionstate == COMPLETION_COMPLETE ||
+                $cmcompletion->completionstate == COMPLETION_COMPLETE_PASS) {
+                $completed_modules++;
+            }
+        }
+
+        $summary['enrolled']++;
+
+        if ($total > 0 && $completed_modules === 0) {
+            $summary['notstarted']++;
+        } elseif ($completed_modules > 0 && $completed_modules < $total) {
+            $summary['inprogress']++;
+        } elseif ($completed_modules === $total && $total > 0) {
+            $summary['completed']++;
+        }
+    }
+
+    return $summary;
+}
 
 function search_assigned_users($managerid, $search = null) {
     global $DB;
