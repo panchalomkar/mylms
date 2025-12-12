@@ -51,6 +51,38 @@ function local_mydashboard_myprofile_navigation(core_user\output\myprofile\tree 
 }
 
 
+function get_points_last7($userid, $weekday) {
+    global $DB;
+
+    $daymap = [
+        'sun' => 1,
+        'mon' => 2,
+        'tue' => 3,
+        'wed' => 4,
+        'thu' => 5,
+        'fri' => 6,
+        'sat' => 7
+    ];
+
+    if (!isset($daymap[$weekday])) {
+        return 0;
+    }
+
+    $wd = $daymap[$weekday];
+
+    $sql = "
+        SELECT SUM(points) AS total
+        FROM {user_points_log}
+        WHERE userid = :uid
+          AND DAYOFWEEK(FROM_UNIXTIME(timecreated)) = :wd
+          AND timecreated >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 7 DAY))
+    ";
+
+    return (int) $DB->get_field_sql($sql, [
+        'uid' => $userid,
+        'wd'  => $wd
+    ]);
+}
 
 function get_available_points($userid)
 {
@@ -114,6 +146,9 @@ function get_my_rank($userid)
 
     return $record->userrank;
 }
+
+
+
 
 function get_new_rank($userid, $total_points, $usergrade)
 {
@@ -552,6 +587,7 @@ function get_spinwheel_button($userid)
 function get_leaderboard_top()
 {
     global $USER, $CFG, $DB, $OUTPUT, $SESSION;
+
     if (!empty($SESSION->currenteditingcompany)) {
         $selectedcompany = $SESSION->currenteditingcompany;
     } else if (!empty($USER->profile->company)) {
@@ -560,73 +596,112 @@ function get_leaderboard_top()
     } else {
         $selectedcompany = "";
     }
+
     if ($selectedcompany) {
-        $sql = "SELECT u.*, p.available_points, p.userrank FROM {user_points} p 
-    INNER JOIN {user} u ON u.id = p.userid 
-    INNER JOIN {company_users} cu ON cu.userid = p.userid
-    WHERE u.deleted = 0 AND u.suspended = 0 AND cu.companyid = $selectedcompany AND cu.managertype != 1 ORDER BY  p.available_points DESC LIMIT 0,10";
+        $sql = "SELECT u.*, p.available_points, p.userrank 
+                FROM {user_points} p
+                INNER JOIN {user} u ON u.id = p.userid
+                INNER JOIN {company_users} cu ON cu.userid = p.userid
+                WHERE u.deleted = 0 AND u.suspended = 0 
+                AND cu.companyid = $selectedcompany 
+                AND cu.managertype != 1
+                ORDER BY p.available_points DESC LIMIT 0,10";
     } else {
-        $sql = "SELECT u.*, p.available_points, p.userrank FROM {user_points} p 
-        INNER JOIN {user} u ON u.id = p.userid
-        WHERE u.deleted = 0 AND u.suspended = 0 ORDER BY  p.available_points DESC LIMIT 0,10";
+        $sql = "SELECT u.*, p.available_points, p.userrank 
+                FROM {user_points} p
+                INNER JOIN {user} u ON u.id = p.userid
+                WHERE u.deleted = 0 AND u.suspended = 0
+                ORDER BY p.available_points DESC LIMIT 0,10";
     }
-    //  include $CFG->dirroot . '/lib/badgeslib.php';
+
     require_once($CFG->libdir . '/badgeslib.php');
 
-
     $records = $DB->get_records_sql($sql);
-    // Sort the records by available_points in descending order
+
     usort($records, function ($a, $b) {
         return $b->available_points <=> $a->available_points;
     });
 
     $i = 1;
-    $table = '<div class="d-flex justify-content-center leader_card_c">'; // Start a flex container for centering
+    $table = '<div class="grid grid-cols-1 md:grid-cols-3 p-5 mb-6 gap-6 w-full">';
 
     foreach ($records as $row) {
 
         $usercontext = context_user::instance($row->id);
         $src = $CFG->wwwroot . "/pluginfile.php/$usercontext->id/user/icon/f1";
-        $badges = $DB->get_records('badge_issued', array('userid' => $row->id));
-        $customlevel = $DB->get_record('custom_level', array('level' => $row->userrank));
-        if ($customlevel->id != '' && $customlevel->id < 10) {
-            $requestbtn = '<a href="' . $CFG->wwwroot . '/local/mydashboard/sme_request.php?id=' . $row->id . '" type="button" class="btn btn-primary question">Send Request</a>';
-        } else {
-            $requestbtn = '';
-        }
 
-        // Assign the order based on the counter
+        /* NEW: Highlight current user */
+        $iscurrent = ($row->id == $USER->id);
+
+        $highlightClass = $iscurrent 
+            ? "ring-4 ring-yellow-400 ring-offset-2 bg-yellow-50" 
+            : "";
+
+        $nameLabel = $iscurrent
+            ?  $row->firstname . " " . $row->lastname 
+            : $row->firstname . ' ' . $row->lastname;
+
+        $youTag = $iscurrent
+            ? '<span class="ml-2 text-xs px-2 py-0.5 bg-yellow-300 text-yellow-800 rounded-full">You</span>'
+            : '';
+
+        /* CARD STYLE BASED ON RANK */
         if ($i == 1) {
-            $specialClass = 'order-2 mx-3'; // Highest points in the middle
-        } elseif ($i == 2) {
-            $specialClass = 'order-1 pt-5'; // Second highest on the left
+            $borderClass = "border-2 border-yellow-400 shadow-2xl ";
+            $ribbonIcon = '<span class="material-symbols-rounded text-yellow-500 text-4xl absolute top-3 right-3">workspace_premium</span>';
         } else {
-            $specialClass = 'order-3 pt-5'; // Third highest on the right
+            $borderClass = "border border-gray-200 shadow";
+            $ribbonIcon = '<span class="material-symbols-rounded text-gray-300 text-2xl absolute top-3 right-3 rotate-12">workspace_premium</span>';
         }
 
-        $table .= '<div class="card pt-3 pb-3 ' . $specialClass . '" style="width: 12rem;">
-        <span class="cap"></span>
-      
-                  <img class="card-img-top rounded-circle align-self-center" src="' . $src . '" alt="User icon">
-                  <span class="circle_l">' . $i . '</span>
-                  <div class="leader-name mt-5">
-                    <h5 class="card-title text-center">' . $row->firstname . ' ' . $row->lastname . '</h5>
-                    <h2 class="card-text coins text-center">' . $row->available_points . '</h2>
-                  </div>
-                </div>';
+        /* BUILD CARD */
+        $table .= '
+        <div class="relative bg-white rounded-3xl p-8 flex flex-col items-center text-center transition-all duration-300 hover:scale-[1.03] ' 
+        . $borderClass . ' ' . $highlightClass . '">
 
-        if ($i >= 3) {
-            break; // Break the loop after processing 3 records
-        }
+            ' . $ribbonIcon . '
+
+            <!-- Profile -->
+            <div class="w-28 h-28 rounded-full border-3 border-yellow-400 overflow-hidden flex items-center justify-center top-user-img">
+                <img src="' . $src . '" 
+                     class="w-full h-full object-cover transition-transform duration-700 ease-in-out hover:scale-110" />
+            </div>
+
+            <!-- Rank circle -->
+            <div class="bg-[#003152] text-white font-bold w-10 h-10 flex items-center justify-center rounded-full -mt-5 mb-3 shadow" style="z-index: 999;">
+                ' . $i . '
+            </div>
+
+            <!-- Name -->
+            <div class="text-xl font-bold text-[#003152] flex items-center justify-center">
+                ' . $nameLabel . '
+                ' . $youTag . '
+            </div>
+
+            <!-- Department -->
+           <div class="text-gray-500 text-sm mt-1">
+    ' . (!empty($row->department) ? $row->department : "-") . '
+</div>
+
+            <!-- Points -->
+            <div class="flex items-center justify-center gap-2 text-yellow-500 font-extrabold text-2xl mt-4">
+                <span class="material-symbols-rounded text-yellow-500 text-3xl">emoji_events</span>
+                ' . $row->available_points . '
+            </div>
+
+        </div>';
+
+        if ($i >= 3) break;
         $i++;
     }
-    $table .= '</div>'; // Close the flex container
 
+    $table .= '</div>';
     return $table;
 }
 
 
-function get_leaderboard()
+
+function get_leaderboard() 
 {
     global $USER, $CFG, $DB, $OUTPUT, $SESSION;
     if (!empty($SESSION->currenteditingcompany)) {
@@ -637,69 +712,108 @@ function get_leaderboard()
     } else {
         $selectedcompany = "";
     }
+
     if ($selectedcompany) {
         $sql = "SELECT u.*, p.available_points, p.userrank FROM {user_points} p 
-    INNER JOIN {user} u ON u.id = p.userid 
-    INNER JOIN {company_users} cu ON cu.userid = p.userid
-    WHERE u.deleted = 0 AND u.suspended = 0 AND cu.companyid = $selectedcompany AND cu.managertype != 1 ORDER BY  p.available_points DESC LIMIT 0,10";
+        INNER JOIN {user} u ON u.id = p.userid 
+        INNER JOIN {company_users} cu ON cu.userid = p.userid
+        WHERE u.deleted = 0 AND u.suspended = 0 AND cu.companyid = $selectedcompany 
+        AND cu.managertype != 1 
+        ORDER BY  p.available_points DESC LIMIT 0,10";
     } else {
         $sql = "SELECT u.*, p.available_points, p.userrank FROM {user_points} p 
         INNER JOIN {user} u ON u.id = p.userid
-        WHERE u.deleted = 0 AND u.suspended = 0 ORDER BY  p.available_points DESC LIMIT 0,10";
+        WHERE u.deleted = 0 AND u.suspended = 0 
+        ORDER BY  p.available_points DESC LIMIT 0,10";
     }
-    //  include $CFG->dirroot . '/lib/badgeslib.php';
-    require_once($CFG->libdir . '/badgeslib.php');
 
+    require_once($CFG->libdir . '/badgeslib.php');
 
     $records = $DB->get_records_sql($sql);
     $i = 1;
     $table = '';
+
     foreach ($records as $row) {
 
+        // ---> NEW: highlight if it's the logged-in user
+        $iscurrent = ($row->id == $USER->id);
+        $rowClass = $iscurrent ? "bg-yellow-100 border-l-4 border-yellow-500" : "bg-white";
+        $nameLabel = $iscurrent 
+            ?$row->firstname . " " . $row->lastname
+            : $row->firstname . " " . $row->lastname;
+
+        $youTag = $iscurrent 
+            ? '<span class="ml-2 text-xs px-2 py-0.5 rounded-full bg-yellow-200 text-yellow-800">You</span>' 
+            : '';
+
+        // IMAGE
         $usercontext = context_user::instance($row->id);
         $src = $CFG->wwwroot . "/pluginfile.php/$usercontext->id/user/icon/f1";
+
+        // BADGES
         $badges = $DB->get_records('badge_issued', array('userid' => $row->id));
+
+        // REQUEST BUTTON LOGIC (UNCHANGED)
         $customlevel = $DB->get_record('custom_level', array('level' => $row->userrank));
         if ($customlevel->id != '' && $customlevel->id < 10) {
-            $requestbtn = '<a href="' . $CFG->wwwroot . '/local/mydashboard/sme_request.php?id=' . $row->id . '" type="button" class="btn btn-primary question">Send Request</a>';
+            $requestbtn = '<a href="' . $CFG->wwwroot . '/local/mydashboard/sme_request.php?id=' . $row->id . '" 
+            type="button" class="btn text-light question" 
+            style="background: linear-gradient(90deg, #0B2964, #23468D);">Send Request</a>';
         } else {
             $requestbtn = '';
         }
 
-        $table .= '<tr>
-                      <th scope="row"> <span>' . $i . '</span></th>
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <img class="rounded-circle" src="' . $src . '" width="30">
-                          <div class="ms-2">' . $row->firstname . ' ' . $row->lastname . '</div>
-                          <i class="fa fa-paper-plane ml-2 sendmsg" value="' . $row->id . '"></i>
-                        </div>
-                      </td>
-                      <td>' . $row->userrank . '</td>
-                      <td>' . $row->department . '</td>
-                      <td>' . $row->available_points . '</td>
-                      <td class="badgesData">
-                        <div class="d-flex align-items-center">';
+        // ROW UI
+        $table .= '
+<div class="grid grid-cols-7 items-center py-2 px-2 hover:bg-gray-50 '.$rowClass.'">
+
+    <!-- Rank -->
+    <div class="text-gray-700 font-semibold" style="width:fit-content;">'.$i.'</div>
+
+    <!-- Name + Image -->
+    <div class="flex items-center gap-3" style="position: relative;
+    right: 130px;
+    width: 260px !important;">
+        <img src="'.$src.'" class="w-10 h-10 rounded-full object-cover">
+        <span class="font-medium text-gray-800">'.$nameLabel.'</span>
+        '.$youTag.'
+    </div>
+
+    <!-- Rank -->
+    <div>
+        <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs">
+            '.$row->userrank.'
+        </span>
+    </div>
+
+    <!-- Department -->
+    <div class="text-gray-700">'.$row->department.'</div>
+
+    <!-- Points -->
+    <div class="font-semibold text-[#003152]">'.$row->available_points.'</div>
+
+    <!-- Badges -->
+    <div class="flex gap-1">';
+
         foreach ($badges as $badge) {
-
             $badgeObj = new badge($badge->badgeid);
-
             $badge_context = $badgeObj->get_context();
-
-            $table .= print_badge_image($badgeObj, $badge_context, 'small');  //  size parameter could be 'small' or 'large'
+            $table .= print_badge_image($badgeObj, $badge_context, 'small');
         }
 
+        $table .= '
+    </div>
 
+    <!-- Action -->
+    <div>'.$requestbtn.'</div>
 
-        $table .= '</div>
-                      </td>
-                      <td>' . $requestbtn . '</td>
-                    </tr>
-                    ';
+</div>';
+
         $i++;
     }
     return $table;
 }
+
 
 function get_lifetime_points($userid)
 {

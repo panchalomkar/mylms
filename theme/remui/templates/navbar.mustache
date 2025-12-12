@@ -70,119 +70,28 @@
 $(document).ready(function($){
 $("#sidebar_btn").on('click',function(){
   $("body").toggleClass("collapsed");
+
+      // If sidebar is collapsed → apply CSS
+        if ($("body").hasClass("collapsed")) {
+            $("#mdb-navbar").css({
+                "z-index": "99999"
+            });
+        } 
+        // If sidebar is expanded → remove CSS
+        else {
+            $("#mdb-navbar").css({
+                "z-index": "",
+                "position": ""
+            });
+        }
+
   
 });
 });
 </script>
 <style>
- input[type="checkbox"].navcheckbox:not(.custom-control-input):not(:checked):after {
-          display:none !important;
-      }
- .block-body-wrapper,.block_myoverview {
-    background: transparent !important;
-    border: none;
-}
-.tool-left-panel ul li {
-    a{font-size:12px; !important}
-    margin: 20px 0;
-    background: #003152;
-    padding: 5px;
-    border-radius: 5px;
-}
-/* Container should display panels side by side */
-.tool-left-panel,
-.sidebar {
-    float: left;
-}
-
-/* Tool panel (small icons only) */
-.tool-left-panel {
-        width: 30px;
-       background: #f6f8fc;
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 20px;
-    text-align: center;
-    z-index: 999;
-    position: fixed;
-    height:100vh;
-    justify-content: center;
-    display: flex;
-    align-items: center;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    top:0;
-}
-
-.tool-left-panel ul {
-    list-style: none;
-   padding: 5px;
-    margin: 0;
-    background: #5770a391;
-}
-
-.tool-left-panel ul li {
-    margin: 20px 0;
-}
-
-.tool-left-panel ul li a {
-    color: #fff;
-    font-size: 12px;
-    display: block;
-    transition: color 0.3s ease;
-}
-
-.tool-left-panel ul li a:hover {
-    color: #ec9707; /* accent on hover */
-}
-
-/* Push main sidebar right */
-.sidebar {
-    margin-left: 60px; /* same as tool panel width */
-}
-.sidebar ul li {
-        padding-left: 10px;
-}
-@media (min-width: 576px) {
-    #page-wrapper {
-        height: 100%;
-        display: block !important;
-        /* flex-direction: column; */
-    }
-}
- .sidebar span.icon.sitelogo{display: none;
- img.icon{max-width:40px!important;min-height:35px!important;width: 35px !important;}
- }
- #check:checked~.sidebar a.navbar-brand{    margin-left: 148px !important;}
- .rapkoala img.icon{max-width:50px!important;width:32px!important;max-height:32px!important;height:50px;}
- .rapkoalaname img.icon {
-    max-width: 160px !important;
-    width: 105px !important;
-    max-height: 82px !important;
-    height: 15px;
-}
-.koala-container{ 
-    background: linear-gradient(45deg, #adbdf6, #93e19cd6);
-       margin-bottom: 10px;
-    border: none;
-    padding: 0px;
-    border-radius: 15px;}
-
-    #typing {
-   border-right: 2px solid #333;
-  white-space: nowrap;
-  overflow: hidden;
-  display: inline-block;
-  font-family: monospace;
-  font-size: 24px;
-}
-
-@keyframes typing {
-  from { width: 0; }
-  to { width: 100%; }
-}
-
-@keyframes blink {
-  50% { border-color: transparent; }
+#check:checked~.sidebar {
+    top: -40px;
 }
 </style>
 {{#sidebarurl}}
@@ -209,25 +118,17 @@ $(document).ready(function($) {
 <!--sidebar end-->
 
 <!--mini tools -->
-<div class="tool-left-panel">
+<div class="tool-left-panel d-none">
     <ul>
-    <li> <div class="togsec" style="padding-right:4px;">
-     <label for="check" class="m-0">
-        <i class="fa fa-bars" id="sidebar_btn" style="font-size:12px;"></i>
-    </label>
-    </div></li>
+    
         <li><a href="{{notificationss}}"><i class="fa fa-bell"></i></a></li>
         <li><a href="{{mail}}"><i class="fa fa-envelope"></i></a></li>
         <li><a href="{{usersetting}}"><i class="fa fa-cog"></i></a></li>
     </ul>
 </div>
 
-<div class="sidebar" style="padding: 19px 0px 0px 16px !important;margin-left: 10px;!important" >
- <a href="{{{ config.homeurl }}}" class="navbar-brand" aria-label="{{ sitename }} - {{#str}}brandname, theme_remui{{/str}}" title="{{ sitename }}">
-   <span class="icon sitelogo">
-   {{#pix}}favicon, theme{{/pix}}
-</span>
-
+<div class="sidebar" style="padding: 19px 0px 0px 16px !important;margin-left: 0px;!important;z-index: 9999;" >
+ <a href="{{{ config.homeurl }}}" class="navbar-brand logoalign d-flex item-center" aria-label="{{ sitename }} - {{#str}}brandname, theme_remui{{/str}}" title="{{ sitename }}">
       
         <span class="">  {{#output.get_branding_context}}
             {{#logourl}}
@@ -252,12 +153,16 @@ $(document).ready(function($) {
             {{/iconwithsitename}}
         {{/output.get_branding_context}}</span>
     </a>
- 
-    
+ <hr>
+     <div class="togsec">
+     <label for="check">
+        <i class="fa fa-bars" id="sidebar_btn"></i>
+    </label>
+    </div>
 <div class="sidecontent mt-3">
-
 {{#admin}}
 <ul class="menu">
+
    <li id="mainmenu">
    <a href="{{dashboard}}"  title="Dasboard">
                            <span class="icon"><i class="fa fa-tachometer" aria-hidden="true"></i></span> <span class="">Dashboard</span></a></li>
@@ -384,7 +289,29 @@ $(document).ready(function($) {
 {{/sidebarurl}}
 
 <nav id="mdb-navbar" class="navbar fixed-top navbar-expand {{navlayout}}  {{#homepagetransparentheader}}trasnparent-home-nav{{/homepagetransparentheader}}" aria-label="{{#str}}sitemenubar, admin{{/str}}">
+ <a href="{{{ config.homeurl }}}" class="navbar-brand logoalign d-flex item-center" aria-label="{{ sitename }} - {{#str}}brandname, theme_remui{{/str}}" title="{{ sitename }}" style="background: transparent !important;">
+      <span class="">  {{#output.get_branding_context}}
+            {{#logourl}}
+                <img src="{{ logourl }}" class="navbar-brand-logo mb-2 logo" style=" height: 100% ;">
+            {{/logourl}}
 
+            {{#logominiurl}}
+                <img src="{{ logominiurl }}" class="navbar-brand-logo logomini">
+            {{/logominiurl}}
+
+            {{#icononly}}
+                <span class="navbar-brand-logo icononly" style="color: {{color}};">
+                    <i class="fa fa-{{siteicon}}"></i>
+                </span>
+            {{/icononly}}
+
+            {{#iconwithsitename}}
+                <span class="navbar-brand-logo iconsitename" style="color: {{color}};">
+                    <i class="fa fa-{{siteicon}}"></i>&nbsp;
+                    {{{ sitename }}}
+                </span>
+            {{/iconwithsitename}}
+        {{/output.get_branding_context}}</span></a>
  
     <div>{{# output.edw_search_box }}
                 {{{ output.edw_search_box }}}
@@ -408,23 +335,39 @@ $(document).ready(function($) {
         <!-- page_heading_menu -->
         <!-- {{{ output.page_heading_menu }}}-->
         <!-- </ul> -->
-        
-    {{#usermenu}}
-            <div class="d-flex d-none usermenu-wrapper">
+
+        <div id="usernavigation" class="navbar-nav ml-auto">
+        {{#showstatus}}
+        <span class="score-desplay"><i class="fa fa-trophy" aria-hidden="true"></i><span>{{userxppoint}} Points</span></span>
+        {{/showstatus}}
+           <button id="darkmodeid" class="colortoggle d-none" value="1"><i class="fa fa-moon-o" aria-hidden="true"></i></button>
+           
+
+            {{#edwisermenu}}
+                <div class="edwiser-navigation">
+                    {{> core/moremenu}}
+                </div>
+            {{/edwisermenu}}
+            
+            {{#langmenu}}
+                {{> theme_remui/language_menu }}
+            {{/langmenu}}
+            {{{ output.navbar_plugin_output }}}
+
+            {{#usermenu}}
+            <div class="d-flex usermenu-wrapper">
                 <div class="divider  h-75 align-self-center"></div>
-                <div class="d-flex align-items-stretch usermenu-container" data-region="usermenu">
-                    {{> core/user_menu }}
+                <div class="d-flex align-items-center usermenu-container" data-region="usermenu">
+                   <span class="uname">{{usernamedis}}</span> {{> core/user_menu }}
                 </div>
                 {{#isloggedin}}
                 <div class="divider  h-75 align-self-center"></div>
                 {{/isloggedin}}
             </div>
             {{/usermenu}}
-        <div id="usernavigation" class="navbar-nav ml-auto">
-        
+
             {{{ output.edit_switch }}}
         </div>
-    
     </div>
 
 </nav>

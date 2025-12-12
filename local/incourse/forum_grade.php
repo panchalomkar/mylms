@@ -23,12 +23,12 @@ $courses = $DB->get_records_menu('course', null, 'fullname', 'id, fullname');
 
 
 // Dropdown with icon and label (proper alignment)
-echo '<div class="max-w-5xl mx-auto p-6">
+echo '<div class="max-w-5xl mx-auto pt-4 pb-4  d-flex">
         <label class="flex items-center gap-2 font-medium text-gray-700 text-lg">
             <span class="material-icons text-blue-500">school</span>
             Select Course:
         </label>
-        <form method="GET" class="mt-2">
+        <form method="GET" class="mt-2 ml-2">
             <select name="courseid" id="courseid" class="border p-2 rounded w-80" onchange="this.form.submit()">
                 <option value="">-- Select Course --</option>';
 foreach ($courses as $id => $name) {
@@ -121,20 +121,22 @@ if (empty($forums)) {
 }
 ?>
 
+
 <!-- Modal -->
-<div id="forumModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-40 items-center justify-center">
+<div id="forumModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-40 items-center justify-center" style="z-index: 99999999999999;">
     <div class="bg-white rounded-lg w-11/12 max-w-5xl p-6 relative mx-auto my-20 shadow-lg">
         <button onclick="closeModal()" class="absolute top-2 right-2 material-icons text-gray-700 hover:text-black cursor-pointer text-2xl">
             close
         </button>
 
-        <!-- Question + Download Buttons -->
+        <!-- Title + Downloads -->
+           <!-- Question + Download Buttons -->
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold flex items-center gap-2" id="modalTitle">
-                <span class="material-icons text-blue-500">question_answer</span> Forum Responses
+                <span class="material-icons text-blue-500">question_answer</span> 
             </h2>
-            <div class="flex gap-2 d-none">
-                <button id="downloadPdf" class="bg-red-600 text-white px-3 py-1 rounded flex items-center gap-1 hover:bg-red-700">
+            <div class="flex gap-2">
+                <button id="downloadPdf" class="bg-red-600 d-none text-white px-3 py-1 rounded flex items-center gap-1 hover:bg-red-700">
                     <span class="material-icons">picture_as_pdf</span> PDF
                 </button>
                 <button id="downloadExcel" class="bg-green-600 text-white px-3 py-1 rounded flex items-center gap-1 hover:bg-green-700">
@@ -142,14 +144,30 @@ if (empty($forums)) {
                 </button>
             </div>
         </div>
+       
 
+        <!-- Search bar -->
+      <div class="mb-3 relative col-md-6">
+    <span class="material-icons absolute  left-3 top-2.5 ml-2 text-gray-500">
+        search
+    </span>
+    <input type="text" 
+           id="searchInput" 
+           onkeyup="applySearch()" 
+           placeholder="Search user, email or text..."
+           class="border rounded pl-10 px-3  py-2 w-full focus:ring focus:ring-blue-200" style="padding-left: 40px !important;
+">
+</div>
+
+
+        <!-- Table -->
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 border border-gray-300">
                 <thead class="bg-gray-100">
                     <tr>
                         <th class="px-2 py-2 text-center text-sm font-medium text-gray-700">#</th>
                         <th class="px-2 py-2 text-center text-sm font-medium text-gray-700">Pic</th>
-                        <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Student</th>
+                        <th class="px-4 py-2 text-left text-sm font-medium text-gray-700"> Name</th>
                         <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Email</th>
                         <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Response</th>
                         <th class="px-4 py-2 text-center text-sm font-medium text-gray-700">Grade</th>
@@ -158,13 +176,30 @@ if (empty($forums)) {
                 <tbody id="modalBody" class="text-sm text-gray-700"></tbody>
             </table>
         </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-between items-center mt-4">
+            <button onclick="prevPage()"
+                class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Prev</button>
+            <span id="pageInfo" class="text-sm font-semibold"></span>
+            <button onclick="nextPage()"
+                class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Next</button>
+        </div>
     </div>
 </div>
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 let currentForumId = 0;
+let fullData = [];  // All data from AJAX
+let filteredData = []; 
+let currentPage = 1;
+const itemsPerPage = 5;
 
+// ------------------------------
+// OPEN MODAL + LOAD DATA
+// ------------------------------
 function openModal(forumid) {
     currentForumId = forumid;
     $('#forumModal').removeClass('hidden').addClass('flex');
@@ -176,44 +211,94 @@ function openModal(forumid) {
         data: { forumid: forumid },
         dataType: 'json',
         success: function(res) {
-            $('#modalBody').empty();
+            fullData = res;
+            filteredData = res;
+            currentPage = 1;
+
             if(res.length === 0) {
-                $('#modalBody').html('<tr><td colspan="6" class="px-4 py-2 text-center text-gray-500">No responses found for this forum</td></tr>');
-                $('#modalTitle').html('<span class="material-icons text-blue-500 align-middle">question_answer</span> No responses');
+                $('#modalBody').html('<tr><td colspan="6" class="text-center text-gray-500 py-3">No responses found</td></tr>');
                 return;
             }
 
-            $('#modalTitle').html('<span class="material-icons text-blue-500 align-middle">question_answer</span> ' + res[0].question);
+            $('#modalTitle').html('<span class="material-icons text-blue-500">question_answer</span> ' + res[0].question);
 
-            res.forEach(function(r, index){
-                $('#modalBody').append(
-                    '<tr class="border-b">' +
-                        '<td class="px-2 py-2 text-center">'+(index+1)+'</td>' +
-                        '<td class="px-2 py-2 text-center">'+r.picturee+'</td>' +
-                        '<td class="px-4 py-2">'+r.student+'</td>' +
-                        '<td class="px-4 py-2">'+r.email+'</td>' +
-                        '<td class="px-4 py-2">'+r.response+'</td>' +
-                        '<td class="px-4 py-2 text-center font-semibold">'+r.grade+'</td>' +
-                    '</tr>'
-                );
-            });
+            renderTable();
         },
         error: function() {
-            $('#modalBody').html('<tr><td colspan="6" class="px-4 py-2 text-center text-red-600">Error loading responses</td></tr>');
+            $('#modalBody').html('<tr><td colspan="6" class="text-center text-red-600">Error loading responses</td></tr>');
         }
     });
 }
 
+// ------------------------------
+// SEARCH FUNCTION
+// ------------------------------
+function applySearch() {
+    let q = $('#searchInput').val().toLowerCase();
+
+    filteredData = fullData.filter(r =>
+        r.student.toLowerCase().includes(q) ||
+        r.email.toLowerCase().includes(q) ||
+        r.response.toLowerCase().includes(q)
+    );
+
+    currentPage = 1;
+    renderTable();
+}
+
+// ------------------------------
+// PAGINATION
+// ------------------------------
+function renderTable() {
+    $('#modalBody').empty();
+
+    let start = (currentPage - 1) * itemsPerPage;
+    let end = start + itemsPerPage;
+    let pageItems = filteredData.slice(start, end);
+
+    if(pageItems.length === 0) {
+        $('#modalBody').html('<tr><td colspan="6" class="text-center py-3 text-gray-500">No results found</td></tr>');
+    }
+
+    pageItems.forEach(function(r, index) {
+        $('#modalBody').append(`
+            <tr class="border-b">
+                <td class="px-2 py-2 text-center">${start + index + 1}</td>
+                <td class="px-2 py-2 text-center">${r.picture}</td>
+                <td class="px-4 py-2">${r.student}</td>
+                <td class="px-4 py-2">${r.email}</td>
+                <td class="px-4 py-2">${r.response}</td>
+                <td class="px-4 py-2 text-center font-semibold">${r.grade}</td>
+            </tr>
+        `);
+    });
+
+    // Page Info
+    let totalPages = Math.ceil(filteredData.length / itemsPerPage);
+    $('#pageInfo').text(`Page ${currentPage} of ${totalPages}`);
+}
+
+function nextPage() {
+    let totalPages = Math.ceil(filteredData.length / itemsPerPage);
+    if(currentPage < totalPages) {
+        currentPage++;
+        renderTable();
+    }
+}
+
+function prevPage() {
+    if(currentPage > 1) {
+        currentPage--;
+        renderTable();
+    }
+}
+
+// ------------------------------
+// CLOSE MODAL
+// ------------------------------
 function closeModal() {
     $('#forumModal').addClass('hidden').removeClass('flex');
 }
-
-// Close modal on clicking overlay
-$('#forumModal').click(function(e){
-    if(e.target.id === 'forumModal') {
-        closeModal();
-    }
-});
 
 // Download buttons
 $('#downloadPdf').click(function() {

@@ -79,7 +79,30 @@ list($n1, $n2, $n3) = $cards[2];
 
 $context_data = [
     'user_stats' => $output,
+
+    // Chart values
+    'chartdata' => [
+        'login'   => (int) $output['login_points'],
+        'spin'    => (int) $output['spinwheel_points'],
+        'rank'    => (int) $output['my_rank'],
+        'quiz'    => (int) $output['quiz_points'],
+        'rewards' => (int) $output['rewards_received_points'],
+
+        // Weekly bar chart (dynamic last 7 days)
+        'weekgraph' => [
+            get_points_last7($userid, 'mon'),
+            get_points_last7($userid, 'tue'),
+            get_points_last7($userid, 'wed'),
+            get_points_last7($userid, 'thu'),
+            get_points_last7($userid, 'fri'),
+            get_points_last7($userid, 'sat'),
+            get_points_last7($userid, 'sun'),
+        ]
+    ]
 ];
+
+// print_r($context_data);
+
 
 echo $OUTPUT->render_from_template('local_mydashboard/landing_page', $context_data);
 ?>
@@ -91,12 +114,21 @@ echo $OUTPUT->render_from_template('local_mydashboard/landing_page', $context_da
 
 <!--****custom css****-->
 <link rel="stylesheet" href="sunil/style.css">
-<script src="external/jquery.min.js"
-    integrity="sha512-3P8rXCuGJdNZOnUx/03c1jOTnMn3rP63nBip5gOP2qmUh5YAdVAvFZ1E+QLZZbC1rtMrQb+mah3AfYW11RUrWA=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- Google Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+<!-- DATATABLES WITH BUTTONS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+
 <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script> -->
 
 <!--SUNIL END-->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
 
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <!--<link rel="stylesheet" href="main.css" type="text/css" />
@@ -113,304 +145,568 @@ echo $OUTPUT->render_from_template('local_mydashboard/landing_page', $context_da
 <!--<script src="external/dist/js/demo.js"></script>-->
 <script type="text/javascript" src="external/jquery-1.11.0.min.js"></script>
 <script type="text/javascript" src="external/wScratchPad.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
 <script src="external/Winwheel.js"></script>
 <script src="external/TweenMax.min.js"></script>
+
+
 <style>
+
+ #region-main-box #region-main div[role="main"] {
+     background: transparent;
+    box-shadow: none !important;
+}
+
+#page-local-mydashboard-index #page-header {display: none;}
+.text-game {
+background: linear-gradient(90deg, #003152, #ec9707);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+    /* MAIN CARD STYLING */
+.leader-wrapper {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 35px;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.05);
+}
+
+/* TOP 3 USER CARDS */
+.top-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 30px 25px;
+    text-align: center;
+    border: 3px solid transparent;
+    transition: .3s;
+}
+
+.top-card.gold { border-color: #f4cb24; }
+.top-card.silver { border-color: #d9d9d9; }
+.top-card.bronze { border-color: #ffb879; }
+
+.top-card:hover { transform: translateY(-5px); }
+
+/* PROFILE IMAGE */
+.top-user-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #f4cb24;
+    animation: zoomPulse 2.5s ease-in-out infinite;
+}
+
+/* ZOOM ANIMATION */
+@keyframes zoomPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+}
+
+
+/* TOP 3 LAYOUT */
+.top-three-container {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 35px;
+}
+
+.top-three-item {
+    flex: 1;
+}
+
     .scratchpad {
         width: 15%;
         height: 160px;
         border: solid 5px;
         display: inline-block;
     }
+    .legend-2col {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 4px;
+    column-gap: 10px;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+.animate-fadeIn { animation: fadeIn .25s ease-out; }
+/* Fast smooth spin */
+.animate-spin-fast {
+    animation: spin 0.4s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.shadow-inner {
+    box-shadow: inset 0 0 15px rgba(255, 200, 0, 0.4);
+}
+/* MAIN CARD STYLING */
+.leader-wrapper {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 35px;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.05);
+}
+
+/* TOP 3 USER CARDS */
+.top-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 30px 25px;
+    text-align: center;
+    border: 3px solid transparent;
+    transition: .3s;
+}
+
+.top-card.gold { border-color: #f4cb24; }
+.top-card.silver { border-color: #d9d9d9; }
+.top-card.bronze { border-color: #ffb879; }
+
+.top-card:hover { transform: translateY(-5px); }
+
+/* PROFILE IMAGE */
+.top-user-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #f4cb24;
+    animation: zoomPulse 2.5s ease-in-out infinite;
+}
+
+/* ZOOM ANIMATION */
+@keyframes zoomPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+}
+
+/* TABLE HEADER */
+.leader_table_d thead {
+    background: #05245c;
+    color: #fff;
+    border-radius: 12px;
+}
+
+.leader_table_d th {
+    padding: 14px 10px;
+    font-weight: 600;
+    text-transform: none;
+}
+
+/* TABLE ROW */
+.leader_table tbody tr {
+    background: #f7f9fc;
+    border-radius: 14px;
+    margin-bottom: 10px;
+}
+
+.leader_table tbody tr td {
+    padding: 18px 10px;
+    vertical-align: middle;
+    font-size: 15px;
+    color: #333;
+}
+
+/* BADGE STYLE */
+.badge-count {
+    background: #f4cb24;
+    padding: 6px 12px;
+    border-radius: 50px;
+    font-weight: bold;
+    color: #000;
+}
+
+/* RANK NUMBER CIRCLE */
+.rank-circle {
+    width: 36px;
+    height: 36px;
+    background: #e8edf5;
+    color: #555;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+}
+
+/* TOP 3 LAYOUT */
+.top-three-container {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 35px;
+}
+
+.top-three-item {
+    flex: 1;
+}
+#demo1, #demo2, #demo3 {
+    border-radius: 10px;
+    border: solid 2px gold;
+    box-shadow: 0 4px 8px rgba(244, 201, 8, 0.75);
+    overflow: hidden;
+}
 </style>
 <script>
 
-    var cnt1 = 0;
-    var cnt2 = 0;
-    var cnt3 = 0;
-    $('#demo1').wScratchPad({
-        fg: '<?php echo $n1 ?>',
-        bg: '<?php echo $scratch1 ?>',
+const donutCtx = document.getElementById('donutChart').getContext('2d');
 
-        scratchMove: function (e, percent) {
+// Plugin: Show text inside the center of donut
+const centerText = {
+    id: 'centerText',
+    afterDraw(chart, args, options) {
+        const {ctx, chartArea} = chart;
 
-            if (percent > 50) {
+        // Get actual center of doughnut
+        const centerX = chart.getDatasetMeta(0).data[0].x;
+        const centerY = chart.getDatasetMeta(0).data[0].y;
 
-                this.clear();
-                var spoint = $('#demo1').attr('point');
-                var scid = $('#demo1').attr('scid');
+        ctx.save();
+        ctx.font = "600 14px sans-serif";  // Smaller text
+        ctx.fillStyle = "#003152";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
 
-                if (cnt1 == 0) {
-                    cnt1++;
-                    $.ajax({
-                        url: 'ajax.php',
-                        type: 'post',
-                        dataType: 'html',
-                        data: { action: 'SCRATCHCARD', spoint: spoint, scid: scid },
-                        success: function (res) {
-                            //                                alert('You got ' + spoint + ' points');
-                            if (parseInt(res) > 0) {
-                                $('#spinpoint').html(spoint);
-                                if (parseInt(spoint) <= 10) {
-                                    $('#popupimage').html('<img src="./images/pop/1-10.gif" width="200">');
-                                } else if (parseInt(spoint) > 10 && parseInt(spoint) <= 20) {
-                                    $('#popupimage').html('<img src="./images/pop/10-20.gif" width="200">');
-                                } else if (parseInt(spoint) > 20) {
-                                    $('#popupimage').html('<img src="./images/pop/21-50.gif" width="200">');
-                                }
-                                $('#spindWheel').modal('show');//now its working
-                            } else {
-                                alert('Better luck next time');
-                                window.location.reload();
-                            }
-                        }
-                    });
-                } else {
-                    cnt1++;
+        ctx.fillText(options.text, centerX, centerY);
+        ctx.restore();
+    }
+};
 
-                }
-            }
+
+// DATA
+const labels = ['Login points', 'Speen Wheel', 'Leadership', 'Quiz points', 'Rewards'];
+const values = [
+    <?php echo $context_data['chartdata']['login']; ?>,
+    <?php echo $context_data['chartdata']['spin']; ?>, <?php echo $context_data['chartdata']['rank']; ?>, <?php echo $context_data['chartdata']['quiz']; ?>, <?php echo $context_data['chartdata']['rewards']; ?>
+];
+
+const colors = ['#003152', 'rgb(36, 71, 143)', 'hsl(220 85% 25%)', 'hsl(48 96% 50%)', 'rgb(251, 212, 55)'];
+
+// CREATE CHART
+let donutChart = new Chart(donutCtx, {
+    type: 'doughnut',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Points',
+            data: values,
+            backgroundColor: colors,
+            hoverOffset: 15,        // 🔥 More zoom effect
+            borderWidth: 2
+        }]
+    },
+   options: {
+    responsive: true,
+    cutout: '60%',
+
+    layout: {
+        padding: {
+            top: 25,
+            bottom: 25,
+            left: 25,
+            right: 25
         }
-    });
-    $('#demo2').wScratchPad({
-        fg: '<?php echo $n2 ?>',
-        bg: '<?php echo $scratch2 ?>',
-        scratchMove: function (e, percent) {
-            console.log(percent);
+    },
 
-            if (percent > 50) {
-                this.clear();
-                var spoint = $('#demo2').attr('point');
-                var scid = $('#demo2').attr('scid');
+    interaction: {
+        mode: 'nearest',
+        intersect: true
+    },
 
-                if (cnt2 == 0) {
-                    cnt2++;
-                    $.ajax({
-                        url: 'ajax.php',
-                        type: 'post',
-                        dataType: 'html',
-                        data: { action: 'SCRATCHCARD', spoint: spoint, scid: scid },
-                        success: function (res) {
-                            //                                alert('You got ' + spoint + ' points');
+    plugins: {
+        legend: { display: false },
 
-                            if (res > 0) {
-                                $('#spinpoint').html(spoint);
-                                if (parseInt(spoint) <= 10) {
-                                    $('#popupimage').html('<img src="./images/pop/1-10.gif" width="200">');
-                                } else if (parseInt(spoint) > 10 && parseInt(spoint) <= 20) {
-                                    $('#popupimage').html('<img src="./images/pop/10-20.gif" width="200">');
-                                } else if (parseInt(spoint) > 20) {
-                                    $('#popupimage').html('<img src="./images/pop/21-50.gif" width="200">');
-                                }
-                                $('#spindWheel').modal('show');//now its working
-                            } else {
-                                alert('Better luck next time');
-                            }
-                        }
-                    });
-                } else {
-                    cnt2++;
+        tooltip: {
+            enabled: false
+        },
 
-                }
-            }
-        }
-    });
-    $('#demo3').wScratchPad({
-        fg: '<?php echo $n3 ?>',
-        bg: '<?php echo $scratch3 ?>',
-        scratchMove: function (e, percent) {
-            console.log(percent);
+        centerText: { text: "" }
+    },
 
-            if (percent > 50) {
-                this.clear();
-                var spoint = $('#demo3').attr('point');
-                var scid = $('#demo3').attr('scid');
-
-                if (cnt3 == 0) {
-                    cnt3++;
-                    $.ajax({
-                        url: 'ajax.php',
-                        type: 'post',
-                        dataType: 'html',
-                        data: { action: 'SCRATCHCARD', spoint: spoint, scid: scid },
-                        success: function (res) {
-                            if (res > 0) {
-                                $('#spinpoint').html(spoint);
-                                if (parseInt(spoint) <= 10) {
-                                    $('#popupimage').html('<img src="./images/pop/1-10.gif" width="200">');
-                                } else if (parseInt(spoint) > 10 && parseInt(spoint) <= 20) {
-                                    $('#popupimage').html('<img src="./images/pop/10-20.gif" width="200">');
-                                } else if (parseInt(spoint) > 20) {
-                                    $('#popupimage').html('<img src="./images/pop/21-50.gif" width="200">');
-                                }
-                                $('#spindWheel').modal('show');//now its working
-                            } else {
-                                alert('Better luck next time');
-                            }
-                        }
-                    });
-                } else {
-                    cnt3++;
-
-                }
-            }
-        }
-    });
-
-
-    // Create new wheel object specifying the parameters at creation time.
-    var theWheel = new Winwheel({
-        'numSegments': 12, // Specify number of segments.
-        'outerRadius': 120, // Set outer radius so wheel fits inside the background.
-        'textFontSize': 20, // Set font size as desired.
-        'segments': // Define segments including colour and text.
-            [
-                { 'fillStyle': '#eae56f', 'text': '00' },
-                { 'fillStyle': '#89f26e', 'text': '5' },
-                { 'fillStyle': '#7de6ef', 'text': '7' },
-                { 'fillStyle': '#a87b32', 'text': '5' },
-                { 'fillStyle': '#eae56f', 'text': '9' },
-                { 'fillStyle': '#89f26e', 'text': '13' },
-                { 'fillStyle': '#7de6ef', 'text': '5' },
-                { 'fillStyle': '#e7706f', 'text': '17' },
-                { 'fillStyle': '#89f26e', 'text': '00' },
-                { 'fillStyle': '#e7706f', 'text': '21' },
-                { 'fillStyle': '#eae56f', 'text': '30' },
-                { 'fillStyle': '#a83255', 'text': '50' }
-            ],
-        'animation': // Specify the animation to use.
-        {
-            'type': 'spinToStop',
-            'duration': 5, // Duration in seconds.
-            'spins': 8, // Number of complete spins.
-            'callbackFinished': alertPrize
-        }
-    });
-
-    // Vars used by the code in this page to do power controls.
-    var wheelPower = 0;
-    var wheelSpinning = false;
-
-    // -------------------------------------------------------
-    // Function to handle the onClick on the power buttons.
-    // -------------------------------------------------------
-    function powerSelected(powerLevel) {
-        // Ensure that power can't be changed while wheel is spinning.
-        if (wheelSpinning == false) {
-            // Reset all to grey incase this is not the first time the user has selected the power.
-            document.getElementById('pw1').className = "";
-            document.getElementById('pw2').className = "";
-            document.getElementById('pw3').className = "";
-
-            // Now light up all cells below-and-including the one selected by changing the class.
-            if (powerLevel >= 1) {
-                document.getElementById('pw1').className = "pw1";
-            }
-
-            if (powerLevel >= 2) {
-                document.getElementById('pw2').className = "pw2";
-            }
-
-            if (powerLevel >= 3) {
-                document.getElementById('pw3').className = "pw3";
-            }
-
-            // Set wheelPower var used when spin button is clicked.
-            wheelPower = powerLevel;
-
-            // Light up the spin button by changing it's source image and adding a clickable class to it.
-            document.getElementById('spin_button').src = "spin_on.png";
-            document.getElementById('spin_button').className = "clickable";
+    onHover: function(evt, items) {
+        if (items.length > 0) {
+            const index = items[0].index;
+            donutChart.options.plugins.centerText.text =
+                labels[index] + ": " + values[index];
+            donutChart.update();
         }
     }
+},
+    plugins: [centerText]
+});
 
-    // -------------------------------------------------------
-    // Click handler for spin button.
-    // -------------------------------------------------------
-    function startSpin() {
-        // Ensure that spinning can't be clicked again while already running.
-        if (wheelSpinning == false) {
-            // Based on the power level selected adjust the number of spins for the wheel, the more times is has
-            // to rotate with the duration of the animation the quicker the wheel spins.
-            if (wheelPower == 1) {
-                theWheel.animation.spins = 3;
-            } else if (wheelPower == 2) {
-                theWheel.animation.spins = 8;
-            } else if (wheelPower == 3) {
-                theWheel.animation.spins = 15;
-            }
+// Reset center text on mouse leave
+document.getElementById("donutChart").addEventListener("mouseleave", function () {
+    donutChart.options.plugins.centerText.text = "";
+    donutChart.update();
+});
 
-            // Disable the spin button so can't click again while wheel is spinning.
-            document.getElementById('spin_button').src = "spin_off.png";
-            document.getElementById('spin_button').className = "";
+// 🔥 Custom 2-column legend
+function renderCustomLegend() {
+    const legendContainer = document.getElementById("customLegend");
+    legendContainer.innerHTML = "";
 
-            // Begin the spin animation by calling startAnimation on the wheel object.
-            theWheel.startAnimation();
+    labels.forEach((label, i) => {
+        const div = document.createElement("div");
+        div.classList.add("legend-item");
 
-            // Set to true so that power can't be changed and spin button re-enabled during
-            // the current animation. The user will have to reset before spinning again.
-            wheelSpinning = true;
+        div.innerHTML = `
+            <div class="legend-dot" style="background:${colors[i]}"></div>
+            <span>${label} (${values[i]})</span>
+        `;
+
+        legendContainer.appendChild(div);
+    });
+}
+
+renderCustomLegend();
+
+
+// BAR CHART
+const barCtx = document.getElementById('barChart').getContext('2d');
+new Chart(barCtx, {
+    type: 'bar',
+    data: {
+        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+        datasets: [{
+            label: 'Points Earned',
+            borderRadius: 8,  
+            data: [<?php echo implode(', ', $context_data['chartdata']['weekgraph']); ?>],
+            backgroundColor: '#003152'
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            y: { beginAtZero: true }
         }
     }
+});
 
-    // -------------------------------------------------------
-    // Function for reset button.
-    // -------------------------------------------------------
-    function resetWheel() {
-        theWheel.stopAnimation(false);  // Stop the animation, false as param so does not call callback function.
-        theWheel.rotationAngle = 0;     // Re-set the wheel angle to 0 degrees.
-        theWheel.draw();                // Call draw to render changes to the wheel.
+// Open modal and load content
+function openPointsModal() {
+    const modal = document.getElementById("pointsModal");
+    const box = document.getElementById("pointsModalBox");
 
-        document.getElementById('pw1').className = "";  // Remove all colours from the power level indicators.
-        document.getElementById('pw2').className = "";
-        document.getElementById('pw3').className = "";
+    // Load PHP table content
+    $("#pointsModalContent").load("mypoint.php", function () {
+        // Initialize DataTable after table is loaded
+        const table = $("#pointsTable").DataTable({
+            responsive: true,
+            lengthChange: true,
+            pageLength: 8, // show 8 entries per page
+            autoWidth: false,
+            dom: 'Bfrtip', // Buttons, filter (search bar), table, info
+            buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        });
 
-        wheelSpinning = false;          // Reset to false to power buttons and spin can be clicked again.
+        // Move buttons above table (Tailwind-friendly wrapper)
+        table.buttons().container().prependTo('#pointsModalContent');
+    });
+
+    // Show modal with fade & scale animation
+    modal.classList.remove("hidden");
+    setTimeout(() => {
+        modal.classList.add("opacity-100");
+        box.classList.remove("scale-95", "opacity-0");
+        box.classList.add("scale-100", "opacity-100");
+    }, 10);
+}
+
+// Close modal
+function closePointsModal() {
+    const modal = document.getElementById("pointsModal");
+    const box = document.getElementById("pointsModalBox");
+
+    // Reverse animation
+    modal.classList.remove("opacity-100");
+    box.classList.remove("scale-100", "opacity-100");
+    box.classList.add("scale-95", "opacity-0");
+
+    // Clear content after animation
+    setTimeout(() => {
+        modal.classList.add("hidden");
+        $("#pointsModalContent").html("");
+    }, 300);
+}
+
+// Event listeners
+document.getElementById("closePointsModal").addEventListener("click", closePointsModal);
+
+// Close modal on background click
+document.getElementById("pointsModal").addEventListener("click", function (e) {
+    if (e.target.id === "pointsModal") {
+        closePointsModal();
+    }
+});
+
+// new code above here 
+var cnt1 = 0, cnt2 = 0, cnt3 = 0;
+
+// ---------------------- HELPER FUNCTION: SHOW REWARD POPUP -------------------------
+function showScratchReward(points) {
+    $("#scratchRevealModal").removeClass("hidden").addClass("flex");
+    $("#rewardPoints").text(points + " Points");
+    $("#wonPoints1").text(points);
+
+    if (points <= 10) {
+        $('#popupimage').html('<img src="./images/pop/1-10.gif" width="200">');
+    } else if (points <= 20) {
+        $('#popupimage').html('<img src="./images/pop/10-20.gif" width="200">');
+    } else {
+        $('#popupimage').html('<img src="./images/pop/21-50.gif" width="200">');
     }
 
-    // -------------------------------------------------------
-    // Called when the spin animation has finished by the callback feature of the wheel because I specified callback in the parameters
-    // note the indicated segment is passed in as a parmeter as 99% of the time you will want to know this to inform the user of their prize.
-    // -------------------------------------------------------
-    function alertPrize(indicatedSegment) {
-        // Do basic alert of the segment text. You would probably want to do something more interesting with this information.
+    startConfetti();
+}
 
-        //            alert("You have won " + indicatedSegment.text);
-        $.ajax({
-            url: 'ajax.php',
-            type: 'post',
-            dataType: 'html',
-            data: { point: indicatedSegment.text, action: 'SPINWHEELPOINT' },
-            success: function (res) {
-                if (parseInt(res) > 0) {
-                    $('#spinpoint').html(res);
-                    if (parseInt(res) <= 10) {
-                        $('#popupimage').html('<img src="./images/pop/1-10.gif" width="200">');
-                    } else if (parseInt(res) > 10 && parseInt(res) <= 20) {
-                        $('#popupimage').html('<img src="./images/pop/10-20.gif" width="200">');
-                    } else if (parseInt(res) > 20) {
-                        $('#popupimage').html('<img src="./images/pop/21-50.gif" width="200">');
+
+// ---------------------- CONFETTI ANIMATION -------------------------
+function startConfetti() {
+    const duration = 2000;
+    const end = Date.now() + duration;
+
+    (function frame() {
+        confetti({ particleCount: 5, spread: 80, origin: { y: 0.2 } });
+        if (Date.now() < end) requestAnimationFrame(frame);
+    })();
+}
+
+// ---------------------- CLOSE POPUP -------------------------
+$("#closeScratchModal").on("click", function () {
+    $("#scratchRevealModal").addClass("hidden").removeClass("flex");
+    location.reload(); // reset scratch cards
+});
+
+// ---------------------- SCRATCH CARD INIT -------------------------
+var scratchCards = [ 
+    { id: "demo1", fg: '<?php echo $n1 ?>', bg: '<?php echo $scratch1 ?>', cnt: 0 },
+    { id: "demo2", fg: '<?php echo $n2 ?>', bg: '<?php echo $scratch2 ?>', cnt: 0 },
+    { id: "demo3", fg: '<?php echo $n3 ?>', bg: '<?php echo $scratch3 ?>', cnt: 0 }
+];
+
+// ---------------------- HELPER FUNCTION: SHOW WIN POPUP -------------------------
+
+
+// ---------------------- HELPER FUNCTION: SHOW BETTER LUCK POPUP -------------------------
+function showBetterLuck() {
+    $("#betterLuckModal").removeClass("hidden").addClass("flex");
+}
+
+// ---------------------- CONFETTI -------------------------
+function startConfetti() {
+    const duration = 3000;
+    const end = Date.now() + duration;
+
+    (function frame() {
+        confetti({ particleCount: 5, spread: 80, origin: { y: 0.2 } });
+        if (Date.now() < end) requestAnimationFrame(frame);
+    })();
+}
+
+// ---------------------- CLOSE POPUPS -------------------------
+$(".closeModal").on("click", function () {
+    $(this).closest(".modal").addClass("hidden").removeClass("flex");
+    location.reload();
+});
+
+// ---------------------- SCRATCH CARD INIT -------------------------
+scratchCards.forEach(function(card, index) {
+    let clicked = false;
+
+    $('#' + card.id).wScratchPad({
+        fg: card.fg,
+        bg: card.bg,
+        size: 45,
+        scratchMove: function (e, percent) {
+            if (percent > 50 && !clicked) {
+                clicked = true;
+                this.clear();
+
+                const spoint = parseInt($('#' + card.id).attr('point'));
+                const scid   = $('#' + card.id).attr('scid');
+
+                $.ajax({
+                    url: "ajax.php",
+                    type: "post",
+                    data: { action: "SCRATCHCARD", spoint: spoint, scid: scid },
+                    success: function(res) {
+                        if (parseInt(res) > 0) {
+                            $('#spinpoint').html(spoint);
+                            showScratchReward(spoint); // show win popup
+                        } else {
+                            showBetterLuck(); // show better luck popup
+                        }
                     }
-                    $('#spindWheel').modal('show');//now its working
-                    //hide spin button 
-                    $('#spin_button').hide();
-                    //updated spin wheel points
-                    var swp = $('.spin-point').html();
-                    $('.spin-point').html(parseInt(res) + parseInt(swp));
+                });
+            }
+        }
+    });
+});
 
-                    //Update available points
-                    var av = $('.available-points').html();
-                    $('.available-points').html(parseInt(res) + parseInt(av));
-                } else {
-                    alert('Better luck next time.');
-                }
+
+
+let spinning = false;
+
+function startSpin() {
+    if (spinning) return;
+
+    spinning = true;
+    let icon = document.querySelector(".spin-refresh-icon");
+
+    icon.classList.add("animate-spin-fast");
+
+    // Reward list
+    let pointsList = [0, 5, 7, 9, 13, 17, 21, 30, 50];
+    let reward = pointsList[Math.floor(Math.random() * pointsList.length)];
+
+    // Spin duration — you can reduce to 1500 for even faster
+    setTimeout(() => {
+        icon.classList.remove("animate-spin-fast");
+        spinning = false;
+
+        document.getElementById("wonPoints").innerHTML = reward;
+        document.getElementById("spinSuccessModal").classList.remove("hidden");
+startConfetti();
+        $.ajax({
+            url: "ajax.php",
+            type: "POST",
+            data: { point: reward, action: "SPINWHEELPOINT" },
+            success: function (res) {
+                console.log("Saved:", res);
             }
         });
 
+    }, 1500); // ⏳ 1.5 seconds spin
+}
 
-
-
-    }
+function closeSpinPopup() {
+    document.getElementById("spinSuccessModal").classList.add("hidden");
+}
 
     //AJAX
 
@@ -541,191 +837,61 @@ echo $OUTPUT->render_from_template('local_mydashboard/landing_page', $context_da
         chart.draw(data, options);
     }
 
-    //LOGIN CHART
-    google.charts.setOnLoadCallback(drawLogin);
+    // LOAD CHARTS
+google.charts.setOnLoadCallback(drawLogin);
+google.charts.setOnLoadCallback(drawQuiz);
 
-    function drawLogin() {
-        var data = new google.visualization.DataTable();
-        data.addColumn('number', 'X');
-        data.addColumn('number', 'Login Points');
-        data.addRows([
-            <?php echo $logingraph; ?>
-            //            [0, 0], [1, 10], [2, 23], [3, 17], [4, 18], [5, 9],
-        ]);
-        var options = {
-            hAxis: {
-                title: 'Login',
-                textStyle: {
-                    color: '#004c8c', // Change the axis text color
-                    fontName: 'Arial', // Change the font
-                    fontSize: 14 // Change the font size
-                },
-                titleTextStyle: {
-                    color: '#004c8c', // Change the axis title color
-                    fontName: 'Arial', // Change the title font
-                    fontSize: 16, // Change the title font size
-                    bold: true // Make the title bold
-                }
-            },
-            vAxis: {
-                title: 'Points',
-                textStyle: {
-                    color: '#004c8c', // Change the axis text color
-                    fontName: 'Arial', // Change the font
-                    fontSize: 14 // Change the font size
-                },
-                titleTextStyle: {
-                    color: '#004c8c', // Change the axis title color
-                    fontName: 'Arial', // Change the title font
-                    fontSize: 16, // Change the title font size
-                    bold: true // Make the title bold
-                }
-            },
-            backgroundColor: '#f9f9f9', // Change background color of the chart
-            colors: ['#004c8c'], // Change line color to blue
-            legend: {
-                textStyle: {
-                    color: '#004c8c' // Change text color of the legend
-                }
-            },
-            titleTextStyle: {
-                color: '#004c8c' // Change title text color if you have a title
-            }
-        };
-        var chart = new google.visualization.LineChart(document.getElementById('chart_login'));
-        chart.draw(data, options);
-    }
+// ===== LOGIN CHART =====
+function drawLogin() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('number', 'X');
+    data.addColumn('number', 'Login Points');
+    data.addRows([
+        <?php echo $logingraph; ?>
+    ]);
 
+    var options = {
+        hAxis: { baselineColor: 'transparent', textStyle: { color: '#004c8c', fontSize: 12 } },
+        vAxis: { baselineColor: 'transparent', textStyle: { color: '#004c8c', fontSize: 12 } },
+        legend: 'none',
+        backgroundColor: 'transparent',
+        colors: ['#F5B700'],
+        curveType: 'function', // smooth curve
+        lineWidth: 2,
+        pointSize: 6,
+        chartArea: { left: 40, top: 10, width: '90%', height: '75%' }
+    };
+
+    var chart = new google.visualization.LineChart(document.getElementById('chart_login'));
+    chart.draw(data, options);
+}
+
+// ===== QUIZ CHART =====
+function drawQuiz() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('number', 'X');
+    data.addColumn('number', 'Quiz Points');
+    data.addRows([
+        <?php echo $quizgraph; ?>
+    ]);
+
+    var options = {
+        hAxis: { baselineColor: 'transparent', textStyle: { color: '#004c8c', fontSize: 12 } },
+        vAxis: { baselineColor: 'transparent', textStyle: { color: '#004c8c', fontSize: 12 } },
+        legend: 'none',
+        backgroundColor: 'transparent',
+        colors: ['#003152'],
+        curveType: 'function', // smooth curve
+        lineWidth: 2,
+        pointSize: 6,
+        chartArea: { left: 40, top: 10, width: '90%', height: '75%' }
+    };
+
+    var chart = new google.visualization.LineChart(document.getElementById('chart_quiz'));
+    chart.draw(data, options);
+}
 
 
-    //QUIZ CHART
-    google.charts.setOnLoadCallback(drawQuiz);
-
-    function drawQuiz() {
-        var data = new google.visualization.DataTable();
-        data.addColumn('number', 'X');
-        data.addColumn('number', 'Quiz Points');
-        data.addRows([
-            <?php echo $quizgraph; ?>
-            // [0, 0], [1, 10], [2, 23], [3, 17], [4, 18], [5, 9],
-        ]);
-
-        var options = {
-            backgroundColor: {
-                fill: '#f9f9f9',
-                stroke: '#cccccc',
-            },
-            hAxis: {
-                title: 'Quiz',
-                textStyle: {
-                    color: '#004c8c', // Change the axis text color
-                    fontName: 'Arial', // Change the font
-                    fontSize: 14 // Change the font size
-                },
-                titleTextStyle: {
-                    color: '#004c8c', // Change the axis title color
-                    fontName: 'Arial', // Change the title font
-                    fontSize: 16, // Change the title font size
-                    bold: true // Make the title bold
-                }
-            },
-            vAxis: {
-                title: 'Points',
-                textStyle: {
-                    color: '#004c8c', // Change the axis text color
-                    fontName: 'Arial', // Change the font
-                    fontSize: 14 // Change the font size
-                },
-                titleTextStyle: {
-                    color: '#004c8c', // Change the axis title color
-                    fontName: 'Arial', // Change the title font
-                    fontSize: 16, // Change the title font size
-                    bold: true // Make the title bold
-                }
-            },
-            // Optional: Change the chart title style
-            titleTextStyle: {
-                color: '#004c8c', // Change the title text color
-                fontName: 'Arial', // Change the font
-                fontSize: 18, // Change the font size
-                bold: true // Make the title bold
-            }
-        };
-
-        var chart = new google.visualization.LineChart(document.getElementById('chart_quiz'));
-        chart.draw(data, options);
-    }
-
-
-
-    //MY POINT CHART
-    google.charts.load('current', { packages: ['corechart', 'bar'] });
-    google.charts.setOnLoadCallback(drawPoints);
-
-    function drawPoints() {
-        var data = google.visualization.arrayToDataTable([
-            ['Points', 'My Points'],
-            ['LOGIN', <?php echo $l; ?>],
-            ['QUIZ', <?php echo $q; ?>],
-            ['SPIN', <?php echo $s; ?>],
-            ['REWARD', <?php echo $r; ?>],
-        ]);
-
-        var options = {
-            title: '',
-            chartArea: { width: '50%' },
-            isStacked: true,
-            hAxis: {
-                title: 'Points',
-                minValue: 0,
-                titleTextStyle: {
-                    color: '#004c8c',
-                    fontSize: 14,
-                    bold: true
-                },
-                textStyle: {
-                    color: '#004c8c',
-                    fontSize: 12
-                },
-                gridlines: {
-                    color: '#d9e8f5'
-                },
-                baselineColor: '#004c8c',
-                // ticks: [0, 10, 20, 30, 40, 50] // Example ticks, customize as needed
-            },
-            vAxis: {
-                title: 'Category',
-                titleTextStyle: {
-                    color: '#004c8c',
-                    fontSize: 14,
-                    bold: true
-                },
-                textStyle: {
-                    color: '#004c8c',
-                    fontSize: 12
-                },
-                gridlines: {
-                    color: '#d9e8f5'
-                },
-                baselineColor: '#004c8c'
-            },
-            colors: ['#1a43c3', '#00c851', '#ffbb33', '#ff4444'],
-            backgroundColor: {
-                fill: '#f9f9f9',
-                stroke: '#cccccc',
-                strokeWidth: 1
-            },
-
-            tooltip: {
-                isHtml: true,
-                textStyle: {
-                    color: '#004c8c'
-                }
-            }
-        };
-        var chart = new google.visualization.BarChart(document.getElementById('chart_mypoints'));
-        chart.draw(data, options);
-    }
 
 
     var a = parseInt($('.count-container').html());
@@ -764,6 +930,7 @@ echo $OUTPUT->render_from_template('local_mydashboard/landing_page', $context_da
     });
 
 </script>
+
 <style>
     #page-local-mydashboard-index .has-blocks {
         display: none;

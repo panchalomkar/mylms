@@ -1241,11 +1241,11 @@ startBtn.addEventListener("click", () => {
     // 2️⃣ If this is a NEW attempt → use startattempt.php (IMPORTANT!)
     let url = "";
 
-    if (data.proctoring_enabled == 1) {
-
-        url = `${base}/local/proctor/start.php?cmid=${cmid}`;
-
-    } else if (data.seb_enabled == 1) {
+     if (data.proctoring_enabled == 1) {
+        // Important: view.php uses 'id' (cmid) param, not cmid param name
+        window.location.href = `${base}/mod/quiz/view.php?id=${cmid}`;
+        return;
+    }else if (data.seb_enabled == 1) {
 
         url = `${base}/mod/quiz/accessrule/seb/start.php?cmid=${cmid}`;
 
