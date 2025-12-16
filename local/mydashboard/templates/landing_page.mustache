@@ -330,14 +330,14 @@
         <!-- Poll -->
         <div class="bg-blue-900 rounded-lg p-6 flex flex-col items-center text-center hover:shadow-lg transition ">
             <div class="bg-blue-700 w-24 h-24 rounded-full flex items-center justify-center mb-4">
-                <span class="material-symbols-rounded text-3xl text-white d-none">poll</span>
+                <span class="material-symbols-rounded text-3xl text-white ">poll</span>
             </div>
             <h3 class="font-semibold text-white">Poll</h3>
             <a href="{{pollurl}}" class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-6 rounded mt-4">Take Poll</a>
         </div>
 
         <!-- Redemption Zone -->
-        <div class="bg-yellow-400 rounded-lg p-6 flex flex-col items-center text-center hover:shadow-lg transition d-none">
+        <div class="bg-yellow-400 rounded-lg p-6 flex flex-col items-center text-center hover:shadow-lg transition">
             <div class="bg-yellow-300 w-24 h-24 rounded-full flex items-center justify-center mb-4">
                 <span class="material-symbols-rounded text-3xl text-gray-800">card_giftcard</span>
             </div>
@@ -490,72 +490,172 @@
 
 
 <!--MODAL -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Gift your rewards to friends (Avl Pts: {{available_points}})</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+<!-- GIFT POINTS MODAL -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:18px;">
+
+            <!-- HEADER -->
+            <div class="modal-header border-0 px-3 pb-0 pt-2">
+                <h5 class="modal-title font-weight-bold" style="color:#0b2c6d;font-size: 16px;">
+                    Gift your rewards to friends (Avl Pts: {{available_points}})
+                </h5>
+                <button type="button" class="close" data-dismiss="modal"
+                        style="font-size:28px; color:#666;">
+                    &times;
+                </button>
+            </div>
+
+            <!-- BODY -->
+            <div class="modal-body px-4">
+
+                <!-- SEARCH BAR -->
+                <div class="d-flex mb-4 gap-2">
+                    <input type="search"
+                           class="form-control"
+                           id="searchtext"
+                           placeholder="Search by employee name"
+                           style="border-radius:10px; height:30px;width: -webkit-fill-available;">
+
+                    <button class="btn d-flex align-items-center px-4"
+                            id="searchuser"
+                            style="background:#16a34a; color:#fff; border-radius:10px; height:30px;">
+                        <span class="material-symbols-rounded mr-2">search</span>
+                        Search
                     </button>
                 </div>
-                <div class="modal-body">
-                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" id="searchtext">
-                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="searchuser">Search</button>
-                    <div id="getmatch"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="sharepoints">Send</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                <!-- USER LIST -->
+                <div id="getmatch"
+                     style="max-height:360px; overflow-y:auto; padding-right:6px;">
+
+                    <!-- SAMPLE USER ROW (JS SHOULD APPEND LIKE THIS) -->
+                    <!--
+                    <div class="d-flex align-items-center justify-content-between p-2 mb-2"
+                         style="border:1px solid #e6ebf2; border-radius:14px; background:#f9fbfd;">
+                        
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width:46px; height:46px; background:#0b2c6d; color:#fff; font-weight:600;">
+                                IS
+                            </div>
+                            <div style="font-weight:600; color:#1f2937;">
+                                Ishika Singh
+                            </div>
+                        </div>
+
+                        <input type="number"
+                               class="form-control text-center"
+                               placeholder="Points"
+                               style="width:110px; border-radius:10px;">
+                    </div>
+                    -->
+
                 </div>
             </div>
+
+            <!-- FOOTER -->
+            <div class="modal-footer border-0 px-3 pt-0 pb-2 d-flex justify-content-center gap-2">
+                <button type="button"
+                        class="btn px-4"
+                        data-dismiss="modal"
+                        style="border-radius:10px; background:#f1f5f9;">
+                    Close
+                </button>
+
+                <button type="button"
+                        class="btn px-4"
+                        id="sharepoints"
+                        style="background:#0b2c6d; color:#fff; border-radius:10px; font-weight:600;">
+                    Send
+                </button>
+            </div>
+
         </div>
     </div>
+</div>
+
 
 <!--MODAL redeem -->
 <!-- REDEEM MODAL -->
+<!-- REDEEM MODAL -->
 <div class="modal fade" id="redeemModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content border-0 rounded-2xl shadow-xl p-6" style="border-radius:20px;">
-
-            <!-- CLOSE BUTTON -->
-            <button type="button" class="close position-absolute" 
-                    data-dismiss="modal" 
-                    style="right:18px; top:16px; font-size:28px; color:#777;">
-                &times;
-            </button>
+    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:18px;">
 
             <!-- HEADER -->
-            <div class="text-center mt-3">
-                <h3 class="font-weight-bold" style="font-size:24px; color:#1a1a1a;">
-                    🎁 Redeem Points
-                </h3>
-
-                <p class="mt-1" style="color:#666; font-size:15px;">
-                    Available Points: <strong style="color:#000;">{{available_points}}</strong>
-                </p>
+            <div class="modal-header border-0 px-4 pt-4">
+                <h5 class="modal-title font-weight-bold" style="color:#0b2c6d;">
+                    Redeem (Avl Pts: <span id="modalAvailablePoints"class="available-points">{{available_points}}</span>)
+                </h5>
+                <button type="button" class="close" data-dismiss="modal"
+                        style="font-size:28px; color:#666;">
+                    &times;
+                </button>
             </div>
 
-            <!-- ICON -->
-            <div class="text-center my-4">
-                <div class="mx-auto d-flex justify-content-center align-items-center"
-                     style="width:80px; height:80px; border-radius:50%; background:#fff7d6; box-shadow:0px 0px 15px rgba(255,193,7,0.3);">
-                    <span class="material-symbols-rounded" style="font-size:40px; color:#f4b400;">
-                        card_giftcard
-                    </span>
+            <!-- BODY -->
+            <div class="modal-body px-4 pb-2">
+
+                <!-- TOP STATS -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="p-3 text-center"
+                             style="background:#f7f9fc; border-radius:14px;">
+                            <div class="text-muted">Lifetime Points</div>
+                            <div id="lifetimePoints"
+                                 style="font-size:25px; font-weight:700; color:#0b2c6d;">
+                                0
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="p-3 text-center"
+                             style="background:#f7f9fc; border-radius:14px;">
+                            <div class="text-muted">Burn Out Points</div>
+                            <div id="burnoutPoints"
+                                 style="font-size:25px; font-weight:700; color:#ff4d4f;">
+                                0
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- POINT DETAILS -->
+                <div class="row border-top pt-3 text-center">
+                    <div class="col-md-6">
+                        <div class="text-muted">Total Points</div>
+                        <div id="totalPoints"
+                             style="font-size:20px; font-weight:700; color:#0b2c6d;">
+                            0
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="text-muted">Redeemable Points</div>
+                        <div id="redeemablePoints"
+                             style="font-size:20px; font-weight:700; color:#f4b400;">
+                            0
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NOTE -->
+                <div class="text-center mt-3 text-muted" style="font-size:13px;">
+                    (*5000 points can be redeemed at once)
+                </div>
+
+                <!-- HIDDEN INPUT FOR REDEEM -->
+                <input type="hidden" id="idredeem-points" value="0">
             </div>
 
-            <!-- CONTENT -->
-            <div class="modal-body text-center" style="font-size:15px; color:#444;">
-                <div id="redeemable"></div>
-            </div>
-
-            <!-- FOOTER BUTTON -->
-            <div class="text-center pb-3">
-                <button id="redeemnow"
-                        class="btn w-100 py-2"
-                        style="background:#f4b400; color:#fff; border-radius:10px; font-weight:600; font-size:16px;">
+            <!-- FOOTER -->
+            <div class="modal-footer border-0 px-4 pb-4">
+                <button type="button"
+                        id="redeemnow"
+                        class="btn px-4 py-2"
+                        style="background:#0b2c6d; color:#fff; border-radius:10px; font-weight:600;">
                     Redeem Now
                 </button>
             </div>
@@ -563,6 +663,8 @@
         </div>
     </div>
 </div>
+
+
 
 
 <!--MODAL REDEEM -->

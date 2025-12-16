@@ -7,6 +7,7 @@
  */
 
 define('AJAX_SCRIPT', true);
+header('Content-Type: application/json');
 
 include_once '../../config.php';
 include_once 'lib.php';
@@ -15,44 +16,88 @@ global $DB, $USER, $CFG;
 $action = $_REQUEST['action'];
 
 switch ($action) {
-    case 'SEARCHUSERS':
-        $search = '';
-        $searchtext = optional_param('search', '', PARAM_RAW);
-        $av_poiints = optional_param('av_poiints', 0, PARAM_INT);
-        if ($searchtext) {
-            $search = " AND (u.firstname LIKE '%$searchtext%' OR u.lastname LIKE '%$searchtext%' OR u.email LIKE '%$searchtext%') ";
-        }
-        $echo = 'No match found';
+  case 'SEARCHUSERS':
 
-        $SQL = "SELECT u.* FROM mdl_message_contacts c INNER JOIN mdl_user u ON u.id = c.contactid
-                    WHERE u.lastaccess > 0 AND c.userid = $USER->id $search
-                    UNION
-                SELECT u.* FROM mdl_message_contacts c INNER JOIN mdl_user u ON u.id = c.userid
-                    WHERE u.lastaccess > 0 AND c.contactid = $USER->id $search";
-        $records = $DB->get_records_sql($SQL);
+    global $DB, $USER, $CFG;
 
-        if ($records) {
-            $echo = '<form id="sharepointsform" method="POST"><ul class="list-group">';
-            $echo .= '<input type="hidden" value="' . $av_poiints . '" name="av_poiints">';
+    $searchtext = trim(optional_param('search', '', PARAM_TEXT));
+    $av_poiints = optional_param('av_poiints', 0, PARAM_INT);
 
-            foreach ($records as $record) {
-                $usercontext = context_user::instance($record->id);
-                $image = '<img src="' . $CFG->wwwroot . '/pluginfile.php/' . $usercontext->id . '/user/icon/f3" width="50">';
-                $echo .= '<li class="list-group-item d-flex justify-content-between align-items-center">
-                            ' . $image . '  ' . $record->firstname . ' ' . $record->lastname . '
-                            <span class="badge badge-primary badge-pill">
-                            <input type="hidden" name="userids[]" value="' . $record->id . '">
-                            <input type="number"  min="1" oninput="validity.valid||(value="");" class="form-control" name="points[]" value="">
-                                </span>
-                          </li>';
-            }
-            $echo .= '</ul></form>';
-        }
+    $params = [
+        'userid' => $USER->id
+    ];
+
+    $searchsql = '';
+
+    if ($searchtext !== '') {
+        $searchsql = " AND (
+            u.firstname LIKE :search1
+            OR u.lastname  LIKE :search2
+            OR u.email     LIKE :search3
+        )";
+
+        $params['search1'] = '%' . $searchtext . '%';
+        $params['search2'] = '%' . $searchtext . '%';
+        $params['search3'] = '%' . $searchtext . '%';
+    }
+
+  $sql = "SELECT u.id, u.firstname, u.lastname
+        FROM {user} u
+        WHERE u.deleted = 0
+          AND u.suspended = 0
+          AND u.id <> :userid
+          AND u.id <> 2               
+          AND u.username <> 'guest'   
+          $searchsql
+        ORDER BY u.firstname ASC";
 
 
-        echo $echo;
+    $records = $DB->get_records_sql($sql, $params);
 
-        break;
+    if (!$records) {
+        echo json_encode([
+            'status' => 0,
+            'html'   => '<div class="text-center text-muted p-3">No match found</div>'
+        ]);
+        exit;
+    }
+
+    $html  = '<form id="sharepointsform">';
+    $html .= '<input type="hidden" name="av_poiints" value="'.$av_poiints.'">';
+
+    foreach ($records as $user) {
+
+        $usercontext = context_user::instance($user->id);
+        $avatar = $CFG->wwwroot.'/pluginfile.php/'.$usercontext->id.'/user/icon/f3';
+
+        $html .= '
+        <div class="d-flex align-items-center justify-content-between p-2 mb-2"
+             style="border:1px solid #e6ebf2; border-radius:14px; background:#f9fbfd;">
+
+            <div class="d-flex align-items-center gap-3">
+                <img src="'.$avatar.'" class="rounded-circle" width="30" height="30">
+                <div style="font-weight:600;">'.$user->firstname.' '.$user->lastname.'</div>
+            </div>
+
+            <input type="hidden" name="userids[]" value="'.$user->id.'">
+            <input type="number"
+                   name="points[]"
+                   min="1"
+                   class="form-control text-center"
+                   placeholder="Points"
+                   style="width:110px; border-radius:10px;">
+        </div>';
+    }
+
+    $html .= '</form>';
+
+    echo json_encode([
+        'status' => 1,
+        'html'   => $html
+    ]);
+    exit;
+    break;
+
 
     case 'SHAREPOINTS':
         $points = $_POST['points'];
@@ -93,25 +138,26 @@ switch ($action) {
 
         break;
 
-    case 'GETREDEEMPOINTS':
-        $av_points = $_POST['av_poiints'];
-        $redeemable = 0;
-        if ($av_points >= 5000) {
-            $redeemable = 5000;
-        }
-        echo 'Life time points : ' . get_lifetime_points($USER->id) . '<br>';
-        echo 'Burn out points : ' . get_redeemed_points($USER->id) . '<br>';
-        echo '<table class="bg-white table table-hover">
-            <thead>
-            <tr><td>Total Points</td><td>Redeemable Points</td></tr>
-            </thead>
-            <tbody>
-            <tr><td>' . $av_points . '</td>
-               <td>' . $redeemable . ' (*<i>5000 points can be redeem at once</i>)</td>
-                   <input type="hidden"  id="idredeem-points" value="' . $redeemable . '"></tr>
-            </tbody>
-        </table>';
-        break;
+case 'GETREDEEMPOINTS':
+
+    $av_points = isset($_POST['av_poiints']) ? (int)$_POST['av_poiints'] : 0;
+
+    $lifetime   = (int) get_lifetime_points($USER->id);
+    $burnout    = (int) get_redeemed_points($USER->id);
+
+    $redeemable = ($av_points >= 5000) ? 5000 : $av_points;
+
+    header('Content-Type: application/json');
+
+    echo json_encode([
+        'lifetime'   => $lifetime,
+        'burnout'    => $burnout,
+        'total'      => $av_points,
+        'redeemable' => $redeemable
+    ]);
+    exit;
+
+
 
     case 'REDEEMNOW';
         $point = $_POST['point'];

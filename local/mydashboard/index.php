@@ -710,26 +710,36 @@ function closeSpinPopup() {
 
     //AJAX
 
-    $('body').on('click', '#gift-reward', function () {
-        var av_poiints = $('.available-points').html();
-        if (av_poiints > 0) {
-            $.ajax({
-                url: 'ajax.php',
-                type: 'post',
-                dataType: 'html',
-                data: { action: 'SEARCHUSERS', av_poiints: av_poiints },
-                success: function (res) {
-                    $('#getmatch').html(res);
-                }
-            });
-        } else {
-            $('#searchtext').hide();
-            $('#searchuser').hide();
-            $('#sharepoints').hide();
-            $('#getmatch').html('You have no points');
-        }
+$('body').on('click', '#gift-reward', function () {
 
+    let av_poiints = parseInt($('.available-points').text()) || 0;
+
+    if (av_poiints <= 0) {
+        $('#searchtext, #searchuser, #sharepoints').hide();
+        $('#getmatch').html('<div class="text-center p-3">You have no points</div>');
+        return;
+    }
+
+    $.ajax({
+        url: 'ajax.php',
+        type: 'POST',
+        dataType: 'json', // ✅ MUST BE JSON
+        data: {
+            action: 'SEARCHUSERS',
+            av_poiints: av_poiints
+        },
+        success: function (res) {
+            if (res.status === 1) {
+                $('#getmatch').html(res.html); // ✅ render HTML only
+            } else {
+                $('#getmatch').html('<div class="text-center p-3">No match found</div>');
+            }
+
+            $('#exampleModal').modal('show'); // ✅ show popup
+        }
     });
+});
+
 
     $('body').on('click', '#redeem-point', function () {
         var av_poiints = $('.available-points').html();
@@ -737,10 +747,18 @@ function closeSpinPopup() {
             $.ajax({
                 url: 'ajax.php',
                 type: 'post',
-                dataType: 'html',
+                dataType: 'json',
                 data: { action: 'GETREDEEMPOINTS', av_poiints: av_poiints },
                 success: function (res) {
-                    $('#redeemable').html(res);
+                      $('#modalAvailablePoints').text(res.total);
+            $('#lifetimePoints').text(res.lifetime);
+            $('#burnoutPoints').text(res.burnout);
+            $('#totalPoints').text(res.total);
+            $('#redeemablePoints').text(res.redeemable);
+
+            $('#idredeem-points').val(res.redeemable);
+
+            $('#redeemModal').modal('show');
                 }
             });
         } else {
@@ -749,22 +767,29 @@ function closeSpinPopup() {
 
     });
 
+  $('#searchuser').on('click', function () {
 
-    $('body').on('click', '#searchuser', function () {
-        var av_poiints = $('.available-points').html();
-        var search = $('#searchtext').val();
-        if (search != '') {
-            $.ajax({
-                url: 'ajax.php',
-                type: 'post',
-                dataType: 'html',
-                data: { search: search, action: 'SEARCHUSERS', av_poiints: av_poiints },
-                success: function (res) {
-                    $('#getmatch').html(res);
-                }
-            });
+    let search = $('#searchtext').val().trim();
+    let av_poiints = parseInt($('.available-points').text()) || 0;
+
+    $.ajax({
+        url: 'ajax.php',
+        type: 'POST',
+        dataType: 'json', // ✅ JSON
+        data: {
+            action: 'SEARCHUSERS',
+            search: search,
+            av_poiints: av_poiints
+        },
+        success: function (res) {
+            if (res.status === 1) {
+                $('#getmatch').html(res.html);
+            } else {
+                $('#getmatch').html('<div class="text-center p-3 text-muted">No match found</div>');
+            }
         }
     });
+});
 
 
     $('body').on('click', '#redeemnow', function (e) {
