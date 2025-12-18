@@ -44,8 +44,8 @@
 <div class="w-full min-h-screen bg-[#f5f6f8]">
 
     <!-- PAGE TITLE -->
-    <div class="text-center mb-10">
-        <h1 class="text-4xl font-bold text-gray-800 tracking-wide text-game to-accent">Gamification Dashboard</h1>
+    <div class="text-center mb-3">
+        <h1 class="text-2xl font-bold text-gray-800 tracking-wide text-game to-accent">Gamification Dashboard</h1>
         <p class="text-gray-500 mt-1">Track your progress, earn rewards, and climb the leaderboard!</p>
     </div>
 
@@ -68,7 +68,7 @@
 
                 <!-- PROFILE DETAILS -->
                 <div class="flex-1">
-                    <h1 class="text-2xl font-bold mb-2 text-gray-900">{{fullname}}</h1>
+                    <h1 class="text-xl font-bold mb-2 text-gray-900">{{fullname}}</h1>
                     <p class="text-gray-500 mb-2">{{designation}}</p>
 
                     <span class="mt-1 inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold">
@@ -165,7 +165,7 @@
     </div> <!-- END TOP GRID -->
 
     <!-- BOTTOM CHART GRID -->
-    <div class="bg-white rounded-lg shadow p-3 mt-5">
+    <div class="bg-white rounded-lg shadow p-3 mt-3">
         <div class="lg:col-span-12  rounded-2xl">
 
             <div class="flex justify-between items-center mb-4">
@@ -173,7 +173,7 @@
                     <div class=" trophydata text-center">
                         <img src="images/coins1.png" class="card-img-top rounded-circle wh-50 rounded-circle" style="    width: 46px;" alt="User">
                       </div>
-                    My Points
+                    My Active Points
                 </h3>
 
                 <button onclick="openPointsModal()" 
@@ -189,6 +189,7 @@
     left: 48px;
     font-size: 19px;
     display: flex;
+    margin-bottom: -25px;
     align-items: center;"><svg class="text-yellow-500 mr-2" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-coins text-accent" data-lov-id="src/components/MyPoints.tsx:148:16" data-lov-name="Coins" data-component-path="src/components/MyPoints.tsx" data-component-line="148" data-component-file="MyPoints.tsx" data-component-name="Coins" data-component-content="%7B%22className%22%3A%22text-accent%22%7D"><circle cx="8" cy="8" r="6"></circle><path d="M18.09 10.37A6 6 0 1 1 10.34 18"></path><path d="M7 6h1v4"></path><path d="m16.71 13.88.7.71-2.82 2.82"></path></svg>{{available_points}}</p>
 
             <div class=" grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -201,7 +202,7 @@
                     </h4>
 
                    <div class="d-flex gap-5">
-                    <div style="width:260px;height:260px;">
+                    <div style="width:190px;height:190px;">
                         <canvas id="donutChart"></canvas>
                     </div>
 
@@ -216,17 +217,17 @@
                         7-Day Trends
                     </h4>
 
-                    <canvas id="barChart" class="w-full h-64"></canvas>
+                    <canvas id="barChart" width="480" height="190" class="w-full h-64"></canvas>
                 </div>
 
             </div>
 
         </div>
     </div>
-<div class="bg-white rounded-lg shadow p-3 mt-5">
+<div class="bg-white rounded-lg shadow p-3 mt-3">
 
     <!-- Header Title -->
-    <div class="flex items-center gap-3 mb-6">
+    <div class="flex items-center gap-3 mb-3">
         <span class="material-symbols-rounded text-blue-700 text-yellow-500">monitoring</span>
         <h2 class="text-xl font-semibold text-gray-800">Daily Quiz and Login Analytics</h2>
     </div>
@@ -237,7 +238,7 @@
         <!-- =============== LEFT SIDE — DAILY QUIZ =============== -->
         <div>
             <!-- Section Title -->
-            <h3 class="text-lg font-bold text-gray-800 mb-2">DAILY QUIZ</h3>
+            <h3 class="text-md font-bold text-gray-800 mb-2">DAILY QUIZ</h3>
 
             <div class="flex items-center gap-4 mb-2">
                 <!-- Avatar -->
@@ -247,7 +248,7 @@
                 
                 <!-- Attempt Button -->
               
-                  <a style="background: linear-gradient(90deg, #0B2964, #23468D);" class="flex items-center gap-2 hover:bg-blue-900 text-white px-5 py-2 rounded-lg shadow font-medium" href="{{dailyquiz_url}}"
+                  <a style="background: linear-gradient(90deg, #0B2964, #23468D);" class="flex items-center gap-2 hover:bg-blue-900 text-white px-3 py-1 rounded-lg shadow font-medium" href="{{dailyquiz_url}}"
                                     class="g_btn-primary px-4" type="button">  <span class="material-symbols-rounded">play_circle</span> Attempt Now</a>
                 
             </div>
@@ -265,18 +266,17 @@
 
         <!-- =============== RIGHT SIDE — DAILY LOGIN =============== -->
         <div>
-            <h3 class="text-lg font-bold text-gray-800 mb-2">DAILY LOGIN</h3>
+            <h3 class="text-md font-bold text-gray-800 mb-2">DAILY LOGIN</h3>
 
             <div class="flex items-center gap-4 mb-4">
                 <!-- Login Icon (circle) -->
-                <div class="w-14 h-14 rounded-full text-white flex items-center justify-center shadow" style="background: linear-gradient(90deg, #0B2964, #23468D);">
+                <div class="w-11 h-11 rounded-full text-white flex items-center justify-center shadow" style="background: linear-gradient(90deg, #0B2964, #23468D);">
                     <span class="material-symbols-rounded text-3xl">login</span>
                 </div>
 
                 <!-- Points -->
                 <div>
-                    <div class="text-gray-600 text-sm">Login Points</div>
-                    <div class="text-3xl font-bold text-gray-900">{{login_points}}</div>
+                    <div class="text-2xl font-bold text-gray-900">{{login_points}}</div>
                 </div>
             </div>
 
@@ -297,7 +297,7 @@
 
         <!-- ======Daily Login Section end here====== -->
         <!-- SCRATCH CARDS SECTION -->
-<div class="bg-white rounded-lg shadow p-3 mt-8">
+<div class="bg-white rounded-lg shadow p-3 mt-3">
     <div class="flex justify-between items-center mb-4">
         <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
             <span class="material-symbols-rounded text-yellow-500">star</span> Scratch Card
@@ -310,26 +310,26 @@
     </div>
 </div>
          <!-- ======Rewards and Redemption start here====== -->
-<div class="bg-white rounded-lg shadow p-3 mt-5">
+<div class="bg-white rounded-lg shadow p-3 mt-3">
     <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
         <span class="material-symbols-rounded text-yellow-500">card_giftcard</span> 
         Rewards and Redemption
     </h2>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-3">
         <!-- Spin Wheel -->
-        <div class="bg-yellow-400 rounded-lg p-6 flex flex-col items-center text-center hover:shadow-lg transition">
-            <div class="bg-yellow-300 w-24 h-24 rounded-full flex items-center justify-center mb-4">
+        <div class="bg-yellow-400 rounded-lg p-2 flex flex-col items-center text-center hover:shadow-lg transition">
+            <div class="bg-yellow-300 w-20 h-20 rounded-full flex items-center justify-center mb-2">
                <span class="material-symbols-rounded text-3xl text-gray-800 spin-refresh-icon">refresh</span>
             </div>
             <h3 class="font-semibold text-gray-900">Spin Wheel</h3>
-            <p class="text-gray-800 text-sm mb-4">Spin the wheel and luck your chance to get points benefit</p>
+            <p class="text-gray-800 mb-4" style="font-size: 12px;">Spin the wheel and luck your chance to get points benefit</p>
             <button onclick="startSpin()" class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-6 rounded">SPIN</button>
         </div>
 
         <!-- Poll -->
-        <div class="bg-blue-900 rounded-lg p-6 flex flex-col items-center text-center hover:shadow-lg transition ">
-            <div class="bg-blue-700 w-24 h-24 rounded-full flex items-center justify-center mb-4">
+        <div class="bg-blue-900 rounded-lg p-2 flex flex-col items-center text-center hover:shadow-lg transition ">
+            <div class="bg-blue-700 w-20 h-20 rounded-full flex items-center justify-center mb-2">
                 <span class="material-symbols-rounded text-3xl text-white ">poll</span>
             </div>
             <h3 class="font-semibold text-white">Poll</h3>
@@ -337,12 +337,12 @@
         </div>
 
         <!-- Redemption Zone -->
-        <div class="bg-yellow-400 rounded-lg p-6 flex flex-col items-center text-center hover:shadow-lg transition">
-            <div class="bg-yellow-300 w-24 h-24 rounded-full flex items-center justify-center mb-4">
+        <div class="bg-yellow-400 rounded-lg p-2 flex flex-col items-center text-center hover:shadow-lg transition">
+            <div class="bg-yellow-300 w-20 h-20 rounded-full flex items-center justify-center mb-2">
                 <span class="material-symbols-rounded text-3xl text-gray-800">card_giftcard</span>
             </div>
             <h3 class="font-semibold text-gray-900">Redemption Zone</h3>
-            <div class="flex flex-col gap-2 mt-4 w-full">
+            <div class="flex flex-col gap-2 mt-4 " style="width: 50%;">
                 <button id="redeem-point" data-toggle="modal" data-target="#redeemModal" class="bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded">Point Redeem</button>
                 <button id="gift-reward" data-toggle="modal" data-target="#exampleModal" class="bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded">Gift Rewards</button>
             </div>
@@ -353,7 +353,7 @@
 
 <!--- top theree -->
 <!-- Leaderboard Title -->
-<div class="bg-white rounded-lg shadow p-3  mt-8">
+<div class="bg-white rounded-lg shadow p-3  mt-3">
 <div class="flex items-center gap-3 mb-4 pl-3">
     <span class="material-symbols-rounded text-yellow-500 text-3xl">groups</span>
     <h2 class="text-2xl font-bold text-[#003152]">Leader Board</h2>

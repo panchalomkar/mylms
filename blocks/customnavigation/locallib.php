@@ -342,8 +342,8 @@ function customnavigation_edit_item()
            
             $roleIDs = explode(',', trim($obj->roleid));
             $DB->update_record('customnavigation', $obj);
-            CheckElementsParentChild($obj->id, true , $roleIDs);
-            CheckElementsParentChild($obj->id, false , $roleIDs);
+            CheckElementsParentChild($obj->id, $roleIDs, true);
+            CheckElementsParentChild($obj->id, $roleIDs, true);
             //End Alejandro changes
 
             $response['message'] = get_string('item_modified', 'block_customnavigation');
@@ -806,43 +806,36 @@ function process_new_icon_cn($context, $component, $filearea, $itemid, $original
 
 
 
-function CheckElementsParentChild ($elementid,$parent = true , $roleIDs) 
+function CheckElementsParentChild($elementid, $roleIDs, $parent = true)
 {
     global $DB;
+
     $allelements = ElementTotals($elementid);
-    if($allelements)
-    {
-        foreach ($allelements as $key => $element) {
-            
-            if($parent){
-                $ElementRoleIDs = explode(',', trim($element->roleid ,',' ) );
-                foreach ($roleIDs as $key => $role) {                        
-                    if(!in_array($role, $ElementRoleIDs))
-                    {
-                       array_push($ElementRoleIDs,$role);
+    if ($allelements) {
+        foreach ($allelements as $element) {
+
+            $ElementRoleIDs = explode(',', trim($element->roleid, ','));
+
+            if ($parent) {
+                foreach ($roleIDs as $role) {
+                    if (!in_array($role, $ElementRoleIDs)) {
+                        $ElementRoleIDs[] = $role;
                     }
                 }
-                $element->roleid = implode(',', $ElementRoleIDs);
-                $DB->update_record('customnavigation', $element); 
-            }else
-            {
-                $ElementRoleIDs = explode(',', trim($element->roleid ,',' ) );
-                foreach ($ElementRoleIDs as $key => $role) {                       
-                    if(!in_array($role, $roleIDs))
-                    {
-                        //remove from child parent not present role
-                        $key = array_search($role, $ElementRoleIDs);
+            } else {
+                foreach ($ElementRoleIDs as $key => $role) {
+                    if (!in_array($role, $roleIDs)) {
                         unset($ElementRoleIDs[$key]);
-                        array_push($ElementRoleIDs);
                     }
                 }
-                
-                $element->roleid = implode(',', $ElementRoleIDs);
-                $DB->update_record('customnavigation', $element); 
             }
+
+            $element->roleid = implode(',', $ElementRoleIDs);
+            $DB->update_record('customnavigation', $element);
         }
     }
 }
+
 
 
 function ElementTotals($elementid)

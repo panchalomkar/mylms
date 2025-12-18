@@ -221,7 +221,12 @@ public function userdashboard_stats($user,$filter = 'all') {
       $duedate = !empty($course->enddate) ? date('d/m/Y', $course->enddate) : '';
 
         // --- Course link ---
-        $courselink = new moodle_url('/course/view.php', ['id' => $course->id]);
+         if (is_siteadmin() && get_config('theme_remui', 'enableedwfeedback')) {
+          $courselink = new moodle_url('/course/view.php', ['id' => $course->id]);
+        }else{
+            $courselink = new moodle_url('/local/incourse/index.php', ['id' => $course->id]);
+        }
+        
 
         // --- Store course data ---
         $coursesdata[] = [

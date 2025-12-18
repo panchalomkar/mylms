@@ -2546,7 +2546,7 @@ function ilt_approve_requests($data) {
                         $status,
                         $attendee->id
                     )) {
-                    continue;
+                    continue 2;
                 }
 
                 break;
@@ -2554,7 +2554,7 @@ function ilt_approve_requests($data) {
             case 0:
             default:
                 // Change nothing.
-                continue;
+                continue 2;
         }
     }
 
@@ -4084,7 +4084,7 @@ function ilt_add_customfields_to_form(&$mform, $customfields, $alloptional=false
                 break;
             default:
                 // error_log("ilt: invalid field type for custom field ID $field->id");
-                continue;
+                continue 2;
         }
 
         $mform->setType($fieldname, PARAM_TEXT);

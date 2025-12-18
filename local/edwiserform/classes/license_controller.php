@@ -29,6 +29,7 @@ class local_edwiserform_license_controller {
      *
      * @var string Slug to be used in url and functions name
      */
+     public $plugin_short_name;
     private $plugin_slug = '';
 
     /**

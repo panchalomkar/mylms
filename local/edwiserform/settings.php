@@ -44,12 +44,15 @@ $ADMIN->add('edwiserform',
             )
         );
 $ADMIN->add('edwiserform',
-            new admin_externalpage(
-                'efbsettings',
-                new lang_string("efb-settings", "local_edwiserform"),
-                new moodle_url("/admin/settings.php?section=local_edwiserform")
-            )
-        );
+    new admin_externalpage(
+        'efbsettings',
+        new lang_string('efb-settings', 'local_edwiserform'),
+        new moodle_url('/admin/settings.php', [
+            'section' => 'local_edwiserform_settings'
+        ])
+    )
+);
+
 
 // Add admin menues.
 // Adding tab setting for the edwiserform.

@@ -58,10 +58,19 @@ $extraclasses = ['uses-drawers'];
 if ($courseindexopen) {
     $extraclasses[] = 'drawer-open-index';
 }
-$hasCompanyClass = rap_has_company_id();
-if ($hasCompanyClass != "") {
-    $extraclasses[] = $hasCompanyClass;
+if (function_exists('rap_has_company_id')) {
+    $hasCompanyClass = rap_has_company_id();
+    if (!empty($hasCompanyClass)) {
+        $extraclasses[] = $hasCompanyClass;
+    }
+    
 }
+if (!function_exists('rap_has_company_id')) {
+    function rap_has_company_id() {
+        return '';
+    }
+}
+
 if($PAGE->pagelayout == 'mydashboard' && $PAGE->pagetype == 'my-index') {
   $isdashboard=true;
 }else{$isdashboard=false;}
@@ -158,7 +167,7 @@ if (is_siteadmin()) {
     $mycourseurl = $CFG->wwwroot . "/course";
 }
 $roles = $DB->get_record_sql("SELECT * FROM mdl_role_assignments WHERE userid = $USER->id");
-$getmanager = $DB->get_record('company_users', array('userid' => $USER->id));
+$getmanager = $DB->get_record('company_users', array('userid' => $USER->id),IGNORE_MULTIPLE);
 $CFG->wwwroot . '/login/logout.php?sesskey=' . sesskey();
 global $CFG, $USER;
 
@@ -310,9 +319,9 @@ $templatecontext = [
     'usermenu' => $primarymenu['user'],
     'usernamedis' => $USER->firstname . ' ' . $USER->lastname,
     'sidebarurl' => $sidebarurldata,
-    'showstatus' => $showarra,
+    $showarra = $showarra ?? [],
     'showadmin' => $admin,
-    'manager' => $manager,
+    'manager' => $manager?? false,
     'createcourses' => $CFG->wwwroot . "/local/coursewizard/createcourse.php?cid=1&category=0",
     'managecourses' => $CFG->wwwroot . "/course/management.php",
     'addlearningplan' => $CFG->wwwroot . "/admin/tool/lp/edittemplate.php?pagecontextid=1",

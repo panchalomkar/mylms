@@ -383,7 +383,7 @@ const centerText = {
         const centerY = chart.getDatasetMeta(0).data[0].y;
 
         ctx.save();
-        ctx.font = "600 14px sans-serif";  // Smaller text
+        ctx.font = "600 10px sans-serif";  // Smaller text
         ctx.fillStyle = "#003152";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
@@ -473,7 +473,7 @@ function renderCustomLegend() {
 
         div.innerHTML = `
             <div class="legend-dot" style="background:${colors[i]}"></div>
-            <span>${label} (${values[i]})</span>
+            <span style="font-size: 10px;" >${label} (${values[i]})</span>
         `;
 
         legendContainer.appendChild(div);
@@ -483,7 +483,6 @@ function renderCustomLegend() {
 renderCustomLegend();
 
 
-// BAR CHART
 const barCtx = document.getElementById('barChart').getContext('2d');
 new Chart(barCtx, {
     type: 'bar',
@@ -506,6 +505,8 @@ new Chart(barCtx, {
         }
     }
 });
+
+
 
 // Open modal and load content
 function openPointsModal() {
@@ -876,8 +877,16 @@ function drawLogin() {
     ]);
 
     var options = {
-        hAxis: { baselineColor: 'transparent', textStyle: { color: '#004c8c', fontSize: 12 } },
-        vAxis: { baselineColor: 'transparent', textStyle: { color: '#004c8c', fontSize: 12 } },
+        hAxis: { 
+            baselineColor: '#003152', 
+            textStyle: { color: '#004c8c', fontSize: 12 },
+            gridlines: { color: 'transparent' } // hide horizontal gridlines
+        },
+        vAxis: { 
+            baselineColor: '#003152', 
+            textStyle: { color: '#004c8c', fontSize: 12 },
+            gridlines: { color: 'transparent' } // hide vertical gridlines
+        },
         legend: 'none',
         backgroundColor: 'transparent',
         colors: ['#F5B700'],
@@ -891,6 +900,7 @@ function drawLogin() {
     chart.draw(data, options);
 }
 
+
 // ===== QUIZ CHART =====
 function drawQuiz() {
     var data = new google.visualization.DataTable();
@@ -901,20 +911,60 @@ function drawQuiz() {
     ]);
 
     var options = {
-        hAxis: { baselineColor: 'transparent', textStyle: { color: '#004c8c', fontSize: 12 } },
-        vAxis: { baselineColor: 'transparent', textStyle: { color: '#004c8c', fontSize: 12 } },
-        legend: 'none',
         backgroundColor: 'transparent',
-        colors: ['#003152'],
-        curveType: 'function', // smooth curve
+        legend: 'none',
+
+        colors: ['#0b2a5b'], // dark blue like image
+
+        curveType: 'function',   // smooth curve
         lineWidth: 2,
-        pointSize: 6,
-        chartArea: { left: 40, top: 10, width: '90%', height: '75%' }
+        pointSize: 7,            // solid visible dots
+        pointShape: 'circle',
+
+        hAxis: {
+            ticks: [0, 1, 2, 3, 4,5],
+            baselineColor: '#6b7280',      // visible axis
+            textStyle: {
+                color: '#6b7280',
+                fontSize: 12
+            },
+            gridlines: {
+                color: 'transparent',          // light dashed grid
+                count: 5
+            },
+            minorGridlines: {
+                color: 'transparent'
+            }
+        },
+
+        vAxis: {
+            baselineColor: 'transparent',
+            textStyle: {
+                color: '#6b7280',
+                fontSize: 12
+            },
+            gridlines: {
+                color: '#e5e7eb'
+            },
+            minorGridlines: {
+                color: 'transparent'
+            }
+        },
+
+        chartArea: {
+            left: 40,
+            top: 15,
+            width: '92%',
+            height: '70%'
+        }
     };
 
-    var chart = new google.visualization.LineChart(document.getElementById('chart_quiz'));
+    var chart = new google.visualization.LineChart(
+        document.getElementById('chart_quiz')
+    );
     chart.draw(data, options);
 }
+
 
 
 
