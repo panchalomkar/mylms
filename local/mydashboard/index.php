@@ -45,7 +45,7 @@ $nextlevel = get_next_level($userid);
 $output['points_needed'] = $nextlevel[0];
 $output['grade_needed'] = $nextlevel[1];
 $output['nextlevel'] = $nextlevel[2];
-
+$output['lifetime_points'] = get_lifetime_points($userid);
 $output['available_points'] = get_available_points($userid);
 $output['total_points'] = get_total_points($userid);
 $output['login_points'] = $l = get_points($userid, 'login');
@@ -673,41 +673,92 @@ scratchCards.forEach(function(card, index) {
 
 let spinning = false;
 
+// Utility: get today key
+function getTodayKey() {
+    const d = new Date();
+    return `spin_${d.getFullYear()}_${d.getMonth() + 1}_${d.getDate()}`;
+}
+
+// Replace spin button with message
+function replaceSpinButton() {
+    const btn = document.getElementById("spinBtn");
+    if (!btn) return;
+
+    btn.outerHTML = `
+        <div class=" italic bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-2 rounded" style="font-size:12px;">
+            You have won today's luck on wheel, Try next day
+        </div>
+    `;
+}
+
+// On page load – if already spun today
+document.addEventListener("DOMContentLoaded", () => {
+    const todayKey = getTodayKey();
+    if (localStorage.getItem(todayKey)) {
+        replaceSpinButton();
+    }
+});
+
 function startSpin() {
     if (spinning) return;
 
-    spinning = true;
-    let icon = document.querySelector(".spin-refresh-icon");
+    const todayKey = getTodayKey();
+    if (localStorage.getItem(todayKey)) {
+        replaceSpinButton();
+        return;
+    }
 
+    spinning = true;
+
+    const icon = document.querySelector(".spin-refresh-icon");
     icon.classList.add("animate-spin-fast");
 
-    // Reward list
-    let pointsList = [0, 5, 7, 9, 13, 17, 21, 30, 50];
-    let reward = pointsList[Math.floor(Math.random() * pointsList.length)];
+    // 🎁 Reward logic (unchanged)
+    const pointsList = [0, 5, 7, 9, 13, 17, 21, 30, 50];
+    const reward = pointsList[Math.floor(Math.random() * pointsList.length)];
 
-    // Spin duration — you can reduce to 1500 for even faster
     setTimeout(() => {
         icon.classList.remove("animate-spin-fast");
         spinning = false;
 
+        // Save spin for today
+        localStorage.setItem(todayKey, "1");
+
+        // Replace button immediately after spin
+        replaceSpinButton();
+
+        // Show modal
         document.getElementById("wonPoints").innerHTML = reward;
         document.getElementById("spinSuccessModal").classList.remove("hidden");
-startConfetti();
+
+        if (reward > 0) startConfetti();
+
+        // Update points UI
+        if (reward > 0) {
+            const sp = document.querySelector(".spin-point");
+            const ap = document.querySelector(".available-points");
+
+            if (sp) sp.innerHTML = parseInt(sp.innerHTML) + reward;
+            if (ap) ap.innerHTML = parseInt(ap.innerHTML) + reward;
+        }
+
+        // AJAX save
         $.ajax({
             url: "ajax.php",
             type: "POST",
-            data: { point: reward, action: "SPINWHEELPOINT" },
-            success: function (res) {
-                console.log("Saved:", res);
+            data: {
+                point: reward,
+                action: "SPINWHEELPOINT"
             }
         });
 
-    }, 1500); // ⏳ 1.5 seconds spin
+    }, 1500);
 }
 
 function closeSpinPopup() {
     document.getElementById("spinSuccessModal").classList.add("hidden");
 }
+
 
     //AJAX
 
@@ -767,6 +818,37 @@ $('body').on('click', '#gift-reward', function () {
         }
 
     });
+    function loadRedeemPopup(avPoints) {
+    $.ajax({
+        url: 'ajax.php',
+        type: 'POST',
+        dataType: 'json',
+        data: {
+            action: 'GETREDEEMPOINTS',
+            av_poiints: avPoints
+        },
+        success: function (res) {
+
+            $('#lifetimePoints').text(res.lifetime);
+            $('#burnoutPoints').text(res.burnout);
+            $('#totalPoints').text(res.total);
+            $('#redeemablePoints').text(res.redeemable);
+            $('#idredeem-points').val(res.redeemable);
+
+            // Enable / Disable redeem button
+            if (res.redeemable === 5000) {
+                $('#redeemnow').prop('disabled', false)
+                    .css('opacity', '1');
+            } else {
+                $('#redeemnow').prop('disabled', true)
+                    .css('opacity', '0.5');
+            }
+
+            $('#redeemModal').modal('show');
+        }
+    });
+}
+
 
   $('#searchuser').on('click', function () {
 
@@ -793,28 +875,36 @@ $('body').on('click', '#gift-reward', function () {
 });
 
 
-    $('body').on('click', '#redeemnow', function (e) {
-        e.preventDefault();
-        var point = parseInt($('#idredeem-points').val());
-        if (point > 0) {
-            if (confirm("Are you sure you want to redeem the points. \n The action cannot be undone.")) {
-                $.ajax({
-                    url: 'ajax.php',
-                    type: 'post',
-                    data: { point: point, action: 'REDEEMNOW' },
-                    success: function (response) {
-                        if (response == 1) {
-                            window.location.reload();
-                        } else {
-                            alert('The redeemable amount is invalid');
-                        }
-                    }
-                });
+$('body').on('click', '#redeemnow', function (e) {
+    e.preventDefault();
+
+    var point = parseInt($('#idredeem-points').val());
+
+    if (point !== 5000) {
+        alert('Minimum 5000 points required to redeem');
+        return;
+    }
+
+    if (confirm("Are you sure you want to redeem the points?\nThe action cannot be undone.")) {
+
+        $.ajax({
+            url: 'ajax.php',
+            type: 'POST',
+            data: {
+                action: 'REDEEMNOW',
+                point: 5000
+            },
+            success: function (response) {
+                if (response == 1) {
+                    window.location.reload();
+                } else {
+                    alert('The redeemable amount is invalid');
+                }
             }
-        } else {
-            alert('The redeemable amount is invalid');
-        }
-    });
+        });
+    }
+});
+
 
 
     $('body').on('click', '#sharepoints', function (e) {

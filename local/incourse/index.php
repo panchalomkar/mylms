@@ -1193,7 +1193,7 @@ if (modname === 'quiz') {
                         </div>
 
                         <div class="w-full flex items-center justify-between gap-4 mt-2">
-                            <button id="modalCancelBtn" class="flex-1 px-2 py-2 border rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>
+                            <button id="modalCancelBtn" class="flex-1 px-2 py-2 border rounded-lg text-white bg-red-500 hover:bg-red-600">Cancel</button>
                             <button id="modalStartBtn" class="flex-1 px-2 py-2 bg-[#003152] text-white rounded-lg hover:bg-[#0b2f49]">Start Attempt</button>
                         </div>
                     </div>

@@ -142,10 +142,11 @@ case 'GETREDEEMPOINTS':
 
     $av_points = isset($_POST['av_poiints']) ? (int)$_POST['av_poiints'] : 0;
 
-    $lifetime   = (int) get_lifetime_points($USER->id);
-    $burnout    = (int) get_redeemed_points($USER->id);
+    $lifetime = (int) get_lifetime_points($USER->id);
+    $burnout  = (int) get_redeemed_points($USER->id);
 
-    $redeemable = ($av_points >= 5000) ? 5000 : $av_points;
+    // 🔒 Only allow redeem if >= 5000
+    $redeemable = ($av_points >= 5000) ? 5000 : 0;
 
     header('Content-Type: application/json');
 
@@ -156,31 +157,47 @@ case 'GETREDEEMPOINTS':
         'redeemable' => $redeemable
     ]);
     exit;
+    break;
 
 
 
-    case 'REDEEMNOW';
-        $point = $_POST['point'];
-        if (add_point_log($USER->id, 'redeem', 'deducted', $_POST['point'])) {
-            //send an email to admin
-            $touser = get_admin();
-            $subject = 'Ponts Redeem | ' . $USER->username;
-            $messagehtml = '<html>
-                            <body>
-                                Hi ' . $touser->firstnae . ' ' . $touser->lasttname . ',<br><br>
-                                ' . $USER->firstnae . ' ' . $USER->lasttname . ' has requested to redeem ' . $point . ' points.<br>
-                                    Kindly take neccessary action.<br><br>
-                                    
-                                    Regards,<br>Team Ceasefire.
-                                </body>
-                            </html>';
+case 'REDEEMNOW':
 
-            email_to_user($touser, $USER, $subject, '', $messagehtml);
-            echo 1;
-        } else {
-            echo 2;
-        }
-        break;
+    $point = (int) ($_POST['point'] ?? 0);
+
+    // Get actual available points from DB
+    $available = (int) get_available_points($USER->id);
+
+    // ❌ Invalid redeem
+    if ($available < 5000 || $point !== 5000) {
+        echo 0;
+        exit;
+    }
+
+    if (add_point_log($USER->id, 'redeem', 'deducted', 5000)) {
+
+        // Email admin
+        $touser = get_admin();
+        $subject = 'Points Redeem | ' . $USER->username;
+
+        $messagehtml = '
+        <html>
+        <body>
+            Hi ' . fullname($touser) . ',<br><br>
+            ' . fullname($USER) . ' has requested to redeem <b>5000</b> points.<br>
+            Kindly take necessary action.<br><br>
+            Regards,<br>Team Ceasefire
+        </body>
+        </html>';
+
+        email_to_user($touser, $USER, $subject, '', $messagehtml);
+
+        echo 1;
+    } else {
+        echo 2;
+    }
+    break;
+
 
     case 'SCRATCHCARD';
         $scid = $_POST['scid'];

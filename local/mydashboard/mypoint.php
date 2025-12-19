@@ -15,20 +15,20 @@ $points_log = get_my_points_log($USER->id);
 
     <div class="flex justify-between items-center mb-3">
         <div class="flex space-x-2">
-            <button class="px-3 py-1 bg-gray-200 rounded text-sm copyBtn">
-                <span class="material-symbols-rounded"style="font-size: 14px;">content_copy</span> Copy
+            <button class="px-3 py-1 bg-gray-200 rounded text-sm copyBtn d-none">
+                <span class="material-symbols-rounded d-none"style="font-size: 14px;">content_copy</span> Copy
             </button>
             <button class="px-3 py-1 bg-gray-200 rounded text-sm csvBtn">
                 <span class="material-symbols-rounded"style="font-size: 14px;">file_download</span> CSV
             </button>
-            <button class="px-3 py-1 bg-gray-200 rounded text-sm excelBtn">
-                <span class="material-symbols-rounded"style="font-size: 14px;">grid_view</span> Excel
+            <button class="px-3 py-1 bg-gray-200 rounded text-sm excelBtn d-none">
+                <span class="material-symbols-rounded d-none"style="font-size: 14px;">grid_view</span> Excel
             </button>
-            <button class="px-3 py-1 bg-gray-200 rounded text-sm pdfBtn">
+            <button class="px-3 py-1 bg-gray-200 rounded text-sm pdfBtn ">
                 <span class="material-symbols-rounded"style="font-size: 14px;">picture_as_pdf</span> PDF
             </button>
-            <button class="px-3 py-1 bg-gray-200 rounded text-sm printBtn">
-                <span class="material-symbols-rounded"style="font-size: 14px;">print</span> Print
+            <button class="px-3 py-1 bg-gray-200 rounded text-sm printBtn d-none">
+                <span class="material-symbols-rounded d-none"style="font-size: 14px;">print</span> Print
             </button>
         </div>
         <input type="text" id="searchInput" placeholder="Search..." class="border rounded px-3 py-1 text-sm w-1/3">
@@ -56,9 +56,9 @@ $points_log = get_my_points_log($USER->id);
                     <td class="px-4 py-2 text-sm text-gray-700"><?= ucwords($log->point_type) ?></td>
                     <td class="px-4 py-2 text-sm">
                         <?php if($log->action === 'added'): ?>
-                            <span class="px-2 py-1 rounded-full text-white bg-green-500 text-xs font-semibold"><?= $log->action ?></span>
+                            <span class="px-2 py-1 rounded-full text-white bg-green-500 text-xs font-semibold capitalize"><?= $log->action ?></span>
                         <?php else: ?>
-                            <span class="px-2 py-1 rounded-full text-white bg-red-500 text-xs font-semibold"><?= $log->action ?></span>
+                            <span class="px-2 py-1 rounded-full text-white bg-red-500 text-xs font-semibold capitalize"><?= $log->action ?></span>
                         <?php endif; ?>
                     </td>
                     <td class="px-4 py-2 text-sm text-gray-700"><?= $log->points ?></td>

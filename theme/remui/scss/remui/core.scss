@@ -1921,3 +1921,33 @@ padding: 14px 20px 10px 25px !important;
    .sidebar .logoalign {
     left: -8px;
 }
+// quiz right drawer show always open css
+/* FORCE quiz drawer visible even if Moodle marks it closed */
+.path-mod-quiz #theme_remui-drawers-blocks {
+    transform: translateX(0) !important;
+    right: 0 !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    display: block !important;
+    visibility: visible !important;
+    width: 360px !important;
+}
+
+/* Kill closed state */
+.path-mod-quiz #theme_remui-drawers-blocks:not(.show) {
+    transform: translateX(0) !important;
+}
+
+/* Disable close button */
+.path-mod-quiz #theme_remui-drawers-blocks .drawertoggle {
+    display: none !important;
+}
+
+/* Remove overlay */
+.path-mod-quiz .drawer-backdrop {
+    display: none !important;
+}
+
+.path-mod-quiz #page{margin-right: 298px;}
+.path-mod-quiz .drawer-right {display:none;}
+.path-mod-quiz .drawer-right-toggle{display:none;}

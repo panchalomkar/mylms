@@ -53,15 +53,15 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
         <!-- PROFILE CARD -->
-        <div class="lg:col-span-8 bg-white rounded-lg shadow p-3">
+        <div class="lg:col-span-8 bg-white rounded-lg shadow p-3 transition-all duration-300 hover:scale-[1.03]">
             <div class="flex items-start gap-6">
 
                 <!-- PROFILE IMAGE -->
                 <div class="relative">
-                    <div class="w-28 h-28 rounded-full border-4 border-yellow-400 overflow-hidden shadow">
+                    <div class="w-28 h-28 rounded-full border-4 border-yellow-400 overflow-hidden shadow top-user-img">
                         <img src="{{profileimage}}" class="w-full h-full object-cover" />
                     </div>
-                    <span class="material-symbols-rounded text-yellow-500 bg-white p-1 rounded-full shadow absolute -bottom-2 left-1/2 -translate-x-1/2">
+                    <span class="material-symbols-rounded text-yellow-500 bg-white p-1  rounded-full shadow absolute -bottom-2 left-1/2 -translate-x-1/2">
                         emoji_events
                     </span>
                 </div>
@@ -125,7 +125,7 @@
         </div>
 
         <!-- ACHIEVEMENTS CARD -->
-        <div class="lg:col-span-4 bg-white rounded-lg shadow p-3">
+        <div class="lg:col-span-4 bg-white rounded-lg shadow p-3 transition-all duration-300 hover:scale-[1.03]">
 
             <h3 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
                 <span class="material-symbols-rounded text-yellow-500 text-3xl">trophy</span>
@@ -135,15 +135,15 @@
             <div class="mt-6 flex justify-around items-center">
 
                 <div class="text-center">
-                    <div class="bg-yellow-50 p-4 rounded-full shadow-inner inline-block">
+                    <div class="bg-yellow-50 p-4 rounded-full top-user-img shadow-inner inline-block">
                         <span class="material-symbols-rounded text-yellow-500 text-4xl">emoji_events</span>
                     </div>
-                    <p class="text-lg font-bold text-yellow-500 mt-3" style="color: #eab308 !important;">{{total_points}}</p>
+                    <p class="text-lg font-bold text-yellow-500 mt-3" style="color: #eab308 !important;">{{lifetime_points}}</p>
                     <p class="text-xs text-gray-500">Points</p>
                 </div>
 
                 <div class="text-center">
-                    <div class="bg-blue-50 p-4 rounded-full shadow-inner inline-block">
+                    <div class="bg-blue-50 p-4 rounded-full top-user-img shadow-inner inline-block">
                         <span class="material-symbols-rounded text-blue-500 text-4xl">workspace_premium</span>
                     </div>
                     <p class="text-lg font-bold text-gray-800 mt-3">0</p>
@@ -151,7 +151,7 @@
                 </div>
 
                 <div class="text-center">
-                    <div class="bg-yellow-50 p-4 rounded-full shadow-inner inline-block">
+                    <div class="bg-yellow-50 p-4 rounded-full top-user-img shadow-inner inline-block">
                         <span class="material-symbols-rounded text-yellow-500 text-4xl">grade</span>
                     </div>
                     <p class="text-lg font-bold text-yellow-600 mt-3" style="color: #eab308 !important;">{{my_rank}}</p>
@@ -318,33 +318,48 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-3">
         <!-- Spin Wheel -->
-        <div class="bg-yellow-400 rounded-lg p-2 flex flex-col items-center text-center hover:shadow-lg transition">
-            <div class="bg-yellow-300 w-20 h-20 rounded-full flex items-center justify-center mb-2">
+        <div class=" rounded-lg p-2 flex flex-col items-center text-center  transition" >
+            <div class="bg-yellow-300 w-20 h-20 rounded-full flex items-center justify-center mb-2 top-user-img"style="border: solid 8px #eab308;">
                <span class="material-symbols-rounded text-3xl text-gray-800 spin-refresh-icon">refresh</span>
             </div>
-            <h3 class="font-semibold text-gray-900">Spin Wheel</h3>
-            <p class="text-gray-800 mb-4" style="font-size: 12px;">Spin the wheel and luck your chance to get points benefit</p>
-            <button onclick="startSpin()" class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-6 rounded">SPIN</button>
+            <h3 class="font-semibold text-gray-900 mb-1">Spin Wheel</h3>
+            <p class="text-gray-800 mb-2" style="font-size: 12px;">Spin the wheel and luck your chance to get points benefit</p>
+            <button id="spinBtn" onclick="startSpin()" class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-6 rounded gap-2 d-flex"  style="align-items:center;">
+            <span class="material-symbols-rounded d-none text-white spin-refresh-icon" style="font-size: 16px;">refresh</span>Spin</button>
         </div>
 
         <!-- Poll -->
-        <div class="bg-blue-900 rounded-lg p-2 flex flex-col items-center text-center hover:shadow-lg transition ">
-            <div class="bg-blue-700 w-20 h-20 rounded-full flex items-center justify-center mb-2">
+        <div class="rounded-lg p-2 flex flex-col items-center text-center  transition ">
+            <div class="bg-[#003152] w-20 h-20 rounded-full flex items-center justify-center mb-2 top-user-img" style="border: solid 8px #486398;">
                 <span class="material-symbols-rounded text-3xl text-white ">poll</span>
             </div>
-            <h3 class="font-semibold text-white">Poll</h3>
-            <a href="{{pollurl}}" class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-6 rounded mt-4">Take Poll</a>
+            <h3 class="font-semibold text-gray-900 mt-3">Poll</h3>
+            <a href="{{pollurl}}" class="bg-yellow-500 d-flex hover:bg-yellow-600 text-white font-semibold py-2 px-6 gap-2 rounded mt-2" style="align-items:center;"><span class="material-symbols-rounded text-white d-none " style="font-size: 16px;">poll</span> Take Poll</a>
         </div>
 
         <!-- Redemption Zone -->
-        <div class="bg-yellow-400 rounded-lg p-2 flex flex-col items-center text-center hover:shadow-lg transition">
-            <div class="bg-yellow-300 w-20 h-20 rounded-full flex items-center justify-center mb-2">
+        <div class=" rounded-lg p-2 flex flex-col items-center text-center  transition" >
+            <div class="bg-yellow-300 w-20 h-20 rounded-full flex items-center justify-center mb-2 top-user-img"style="border: solid 8px #eab308;">
                 <span class="material-symbols-rounded text-3xl text-gray-800">card_giftcard</span>
             </div>
-            <h3 class="font-semibold text-gray-900">Redemption Zone</h3>
-            <div class="flex flex-col gap-2 mt-4 " style="width: 50%;">
-                <button id="redeem-point" data-toggle="modal" data-target="#redeemModal" class="bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded">Point Redeem</button>
-                <button id="gift-reward" data-toggle="modal" data-target="#exampleModal" class="bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded">Gift Rewards</button>
+            <h3 class="font-semibold text-gray-900 mt-3">Redemption Zone</h3>
+            <div class="flex flex-row w-100 justify-center gap-2 mt-2 ">
+                <button id="redeem-point"
+        data-toggle="modal"
+        data-target="#redeemModal"
+        class="px-2 bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded flex items-center gap-1">
+    <svg class="text-white mr-1 d-none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lov-id="src/components/MyPoints.tsx:148:16" data-lov-name="Coins" data-component-path="src/components/MyPoints.tsx" data-component-line="148" data-component-file="MyPoints.tsx" data-component-name="Coins" data-component-content="%7B%22className%22%3A%22text-accent%22%7D"><circle cx="8" cy="8" r="6"></circle><path d="M18.09 10.37A6 6 0 1 1 10.34 18"></path><path d="M7 6h1v4"></path><path d="m16.71 13.88.7.71-2.82 2.82"></path></svg>
+    <span>Point Redeem</span>
+</button>
+
+<button id="gift-reward"
+        data-toggle="modal"
+        data-target="#exampleModal"
+        class="px-3 bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded flex items-center gap-1">
+    <span class="material-symbols-rounded d-none text-white "style="font-size: 16px;">redeem</span>
+    <span>Gift Rewards</span>
+</button>
+
             </div>
         </div>
     </div>
@@ -418,11 +433,6 @@
             <span id="wonPoints" style="font-size:20px;color;color: rgb(234, 179, 8);">0</span> Points
         </p>
 
-        <!-- Claim Button -->
-        <button onclick="closeSpinPopup()" 
-            class="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-1 rounded text-lg font-semibold w-50 shadow">
-            Claim Points
-        </button>
     </div>
 </div>
 
@@ -625,7 +635,7 @@
                 <!-- POINT DETAILS -->
                 <div class="row border-top pt-3 text-center">
                     <div class="col-md-6">
-                        <div class="text-muted">Total Points</div>
+                        <div class="text-muted">Active Points</div>
                         <div id="totalPoints"
                              style="font-size:20px; font-weight:700; color:#0b2c6d;">
                             0
