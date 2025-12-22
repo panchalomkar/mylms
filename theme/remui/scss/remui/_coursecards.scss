@@ -210,7 +210,16 @@ $card-list-gap-half: $card-list-gap / 2;
       }
    }
 }
-
+#page-course-index-category{
+   .edw-course-card-grid {
+   display: grid;
+   // grid-template-columns: minmax(auto, 424px) minmax(auto, 424px) minmax(auto, 424px);
+   // grid-template-columns: repeat(4,minmax(auto,25%));
+   // gap: $card-list-gap;
+    grid-template-columns: repeat(4, minmax(auto, 26%)) !important;
+    gap: 30px !important;
+    justify-content: center;
+}}
 .edw-course-card-grid {
    display: grid;
    // grid-template-columns: minmax(auto, 424px) minmax(auto, 424px) minmax(auto, 424px);

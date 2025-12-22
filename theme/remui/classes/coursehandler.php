@@ -382,9 +382,11 @@ class theme_remui_coursehandler {
             if ($PAGE->pagelayout === 'incourse') {
               if ($isadmin) {
     $coursesarray[$count]["courseurl"] = $CFG->wwwroot . "/course/view.php?id=" . $course->id;
+    $coursesarray[$count]["viewurl"] = $CFG->wwwroot . "/course/view.php?id=" . $course->id;
 } else {
     // Replace `5` with the correct course or page id if dynamic
     $coursesarray[$count]["courseurl"] = $CFG->wwwroot . "/local/incourse/index.php?id=". $course->id;
+    $coursesarray[$count]["viewurl"] = $CFG->wwwroot . "/local/incourse/index.php?id=". $course->id;
 }
             }
 

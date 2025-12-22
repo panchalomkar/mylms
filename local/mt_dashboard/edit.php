@@ -91,6 +91,11 @@ $PAGE->requires->css('/local/mt_dashboard/styles.css');
 $PAGE->blocks->add_region('content');
 // Set tye pagetype correctly.
 $PAGE->set_pagetype('local-iomad-dashboard-index');
+$PAGE->requires->js(new moodle_url('https://cdn.tailwindcss.com'));
+$PAGE->requires->css(new moodle_url('https://fonts.googleapis.com/icon?family=Material+Icons'));
+$PAGE->requires->css(new moodle_url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined'));
+$PAGE->requires->css(new moodle_url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded'));
+
 //$PAGE->set_pagelayout('mydashboard');
 
 // Now we can display the page.
@@ -128,6 +133,12 @@ $backlink = new moodle_url("/local/mt_dashboard/index.php?companyss=0&company=0"
 $data['compnay_name'] = $compnay_name;
 $data['backlink'] = $backlink;
 $company_name = $DB->get_record('company', array('id' => $SESSION->currenteditingcompany));
+$gradients = ['avatar-blue', 'avatar-purple', 'avatar-indigo'];
+$gradientclass = $gradients[$SESSION->currenteditingcompany % count($gradients)];
+
+$data['avatar_class'] = $gradientclass;
+$data['avatar_text']  = strtoupper(substr($compnay_name, 0, 2));
+
 // Only display if you have the correct capability.
 // if (!iomad::has_capability('local/iomad_dashboard:view', context_system::instance())) {
 //     return;
@@ -155,6 +166,26 @@ if( 0 == $selectedcompany ){
 }
 ksort($companylist); 
 
+// ==============================
+// COMPANY INFORMATION
+// ==============================
+$companyinfo = null;
+
+if (!empty($selectedcompany)) {
+    $companyinfo = $DB->get_record('company', ['id' => $selectedcompany], '*', IGNORE_MISSING);
+}
+
+$data['company_address'] = $companyinfo->address ;
+$data['company_email']   = $companyinfo->email ;
+$data['company_phone']   = $companyinfo->telephone;
+$data['location']   = $companyinfo->city .', '. $companyinfo->country;
+
+$data['company_status'] = (!empty($companyinfo) && empty($companyinfo->suspended))
+    ? 'Active'
+    : 'Suspended';
+
+get_company_creator_name($selectedcompany);
+$data['company_creator_name'] = get_company_creator_name($selectedcompany);
 // If no selected company no point showing tabs.
 if (!iomad::get_my_companyid(context_system::instance(), false)) {
     $data['no_company_selected'] = true;
@@ -244,7 +275,7 @@ if (!iomad::get_my_companyid(context_system::instance(), false)) {
             $icon = $menu['icon'];
         } else if (!empty($menu['icondefault'])) {
             $imgsrc = $OUTPUT->image_url($menu['icondefault'], 'block_iomad_company_admin');
-            $icon = '"><img src="'.$imgsrc.'" alt="'.$menu['name'].'" /></br';
+            $icon = '"><img src="'.$imgsrc.'" alt="'.$menu['name'].'" /></br>';
         } else {
             $icon = '';
         }
@@ -262,10 +293,26 @@ if (!iomad::get_my_companyid(context_system::instance(), false)) {
         } else {
             $action = '';
         }
+$iconmap = [
+    'Manage departments'           => ['icon' => 'settings', 'bg' => 'bg-blue'],
+    'Edit company'                 => ['icon' => 'edit_square', 'bg' => 'bg-sky'],
+    'Department users & managers'  => ['icon' => 'groups', 'bg' => 'bg-cyan'],
+    'Optional profiles'            => ['icon' => 'person_add', 'bg' => 'bg-purple'],
+    'Assign users'                 => ['icon' => 'how_to_reg', 'bg' => 'bg-indigo'],
+    'Restrict capabilities'        => ['icon' => 'shield', 'bg' => 'bg-royal'],
+    'Email templates'              => ['icon' => 'mail', 'bg' => 'bg-teal'],
+    'Appearance Setting'           => ['icon' => 'palette', 'bg' => 'bg-ocean'],
+];
+
+$menuicon = $iconmap[$menu['name']] ?? ['icon' => 'apps', 'bg' => 'bg-default'];
+
+$new_array['icon']     = $menuicon['icon'];
+$new_array['icon_bg']  = $menuicon['bg'];
+
 
         $new_array['url_new'] = $url;
         $new_array['menu_style'] = $menu['style'];
-        $new_array['icon'] = $icon;
+        // $new_array['icon'] = $icon;
         $new_array['icon_small'] = $iconsmall;
         $new_array['action'] = $action;
         $new_array['imgsrc'] = $imgsrc;
@@ -274,6 +321,53 @@ if (!iomad::get_my_companyid(context_system::instance(), false)) {
     }
         $data['tenant_menus'] = $tt;
 }
+
+
+$data['hasstats'] = false;
+$data['stats'] = [];
+$data['has_quick_actions'] = !empty($data['tenant_menus']);
+$data['show_company_info'] = in_array($selectedtab, [1]);
+$data['selectedtab'] = $selectedtab;
+
+// Helpers
+$data['is_tab_2'] = ($selectedtab == 2);
+$data['is_tab_1'] = ($selectedtab == 1);
+
+switch ($selectedtab) {
+
+    // TAB 1 – Company overview
+    case 1:
+        $data['stats'] = get_company_overview_stats($selectedcompany);
+        break;
+
+    // TAB 2 – User management
+    case 2:
+        $data['stats'] = get_company_user_stats($selectedcompany);
+        break;
+
+    // TAB 3 – Course management
+    case 3:
+        // $data['stats'] = get_company_course_stats($selectedcompany);
+        break;
+
+    // TAB 4 – License management
+    case 4:
+        // $data['stats'] = get_company_license_stats($selectedcompany);
+        break;
+
+    // TAB 5 – Competency management
+    case 5:
+        // $data['stats'] = get_company_competency_stats($selectedcompany);
+        break;
+}
+
+if (!empty($data['stats'])) {
+    $data['hasstats'] = true;
+}
+
+
+
+
 
 $output .= $OUTPUT->render_from_template('local_mt_dashboard/edit', $data);
 

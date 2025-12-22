@@ -1,84 +1,140 @@
-{{#noticeok}}
-<div class='alert alert-success'>
-	{{{noticeok_message}}}
-</div>
-{{/noticeok}}
-
-{{#noticefail}}
-<div class='alert alert-warning'>
-	{{{noticefail_message}}}
-</div>
-{{/noticefail}}
-
-{{#is_siteadmin}}
-	<div class="alert alert-warning">{{#str}} edit_msg,local_mt_dashboard {{/str}}
-		<span> 
-			<span class="tenanname font-weight-bold">{{{compnay_name}}}</span> 
-		</span>. {{#str}} edit_msg_end,local_mt_dashboard {{/str}}
-	</div>
-{{/is_siteadmin}}
-
-	<div class="mt-dashboard-header">
-		<div class="row">
-			<div class="col page-heading">
-				<h2>{{{compnay_name}}}</h2>
-				<div class="backtotenant clearfix">
-					<a href="{{{backlink}}}">
-						<span class="fa fa-chevron-circle-left" aria-hidden="true"></span>
-						<span class="backtenant-message">{{#str}} backtenant,local_mt_dashboard {{/str}}</span>
-					</a>
-				</div>
-			</div>
-		</div>
-		<div class="search-mtn company_search">
-			<div id="searchbox" class="searchbox" role="search">
-				<div class="input-group mb-3 mt-search input-group custom-search-form">
-					<div class="input-group-btn">                    
-						<div class="">
-                        	<input class="form-control " type="text" autocomplete="off" placeholder="Search for Company" aria-label="" onkeyup="" value="" id="search-mt" name="search-mt" for="search-mt">
-                    	</div>
-                    	<div class="getlist"></div>
-                    	<span class="input-group-btn search-lp">
-                    		<i class="men men-search-phx header-txt i-search" aria-hidden="true"></i>
-                    	</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="tab-wrapper ">
+<!-- Top Header -->
+<div class="w-full bg-gradient-to-r from-slate-400 to-slate-700 p-10 rounded-xl mb-6">
+  <div class="flex items-center gap-6">
+    
+    <!-- Avatar -->
+    <div class="w-20 h-20 rounded-xl text-white text-2xl font-bold flex items-center justify-center {{avatar_class}}">
+      {{avatar_text}}
     </div>
 
-   {{#no_company_selected}}
-   		<div class="alert alert-warning">{{#str}}nocompanyselected,block_iomad_company_admin {{/str}}</div>
-   {{/no_company_selected}}
-   {{^no_company_selected}}
-   		<article class="card block block_iomad_company_admin col-sm-12 mt_company_admin"> 
-   			<div class="card-text content">
-   				{{{tabhtml}}}
-   			<div class="iomadlink_container clearfix row">
+    <!-- Company Info -->
+    <div>
+      <h1 class="text-3xl font-semibold text-white">{{compnay_name}}</h1>
+      <p class="text-white/80 mt-1">
+        {{location}} • Managed by {{company_creator_name}}
+      </p>
+    </div>
+  </div>
+</div>
+<div class="mb-6 d-flex justify-row items-center">
+<div class="bg-white rounded-xl p-4 col-md-7">
+  {{{tabhtml}}}
+</div>
+  <div class="relative col-md-4">
+    <span class="material-icons absolute left-3 top-3 text-gray-400">search</span>
+    <input
+      type="text"
+      name="search-mt"
+      value="{{search}}"
+      placeholder="Search for Company"
+      class="w-full pl-10 px-6 py-3 mr-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+</div>
 
-   			{{#tenant_menus}}
-   				<div class="col-sm-3 content_mt">
-   					<a href="{{{url_new}}}">
-   						<div class="iomadlink">
-   							<div class="iomadicon {{{menu_style}}}">
-   								<div class="fa fa-topic {{{icon}}}">
-   									<img src="{{{imgsrc}}}" alt="{{{imgsrcalt}}}"> 
-   								</div>
-	   							<div class="fa fa-action {{{icon_small}}}"> 
-	   							</div>
-   							</div>
-   						</div>
-   						<div class="actiondescription d-inline-block">{{{action}}}</div>
-   					</a>
-   				</div>
-   			{{/tenant_menus}}
+{{#hasstats}}
+<div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-10 top-stat-e">
+  {{#stats}}
+    <div class="stat-card {{bg}}" style="border:1px solid hsl(240 6% 90%)">
 
-   			</div>	
-   			</div>
-		</article>
+      <div class="flex justify-between items-start">
+        <div class="stat-icon {{iconbg}}">
+          <span class="material-symbols-rounded">
+            {{icon}}
+          </span>
+        </div>
+      </div>
 
-		<div class="clearfix"></div>
+      <p class="stat-label">{{label}}</p>
+      <h2 class="stat-value">{{value}}</h2>
 
-   {{/no_company_selected}}
+    </div>
+  {{/stats}}
+</div>
+{{/hasstats}}
 
+{{#is_tab_1}}
+{{#has_quick_actions}}
+<h2 class="text-2xl font-semibold mb-6 ">Quick Actions</h2>
 
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 edit-ui-t">
+  {{#tenant_menus}}
+    <a href="{{{url_new}}}" class="group">
+      <div class="menu-card" style="border:1px solid hsl(240 6% 90%)">
+
+        <div class="icon-box {{icon_bg}}">
+          <span class="material-symbols-rounded">
+            {{icon}}
+          </span>
+        </div>
+
+        <h3 class="menu-title">{{action}}</h3>
+        <p class="menu-desc">
+          Manage and configure {{action}}
+        </p>
+
+      </div>
+    </a>
+  {{/tenant_menus}}
+</div>
+{{/has_quick_actions}}
+{{/is_tab_1}}
+
+{{#is_tab_2}}
+{{#has_quick_actions}}
+<h2 class="text-2xl font-semibold mb-6 ">Quick Actions</h2>
+
+{{/has_quick_actions}}
+{{/is_tab_2}}
+
+{{#show_company_info}}
+<div class="bg-white rounded-xl p-6 mt-10 {{#is_tab_2}}d-none{{/is_tab_2}}">
+  <h3 class="text-xl font-semibold mb-6">Company Information</h3>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <div class="flex items-center gap-4 border p-4 rounded-lg">
+      <div class="icon-box bg-[#5f948d]">
+        <span class="material-icons text-white">location_on</span>
+      </div>
+      <div>
+        <p class="text-gray-500">Address</p>
+        <p class="font-medium">{{company_address}}</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4 border p-4 rounded-lg">
+      <div class="icon-box bg-[#003152]">
+        <span class="material-icons text-white">email</span>
+      </div>
+      <div>
+        <p class="text-gray-500">Email</p>
+        <p class="font-medium">{{company_email}}</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4 border p-4 rounded-lg">
+      <div class="icon-box bg-[#042b26]">
+        <span class="material-icons text-white">phone</span>
+      </div>
+      <div>
+        <p class="text-gray-500">Phone</p>
+        <p class="font-medium">{{company_phone}}</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4 border p-4 rounded-lg">
+      <div class="icon-box bg-[#2dd4bf]">
+        <span class="material-icons text-white">check</span>
+      </div>
+      <div>
+        <p class="text-gray-500">Status</p>
+        <p class="font-medium">{{company_status}}</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+{{/show_company_info}}
+</div>
