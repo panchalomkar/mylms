@@ -166,17 +166,73 @@ document.addEventListener('DOMContentLoaded', function () {
 
     
    
-   var selectedId = localStorage.getItem('selectedId');
-  var selectedLinkId = localStorage.getItem('selectedLinkId');
-            if (selectedLinkId) {
-                $("#" + selectedLinkId).parent().addClass('selectedmenu').siblings().removeClass('selectedmenu');
+    // Current page path (no domain, no trailing slash)
+    var currentPath = window.location.pathname.replace(/\/$/, "");
+
+    // Reset menu
+    $(".menu li").removeClass("selectedactive selectedmenu active");
+
+    var matched = false;
+
+    /* =========================
+       1️⃣ URL-BASED MATCH (ID REQUIRED)
+       ========================= */
+    $(".menu a").each(function () {
+
+        var href = $(this).attr("href");
+        if (!href || href === "#") return;
+
+        var $li = $(this).closest("li");
+
+        // ❌ Skip if li has no ID
+        if (!$li.attr("id")) return;
+
+        // Convert full URL → pathname
+        var link = document.createElement("a");
+        link.href = href;
+        var linkPath = link.pathname.replace(/\/$/, "");
+
+        if (
+            currentPath === linkPath ||
+            currentPath.startsWith(linkPath + "/")
+        ) {
+            $li.addClass("selectedactive selectedmenu");
+            matched = true;
+        }
+    });
+
+    /* =========================
+       2️⃣ ID-BASED MATCH (SECONDARY)
+       ========================= */
+    if (!matched) {
+        $(".menu li[id]").each(function () {
+
+            var liId = this.id;
+
+            // Normalize id (menuitem123 → menuitem)
+            var cleanId = liId.replace(/\d+$/, "");
+
+            if (cleanId && currentPath.indexOf(cleanId) !== -1) {
+                $(this).addClass("selectedactive selectedmenu");
+                matched = true;
             }
-    if(selectedId){
-        $("#" + selectedId).addClass('selectedactive').siblings().removeClass('selectedactive');
-      $("#" + selectedId).children('ul').slideDown();
-  
-    }else{
-      $("#mainmenu").children().addClass('selectedactive').siblings().removeClass('selectedactive');
+        });
+    }
+
+    /* =========================
+       3️⃣ FINAL FALLBACK → DASHBOARD (ID REQUIRED)
+       ========================= */
+    if (!matched && (
+        currentPath === "/my" ||
+        currentPath === "/lms5/my"
+    )) {
+        $(".menu a[href*='/my']")
+            .filter(function () {
+                return $(this).closest("li").attr("id");
+            })
+            .first()
+            .closest("li")
+            .addClass("selectedactive selectedmenu");
     }
 
 });
