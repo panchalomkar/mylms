@@ -53,31 +53,56 @@ class course_summary_exporter extends \core\external\exporter {
         return array('context' => '\\context', 'isfavourite' => 'bool?');
     }
 
-    protected function get_other_values(renderer_base $output) {
-        global $CFG;
-        $courseimage = self::get_course_image($this->data);
-        if (!$courseimage) {
-            $courseimage = $output->get_generated_image_for_id($this->data->id);
-        }
-        $progress = self::get_course_progress($this->data);
-        $hasprogress = false;
-        if ($progress === 0 || $progress > 0) {
-            $hasprogress = true;
-        }
-        $progress = floor($progress ?? 0);
-        $coursecategory = \core_course_category::get($this->data->category, MUST_EXIST, true);
-        return array(
-            'fullnamedisplay' => get_course_display_name_for_list($this->data),
-            'viewurl' => (new moodle_url('/course/view.php', array('id' => $this->data->id)))->out(false),
-            'courseimage' => $courseimage,
-            'progress' => $progress,
-            'hasprogress' => $hasprogress,
-            'isfavourite' => $this->related['isfavourite'],
-            'hidden' => boolval(get_user_preferences('block_myoverview_hidden_course_' . $this->data->id, 0)),
-            'showshortname' => $CFG->courselistshortnames ? true : false,
-            'coursecategory' => $coursecategory->name
+protected function get_other_values(renderer_base $output) {
+    global $CFG, $USER;
+
+    $courseimage = self::get_course_image($this->data);
+    if (!$courseimage) {
+        $courseimage = $output->get_generated_image_for_id($this->data->id);
+    }
+
+    $progress = self::get_course_progress($this->data);
+    $hasprogress = ($progress !== null);
+    $progress = floor($progress ?? 0);
+
+    $coursecategory = \core_course_category::get(
+        $this->data->category,
+        MUST_EXIST,
+        true
+    );
+
+    // --------------------------------------------------
+    // ✅ SIMPLE ROLE CHECK (NO CONTEXT)
+    // --------------------------------------------------
+    if (is_siteadmin()) {
+        // Admin / Teacher
+        $viewurl = new moodle_url(
+            '/course/view.php',
+            ['id' => $this->data->id]
+        );
+    } else {
+        // Student
+        $viewurl = new moodle_url(
+            '/local/incourse/index.php',
+            ['id' => $this->data->id]
         );
     }
+
+    return array(
+        'fullnamedisplay' => get_course_display_name_for_list($this->data),
+        'viewurl'         => $viewurl->out(false),
+        'courseimage'     => $courseimage,
+        'progress'        => $progress,
+        'hasprogress'     => $hasprogress,
+        'isfavourite'     => $this->related['isfavourite'],
+        'hidden'          => (bool) get_user_preferences(
+            'block_myoverview_hidden_course_' . $this->data->id,
+            0
+        ),
+        'showshortname'   => !empty($CFG->courselistshortnames),
+        'coursecategory' => $coursecategory->name
+    );
+}
 
     public static function define_properties() {
         return array(

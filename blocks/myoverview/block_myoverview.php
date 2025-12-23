@@ -37,7 +37,7 @@ class block_myoverview extends block_base {
      * Init.
      */
     public function init() {
-        $this->title = get_string('pluginrename', 'block_myoverview');
+        $this->title = get_string('pluginname', 'block_myoverview');
     }
 
     /**

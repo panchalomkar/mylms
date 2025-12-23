@@ -384,7 +384,7 @@ font-weight: bold;
 {{#stat_course_due}}
 <div class="card flex-fill col-md-6 mb-4">
     <h3 style="justify-content: space-between;">
-        <span><i class="{{icon}} mr-2"></i>{{label}}</span>
+        <span><span class=" mr-1">📊</span>{{label}}</span>
     </h3>
 
     <!-- Chart container -->
@@ -454,7 +454,7 @@ Highcharts.chart('course-donut-{{id}}', {
 
 {{#stat_course_date}}
 <div class="card flex-fill col-md-6 stat_course_date">
-  <h3><i class="{{icon}}"></i> {{label}}</h3>
+  <h3>🔔 {{label}}</h3>
 
   <div class="course-list">
     <div class="course-header">

@@ -127,7 +127,7 @@ $(document).ready(function($) {
     </ul>
 </div>
 
-<div class="sidebar" style="padding: 19px 0px 0px 16px !important;margin-left: 0px;!important;z-index: 9999;" >
+<div class="sidebar" style="padding: 19px 0px 0px 16px !important;margin-left: 0px;!important;z-index: 9999;height: 100ch !important;" >
  <a href="{{{ config.homeurl }}}" class="navbar-brand logoalign d-flex item-center" aria-label="{{ sitename }} - {{#str}}brandname, theme_remui{{/str}}" title="{{ sitename }}">
       
         <span class="">  {{#output.get_branding_context}}
@@ -153,7 +153,7 @@ $(document).ready(function($) {
             {{/iconwithsitename}}
         {{/output.get_branding_context}}</span>
     </a>
- <hr>
+ <hr style="margin: 1rem 0;">
      <div class="togsec">
      <label for="check">
         <i class="fa fa-bars" id="sidebar_btn"></i>

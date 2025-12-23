@@ -95,8 +95,8 @@ echo '<div class="header-btns d-flex py-3 justify-content-between">';
     }
     echo '</div>';
 
-$teamusers = get_teamusers($page, $perpage, $m, $s);
-$resultcount = get_teamusers(0, 0, $m, $s);
+$teamusers = local_my_team_get_teamuser($page, $perpage, $m, $s);
+$resultcount = local_my_team_get_teamuser(0, 0, $m, $s);
 
 $table = new html_table();
 $table->head = array('User Pic', 'Fullname', 'Email','Department','Designation','Course Enrolled','Course Inprogress', 'Course Completed');

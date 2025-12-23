@@ -44,7 +44,7 @@ function getModuleNameHrms($module_key) {
     } 
 }
 
-function addAdminDataHrms($admin_no = 1, $module, $ref_id) {
+function addAdminDataHrms($module, $ref_id, $admin_no = 1) {
     //modules
     // airticket-request
     // leave-application

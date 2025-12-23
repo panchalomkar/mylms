@@ -58,6 +58,74 @@ function closeNav() {
   document.getElementById("mySidebar").style.width = "50px";
   document.getElementById("main").style.marginLeft= "0";
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const body = document.body;
+    const path = window.location.pathname;
+
+    const isIncourseIndex = body.classList.contains('page-local-incourse-index');
+    const isStartAttemptPage = path.includes('/mod/quiz/startattempt.php');
+
+    if (!isIncourseIndex && !isStartAttemptPage) return;
+
+    const startAttemptButton = document.getElementById('id_submitbutton');
+    const mainContent = document.getElementById('page-content');
+
+    if (!startAttemptButton) return;
+
+    // Prevent duplicate loader in **same page load**
+    if (document.getElementById('quizLoadingOverlay')) return;
+
+    // Hide page content
+    if (mainContent) mainContent.style.display = 'none';
+
+    // Loader overlay
+    const loader = document.createElement('div');
+    loader.id = 'quizLoadingOverlay';
+    loader.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(255,255,255,0.95);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    `;
+    loader.innerHTML = `
+        <div style="font-size:20px;font-weight:600;margin-bottom:12px;">
+            Loading Quiz...
+        </div>
+        <div class="quiz-spinner"></div>
+    `;
+    document.body.appendChild(loader);
+
+    // Spinner style (once)
+    if (!document.getElementById('quizSpinnerStyle')) {
+        const style = document.createElement('style');
+        style.id = 'quizSpinnerStyle';
+        style.innerHTML = `
+            .quiz-spinner {
+                border: 4px solid #f3f3f3;
+                border-top: 4px solid #003152;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                animation: quizspin 1s linear infinite;
+            }
+            @keyframes quizspin {
+                from { transform: rotate(0deg); }
+                to   { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    // Auto-submit
+    startAttemptButton.click();
+
+});
 </script >
 
 
@@ -97,55 +165,8 @@ function closeNav() {
     }
 
     
-     $('.menu li').click(function(e) {
- 
-      var selectedId = $(this).attr('id');
-      localStorage.setItem('selectedId', selectedId);
+   
 
-      });  
-
-
-
-
-    $('.menu li:has(ul)').click(function(e) {
-        e.preventDefault();
-       
-
-      var selectedId = $(this).attr('id');
-      localStorage.setItem('selectedId', selectedId);
-
-        if($(this).hasClass('active')) {
-            $(this).removeClass('active');
-           // $(this).children('ul').slideUp(800);
-            
-        } else {
-          $('.menu li ul').slideUp(1000);
-            $('.menu li').removeClass('active');
-            $(this).addClass('active');
-            $(this).children('ul').slideDown(1000);
-             
-        }
-
-        $('.menu li ul li a').click(function() {
-            window.location.href = $(this).attr('href');
-          $(this).parent().addClass('selectedmenu').siblings().removeClass('selectedmenu');
-           var selectedLinkId = $(this).attr('id');
-            localStorage.setItem('selectedLinkId', selectedLinkId);
-        })
-    });
-
-   var selectedId = localStorage.getItem('selectedId');
-  var selectedLinkId = localStorage.getItem('selectedLinkId');
-            if (selectedLinkId) {
-                $("#" + selectedLinkId).parent().addClass('selectedmenu').siblings().removeClass('selectedmenu');
-            }
-    if(selectedId){
-        $("#" + selectedId).addClass('selectedactive').siblings().removeClass('selectedactive');
-      $("#" + selectedId).children('ul').slideDown();
-  
-    }else{
-      $("#mainmenu").children().addClass('selectedactive').siblings().removeClass('selectedactive');
-    }
 
 });
 {{/js}}

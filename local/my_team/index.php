@@ -467,12 +467,22 @@ $pct_completed  = ($enrolled_count > 0) ? round(($completed_count / $enrolled_co
       success: function (data) {
         tbody.empty();
 
-        const filtered = data.filter(row => {
-          const p = parseFloat(row.percentage) || 0;
-          if (isCompleted) return p === 100;
-          if (isNotStarted) return p === 0;
-          return p > 0 && p < 100;
-        });
+      
+       const filtered = data.filter(row => {
+  const p = Number(row.percentage) || 0;
+  const completed = Number(row.iscompleted) === 1;
+
+  if (isCompleted) {
+    return completed;                 // ✅ EXACT MATCH with counter
+  }
+
+  if (isNotStarted) {
+    return p === 0 && !completed;     // ✅ true not started
+  }
+
+  // In progress
+  return p > 0 && p < 100 && !completed;
+});
 
         if (!filtered.length) {
           tbody.html(`<tr><td colspan="5" class="px-4 py-2">No ${label.toLowerCase()}.</td></tr>`);

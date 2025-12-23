@@ -26,6 +26,17 @@ echo $OUTPUT->header();
     border-radius: 8px;
         border: solid 1px hsl(45deg 93% 47% / 30%);
 }
+#page-local-incourse-index.drawer-open-left {
+    overflow: auto;
+}
+#page-local-incourse-index{    width: 100%;
+    position: fixed;}
+#page{margin:0px !important; padding:0px !important; }
+#page-local-incourse-index #mdb-navbar{ display: none !important;}
+#page-local-incourse-index .drawer-left {
+    display: none !important;
+}
+
 .accordion-header-active{ background:rgb(30 64 175)!important;}
 .courseindex-active span,
 .courseindex-active div,
@@ -1014,7 +1025,7 @@ if (modname === 'quiz') {
         // choose start URL depending on mode
         let startURL = `${base}/mod/quiz/view.php?id=${cmid}`;
         if (isProctor) startURL = `${base}/local/proctor/start.php?cmid=${cmid}`;
-        else if (isSEB) startURL = `${base}/mod/quiz/accessrule/seb/start.php?cmid=${cmid}`;
+        else if (isSEB) startURL = `${base}/mod/quiz/view.php?id=${cmid}`;
 
         // build attempts HTML (table with marks+grade)
         let attemptsHTML = "";
@@ -1243,7 +1254,8 @@ startBtn.addEventListener("click", () => {
 
      if (data.proctoring_enabled == 1) {
         // Important: view.php uses 'id' (cmid) param, not cmid param name
-        window.location.href = `${base}/mod/quiz/view.php?id=${cmid}`;
+         window.location.href = `${base}/mod/quiz/accessrule/seb/start.php?cmid=${cmid}`;
+        // window.location.href = `${base}/mod/quiz/view.php?id=${cmid}`;
         return;
     }else if (data.seb_enabled == 1) {
 

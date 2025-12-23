@@ -48,15 +48,31 @@ foreach ($enrolledcourses as $course) {
         }
     }
 
-    $percentage = $totalactivities > 0 ? floor(($completedactivities / $totalactivities) * 100) : 0;
+    $percentage = $totalactivities > 0
+    ? floor(($completedactivities / $totalactivities) * 100)
+    : 0;
 
-    $data[] = [
-        'coursename' => format_string($course->fullname),
-        'courseid' => $courseid,
-        'percentage' => $percentage,
-        'totalactivities' => $totalactivities,
-        'completedactivities' => $completedactivities
-    ];
+$progress = \core_completion\progress::get_course_progress_percentage($course, $userid);
+
+// ✅ SINGLE SOURCE OF TRUTH (same as userdashboard_stats)
+$iscompleted = ($progress !== null && (int)$progress === 100) ? 1 : 0;
+
+// ✅ Align percentage with course progress
+if ($progress !== null) {
+    $percentage = (int) floor($progress);
+}
+
+
+   $data[] = [
+    'coursename'          => format_string($course->fullname),
+    'courseid'            => $courseid,
+    'percentage'          => $percentage,
+    'totalactivities'     => $totalactivities,
+    'completedactivities' => $completedactivities,
+    'iscompleted'         => $iscompleted
+];
+
 }
 
 echo json_encode($data);
+

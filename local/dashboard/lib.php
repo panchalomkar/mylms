@@ -30,7 +30,7 @@ function getliveClasses($userid, $where){
     return $sessionList;
 }
 
-function getCousesClasses($courseid = null, $where){
+function getCousesClasses($where, $courseid = 0){
     global $CFG,$DB;
     $whereSql = "";
     if($where == "today"){

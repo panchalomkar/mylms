@@ -1795,8 +1795,7 @@ tr[role="presentation"]{display: flex; align-items: center;}
 td[role="presentation"] .form-select {padding: 5px 30px 5px 10px;}
 }
 
-.question-custom-d .qtext{padding: 10px;
-   border-bottom: solid 1px #003152;}
+.question-custom-d .qtext{padding: 10px; overflow: hidden;}
 
    //  dashboard css
    #page{    margin-top: 45px !important;}
