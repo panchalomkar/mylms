@@ -166,7 +166,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     
    
-
+   var selectedId = localStorage.getItem('selectedId');
+  var selectedLinkId = localStorage.getItem('selectedLinkId');
+            if (selectedLinkId) {
+                $("#" + selectedLinkId).parent().addClass('selectedmenu').siblings().removeClass('selectedmenu');
+            }
+    if(selectedId){
+        $("#" + selectedId).addClass('selectedactive').siblings().removeClass('selectedactive');
+      $("#" + selectedId).children('ul').slideDown();
+  
+    }else{
+      $("#mainmenu").children().addClass('selectedactive').siblings().removeClass('selectedactive');
+    }
 
 });
 {{/js}}
