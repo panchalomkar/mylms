@@ -15,6 +15,11 @@ $PAGE->set_pagelayout('standard');
 ?>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
+<style>
+    #page-local-incourse-forum_grade nav#mdb-navbar {
+    display: none;
+}
+    </style>
 <?php
 echo $OUTPUT->header();
 

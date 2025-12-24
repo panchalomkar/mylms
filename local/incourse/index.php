@@ -760,7 +760,16 @@ if (modname === 'h5pactivity') {
                     </iframe>
                 </div>
             `;
+  // ✅ Trigger Moodle completion (ONLY ONCE)
+            // if (!window.h5pCompletionTriggered) {
+            //     window.h5pCompletionTriggered = true;
 
+            //     const completionIframe = document.createElement('iframe');
+            //     completionIframe.src = `${base}/mod/h5pactivity/view.php?id=${cmid}`;
+            //     completionIframe.style.cssText =
+            //         'width:1px;height:1px;opacity:0;position:absolute;left:-9999px;';
+            //     document.body.appendChild(completionIframe);
+            // }
             // ✅ Back to course
             document.getElementById('backToCourse').addEventListener('click', () => {
                 window.location.reload();

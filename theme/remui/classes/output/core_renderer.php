@@ -152,33 +152,61 @@ public function userdashboard_stats($user,$filter = 'all') {
 
 
            // --- ✅ Certificates (CustomCert + IomadCertificate) ---
-        // Custom Certificates
-        if ($DB->get_manager()->table_exists('customcert')) {
-            $customcerts = $DB->get_records('customcert', ['course' => $course->id]);
-            $totalcertificates += count($customcerts);
-            foreach ($customcerts as $cert) {
-                if ($DB->record_exists('customcert_issues', [
-                    'customcertid' => $cert->id,
-                    'userid' => $user->id
-                ])) {
-                    $earnedcertificates++;
-                }
-            }
-        }
+            // Custom Certificates (exclude deleted course modules)
+if ($DB->get_manager()->table_exists('customcert')) {
 
-        // Iomad Certificates
-        if ($DB->get_manager()->table_exists('iomadcertificate')) {
-            $iomadcerts = $DB->get_records('iomadcertificate', ['course' => $course->id]);
-            $totalcertificates += count($iomadcerts);
-            foreach ($iomadcerts as $cert) {
-                if ($DB->record_exists('iomadcertificate_issues', [
-                    'iomadcertificateid' => $cert->id,
-                    'userid' => $user->id
-                ])) {
-                    $earnedcertificates++;
-                }
-            }
+    $sql = "
+        SELECT cc.id
+        FROM {customcert} cc
+        JOIN {course_modules} cm ON cm.instance = cc.id
+        JOIN {modules} m ON m.id = cm.module
+        WHERE cc.course = :courseid
+          AND m.name = 'customcert'
+          AND cm.deletioninprogress = 0
+          AND cm.visible = 1
+    ";
+
+    $customcerts = $DB->get_records_sql($sql, ['courseid' => $course->id]);
+
+    $totalcertificates += count($customcerts);
+
+    foreach ($customcerts as $cert) {
+        if ($DB->record_exists('customcert_issues', [
+            'customcertid' => $cert->id,
+            'userid' => $user->id
+        ])) {
+            $earnedcertificates++;
         }
+    }
+}
+
+     // Iomad Certificates (exclude deleted course modules)
+if ($DB->get_manager()->table_exists('iomadcertificate')) {
+
+    $sql = "
+        SELECT ic.id
+        FROM {iomadcertificate} ic
+        JOIN {course_modules} cm ON cm.instance = ic.id
+        JOIN {modules} m ON m.id = cm.module
+        WHERE ic.course = :courseid
+          AND m.name = 'iomadcertificate'
+          AND cm.deletioninprogress = 0
+          AND cm.visible = 1
+    ";
+
+    $iomadcerts = $DB->get_records_sql($sql, ['courseid' => $course->id]);
+
+    $totalcertificates += count($iomadcerts);
+
+    foreach ($iomadcerts as $cert) {
+        if ($DB->record_exists('iomadcertificate_issues', [
+            'iomadcertificateid' => $cert->id,
+            'userid' => $user->id
+        ])) {
+            $earnedcertificates++;
+        }
+    }
+}
 
 
         // --- Progress color ---
