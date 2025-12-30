@@ -820,6 +820,49 @@ function markVideoCompleted(cmid) {
 function isVideoCompleted(cmid) {
     return localStorage.getItem("video_completed_" + cmid) === "1";
 }
+// 🎬 SUPERVIDEO (CORRECT + STABLE)
+if (modname === 'supervideo') {
+
+    const params = new URLSearchParams(link.href.split('?')[1]);
+    const cmid = params.get('id');
+    if (!cmid) return;
+
+    const base = (typeof M !== "undefined" && M.cfg && M.cfg.wwwroot)
+        ? M.cfg.wwwroot
+        : window.location.origin;
+
+    // Clear area immediately
+    area.innerHTML = `
+        <div class="relative w-full h-[85vh] bg-black rounded-2xl overflow-hidden">
+
+            <!-- Loader -->
+            <div id="sv-loader"
+                 class="absolute inset-0 flex flex-col items-center justify-center text-white bg-black/70 z-10">
+                <span class="material-symbols-outlined text-5xl mb-2 animate-pulse">
+                    smart_display
+                </span>
+                <p class="text-sm opacity-80">Loading Super Video…</p>
+            </div>
+
+            <!-- IFRAME -->
+            <iframe
+                src="${base}/mod/supervideo/view.php?id=${cmid}"
+                class="w-full h-full border-0 bg-white"
+                allowfullscreen
+                allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups">
+            </iframe>
+        </div>
+    `;
+
+    // Remove loader after short delay (iframe onload is unreliable)
+    setTimeout(() => {
+        const loader = document.getElementById('sv-loader');
+        if (loader) loader.remove();
+    }, 1500);
+
+    return;
+}
 
 if (modname === 'videotime') {
 

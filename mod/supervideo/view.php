@@ -75,6 +75,8 @@ if ($view->freemode) {
     $PAGE->set_pagelayout("embedded");
     $PAGE->add_body_class("body-df");
     echo $OUTPUT->header();
+$isadmin = has_capability('moodle/site:config', $context);
+$canedit = has_capability('moodle/course:manageactivities', $context);
 
     $mustachedata = [
         "showmapa" => $view->config->showmapa,
@@ -84,6 +86,7 @@ if ($view->freemode) {
         "page-title" => $view->supervideo->name,
         "url-back" => "{$CFG->wwwroot}/course/view.php?id={$cm->course}",
         "url-settings" => "{$CFG->wwwroot}/course/modedit.php?update={$cm->id}",
+         "canseeheaderbuttons" => ($isadmin || $canedit),
     ];
     echo $OUTPUT->render_from_template("mod_supervideo/view-freemode", $mustachedata);
 

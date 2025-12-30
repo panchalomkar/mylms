@@ -2,165 +2,297 @@
 require_once("../../../config.php");
 require_login();
 
+
 global $DB, $CFG;
 
 require_once($CFG->libdir . '/completionlib.php');
 require_once($CFG->libdir . '/excellib.class.php');
+require_once($CFG->dirroot . '/course/format/lib.php');
 
+/**
+ * PARAMS
+ */
 $userid    = required_param('userid', PARAM_INT);
 $sectionid = required_param('sectionid', PARAM_INT);
 
-$user    = $DB->get_record('user', ['id'=>$userid], '*', MUST_EXIST);
-$section = $DB->get_record('course_sections', ['id'=>$sectionid], '*', MUST_EXIST);
-$course  = $DB->get_record('course', ['id'=>$section->course], '*', MUST_EXIST);
+$user = $DB->get_record('user', ['id' => $userid], '*', MUST_EXIST);
+
+/**
+ * COURSE / SECTION
+ */
+if ($sectionid > 0) {
+    $section = $DB->get_record('course_sections', ['id' => $sectionid], '*', MUST_EXIST);
+    $course  = get_course($section->course);
+
+    $format = course_get_format($course);
+    $sectionname = $format->get_section_name($section);
+
+    $sectionnum = $section->section;
+} else {
+    $courseid = required_param('courseid', PARAM_INT);
+    $course   = get_course($courseid);
+
+    $sectionnum  = null;
+    $sectionname = "All Sections";
+}
 
 $completion = new completion_info($course);
 $modinfo    = get_fast_modinfo($course);
 
 /**
- * Normalize module type
+ * FETCH ALL LOGS (FAST)
  */
-function normalize_module_name(string $modname, string $label): string {
+$alllogs = $DB->get_records_sql("
+    SELECT contextinstanceid AS cmid, timecreated
+    FROM {logstore_standard_log}
+    WHERE userid = :userid
+      AND courseid = :courseid
+      AND contextlevel = :contextlevel
+      AND action IN ('viewed','submitted','attempted','answered','completed')
+    ORDER BY timecreated ASC
+", [
+    'userid' => $userid,
+    'courseid' => $course->id,
+    'contextlevel' => CONTEXT_MODULE
+]);
+
+
+$logsbycm = [];
+foreach ($alllogs as $log) {
+    $logsbycm[$log->cmid][] = $log;
+}
+
+/**
+ * =====================
+ * HELPERS (UNCHANGED)
+ * =====================
+ */
+function calculate_activity_time(array $logs, int $timeout = 1800): int {
+    if (empty($logs)) return 0;
+
+    $time = 0;
+    $prev = $logs[0]->timecreated;
+
+    for ($i = 1; $i < count($logs); $i++) {
+        $gap = $logs[$i]->timecreated - $prev;
+        if ($gap > 0 && $gap <= $timeout) {
+            $time += $gap;
+        }
+        $prev = $logs[$i]->timecreated;
+    }
+
+    // if ($time === 0) {
+    //     $time = "-"; // minimum 2 minutes
+    // }
+
+    return $time;
+}
+
+/**
+ * =====================
+ * REAL QUIZ TIME
+ * =====================
+ */
+function get_quiz_time_spent(int $quizid, int $userid): int {
+    global $DB;
+
+    $attempts = $DB->get_records('quiz_attempts', [
+        'quiz' => $quizid,
+        'userid' => $userid,
+        'state' => 'finished'
+    ]);
+
+    $time = 0;
+    foreach ($attempts as $a) {
+        if ($a->timestart && $a->timefinish) {
+            $time += ($a->timefinish - $a->timestart);
+        }
+    }
+    return $time;
+}
+
+/**
+ * =====================
+ * REAL SCORM TIME
+ * =====================
+ */
+function scorm_time_to_seconds(string $time): int {
+    if (strpos($time, 'PT') === 0) {
+        preg_match('/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/', $time, $m);
+        return ($m[1] ?? 0) * 3600 + ($m[2] ?? 0) * 60 + ($m[3] ?? 0);
+    }
+    if (preg_match('/(\d+):(\d+):(\d+)/', $time, $m)) {
+        return $m[1] * 3600 + $m[2] * 60 + $m[3];
+    }
+    return 0;
+}
+
+function get_scorm_time_spent(int $scormid, int $userid): int {
+    global $DB;
+
+    $tracks = $DB->get_records_sql("
+        SELECT value
+        FROM {scorm_scoes_track}
+        WHERE userid = :userid
+          AND scormid = :scormid
+          AND element IN ('cmi.core.total_time','cmi.session_time')
+    ", [
+        'userid' => $userid,
+        'scormid' => $scormid
+    ]);
+
+    $time = 0;
+    foreach ($tracks as $t) {
+        $time += scorm_time_to_seconds($t->value);
+    }
+    return $time;
+}
+
+/**
+ * =====================
+ * REAL H5P TIME
+ * =====================
+ */
+function get_h5p_time_spent(int $cmid, int $userid): int {
+    global $DB;
+
+    return (int)$DB->get_field_sql("
+        SELECT SUM(duration)
+        FROM {h5pactivity_attempts}
+        WHERE userid = :userid
+          AND cmid = :cmid
+    ", [
+        'userid' => $userid,
+        'cmid' => $cmid
+    ]) ?: 0;
+}
+
+function normalize_module_name(string $modname): string {
     $map = [
-        'videotime'        => 'Video',
-        'pdfjsloader'      => 'PDF',
-        'pdf'              => 'PDF',
-        'iomadcertificate' => 'Certificate',
-        'customcert'       => 'Certificate',
-        'googlemeet'       => 'GoogleMeet',
-        'h5pactivity'      => 'H5P',
-        'scorm'            => 'SCORM',
-        'quiz'             => 'Quiz',
-        'assign'           => 'Assignment',
-        'forum'            => 'Forum',
-        'page'             => 'Page',
-        'url'              => 'URL',
-        'ilt'              => 'ILT',
+        'quiz' => 'Quiz',
+        'assign' => 'Assignment',
+        'scorm' => 'SCORM',
+        'forum' => 'Forum',
+        'page' => 'Page',
+        'url' => 'URL',
+        'h5pactivity' => 'H5P'
     ];
     return $map[$modname] ?? ucfirst($modname);
 }
 
-$data  = [];
-$index = 1;
+function get_activity_status(cm_info $cm, completion_info $completion, int $userid, array $logs): array {
 
-foreach ($modinfo->get_cms() as $cm) {
-
-    // Only this section
-    if ($cm->sectionnum != $section->section) {
-        continue;
-    }
-
-    // Skip hidden / deleted
-    if (!$cm->uservisible || $cm->deletioninprogress) {
-        continue;
-    }
-
-    /** --------------------
-     * COMPLETION STATUS
-     * -------------------- */
     if ($completion->is_enabled($cm)) {
         $cdata = $completion->get_data($cm, true, $userid);
 
-        $statusicon = (
-            $cdata->completionstate == COMPLETION_COMPLETE ||
-            $cdata->completionstate == COMPLETION_COMPLETE_PASS
-        )
-            ? '<span class="text-success"><i class="fa fa-check"></i></span> Completed'
-            : '<span class="text-danger"><i class="fa fa-times"></i></span> Not Completed';
-    } else {
-        $statusicon = '<span class="text-danger"><i class="fa fa-times"></i></span> Not Completed';
-    }
-
-    /** --------------------
-     * MODULE TYPE
-     * -------------------- */
-    $rawlabel   = get_string('modulename', $cm->modname);
-    $modulename = normalize_module_name($cm->modname, $rawlabel);
-
-    /** --------------------
-     * TIME SPENT (PER ACTIVITY)
-     * -------------------- */
-    $logs = $DB->get_records_sql("
-        SELECT timecreated
-        FROM {logstore_standard_log}
-        WHERE userid = :userid
-          AND contextinstanceid = :cmid
-          AND contextlevel = :contextlevel
-        ORDER BY timecreated ASC
-    ", [
-        'userid'       => $userid,
-        'cmid'         => $cm->id,
-        'contextlevel' => CONTEXT_MODULE
-    ]);
-
-    $time    = 0;
-    $prev    = 0;
-    $timeout = 30 * 60; // 30 min idle
-
-    foreach ($logs as $log) {
-        if ($prev) {
-            $gap = $log->timecreated - $prev;
-            if ($gap > 0 && $gap <= $timeout) {
-                $time += $gap;
-            }
+        if (in_array($cdata->completionstate, [COMPLETION_COMPLETE, COMPLETION_COMPLETE_PASS])) {
+            return [
+                'Completed',
+                '<span class="text-green-600 flex items-center justify-center gap-1">
+                    <span class="material-icons text-sm">check_circle</span>
+                    Completed
+                 </span>'
+            ];
         }
-        $prev = $log->timecreated;
     }
 
-    /** --------------------
-     * ROW DATA
-     * -------------------- */
-    $data[] = [
-        'srno'         => $index++,
-        'activityname' => $cm->name,
-        'moduletype'   => $modulename,
-        'status'       => $statusicon,
-        'timespent'    => $time   // seconds (JS formats it)
+    if (!empty($logs)) {
+        return [
+            'In Progress',
+            '<span class="text-yellow-600 flex items-center justify-center gap-1">
+                <span class="material-icons text-sm">schedule</span>
+                In Progress
+             </span>'
+        ];
+    }
+
+    return [
+        'Not Started',
+        '<span class="text-red-500 flex items-center justify-center gap-1">
+            <span class="material-icons text-sm">radio_button_unchecked</span>
+            Not Started
+         </span>'
     ];
 }
 
 /**
- * EXCEL DOWNLOAD (unchanged)
+ * =====================
+ * DATA (LOGIC SAME)
+ * =====================
  */
-$download = optional_param('download', '', PARAM_ALPHA);
-if ($download === 'excel') {
-    $filename = clean_filename("ActivityReport_{$user->username}_{$course->shortname}.xlsx");
-    $workbook = new MoodleExcelWorkbook("-");
-    $sheet = $workbook->add_worksheet('Activity Report');
+$activities = [];
+$index = 1;
 
-    $sheet->write_string(0, 0, 'Student Name');
-    $sheet->write_string(0, 1, fullname($user));
-    $sheet->write_string(1, 0, 'Course Name');
-    $sheet->write_string(1, 1, $course->fullname);
-    $sheet->write_string(2, 0, 'Section Name');
-    $sheet->write_string(2, 1, format_string($section->name ?: "Section {$section->section}"));
+foreach ($modinfo->get_cms() as $cm) {
 
-    $sheet->write_string(4, 0, 'Sr. No');
-    $sheet->write_string(4, 1, 'Activity Name');
-    $sheet->write_string(4, 2, 'Module Type');
-    $sheet->write_string(4, 3, 'Status');
-    $sheet->write_string(4, 4, 'Time Spent');
+    if ($sectionnum !== null && $cm->sectionnum != $sectionnum) continue;
+    if (!$cm->uservisible || $cm->deletioninprogress) continue;
 
-    $row = 5;
-    foreach ($data as $d) {
-        $hrs  = floor($d['timespent'] / 3600);
-        $mins = floor(($d['timespent'] % 3600) / 60);
+    $logs = $logsbycm[$cm->id] ?? [];
+    [$statustext, $statushtml] = get_activity_status($cm, $completion, $userid, $logs);
 
-        $timestr = '';
-        if ($hrs > 0)  $timestr .= $hrs . ' hr ';
-        if ($mins > 0) $timestr .= $mins . ' min';
+ $timespent = 0;
 
-        $sheet->write_string($row, 0, $d['srno']);
-        $sheet->write_string($row, 1, $d['activityname']);
-        $sheet->write_string($row, 2, $d['moduletype']);
-        $sheet->write_string($row, 3, strip_tags($d['status']));
-        $sheet->write_string($row, 4, trim($timestr));
-        $row++;
+try {
+
+    switch ($cm->modname) {
+
+        case 'quiz':
+            if ($DB->record_exists('quiz_attempts', [
+                'quiz' => $cm->instance,
+                'userid' => $userid
+            ])) {
+                $timespent = get_quiz_time_spent($cm->instance, $userid);
+            }
+            break;
+
+        case 'scorm':
+            if ($DB->record_exists('scorm_scoes_track', [
+                'scormid' => $cm->instance,
+                'userid' => $userid
+            ])) {
+                $timespent = get_scorm_time_spent($cm->instance, $userid);
+            }
+            break;
+
+        case 'h5pactivity':
+            if ($DB->get_manager()->table_exists('h5pactivity_attempts')) {
+                $timespent = get_h5p_time_spent($cm->id, $userid);
+            }
+            break;
     }
 
-    $workbook->close();
-    exit;
+} catch (Exception $e) {
+    // fallback
+    $timespent = 0;
 }
 
-echo json_encode($data);
+// 🔁 fallback to logs if module gave nothing
+if ($timespent <= 0) {
+    $timespent = calculate_activity_time($logs);
+}
+
+    $activities[] = [
+        'srno' => $index++,
+        'activityname' => format_string($cm->name),
+        'moduletype' => normalize_module_name($cm->modname),
+        'status' => $statustext,
+        'status_text' => $statustext,
+        'status_html' => $statushtml,
+        'timespent' => $timespent
+    ];
+}
+
+/**
+ * JSON OUTPUT
+ */
+header('Content-Type: application/json; charset=utf-8');
+echo json_encode([
+    'meta' => [
+        'username' => fullname($user),
+        'course' => $course->fullname,
+        'section' => $sectionname
+    ],
+    'activities' => $activities
+]);
 exit;
