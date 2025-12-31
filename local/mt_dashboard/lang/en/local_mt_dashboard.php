@@ -46,3 +46,9 @@ $string['mt_dashboard:assigncompanycohort'] = "Assign company cohort";
 
 $string['edit_msg'] = "You are currently editing the Tenant Company";
 $string['edit_msg_end'] = "To go back in multitenant dashboard click on <strong>Back to Main Tenant</strong> link.";
+$string['Approvetraining'] = "Approve training";
+$string['Merge_user_accounts'] = "Merge user accounts";
+$string['Advanced_company_settings'] = "Advanced company settings";
+$string['Import_companies'] = "Import companies";
+$string['Custom_pages'] = "Custom pages";
+$string['Permission_Control'] = "Permission Control";

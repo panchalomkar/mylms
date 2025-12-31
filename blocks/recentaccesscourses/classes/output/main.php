@@ -155,8 +155,10 @@ if (is_siteadmin($USER)) {
 
             // HTML progress bar
             $progress = '
-            <div class="w-100 d-flex align-items-center gap-1" style="background:#e6e6f5; border-radius:8px; padding:2px;">
-                <div class="progress" style="height:1.2rem; width:100%;">
+            <div class="w-100 d-flex align-items-center gap-1">
+                <div class="progress" style="    min-width: 100%;
+    height: 0.75rem;
+    border-radius: 10px !important;">
                     <div class="progress-bar" role="progressbar"
                         style="background:' . $barcolor . '; width:' . $percentage . '%"
                         aria-valuenow="' . $percentage . '" aria-valuemin="0" aria-valuemax="100">

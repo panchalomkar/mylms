@@ -95,7 +95,46 @@ $PAGE->requires->js(new moodle_url('https://cdn.tailwindcss.com'));
 $PAGE->requires->css(new moodle_url('https://fonts.googleapis.com/icon?family=Material+Icons'));
 $PAGE->requires->css(new moodle_url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined'));
 $PAGE->requires->css(new moodle_url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded'));
+?>
+<STYLE>
+    .user_tab{
+    .input-style {
+  padding: 12px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  width: 100%;
+}
 
+.btn-primary {
+  background: #003152;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 10px;
+}
+
+.btn-secondary {
+  border: 1px solid #e5e7eb;
+  padding: 10px 16px;
+  border-radius: 10px;
+}
+
+.badge-success {
+  background: #dcfce7;
+  color: #166534;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.badge-muted {
+  background: #f3f4f6;
+  color: #374151;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+    }
+</STYLE>
+<?PHP
 //$PAGE->set_pagelayout('mydashboard');
 
 // Now we can display the page.
@@ -244,6 +283,7 @@ if (!iomad::get_my_companyid(context_system::instance(), false)) {
        }
     }
     $tt= array();
+    
     foreach ($menus as $key => $menu) {
         //tenant_appearance setting
         if ($menu['name'] == 'Appearance Setting') {
@@ -302,6 +342,18 @@ $iconmap = [
     'Restrict capabilities'        => ['icon' => 'shield', 'bg' => 'bg-royal'],
     'Email templates'              => ['icon' => 'mail', 'bg' => 'bg-teal'],
     'Appearance Setting'           => ['icon' => 'palette', 'bg' => 'bg-ocean'],
+    'Create user'          => ['icon' => 'person_add', 'bg' => 'bg-green'],
+    'Edit users'           => ['icon' => 'edit', 'bg' => 'bg-blue'],
+    'Upload users'         => ['icon' => 'upload', 'bg' => 'bg-purple'],
+    'User bulk download'   => ['icon' => 'download', 'bg' => 'bg-teal'],
+    'Bulk user actions'    => ['icon' => 'group_work', 'bg' => 'bg-indigo'],
+    'Cohorts'              => ['icon' => 'groups', 'bg' => 'bg-cyan'],
+    'Approve training events' => ['icon' => 'check_circle', 'bg' => 'bg-green'],
+    'Merge user accounts'      => ['icon' => 'merge_type', 'bg' => 'bg-amber'],
+    'Advanced company settings' => ['icon' => 'settings', 'bg' => 'bg-blue'],
+    'Import companies'         => ['icon' => 'import_export', 'bg' => 'bg-purple'],
+    'Custom pages'             => ['icon' => 'pageview', 'bg' => 'bg-ocean'],
+    'Permission Control'       => ['icon' => 'lock', 'bg' => 'bg-indigo'],
 ];
 
 $menuicon = $iconmap[$menu['name']] ?? ['icon' => 'apps', 'bg' => 'bg-default'];
@@ -320,7 +372,11 @@ $new_array['icon_bg']  = $menuicon['bg'];
         $tt[]=$new_array;
     }
         $data['tenant_menus'] = $tt;
+
+        // print_r($data['tenant_menus']);
+      
 }
+
 
 
 $data['hasstats'] = false;
@@ -341,9 +397,103 @@ switch ($selectedtab) {
         break;
 
     // TAB 2 – User management
-    case 2:
-        $data['stats'] = get_company_user_stats($selectedcompany);
-        break;
+   case 2:
+    $data['stats'] = get_company_user_stats($selectedcompany);
+
+    // URLs
+    $data['adduserurl']    = new moodle_url('/user/editadvanced.php');
+    $data['bulkuploadurl'] = new moodle_url('/admin/tool/uploaduser/index.php');
+
+    // Roles
+    $context = context_system::instance();
+
+// $roles = get_assignable_roles($context, ROLENAME_BOTH);
+
+// $data['roles'] = [];
+// foreach ($roles as $id => $name) {
+//     $data['roles'][] = [
+//         'id'   => $id,
+//         'name' => $name
+//     ];
+// }
+$roles = $DB->get_records('role', null, '', 'id, shortname');
+
+// $data['roles'] = [];
+// foreach ($roles as $r) {
+//     $data['roles'][] = [
+//         'id'   => (string) $r->id,
+//         'name' => format_string($r->shortname)
+//     ];
+// }
+
+
+    // Users
+    $sql = "
+      SELECT 
+    u.id,
+    u.firstname,
+    u.lastname,
+    u.email,
+    u.lastaccess,
+    u.suspended,
+    r.id AS roleid,
+    r.shortname AS role
+FROM {user} u
+JOIN {company_users} cu ON cu.userid = u.id
+LEFT JOIN {role_assignments} ra ON ra.userid = u.id
+LEFT JOIN {role} r ON r.id = ra.roleid
+WHERE cu.companyid = :companyid
+  AND u.deleted = 0
+
+    ";
+
+    $records = $DB->get_records_sql($sql, ['companyid' => $selectedcompany]);
+
+    $users = [];
+    foreach ($records as $u) {
+$sesskey = sesskey();
+
+$users[] = [
+    'id'           => $u->id,
+    'fullname'     => fullname($u),
+    'email'        => $u->email,
+    'role'         => $u->role ?? '—',
+     'roleid'    => (string) ($u->roleid ?? ''),
+    'active'       => !$u->suspended,
+    'status'       => $u->suspended ? 'suspended' : 'active',
+    'lastlogin'    => $u->lastaccess ? date('Y-m-d', $u->lastaccess) : '—',
+    // EDIT (no sesskey required)
+    'editurl' => (new moodle_url(
+        '/user/editadvanced.php',
+        ['id' => $u->id]
+    ))->out(false),
+
+    // SUSPEND / UNSUSPEND (sesskey REQUIRED)
+  'suspendurl' => (new moodle_url(
+    '/admin/user.php',
+    ['suspend' => $u->id, 'sesskey' => sesskey()]
+))->out(false),
+
+    'unsuspendurl' => (new moodle_url(
+        '/admin/user.php',
+        ['unsuspend' => $u->id, 'sesskey' => $sesskey]
+    ))->out(false),
+
+    // DELETE (sesskey REQUIRED)
+    'deleteurl' => (new moodle_url(
+        '/admin/user.php',
+        ['delete' => $u->id, 'sesskey' => $sesskey]
+    ))->out(false),
+];
+
+// echo '<pre>';
+// print_r($data['roles']);
+// exit;
+    }
+
+    $data['users'] = $users;
+    break;
+
 
     // TAB 3 – Course management
     case 3:
@@ -364,10 +514,6 @@ switch ($selectedtab) {
 if (!empty($data['stats'])) {
     $data['hasstats'] = true;
 }
-
-
-
-
 
 $output .= $OUTPUT->render_from_template('local_mt_dashboard/edit', $data);
 
@@ -396,3 +542,126 @@ function mt_gettabs($tabs, $selected) {
     $html = $OUTPUT->tabtree($row, $selected);
     return $html;
 }
+?>
+<script>
+document.addEventListener('click', function (e) {
+
+  // Close all dropdowns
+  document.querySelectorAll('.action-menu').forEach(m => m.classList.add('hidden'));
+
+  // Toggle clicked dropdown
+  const btn = e.target.closest('.action-btn');
+  if (btn) {
+    e.stopPropagation();
+    const menu = btn.nextElementSibling;
+    menu.classList.toggle('hidden');
+  }
+});
+
+// -----------------------------
+// SEARCH + FILTER LOGIC
+// -----------------------------
+const searchInput = document.getElementById('userSearch');
+const roleFilter  = document.getElementById('roleFilter');
+const statusFilter = document.getElementById('statusFilter');
+
+function filterUsers() {
+  const search = searchInput.value.toLowerCase();
+  const role   = roleFilter.value;
+  const status = statusFilter.value;
+
+  document.querySelectorAll('.user-row').forEach(row => {
+    const name   = row.dataset.name.toLowerCase();
+    const r      = row.dataset.role;
+    const s      = row.dataset.status;
+
+    const matchSearch = name.includes(search);
+    const matchRole   = !role || r === role;
+    const matchStatus = !status || s === status;
+
+    row.style.display = (matchSearch && matchRole && matchStatus)
+      ? ''
+      : 'none';
+  });
+}
+
+searchInput.addEventListener('input', filterUsers);
+roleFilter.addEventListener('change', filterUsers);
+statusFilter.addEventListener('change', filterUsers);
+
+const modal = document.getElementById('userActionModal');
+const icon  = document.getElementById('modalIcon');
+const title = document.getElementById('modalTitle');
+const text  = document.getElementById('modalText');
+const confirmBtn = document.getElementById('modalConfirm');
+const cancelBtn  = document.getElementById('modalCancel');
+
+let currentUserId = null;
+let currentAction = null;
+
+document.querySelectorAll('.js-user-action').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.preventDefault();
+
+    currentUserId = btn.dataset.userid;
+    currentAction = btn.dataset.action;
+
+    // Reset styles
+    confirmBtn.className = 'px-4 py-2 rounded-lg text-white';
+
+    if (currentAction === 'suspend') {
+      icon.textContent = 'pause_circle';
+      icon.className = 'material-icons text-orange-500 text-4xl mb-3';
+      title.textContent = 'Suspend user?';
+      text.textContent = 'This user will not be able to log in.';
+      confirmBtn.classList.add('bg-orange-600');
+    }
+
+    if (currentAction === 'activate') {
+      icon.textContent = 'check_circle';
+      icon.className = 'material-icons text-green-600 text-4xl mb-3';
+      title.textContent = 'Activate user?';
+      text.textContent = 'This user will regain access.';
+      confirmBtn.classList.add('bg-green-600');
+    }
+
+    if (currentAction === 'delete') {
+      icon.textContent = 'delete_forever';
+      icon.className = 'material-icons text-red-600 text-4xl mb-3';
+      title.textContent = 'Delete user permanently?';
+      text.textContent = 'This action cannot be undone.';
+      confirmBtn.classList.add('bg-red-600');
+    }
+
+    modal.classList.remove('hidden');
+  });
+});
+
+cancelBtn.onclick = () => modal.classList.add('hidden');
+
+confirmBtn.onclick = async () => {
+  confirmBtn.disabled = true;
+
+  const res = await fetch(
+    M.cfg.wwwroot + '/local/mt_dashboard/ajax/user_status.php',
+    {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        userid: currentUserId,
+        action: currentAction,
+        sesskey: M.cfg.sesskey
+      })
+    }
+  );
+
+  const json = await res.json();
+
+  if (json.success) {
+    modal.classList.add('hidden');
+    location.reload();
+  } else {
+    alert(json.message || 'Action failed');
+  }
+};
+</script>

@@ -21,7 +21,7 @@
 <div class="bg-white rounded-xl p-4 col-md-7">
   {{{tabhtml}}}
 </div>
-  <div class="relative col-md-4">
+  <div class="relative col-md-4 {{#is_tab_2}}d-none{{/is_tab_2}}">
     <span class="material-icons absolute left-3 top-3 text-gray-400">search</span>
     <input
       type="text"
@@ -82,11 +82,174 @@
 {{/is_tab_1}}
 
 {{#is_tab_2}}
-{{#has_quick_actions}}
-<h2 class="text-2xl font-semibold mb-6 ">Quick Actions</h2>
 
-{{/has_quick_actions}}
+<!-- QUICK ACTIONS -->
+<h2 class="text-2xl font-semibold mb-6">Quick Actions</h2>
+<div class="flex flex-wrap gap-3 mb-8 user_tab">
+  {{#tenant_menus}}
+    <a href="{{{url_new}}}" class="bg-[#003152] text-white px-3 py-2 rounded-xl flex items-center gap-2 hover:bg-[#00263d]">
+      <span class="material-symbols-rounded text-white">{{icon}}</span>
+      {{action}}
+    </a>
+  {{/tenant_menus}}
+</div>
+
+<!-- USERS MANAGEMENT CARD -->
+<div class="bg-white rounded-xl p-6 border user_tab ">
+
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-6">
+    <h3 class="text-xl font-semibold item-center align-center d-flex"><span class="material-icons text-[#003152]">admin_panel_settings</span>
+ Users & Team Management</h3>
+    <div class="flex gap-3">
+      <a href="{{adduserurl}}" class="btn-primary">Add User</a>
+      <a href="{{bulkuploadurl}}" class="btn-secondary">Bulk Upload</a>
+    </div>
+  </div>
+
+<!-- Filters -->
+<div class="bg-white p-4 rounded-xl shadow-sm mb-6">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    
+    <input
+      id="userSearch"
+      type="text"
+      placeholder="Search by name or email"
+      class="input-style w-full"
+    />
+
+    <select id="roleFilter" class="input-style w-full">
+      <option value="">All Roles</option>
+      {{#roles}}
+        <option value="{{id}}">{{name}}</option>
+      {{/roles}}
+    </select>
+
+    <select id="statusFilter" class="input-style w-full ">
+      <option value="">All Status</option>
+      <option value="active">Active</option>
+      <option value="suspended">Inactive</option>
+    </select>
+
+  </div>
+</div>
+
+
+  <!-- Table -->
+  <div class=" bg-white  shadow-sm" >
+  <table class="w-full text-sm">
+    <thead class="border-b bg-[#003152]">
+      <tr class="text-white">
+        <th class="px-4 py-2 text-left">User</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th>Last Login</th>
+        <th class="text-right px-6">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody id="userTableBody">
+      {{#users}}
+      <tr
+        class="border-b hover:bg-gray-50 user-row"
+        data-name="{{fullname}} {{email}}"
+        data-role="{{roleid}}"
+        data-status="{{status}}"
+      >
+
+        <!-- USER -->
+        <td class="px-4 py-2 flex items-center gap-3">
+          {{{profileimageurl}}}
+          <span class="font-medium text-gray-800">{{fullname}}</span>
+        </td>
+
+        <td>{{email}}</td>
+        <td>{{role}}</td>
+
+        <!-- STATUS -->
+        <td>
+          {{#active}}
+            <span class="badge badge-success">Active</span>
+          {{/active}}
+          {{^active}}
+            <span class="badge badge-muted">Inactive</span>
+          {{/active}}
+        </td>
+
+        <td>{{lastlogin}}</td>
+
+        <!-- ACTIONS -->
+        <td class="relative text-right px-6">
+          <button
+            class="action-btn p-2 rounded-full hover:bg-gray-100"
+            aria-label="Actions">
+            <span class="material-icons">more_vert</span>
+          </button>
+
+          <div class="action-menu hidden absolute right-6 top-12 w-44 bg-white border rounded-lg shadow-xl z-50" style="text-align: center;">
+            <a href="{{editurl}}" class="dropdown-item">Edit user</a>
+
+          {{#active}}
+<button
+  class="dropdown-item text-orange-600 js-user-action"
+  data-action="suspend"
+  data-userid="{{id}}">
+  Suspend
+</button>
+{{/active}}
+
+{{^active}}
+<button
+  class="dropdown-item text-green-600 js-user-action"
+  data-action="activate"
+  data-userid="{{id}}">
+  Activate
+</button>
+{{/active}}
+
+        <button
+  class="dropdown-item text-red-600 js-user-action"
+  data-action="delete"
+  data-userid="{{id}}">
+  Delete
+</button>
+
+          </div>
+        </td>
+
+      </tr>
+      {{/users}}
+    </tbody>
+  </table>
+</div>
+
+
+</div>
 {{/is_tab_2}}
+<div id="userActionModal"
+     class="fixed inset-0 hidden bg-black/50 flex items-center justify-center z-50">
+
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 text-center">
+    <span class="material-icons text-4xl mb-3" id="modalIcon">warning</span>
+
+    <h3 class="text-lg font-semibold mb-2" id="modalTitle"></h3>
+    <p class="text-gray-600 mb-6" id="modalText"></p>
+
+    <div class="flex justify-center gap-4">
+      <button id="modalCancel"
+              class="px-4 py-2 rounded-lg border">
+        Cancel
+      </button>
+
+      <button id="modalConfirm"
+              class="px-4 py-2 rounded-lg text-white bg-indigo-600">
+        Confirm
+      </button>
+    </div>
+  </div>
+</div>
+
 
 {{#show_company_info}}
 <div class="bg-white rounded-xl p-6 mt-10 {{#is_tab_2}}d-none{{/is_tab_2}}">

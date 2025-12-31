@@ -53,6 +53,51 @@ if( !function_exists('mt_admin_menu') ):
                     'icon' => 'fa-group',
                     'iconsmall' => 'fa fa-user'
                 ),
+                'Advancedcompanysettings' => array(
+                    'category' => 'CompanyAdmin',
+                    'tab' => 1,
+                    'name' => get_string('Advanced_company_settings', 'local_mt_dashboard'),
+                    'url' => '/blocks/iomad_company_admin/company_advanced_settings.php',
+                    'cap' => 'block/iomad_company_admin:companyadvancedsettingss',
+                    'icondefault' => 'companysettings',
+                    'style' => 'company',
+                    'icon' => 'fa-cog',
+                    'iconsmall' => 'fa fa-cog'
+                ),
+                'Importcompanies' => array(
+                    'category' => 'CompanyAdmin',
+                    'tab' => 1,
+                    'name' => get_string('Import_companies', 'local_mt_dashboard'),
+                    'url' => '/blocks/iomad_company_admin/company_upload.php',
+                    'cap' => 'block/iomad_company_admin:import_departmentss',
+                    'icondefault' => '',
+                    'style' => '',
+                    'icon' => '',
+                    'iconsmall' => ''
+                ),
+                'Custompages' => array(
+                    'category' => '',
+                    'tab' => 1,
+                    'name' => get_string('Custom_pages', 'local_mt_dashboard'),
+                    "url"        =>'/local/iomadcustompage/index.php',
+                  "cap"        =>'block/iomad_company_admin:companyadvancedsettingss',
+                  "icondefault"=> '',
+                  "style"      =>'company',
+                  "icon"       =>'fa-lock',
+                  "iconsmall"  =>'fa fa-lock'
+                ),
+                'Permissioncontrol'   => array(
+                  "category"   =>'CompanyAdmin',
+                  "tab"        =>'1',
+                  "name"       =>get_string('Permission_Control', 'local_mt_dashboard'),
+                  "url"        =>'/local/tenant_control/index.php',
+                  "cap"        =>'block/iomad_company_admin:companyadvancedsettingss',
+                  "icondefault"=> '',
+                  "style"      =>'company',
+                  "icon"       =>'fa-lock',
+                  "iconsmall"  =>'fa fa-lock'
+                ),
+
                 'userprofiles' => array(
                     'category' => 'CompanyAdmin',
                     'tab' => 1,
@@ -180,6 +225,28 @@ if( !function_exists('mt_admin_menu') ):
                     'tab' => 2,
                     'name' => get_string('companyCohorts', 'local_mt_dashboard'),
                     'url' => '/local/mt_dashboard/cohort/index.php',
+                    'cap' => 'local/mt_dashboard:companycohort_view',
+                    'icondefault' => 'managecompany',
+                    'style' => 'company',
+                    'icon' => 'fa-globe',
+                    'iconsmall' => 'fa-globe'
+                ),
+                'Approvetraining' => array(
+                    'category' => 'CompanyAdmin',
+                    'tab' => 2,
+                    'name' => get_string('Approvetraining', 'local_mt_dashboard'),
+                    'url' => '/blocks/iomad_approve_access/approve.php',
+                    'cap' => 'local/mt_dashboard:companycohort_view',
+                    'icondefault' => 'managecompany',
+                    'style' => 'company',
+                    'icon' => 'fa-globe',
+                    'iconsmall' => 'fa-globe'
+                ),
+                'Merge_user_accounts' => array(
+                    'category' => 'CompanyAdmin',
+                    'tab' => 2,
+                    'name' => get_string('Merge_user_accounts', 'local_mt_dashboard'),
+                    'url' => '/admin/tool/iomadmerge/index.php',
                     'cap' => 'local/mt_dashboard:companycohort_view',
                     'icondefault' => 'managecompany',
                     'style' => 'company',
