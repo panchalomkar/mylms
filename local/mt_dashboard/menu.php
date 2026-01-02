@@ -58,7 +58,7 @@ if( !function_exists('mt_admin_menu') ):
                     'tab' => 1,
                     'name' => get_string('Advanced_company_settings', 'local_mt_dashboard'),
                     'url' => '/blocks/iomad_company_admin/company_advanced_settings.php',
-                    'cap' => 'block/iomad_company_admin:companyadvancedsettingss',
+                    'cap' => 'block/iomad_company_admin:companyadvancedsettings',
                     'icondefault' => 'companysettings',
                     'style' => 'company',
                     'icon' => 'fa-cog',
@@ -69,7 +69,7 @@ if( !function_exists('mt_admin_menu') ):
                     'tab' => 1,
                     'name' => get_string('Import_companies', 'local_mt_dashboard'),
                     'url' => '/blocks/iomad_company_admin/company_upload.php',
-                    'cap' => 'block/iomad_company_admin:import_departmentss',
+                    'cap' => 'block/iomad_company_admin:import_departments',
                     'icondefault' => '',
                     'style' => '',
                     'icon' => '',
@@ -80,7 +80,7 @@ if( !function_exists('mt_admin_menu') ):
                     'tab' => 1,
                     'name' => get_string('Custom_pages', 'local_mt_dashboard'),
                     "url"        =>'/local/iomadcustompage/index.php',
-                  "cap"        =>'block/iomad_company_admin:companyadvancedsettingss',
+                  "cap"        =>'block/iomad_company_admin:companyadvancedsettings',
                   "icondefault"=> '',
                   "style"      =>'company',
                   "icon"       =>'fa-lock',
@@ -91,7 +91,7 @@ if( !function_exists('mt_admin_menu') ):
                   "tab"        =>'1',
                   "name"       =>get_string('Permission_Control', 'local_mt_dashboard'),
                   "url"        =>'/local/tenant_control/index.php',
-                  "cap"        =>'block/iomad_company_admin:companyadvancedsettingss',
+                  "cap"        =>'block/iomad_company_admin:companyadvancedsettings',
                   "icondefault"=> '',
                   "style"      =>'company',
                   "icon"       =>'fa-lock',
@@ -278,7 +278,7 @@ if( !function_exists('mt_admin_menu') ):
                 'managecourses' => array(
                     'category' => 'CourseAdmin',
                     'tab' => 3,
-                    'name' => get_string('iomad_courses_title', 'block_iomad_company_admin'),
+                    'name' => get_string('managecoursesettings', 'local_mt_dashboard'),
                     'url' => 'iomad_courses_form.php',
                     'cap' => 'block/iomad_company_admin:managecourses',
                     'icondefault' => 'managecoursesettings',
@@ -341,6 +341,27 @@ if( !function_exists('mt_admin_menu') ):
                     'icon' => 'fa-map-signs',
                     'iconsmall' => 'fa-gear',
                 ),
+                'MicrolearningAdmin' => array(
+                'category' => 'MicrolearningAdmin',
+                'tab' => 8,
+                'name' => get_string('threads', 'block_iomad_microlearning'),
+                'url' => '/blocks/iomad_microlearning/threads.php',
+                'cap' => 'block/iomad_microlearning:view',
+                'icondefault' => 'MicrolearningAdmin',
+                'style' => 'ecomm',
+                'icon' => 'fa-microchip',
+                'iconsmall' => 'fa-eye'
+                ),
+            'managethreads' => array(
+                'category' => 'MicrolearningAdmin',
+                'tab' => 8,
+                'name' => get_string('managethreads', 'local_mt_dashboard'),
+                'url' => '/blocks/iomad_microlearning/users.php',
+                'cap' => 'block/iomad_microlearning:view',
+                'icondefault' => 'MicrolearningAdmin',
+                'style' => 'ecomm',
+                'icon' => 'fa-microchip',
+                'iconsmall' => 'fa-eye')
             );
             $returnarray['manageiomadlicenses'] = array(
                     'category' => 'LicenseAdmin',
@@ -408,6 +429,7 @@ if( !function_exists('mt_admin_menu') ):
                 'icon' => 'fa-truck',
                 'iconsmall' => 'fa-eye'
             );
+           
             $returnarray['companyframeworks'] = array(
                 'category' => 'CompetencyAdmin',
                 'tab' => 5,
@@ -442,6 +464,17 @@ if( !function_exists('mt_admin_menu') ):
                 'iconsmall' => 'fa-eye'
             );
             $returnarray['companytemplates'] = array(
+                'category' => 'CompetencyAdmin',
+                'tab' => 5,
+                'name' => get_string('companytemplates', 'block_iomad_company_admin'),
+                'url' => '/blocks/iomad_company_admin/company_competency_templates_form.php',
+                'cap' => 'block/iomad_company_admin:company_template',
+                'icondefault' => 'assigntocompany',
+                'style' => 'competency',
+                'icon' => 'fa-cubes',
+                'iconsmall' => 'fa-chevron-circle-right'
+            ); 
+             $returnarray['companytemplates'] = array(
                 'category' => 'CompetencyAdmin',
                 'tab' => 5,
                 'name' => get_string('companytemplates', 'block_iomad_company_admin'),

@@ -52,3 +52,6 @@ $string['Advanced_company_settings'] = "Advanced company settings";
 $string['Import_companies'] = "Import companies";
 $string['Custom_pages'] = "Custom pages";
 $string['Permission_Control'] = "Permission Control";
+$string['managethreads'] = "Manage Threads";
+$string['E-commerce'] = "E-commerce";
+$string['managecoursesettings'] = "Manage course settings";

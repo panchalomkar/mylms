@@ -322,3 +322,67 @@ function get_company_overview_stats(int $companyid): array {
     ];
 }
 
+/**
+ * Get company (tenant) course stats
+ *
+ * @param int $companyid
+ * @return array
+ */
+function get_company_course_stats(int $companyid): array {
+    global $DB;
+
+    if (empty($companyid)) {
+        return [];
+    }
+
+    // 1. Total Courses
+    $totalcourses = $DB->count_records_sql("
+        SELECT COUNT(DISTINCT cc.courseid)
+        FROM {company_course} cc
+        WHERE cc.companyid = :companyid
+    ", ['companyid' => $companyid]);
+
+    // 2. Total Enrollments (unique users enrolled in company courses)
+    $totalenrollments = $DB->count_records_sql("
+        SELECT COUNT(DISTINCT ue.userid)
+        FROM {user_enrolments} ue
+        JOIN {enrol} e ON e.id = ue.enrolid
+        JOIN {company_course} cc ON cc.courseid = e.courseid
+        WHERE cc.companyid = :companyid
+    ", ['companyid' => $companyid]);
+
+    // 3. Active Groups (groups with members in company courses)
+    $activegroups = $DB->count_records_sql("
+        SELECT COUNT(DISTINCT g.id)
+        FROM {groups} g
+        JOIN {groups_members} gm ON gm.groupid = g.id
+        JOIN {company_course} cc ON cc.courseid = g.courseid
+        WHERE cc.companyid = :companyid
+    ", ['companyid' => $companyid]);
+
+    return [
+        [
+            'icon'   => 'menu_book',
+            'label'  => 'Total Courses',
+            'value'  => $totalcourses,
+            'bg'     => 'bg-sky-card',
+            'iconbg' => 'icon-sky'
+        ],
+        [
+            'icon'   => 'how_to_reg',
+            'label'  => 'Total Enrollments',
+            'value'  => $totalenrollments,
+            'bg'     => 'bg-teal-card',
+            'iconbg' => 'icon-teal'
+        ],
+        [
+            'icon'   => 'groups',
+            'label'  => 'Active Groups',
+            'value'  => $activegroups,
+            'bg'     => 'bg-blue-card',
+            'iconbg' => 'icon-blue'
+            
+        ]
+    ];
+}
+

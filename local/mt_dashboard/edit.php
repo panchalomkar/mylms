@@ -247,8 +247,14 @@ if (!iomad::get_my_companyid(context_system::instance(), false)) {
     if (iomad::has_capability('block/iomad_company_admin:competencymanagement_view', $systemcontext) && check_tenant_permission ('compentecies', $selectedcompany)) {
         $tabs[5] = get_string('competencymanagement', 'block_iomad_company_admin');
     }
+      if (has_capability('block/iomad_commerce:admin_view', $systemcontext) && check_tenant_permission ('ecommerce', $selectedcompany)) {
+        $tabs[6] = get_string('E-commerce', 'local_mt_dashboard');
+    }
     if (has_capability('local/mt_dashboard:report_view', $systemcontext) && check_tenant_permission ('reports', $selectedcompany)) {
         $tabs[7] = get_string('reporttitle', 'local_mt_dashboard');
+    }
+       if (has_capability('block/iomad_microlearning:view', $systemcontext) && check_tenant_permission ('MicrolearningAdmin', $selectedcompany)) {
+        $tabs[8] = get_string('threads', 'block_iomad_microlearning');
     }
     $tabhtml = mt_gettabs($tabs, $selectedtab);
     // Build content for selected tab (from menu array).
@@ -354,12 +360,21 @@ $iconmap = [
     'Import companies'         => ['icon' => 'import_export', 'bg' => 'bg-purple'],
     'Custom pages'             => ['icon' => 'pageview', 'bg' => 'bg-ocean'],
     'Permission Control'       => ['icon' => 'lock', 'bg' => 'bg-indigo'],
+     'Assign to company' => [ 'icon' => 'add_box', 'bg'   => 'bg-[#003152]','description' => 'Assign courses'],
+    'User enrolments' => ['icon' => 'person_add', 'bg'   => 'bg-[#003152]','description' => 'Assign users '],
+    'Create course' => ['icon' => 'menu_book','bg'   => 'bg-[#003152]','description' => 'New course'],
+    'Manage course settings' => ['icon' => 'settings', 'bg'   => 'bg-[#003152]','description' => 'Course settings'],
+    'Manage company groups' => [ 'icon' => 'school', 'bg'   => 'bg-[#003152]','description' => 'Manage groups'],
+    'Assign course groups' => [ 'icon' => 'device_hub','bg'   => 'bg-[#003152]','description' => 'Assign groups'],
+    'Teaching locations' => ['icon' => 'location_on', 'bg'   => 'bg-[#003152]','description' => 'Manage locations'],
+    'Cohort Sync' => ['icon' => 'link', 'bg'   => 'bg-[#003152]','description' => 'Sync cohorts'],
 ];
 
 $menuicon = $iconmap[$menu['name']] ?? ['icon' => 'apps', 'bg' => 'bg-default'];
 
 $new_array['icon']     = $menuicon['icon'];
 $new_array['icon_bg']  = $menuicon['bg'];
+$new_array['description']  = $menuicon['description'] ?? '';
 
 
         $new_array['url_new'] = $url;
@@ -372,8 +387,6 @@ $new_array['icon_bg']  = $menuicon['bg'];
         $tt[]=$new_array;
     }
         $data['tenant_menus'] = $tt;
-
-        // print_r($data['tenant_menus']);
       
 }
 
@@ -388,6 +401,14 @@ $data['selectedtab'] = $selectedtab;
 // Helpers
 $data['is_tab_2'] = ($selectedtab == 2);
 $data['is_tab_1'] = ($selectedtab == 1);
+$data['is_tab_3'] = ($selectedtab == 3);
+$data['is_tab_4'] = ($selectedtab == 4);    
+$data['is_tab_5'] = ($selectedtab == 5);
+$data['is_tab_6'] = ($selectedtab == 6);    
+$data['is_tab_7'] = ($selectedtab == 7);    
+$data['is_tab_8'] = ($selectedtab == 8);
+
+$data['show_quick_actions'] = (($selectedtab == 1) ||($selectedtab == 3));
 
 switch ($selectedtab) {
 
@@ -418,13 +439,13 @@ switch ($selectedtab) {
 // }
 $roles = $DB->get_records('role', null, '', 'id, shortname');
 
-// $data['roles'] = [];
-// foreach ($roles as $r) {
-//     $data['roles'][] = [
-//         'id'   => (string) $r->id,
-//         'name' => format_string($r->shortname)
-//     ];
-// }
+$data['roles'] = [];
+foreach ($roles as $r) {
+    $data['roles'][] = [
+        'id'   => (string) $r->id,
+        'name' => format_string($r->shortname)
+    ];
+}
 
 
     // Users
@@ -485,10 +506,6 @@ $users[] = [
         ['delete' => $u->id, 'sesskey' => $sesskey]
     ))->out(false),
 ];
-
-// echo '<pre>';
-// print_r($data['roles']);
-// exit;
     }
 
     $data['users'] = $users;
@@ -497,7 +514,7 @@ $users[] = [
 
     // TAB 3 – Course management
     case 3:
-        // $data['stats'] = get_company_course_stats($selectedcompany);
+        $data['stats'] = get_company_course_stats($selectedcompany);
         break;
 
     // TAB 4 – License management
