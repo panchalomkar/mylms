@@ -87,7 +87,7 @@ echo $OUTPUT->header();
             $progress = (int) round(\core_completion\progress::get_course_progress_percentage($course, $USER->id));
             $progresscolor = '#ec9707';
             ?>
-            <img src="<?php echo $courseimage; ?>" class="w-full h-48 object-cover rounded-tr-2xl" alt="Course banner">
+            <img src="<?php echo $courseimage; ?>" class="w-full h-48 object-cover rounded-tr-2xl" alt="Course banner" style="max-height: 145px;">
             <div class="p-3 m-2 rounded border-1 mt-2">
                 <h2 class="text-light mb-3" style="font-size:16px">Course Progress</h2>
                 <div class="flex justify-between">
