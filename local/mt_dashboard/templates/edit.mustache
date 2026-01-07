@@ -58,10 +58,10 @@
 {{#has_quick_actions}}
 <h2 class="text-2xl font-semibold mb-6 ">Quick Actions</h2>
 
-<div class="grid grid-cols-1 {{#is_tab_3}}md:grid-cols-4 gap-3{{/is_tab_3}} {{^is_tab_3}} md:grid-cols-3 gap-4 {{/is_tab_3}} edit-ui-t ">
+<div class="grid grid-cols-1 {{#is_tab_3}}md:grid-cols-4 gap-3{{/is_tab_3}}  {{^is_tab_3}} md:grid-cols-3 gap-4 {{/is_tab_3}} edit-ui-t ">
   {{#tenant_menus}}
     <a href="{{{url_new}}}" class="group">
-      <div class="menu-card {{#is_tab_3}}d-flex gap-4{{/is_tab_3}}" style="border:1px solid hsl(240 6% 90%);{{#is_tab_3}}padding:17px; gap:10px !important;{{/is_tab_3}}">
+      <div class="menu-card {{#actions_child}}d-flex gap-4{{/actions_child}}" style="border:1px solid hsl(240 6% 90%);{{#actions_child}}padding:17px; gap:10px !important;{{/actions_child}}">
 
         <div class="icon-box {{icon_bg}}">
           <span class="material-symbols-rounded">
@@ -69,7 +69,7 @@
           </span>
         </div>
         <div>
-        <h3 class="menu-title" style="{{#is_tab_3}}font-size:15px;{{/is_tab_3}}">{{action}}</h3>
+        <h3 class="menu-title" style="{{#actions_child}}font-size:15px;{{/actions_child}}">{{action}}</h3>
         <p class="menu-desc">
         {{#is_tab_1}}Manage and configure {{action}}{{/is_tab_1}}
           {{description}}
@@ -82,8 +82,8 @@
 {{/has_quick_actions}}
 {{/show_quick_actions}}
 
-{{#is_tab_2}}
 
+{{#show_quick_actions_small}}
 <!-- QUICK ACTIONS -->
 <h2 class="text-2xl font-semibold mb-6">Quick Actions</h2>
 <div class="flex flex-wrap gap-3 mb-8 user_tab">
@@ -94,7 +94,8 @@
     </a>
   {{/tenant_menus}}
 </div>
-
+{{/show_quick_actions_small}}
+{{#is_tab_2}}
 <!-- USERS MANAGEMENT CARD -->
 <div class="bg-white rounded-xl p-6 border user_tab ">
 
@@ -228,6 +229,78 @@
 
 </div>
 {{/is_tab_2}}
+
+{{#is_tab_4}}
+<!-- LICENSE MANAGEMENT CARD -->
+<div class="bg-white rounded-xl p-6 border user_tab ">
+
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-6">
+    <h3 class="text-xl font-semibold flex items-center gap-2">
+      <span class="material-icons text-[#003152]">verified_user</span>
+      License Overview
+    </h3>
+
+  </div>
+
+  <!-- Table -->
+  <div class="bg-white shadow-sm">
+    <table class="w-full text-sm">
+      <thead class="border-b bg-[#003152]">
+        <tr class="text-white">
+          <th class="px-4 py-2 text-left">License Type</th>
+          <th>Course</th>
+          <th>Quantity</th>
+          <th>Assigned</th>
+          <th>Available</th>
+          <th>Expiry Date</th>
+          <th class="text-right px-6">Status</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {{#licenses}}
+        <tr class="border-b hover:bg-gray-50">
+
+          <td class="px-4 py-3 font-medium">{{name}}</td>
+          <td>{{course}}</td>
+          <td>{{quantity}}</td>
+          <td>{{assigned}}</td>
+          <td>{{available}}</td>
+          <td>{{expir}}</td>
+
+      <td class="text-right px-6">
+  {{#status.active}}
+    <span class="badge badge-success">Active</span>
+  {{/status.active}}
+
+  {{#status.expiring}}
+    <span class="badge badge-warning">Expiring Soon</span>
+  {{/status.expiring}}
+
+  {{#status.expired}}
+    <span class="badge badge-danger">Expired</span>
+  {{/status.expired}}
+</td>
+
+
+        </tr>
+        {{/licenses}}
+
+        {{^licenses}}
+        <tr>
+          <td colspan="6" class="text-center py-6 text-gray-400">
+            No licenses found
+          </td>
+        </tr>
+        {{/licenses}}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{{/is_tab_4}}
+
 
 
 {{#show_company_info}}

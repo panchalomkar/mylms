@@ -126,6 +126,22 @@ $PAGE->requires->css(new moodle_url('https://fonts.googleapis.com/css2?family=Ma
   font-size: 12px;
 }
 
+.badge-warning {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+.badge-danger {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
 .badge-muted {
   background: #f3f4f6;
   color: #374151;
@@ -368,6 +384,14 @@ $iconmap = [
     'Assign course groups' => [ 'icon' => 'device_hub','bg'   => 'bg-[#003152]','description' => 'Assign groups'],
     'Teaching locations' => ['icon' => 'location_on', 'bg'   => 'bg-[#003152]','description' => 'Manage locations'],
     'Cohort Sync' => ['icon' => 'link', 'bg'   => 'bg-[#003152]','description' => 'Sync cohorts'],
+    'License management' => ['icon' => 'verified_user', 'bg'   => 'bg-[#003152]','description' => 'Manage locations'],
+    'User license allocations' => ['icon' => 'assignment_ind', 'bg'   => 'bg-[#003152]','description' => 'Sync cohorts'],
+'Assign frameworks' => ['icon' => 'add_box', 'bg'   => 'bg-[#003152]','description' => 'Assign courses'],
+'Manage framework settings' => ['icon' => 'settings', 'bg'   => 'bg-[#003152]','description' => 'Manage framework settings'],
+'Competency frameworks' => ['icon' => 'account_tree', 'bg'   => 'bg-[#003152]','description' => 'Competency frameworks'],
+'Assign LP to company' => ['icon' => 'assignment_turned_in', 'bg'   => 'bg-[#003152]','description' => 'Assign LP to company'],
+'Manage template settings' => ['icon' => 'tune', 'bg'   => 'bg-[#003152]','description' => 'Manage template settings'],
+'Learning Plan' => ['icon' => 'school', 'bg'   => 'bg-[#003152]','description' => 'Learning Plan'],
 ];
 
 $menuicon = $iconmap[$menu['name']] ?? ['icon' => 'apps', 'bg' => 'bg-default'];
@@ -408,8 +432,9 @@ $data['is_tab_6'] = ($selectedtab == 6);
 $data['is_tab_7'] = ($selectedtab == 7);    
 $data['is_tab_8'] = ($selectedtab == 8);
 
-$data['show_quick_actions'] = (($selectedtab == 1) ||($selectedtab == 3));
-
+$data['show_quick_actions'] = (($selectedtab == 1) ||($selectedtab == 3||($selectedtab == 5)));//||($selectedtab == 5)
+$data['show_quick_actions_small'] = (($selectedtab == 2) ||($selectedtab == 4));
+$data['actions_child'] = (($selectedtab == 3) ||($selectedtab == 5));
 switch ($selectedtab) {
 
     // TAB 1 – Company overview
@@ -519,13 +544,81 @@ $users[] = [
 
     // TAB 4 – License management
     case 4:
-        // $data['stats'] = get_company_license_stats($selectedcompany);
+    // License stats cards (optional)
+    $data['stats'] = get_company_license_stats($selectedcompany);
+
+    // Fetch licenses
+$sql = "
+    SELECT
+        cl.id,
+        cl.name,
+        cl.allocation,
+        cl.used,
+        (cl.allocation - cl.used) AS available,
+        cl.expirydate,
+        GROUP_CONCAT(c.fullname SEPARATOR ', ') AS coursename
+    FROM {companylicense} cl
+    LEFT JOIN {companylicense_courses} clc
+           ON clc.licenseid = cl.id
+    LEFT JOIN {course} c
+           ON c.id = clc.courseid
+    WHERE cl.companyid = :companyid
+    GROUP BY cl.id
+    ORDER BY cl.expirydate ASC
+";
+
+$records = $DB->get_records_sql($sql, ['companyid' => $selectedcompany]);
+
+$licenses = [];
+$now = time();
+$todayend = strtotime('today 23:59:59');
+$expiringwindow = $now + (30 * DAYSECS);
+
+foreach ($records as $l) {
+
+    $expiry = (int) $l->expirydate;
+
+    // ---- STATUS LOGIC ----
+    if (empty($expiry)) {
+        $status = 'active';
+    } elseif ($expiry <= $todayend) {
+        $status = 'expired';
+    } elseif ($expiry <= $expiringwindow) {
+        $status = 'expiring';
+    } else {
+        $status = 'active';
+    }
+
+    $allocation = (int) $l->allocation;
+    $used       = (int) $l->used;
+    $available  = max(0, $allocation - $used);
+
+   $licenses[] = [
+    'id'        => $l->id,
+    'name'      => format_string($l->name),
+    'course'    => $l->coursename ? format_string($l->coursename) : 'All Courses',
+    'quantity'  => $allocation,
+    'assigned'  => $used,
+    'available' => $available,
+    'expiry'    => $expiry ? date('Y-m-d', $expiry) : '—',
+    'status' => [
+        'active'   => ($status === 'active'),
+        'expired'  => ($status === 'expired'),
+        'expiring' => ($status === 'expiring')
+    ]
+];
+
+}
+
+$data['licenses'] = $licenses;
+
         break;
 
-    // TAB 5 – Competency management
-    case 5:
-        // $data['stats'] = get_company_competency_stats($selectedcompany);
-        break;
+  // TAB 5 – Competency management
+case 5:
+    $data['stats'] = get_company_competency_stats($selectedcompany);
+    break;
+
 }
 
 if (!empty($data['stats'])) {

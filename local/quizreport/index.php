@@ -51,7 +51,7 @@ if (!isset($_GET['courseid']) || !isset($_GET['quizid'])) {
 
     echo '<div class="card mb-4 shadow-sm" style="border-left: 5px solid #ec9707;">';
     echo '<div class="card-body d-flex justify-content-center">';
-    echo '<form method="GET" action="">';
+    echo '<form method="GET" action="" style="width:100%;">';
 
     $courses = get_courses();
     if (empty($courses)) {
@@ -60,7 +60,7 @@ if (!isset($_GET['courseid']) || !isset($_GET['quizid'])) {
         exit;
     }
 
-    echo '<div class="form-row align-items-end">';
+    echo '<div class="form-row align-items-end d-flex gap-3">';
 
     // Course dropdown
     echo '<div class="form-group col-md-4">';
@@ -81,7 +81,7 @@ if (!isset($_GET['courseid']) || !isset($_GET['quizid'])) {
     echo '</div>';
 
     // Submit button
-    echo '<div class="form-group col-md-4">';
+    echo '<div class="form-group col-md-4 mb-3">';
     echo '<label style="visibility:hidden;">Generate</label>'; // Placeholder
     echo '<button type="submit" class="btn" style="background-color:#003152; color:white; position: relative;
     top: 8px;">

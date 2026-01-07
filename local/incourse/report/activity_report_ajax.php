@@ -21,18 +21,117 @@ $user = $DB->get_record('user', ['id' => $userid], '*', MUST_EXIST);
  * HELPERS
  * =====================
  */
+function get_activity_grade(cm_info $cm, int $userid) {
+    global $DB;
+
+    switch ($cm->modname) {
+
+        case 'quiz':
+
+            // User grade
+            $grade = $DB->get_field('quiz_grades', 'grade', [
+                'quiz'   => $cm->instance,
+                'userid' => $userid
+            ]);
+
+            // Quiz max grade
+            $maxgrade = $DB->get_field('quiz', 'grade', [
+                'id' => $cm->instance
+            ]);
+
+            if ($grade === false || $grade === null || $maxgrade <= 0) {
+                return '-';
+            }
+
+            // ✅ If max = 10 → show percentage
+            if ((int)$maxgrade === 10) {
+                return round(($grade / 10) * 100);
+            }
+
+            // Otherwise show raw grade
+            return round($grade, 2);
+
+
+        case 'assign':
+
+            // User grade
+            $grade = $DB->get_field_sql("
+                SELECT ag.grade
+                FROM {assign_grades} ag
+                WHERE ag.assignment = :assignid
+                  AND ag.userid = :userid
+                  AND ag.grade >= 0
+            ", [
+                'assignid' => $cm->instance,
+                'userid'   => $userid
+            ]);
+
+            // Assignment max grade
+            $maxgrade = $DB->get_field('assign', 'grade', [
+                'id' => $cm->instance
+            ]);
+
+            if ($grade === false || $grade === null || $maxgrade <= 0) {
+                return '-';
+            }
+
+            // ✅ If max = 10 → show percentage
+            if ((int)$maxgrade === 10) {
+                return round(($grade / 10) * 100);
+            }
+
+            // Otherwise raw grade
+            return round($grade, 2);
+
+        default:
+            return '-';
+    }
+}
+
+
 function get_activity_status(cm_info $cm, completion_info $completion, int $userid, array $logs): array {
+
+    // ✅ Normal completion check
     if ($completion->is_enabled($cm)) {
         $cdata = $completion->get_data($cm, true, $userid);
-        if (in_array($cdata->completionstate, [COMPLETION_COMPLETE, COMPLETION_COMPLETE_PASS])) {
-            return ['Completed', '<span class="text-green-600 flex items-center justify-center gap-1"><span class="material-icons text-sm">check_circle</span>Completed</span>'];
+
+        if (in_array($cdata->completionstate, [
+            COMPLETION_COMPLETE,
+            COMPLETION_COMPLETE_PASS
+        ])) {
+            return ['Completed',
+                '<span class="text-green-600 flex items-center justify-center gap-1">
+                    <span class="material-icons text-sm">check_circle</span>Completed
+                 </span>'
+            ];
         }
     }
-    if (!empty($logs)) {
-        return ['In Progress', '<span class="text-yellow-600 flex items-center justify-center gap-1"><span class="material-icons text-sm">schedule</span>In Progress</span>'];
+
+    // ✅ PAGE fallback: viewed = completed
+    if ($cm->modname === 'page' && !empty($logs)) {
+        return ['Completed',
+            '<span class="text-green-600 flex items-center justify-center gap-1">
+                <span class="material-icons text-sm">check_circle</span>Completed
+             </span>'
+        ];
     }
-    return ['Not Started', '<span class="text-red-500 flex items-center justify-center gap-1"><span class="material-icons text-sm">radio_button_unchecked</span>Not Started</span>'];
+
+    // In progress
+    if (!empty($logs)) {
+        return ['In Progress',
+            '<span class="text-yellow-600 flex items-center justify-center gap-1">
+                <span class="material-icons text-sm">schedule</span>In Progress
+             </span>'
+        ];
+    }
+
+    return ['Not Started',
+        '<span class="text-red-500 flex items-center justify-center gap-1">
+            <span class="material-icons text-sm">radio_button_unchecked</span>Not Started
+         </span>'
+    ];
 }
+
 
 function calculate_activity_time(array $logs, int $timeout = 1800): int {
     if (empty($logs)) return 0;
@@ -116,7 +215,7 @@ function get_attendance_time_spent(int $attendanceid,int $userid): array {
 }
 
 function normalize_module_name(string $modname): string {
-    $map = ['quiz'=>'Quiz','assign'=>'Assignment','scorm'=>'SCORM','forum'=>'Forum','page'=>'Page','url'=>'URL','h5pactivity'=>'H5P','supervideo'=>'Video','attendance'=>'Attendance'];
+    $map = ['quiz'=>'Quiz','assign'=>'Assignment','scorm'=>'SCORM','forum'=>'Forum','page'=>'Page','url'=>'URL','h5pactivity'=>'H5P','supervideo'=>'Video','attendance'=>'Attendance','page'=>'PPT'];
     return $map[$modname] ?? ucfirst($modname);
 }
 
@@ -169,8 +268,8 @@ foreach($modinfo->get_cms() as $cm){
     $logs = $logsbycm[$cm->id] ?? [];
     $timespent = 0;
     $statustext = 'Not Started';
-    $statushtml = '<span class="text-red-500">Not Started</span>';
-
+    $statushtml = '<span class="text-red-500 flex items-center justify-center gap-1"><span class="material-icons text-sm">radio_button_unchecked</span><span class="text-red-500">Not Started</span>';
+    $grade = get_activity_grade($cm, $userid);
     try{
         switch($cm->modname){
             case 'attendance':
@@ -199,6 +298,11 @@ foreach($modinfo->get_cms() as $cm){
                 $timespent = get_supervideo_time_spent($cm->id,$userid);
                 [$statustext,$statushtml] = get_activity_status($cm,$completion,$userid,$logs);
                 break;
+                case 'page':
+    $timespent = calculate_activity_time($logs);
+    [$statustext, $statushtml] = get_activity_status($cm, $completion, $userid, $logs);
+    break;
+
         }
     }catch(Exception $e){
         $timespent = 0;
@@ -216,6 +320,7 @@ foreach($modinfo->get_cms() as $cm){
         'status'=>$statustext,
         'status_text'=>$statustext,
         'status_html'=>$statushtml,
+         'grade'        => $grade,
         'timespent'=>$timespent
     ];
 }

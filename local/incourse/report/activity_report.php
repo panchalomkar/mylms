@@ -94,7 +94,29 @@ $PAGE->set_pagelayout('standard');
 $PAGE->set_title('Activity Report');
 echo $OUTPUT->header();
 
-$courses = $DB->get_records_menu('course', null, 'fullname', 'id, fullname');
+$systemcontext = context_system::instance();
+
+if (has_capability('moodle/site:config', $systemcontext)) {
+    // ✅ ADMIN → show ALL courses
+    $courses = $DB->get_records_menu(
+        'course',
+        ['visible' => 1],
+        'fullname',
+        'id, fullname'
+    );
+} else {
+    // ✅ TEACHER / NON-ADMIN → only ENROLLED courses
+    $courses = enrol_get_my_courses([
+        'id',
+        'fullname'
+    ], 'fullname ASC');
+
+    // convert to id => fullname format
+    $courses = array_map(function($c) {
+        return format_string($c->fullname);
+    }, $courses);
+}
+
 ?>
 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -146,7 +168,39 @@ $courses = $DB->get_records_menu('course', null, 'fullname', 'id, fullname');
 if (!$courseid) { echo $OUTPUT->footer(); exit; }
 
 $context = context_course::instance($courseid);
-require_capability('moodle/course:update', $context);
+// require_capability('moodle/course:update', $context);
+if (!has_capability('moodle/course:update', $context)) {
+
+    echo '
+    <div class="max-w-xl mx-auto mt-16 bg-white border rounded-lg shadow p-8 text-center">
+        <div class="flex justify-center mb-4">
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="none">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                      d="M12 2C7.03 2 3 6.03 3 11C3 15.97 7.03 20 12 20C16.97 20 21 15.97 21 11C21 6.03 16.97 2 12 2ZM11 7C11 6.45 11.45 6 12 6C12.55 6 13 6.45 13 7V12C13 12.55 12.55 13 12 13C11.45 13 11 12.55 11 12V7ZM12 15C11.45 15 11 15.45 11 16C11 16.55 11.45 17 12 17C12.55 17 13 16.55 13 16C13 15.45 12.55 15 12 15Z"
+                      fill="#2563EB" fill-opacity="0.9"/>
+            </svg>
+        </div>
+
+        <h2 class="text-xl font-semibold text-gray-800 mb-2">
+            Access Restricted
+        </h2>
+
+        <p class="text-gray-600 mb-6">
+            You do not have permission to view the <strong>Activity Report</strong>.
+            This section is available only to instructors and administrators.
+        </p>
+
+        <a href="' . $CFG->wwwroot . '/my"
+           class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">
+            <span class="material-icons text-sm">arrow_back</span>
+            Go to Dashboard
+        </a>
+    </div>';
+
+    echo $OUTPUT->footer();
+    exit;
+}
+
 
 $users      = get_enrolled_users($context);
 $completion = new completion_info($course);
@@ -236,8 +290,10 @@ foreach ($modinfo->get_cms() as $cm) {
 
     if ($sectionid && $cm->sectionnum != $sectionnum) continue;
     if (!$cm->is_visible_on_course_page()) continue;
+$grade = '-';
 
     try {
+       
         switch ($cm->modname) {
 case 'attendance':
     // attendance_sessions duration based time
@@ -345,12 +401,13 @@ case 'attendance':
                 <th class="border px-3 py-2">Activity</th>
                 <th class="border px-3 py-2 text-center">Type</th>
                 <th class="border px-3 py-2 text-center">Status</th>
+                <th class="border px-3 py-2 text-center">Grade (%)</th>
                 <th class="border px-3 py-2 text-center">Time Spent</th>
             </tr>
         </thead>
         <tbody id="modalBody">
             <tr>
-                <td colspan="5" class="text-center p-4 text-gray-500">
+                <td colspan="6" class="text-center p-4 text-gray-500">
                     No data
                 </td>
             </tr>
@@ -487,7 +544,7 @@ function renderTable(data) {
     if (!data.length) {
         body.innerHTML = `
             <tr>
-                <td colspan="5" class="text-center p-4 text-gray-500">
+                <td colspan="6" class="text-center p-4 text-gray-500">
                     No activities found
                 </td>
             </tr>`;
@@ -502,12 +559,18 @@ function renderTable(data) {
                 <td class="border px-3 py-2">${d.activityname}</td>
                 <td class="border px-3 py-2 text-center">${d.moduletype}</td>
                 <td class="border px-3 py-2 text-center">${d.status_html}</td>
-                <td class="border px-3 py-2 text-center">${formatTime(d.timespent)}</td>
+                <td class="border px-3 py-2 text-center font-semibold">
+                    ${d.grade ?? '-'}
+                </td>
+                <td class="border px-3 py-2 text-center">
+                    ${formatTime(d.timespent)}
+                </td>
             </tr>`;
     });
 
     body.innerHTML = html;
 }
+
 
 function closeModal() {
     document.getElementById('activityModal').classList.add('hidden');
@@ -523,11 +586,12 @@ document.getElementById('exportCsvBtn').addEventListener('click', () => {
     const exportData = filteredData.length ? filteredData : modalData;
     if (!exportData.length) return;
 
-    let csv = 'Sr No,Activity,Type,Status,Time Spent\n';
+   let csv = 'Sr No,Activity,Type,Status,Grade,Time Spent\n';
 
-    exportData.forEach(d => {
-        csv += `"${d.srno}","${d.activityname}","${d.moduletype}","${d.status_text}","${formatTime(d.timespent)}"\n`;
-    });
+exportData.forEach(d => {
+    csv += `"${d.srno}","${d.activityname}","${d.moduletype}","${d.status_text}","${d.grade ?? '-'}","${formatTime(d.timespent)}"\n`;
+});
+
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');

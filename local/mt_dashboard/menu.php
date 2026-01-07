@@ -433,7 +433,7 @@ if( !function_exists('mt_admin_menu') ):
             $returnarray['companyframeworks'] = array(
                 'category' => 'CompetencyAdmin',
                 'tab' => 5,
-                'name' => get_string('companyframeworks', 'block_iomad_company_admin'),
+                'name' => get_string('Assignframeworks', 'local_mt_dashboard'),
                 'url' => '/blocks/iomad_company_admin/company_competency_frameworks_form.php',
                 'cap' => 'block/iomad_company_admin:company_framework',
                 'icondefault' => 'assigntocompany',
@@ -444,7 +444,7 @@ if( !function_exists('mt_admin_menu') ):
             $returnarray['iomadframeworksettings'] = array(
                 'category' => 'CompetencyAdmin',
                 'tab' => 5,
-                'name' => get_string('frameworksettings', 'block_iomad_company_admin'),
+                'name' => get_string('Manageframework', 'local_mt_dashboard'),
                 'url' => '/blocks/iomad_company_admin/iomad_frameworks_form.php',
                 'cap' => 'block/iomad_company_admin:manageframeworks',
                 'icondefault' => 'managecoursesettings',
@@ -455,7 +455,7 @@ if( !function_exists('mt_admin_menu') ):
             $returnarray['editframeworks'] = array(
                 'category' => 'CompetencyAdmin',
                 'tab' => 5,
-                'name' => get_string('competencyframeworks', 'tool_lp'),
+                'name' => get_string('Competencyframeworks', 'local_mt_dashboard'),
                 'url' => '/admin/tool/lp/competencyframeworks.php?pagecontextid=1',
                 'cap' => 'block/iomad_company_admin:competencyview',
                 'icondefault' => 'courses',
@@ -466,7 +466,7 @@ if( !function_exists('mt_admin_menu') ):
             $returnarray['companytemplates'] = array(
                 'category' => 'CompetencyAdmin',
                 'tab' => 5,
-                'name' => get_string('companytemplates', 'block_iomad_company_admin'),
+                'name' => get_string('Competencyframeworks', 'local_mt_dashboard'),
                 'url' => '/blocks/iomad_company_admin/company_competency_templates_form.php',
                 'cap' => 'block/iomad_company_admin:company_template',
                 'icondefault' => 'assigntocompany',
@@ -477,7 +477,7 @@ if( !function_exists('mt_admin_menu') ):
              $returnarray['companytemplates'] = array(
                 'category' => 'CompetencyAdmin',
                 'tab' => 5,
-                'name' => get_string('companytemplates', 'block_iomad_company_admin'),
+                'name' => get_string('AssignLPtocompany', 'local_mt_dashboard'),
                 'url' => '/blocks/iomad_company_admin/company_competency_templates_form.php',
                 'cap' => 'block/iomad_company_admin:company_template',
                 'icondefault' => 'assigntocompany',
@@ -488,7 +488,7 @@ if( !function_exists('mt_admin_menu') ):
             $returnarray['iomadtemplatesettings'] = array(
                 'category' => 'CompetencyAdmin',
                 'tab' => 5,
-                'name' => get_string('templatesettings', 'block_iomad_company_admin'),
+                'name' => get_string('Managetemplatesettings', 'local_mt_dashboard'),
                 'url' => '/blocks/iomad_company_admin/iomad_templates_form.php',
                 'cap' => 'block/iomad_company_admin:managetemplates',
                 'icondefault' => 'managecoursesettings',
@@ -499,7 +499,7 @@ if( !function_exists('mt_admin_menu') ):
             $returnarray['edittemplates'] = array(
                 'category' => 'CompetencyAdmin',
                 'tab' => 5,
-                'name' => get_string('templates', 'tool_lp'),
+                'name' => get_string('LearningPlan', 'local_mt_dashboard'),
                 'url' => '/admin/tool/lp/learningplans.php?pagecontextid=1',
                 'cap' => 'block/iomad_company_admin:templateview',
                 'icondefault' => 'userenrolements',

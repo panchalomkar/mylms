@@ -55,3 +55,10 @@ $string['Permission_Control'] = "Permission Control";
 $string['managethreads'] = "Manage Threads";
 $string['E-commerce'] = "E-commerce";
 $string['managecoursesettings'] = "Manage course settings";
+
+ $string['Assignframeworks'] = "Assign frameworks";
+ $string['Manageframework'] = "Manage framework settings";
+ $string['Competencyframeworks'] = "Competency frameworks";
+ $string['AssignLPtocompany'] = "Assign LP to company";
+ $string['Managetemplatesettings'] = "Manage template settings";
+ $string['LearningPlan'] = "Learning Plan";

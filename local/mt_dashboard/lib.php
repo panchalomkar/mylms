@@ -385,4 +385,165 @@ function get_company_course_stats(int $companyid): array {
         ]
     ];
 }
+/**
+ * Get company license stats
+ *
+ * @param int $companyid
+ * @return array
+ */
+function get_company_license_stats(int $companyid): array {
+    global $DB;
+
+    if (empty($companyid)) {
+        return [];
+    }
+
+    $now          = time();
+    $expirywindow = $now + (30 * DAYSECS);
+
+    // Aggregate licenses for company
+    $license = $DB->get_record_sql("
+        SELECT
+            SUM(allocation) AS totallicenses,
+            SUM(used)       AS usedlicenses,
+            SUM(
+                CASE
+                    WHEN expirydate IS NOT NULL
+                     AND expirydate >= :now
+                     AND expirydate <= :expirywindow
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS expiringsoon
+        FROM {companylicense}
+        WHERE companyid = :companyid
+    ", [
+        'companyid'    => $companyid,
+        'now'          => $now,
+        'expirywindow' => $expirywindow
+    ]);
+
+    $totallicenses     = (int) ($license->totallicenses ?? 0);
+    $assignedlicenses  = (int) ($license->usedlicenses ?? 0);
+    $availablelicenses = max(0, $totallicenses - $assignedlicenses);
+    $expiringsoon      = (int) ($license->expiringsoon ?? 0);
+
+    return [
+        [
+            'icon'   => 'verified_user',
+            'label'  => 'Total Licenses',
+            'value'  => $totallicenses,
+            'bg'     => 'bg-indigo-card',
+            'iconbg' => 'icon-indigo'
+        ],
+        [
+            'icon'   => 'person',
+            'label'  => 'Assigned Licenses',
+            'value'  => $assignedlicenses,
+            'bg'     => 'bg-sky-card',
+            'iconbg' => 'icon-sky'
+        ],
+        [
+            'icon'   => 'inventory_2',
+            'label'  => 'Available Licenses',
+            'value'  => $availablelicenses,
+            'bg'     => 'bg-blue-card',
+            'iconbg' => 'icon-blue'
+        ],
+        [
+            'icon'   => 'event_busy',
+            'label'  => 'Expiring Soon',
+            'value'  => $expiringsoon,
+          'bg'     => 'bg-teal-card',
+            'iconbg' => 'icon-teal'
+        ]
+    ];
+}
+/**
+ * Get company competency stats
+ *
+ * @param int $companyid
+ * @return array
+ */
+function get_company_competency_stats(int $companyid): array {
+    global $DB;
+
+    if (empty($companyid)) {
+        return [];
+    }
+
+    /*
+     * Assumptions (Moodle core):
+     * - competencies      -> {competency}
+     * - user links        -> {competency_usercomp}
+     * - company users     -> {company_users}
+     */
+
+    // 1. Total competencies
+    $totalcompetencies = $DB->count_records('competency');
+
+    // 2. Users with competencies (company users who have at least one competency)
+    $userswithcompetencies = $DB->count_records_sql("
+        SELECT COUNT(DISTINCT cu.userid)
+        FROM {company_users} cu
+        JOIN {competency_usercomp} cuc ON cuc.userid = cu.userid
+        WHERE cu.companyid = :companyid
+    ", ['companyid' => $companyid]);
+
+    // 3. Pending assessments
+    // status = 0 → in progress / not completed
+    $pendingassessments = $DB->count_records_sql("
+        SELECT COUNT(cuc.id)
+        FROM {competency_usercomp} cuc
+        JOIN {company_users} cu ON cu.userid = cuc.userid
+        WHERE cu.companyid = :companyid
+          AND cuc.status = 0
+    ", ['companyid' => $companyid]);
+
+    // 4. Completion rate
+    $completed = $DB->count_records_sql("
+        SELECT COUNT(cuc.id)
+        FROM {competency_usercomp} cuc
+        JOIN {company_users} cu ON cu.userid = cuc.userid
+        WHERE cu.companyid = :companyid
+          AND cuc.status = 1
+    ", ['companyid' => $companyid]);
+
+    $totalassessments = $completed + $pendingassessments;
+
+    $completionrate = $totalassessments > 0
+        ? round(($completed / $totalassessments) * 100)
+        : 0;
+
+    return [
+        [
+            'icon'   => 'psychology',
+            'label'  => 'Total Competencies',
+            'value'  => $totalcompetencies,
+            'bg'     => 'bg-indigo-card',
+            'iconbg' => 'icon-indigo'
+        ],
+        [
+            'icon'   => 'groups',
+            'label'  => 'Users with Competencies',
+            'value'  => $userswithcompetencies,
+            'bg'     => 'bg-sky-card',
+            'iconbg' => 'icon-sky'
+        ],
+        [
+            'icon'   => 'pending_actions',
+            'label'  => 'Pending Assessments',
+            'value'  => $pendingassessments,
+             'bg'     => 'bg-blue-card',
+            'iconbg' => 'icon-blue'
+        ],
+        [
+            'icon'   => 'bar_chart',
+            'label'  => 'Completion Rate',
+            'value'  => $completionrate . '%',
+            'bg'     => 'bg-teal-card',
+            'iconbg' => 'icon-teal'
+        ]
+    ];
+}
 
