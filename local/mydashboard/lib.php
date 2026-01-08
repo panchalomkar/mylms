@@ -282,7 +282,8 @@ function get_user_grade($userid)
     global $DB, $CFG;
     include_once $CFG->dirroot . '/grade/querylib.php';
 
-    $courses = $DB->get_records('course');
+    $courses = enrol_get_users_courses($userid, true);
+
     $sum = 0;
     $maxsum = 0;
 

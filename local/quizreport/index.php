@@ -454,30 +454,32 @@ try {
 </div>';
 
 
-                foreach ($users as $index => $user) {
-                    $userpic = $OUTPUT->user_picture((object) [
-                        'id' => $user->userid,
-                        'picture' => $user->picture,
-                        'imagealt' => $user->imagealt,
-                        'firstname' => $user->firstname,
-                        'lastname' => $user->lastname,
-                        'email' => $user->email,
-                    ]);
+foreach ($users as $index => $user) {
 
-                    echo '
-                    <div class="user-item mb-3" data-page="' . floor($index / 5) . '" style="' . ($index >= 5 ? 'display:none;' : '') . '">
-                        <div class="d-flex align-items-center">
-                            ' . $userpic . '
-                            <div class="ml-3">
-                                <strong>' . fullname($user) . '</strong><br>
-                                <small>' . s($user->email) . '</small>
-                            </div>
-                        </div>
-                    </div>';
-                }
+    // Fetch REAL Moodle user record (cached automatically by Moodle)
+    $userrecord = $DB->get_record('user', ['id' => $user->userid], '*', MUST_EXIST);
 
-                echo '
-                            </div>';
+    $userpic = $OUTPUT->user_picture($userrecord, [
+        'size' => 35,
+        'link' => false,
+    ]);
+
+    echo '
+    <div class="user-item mb-3" data-page="' . floor($index / 5) . '" style="' . ($index >= 5 ? 'display:none;' : '') . '">
+        <div class="d-flex align-items-center">
+            ' . $userpic . '
+            <div class="ml-3">
+                <strong>' . fullname($userrecord) . '</strong><br>
+                <small>' . s($userrecord->email) . '</small>
+            </div>
+        </div>
+    </div>';
+}
+
+echo '
+            </div>';
+
+
 
                 // Pagination controls
                 if ($totalpages > 1) {

@@ -392,6 +392,12 @@ $iconmap = [
 'Assign LP to company' => ['icon' => 'assignment_turned_in', 'bg'   => 'bg-[#003152]','description' => 'Assign LP to company'],
 'Manage template settings' => ['icon' => 'tune', 'bg'   => 'bg-[#003152]','description' => 'Manage template settings'],
 'Learning Plan' => ['icon' => 'school', 'bg'   => 'bg-[#003152]','description' => 'Learning Plan'],
+'Attendance report by course' => ['icon' => 'event_available', 'bg'   => 'bg-[#003152]','description' => 'Course Attendance Overview'],
+'Completion report by course' => ['icon' => 'task_alt', 'bg'   => 'bg-[#003152]','description' => 'Course Completion Status'],
+'License Allocations Report' => ['icon' => 'assignment', 'bg'   => 'bg-[#003152]','description' => 'License Allocation Summary'],
+'User license allocations report' => ['icon' => 'assignment_ind', 'bg'   => 'bg-[#003152]','description' => 'User License Distribution'],
+'User Login Report' => ['icon' => 'login', 'bg'   => 'bg-[#003152]','description' => 'User Login Activity'],
+'Users Report' => ['icon' => 'people', 'bg'   => 'bg-[#003152]','description' => 'User Account Overview'],
 ];
 
 $menuicon = $iconmap[$menu['name']] ?? ['icon' => 'apps', 'bg' => 'bg-default'];
@@ -434,7 +440,7 @@ $data['is_tab_8'] = ($selectedtab == 8);
 
 $data['show_quick_actions'] = (($selectedtab == 1) ||($selectedtab == 3||($selectedtab == 5)));//||($selectedtab == 5)
 $data['show_quick_actions_small'] = (($selectedtab == 2) ||($selectedtab == 4));
-$data['actions_child'] = (($selectedtab == 3) ||($selectedtab == 5));
+$data['actions_child'] = (($selectedtab == 3) ||($selectedtab == 5));//||($selectedtab == 7)
 switch ($selectedtab) {
 
     // TAB 1 – Company overview
@@ -617,8 +623,84 @@ $data['licenses'] = $licenses;
   // TAB 5 – Competency management
 case 5:
     $data['stats'] = get_company_competency_stats($selectedcompany);
-    break;
+    // TAB 5 – Competency management
+case 5:
 
+    $data['stats'] = get_company_competency_stats($selectedcompany);
+
+    $sql = "
+        SELECT
+            c.id AS uniqid,              -- ✅ MUST be unique (important!)
+
+            cf.id AS frameworkid,
+            cf.shortname AS frameworkname,
+
+            c.shortname,
+            c.parentid,
+            c.path,
+            c.sortorder
+        FROM {competency_framework} cf
+        JOIN {competency} c
+            ON c.competencyframeworkid = cf.id
+        WHERE cf.visible = 1
+        ORDER BY cf.id, c.path
+    ";
+
+    $records = $DB->get_records_sql($sql);
+
+    $frameworks = [];
+
+    foreach ($records as $r) {
+
+        // ✅ Calculate depth from path (Moodle standard)
+        $depth = substr_count(trim($r->path, '/'), '/') + 1;
+
+        // Init framework
+        if (!isset($frameworks[$r->frameworkid])) {
+            $frameworks[$r->frameworkid] = [
+                'frameworkname' => format_string($r->frameworkname),
+                'categories'    => []
+            ];
+        }
+
+        // ✅ Depth 1 = Category
+        if ($depth === 1) {
+            $frameworks[$r->frameworkid]['categories'][$r->uniqid] = [
+                'categoryname' => format_string($r->shortname),
+                'competencies' => []
+            ];
+            continue;
+        }
+
+        // ✅ Depth > 1 = Competency
+        if (!empty($r->parentid)) {
+            if (isset($frameworks[$r->frameworkid]['categories'][$r->parentid])) {
+                $frameworks[$r->frameworkid]['categories'][$r->parentid]['competencies'][] = [
+                    'name'        => format_string($r->shortname),
+                    'proficiency' => ''
+                ];
+            }
+        }
+    }
+
+    // ✅ Normalize for Mustache
+    $data['competencyframeworks'] = array_values(array_map(function ($fw) {
+        $fw['categories'] = array_values($fw['categories']);
+        return $fw;
+    }, $frameworks));
+
+    break;
+  
+         case 6:
+        // $data['stats'] = get_company_ecommerce_stats($selectedcompany);
+        break;
+        case 7:
+        // $data['stats'] = get_company_report_stats($selectedcompany);
+        
+        break;
+        case 8:
+        // $data['stats'] = get_company_microlearning_stats($selectedcompany);
+        break;  
 }
 
 if (!empty($data['stats'])) {

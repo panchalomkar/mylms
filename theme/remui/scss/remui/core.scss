@@ -1964,3 +1964,11 @@ padding: 14px 20px 10px 25px !important;
 #page-local-venuemanangement-index .iconsmall {
     width: 15px !important;
 }
+@media (max-width: 1500px) and (min-width: 1100px) {
+.block-myoverview {
+    .fourmenu li.nav-item{
+width: 99px !important;
+}}
+.block-myoverview [data-region="filter"] .all-filter-wrapper {
+    gap: 2px !important;
+}}
