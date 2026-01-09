@@ -343,7 +343,7 @@ if (modname === 'pdfjsfolder') {
                     <span class="material-icons mr-1">arrow_back</span>Back to PDFs
                 </button>
             </div>
-            <div id="pdfContainer" class="flex flex-col items-center justify-center w-100 p-0 " style="position: relative;left: 90px;    overflow: hidden;>
+            <div id="pdfContainer" class="flex flex-col items-center justify-center w-100 p-0 " style="left: 90px;    overflow: hidden;>
                 <span class="text-gray-500">Loading PDF...</span>
             </div>
         `;
@@ -404,11 +404,10 @@ if (modname === 'pdfjsfolder') {
 
             // If preview fails, fallback to iframe full viewer
             document.getElementById('pdfContainer').innerHTML = `
-                <div class="text-center w-full" style="position: relative;
-    right: 170px;
+                <div class="text-center w-full" style="right: 170px;
     top: -50px;
     overflow: hidden;" >
-                    <iframe src="${pdfUrl}" style=" position: relative;left: 100px;"  class="w-full h-[80vh] rounded-lg border" allowfullscreen></iframe>
+                    <iframe src="${pdfUrl}" style="left: 100px;"  class="w-full h-[80vh] rounded-lg border" allowfullscreen></iframe>
                 </div>
                
             `;

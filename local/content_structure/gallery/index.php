@@ -315,7 +315,7 @@ $allfiles = $DB->get_records_sql($file_sql, $fileparams);
         <div class="tab-content" id="tab-content">
             <!-- Folders Tab -->
             <div class="tab-pane fade show active" id="tab-folders">
-                <div class="input-group col-md-6 mb-3">
+                <div class="input-group col-md-6 mb-3" style="width: 50%;">
                     <input type="text" class="form-control" id="searchInput" value="<?php echo $sval; ?>"
                         style="height: 38px; placeholder=" <?php echo get_string('searchcontent', 'local_content_structure'); ?>">
                     <div class="input-group-append">

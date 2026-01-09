@@ -1,0 +1,67 @@
+      #page-local-content_structure-index div[role="main"] {
+         background: #fff !important;
+         box-shadow: 0 14px 24px rgba(0, 0, 0, .2);
+       }
+   
+       #page-local-content_structure-index .submit-icon::before {
+         display: inline-block;
+         width: 25px;
+         height: 20px;
+         margin-left: 5px;
+         top: 15px;
+         position: absolute;
+         content: "";
+         background: url(https://img.icons8.com/fluency/48/ok--v1.png);
+         background-repeat: no-repeat;
+         background-size: contain;
+     }
+     
+   
+     #page-local-content_structure-index .cancel-icon::before {
+      display: inline-block;
+      width: 25px;
+      height: 20px;
+      margin-left: 5px;
+      top: 15px;
+      position: absolute;
+      content: "";
+      background: url(https://img.icons8.com/fluency/48/cancel.png);
+      background-repeat: no-repeat;
+      background-size: contain;
+   }
+   
+   #page-local-content_structure-index thead tr{
+      background: #003152 !important;
+      color: #fff !important;
+      a{color:#fff !important}
+   } 
+   #page-local-content_structure-index a{text-decoration: none;}
+
+   #page-local-content_structure-index .nav-tabs .nav-link.active{    background: #003152 !important;
+      color: #fff !important;}
+   
+   #page-local-content_structure-gallery-index #page-wrapper #page {
+      padding-left: 17em;
+   padding-right: 0em;
+   }
+   #page-local-content_structure-gallery-index body.collapsed #page {
+      padding-left: 7em !important;
+   }
+   // #page-local-content_structure-gallery-index #page-header{display: none;}
+   #page-local-content_structure-gallery-index div[role="main"] {
+      margin-top: 0;
+      padding-top: 0px !important;}
+   
+   
+   .btn-primary-t{color:#fff !important;background-color:#003152 !important;}
+   
+   .path-local-content_structure{
+      #file-type-buttons button.active,pagination.active{color:#fff;background:#003152;}
+   
+   }
+     #page-local-content_structure-index table#example, table#example thead {
+      border-bottom: solid 1px #E4E7EC;
+      overflow: hidden;
+   }
+     .path-local-content_structure .input-group{    width: 50% !important;
+    margin-right: 20px;}

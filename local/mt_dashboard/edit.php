@@ -398,6 +398,8 @@ $iconmap = [
 'User license allocations report' => ['icon' => 'assignment_ind', 'bg'   => 'bg-[#003152]','description' => 'User License Distribution'],
 'User Login Report' => ['icon' => 'login', 'bg'   => 'bg-[#003152]','description' => 'User Login Activity'],
 'Users Report' => ['icon' => 'people', 'bg'   => 'bg-[#003152]','description' => 'User Account Overview'],
+'Products' => ['icon' => 'inventory_2', 'bg'   => 'bg-[#003152]','description' => 'Manage Products'],
+'Orders' => ['icon' => 'shopping_cart', 'bg'   => 'bg-[#003152]','description' => 'Manage Orders']
 ];
 
 $menuicon = $iconmap[$menu['name']] ?? ['icon' => 'apps', 'bg' => 'bg-default'];
@@ -438,9 +440,9 @@ $data['is_tab_6'] = ($selectedtab == 6);
 $data['is_tab_7'] = ($selectedtab == 7);    
 $data['is_tab_8'] = ($selectedtab == 8);
 
-$data['show_quick_actions'] = (($selectedtab == 1) ||($selectedtab == 3||($selectedtab == 5)));//||($selectedtab == 5)
+$data['show_quick_actions'] = (($selectedtab == 1) ||($selectedtab == 3||($selectedtab == 5)||($selectedtab == 7)||($selectedtab == 6)));//||($selectedtab == 5)
 $data['show_quick_actions_small'] = (($selectedtab == 2) ||($selectedtab == 4));
-$data['actions_child'] = (($selectedtab == 3) ||($selectedtab == 5));//||($selectedtab == 7)
+$data['actions_child'] = (($selectedtab == 3) ||($selectedtab == 5)||($selectedtab == 7)||($selectedtab == 6));//||($selectedtab == 7)
 switch ($selectedtab) {
 
     // TAB 1 – Company overview
