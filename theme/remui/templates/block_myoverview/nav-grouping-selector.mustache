@@ -48,7 +48,7 @@
 <ul class="nav fourmenu nav-tabs col-md-8 p-0" role="menu" data-show-active-item data-skip-active-class="true" data-active-item-text
     aria-labelledby="groupingdropdown">
     {{#displaygroupingallincludinghidden}}
-    <li class="nav-item">
+    <li class="nav-item btn-primary">
         <a class="nav-link" href="#" data-filter="grouping" data-value="allincludinghidden"
             data-pref="allincludinghidden"
             aria-label="{{#str}} aria:allcoursesincludinghidden, block_myoverview {{/str}}"
@@ -59,7 +59,7 @@
     </li>
     {{/displaygroupingallincludinghidden}}
     {{#displaygroupingall}}
-    <li class="nav-item " >
+    <li class="nav-item btn-primary" >
         <a class="nav-link" href="#" data-filter="grouping" data-value="all" data-pref="all"
             aria-label="{{#str}} aria:allcourses, block_myoverview {{/str}}" aria-controls="courses-view-{{uniqid}}"
             role="menuitem" {{#all}}aria-current="true" {{/all}} title="{{#str}} all, block_myoverview {{/str}}">
@@ -68,7 +68,7 @@
     </li>
     {{/displaygroupingall}}
     {{#displaygroupinginprogress}}
-    <li class="nav-item">
+    <li class="nav-item btn-primary">
         <a class="nav-link" href="#" data-filter="grouping" data-value="inprogress" data-pref="inprogress"
             aria-label="{{#str}} aria:inprogress, block_myoverview {{/str}}" aria-controls="courses-view-{{uniqid}}"
             role="menuitem" {{#inprogress}}aria-current="true" {{/inprogress}} title="{{#str}} inprogress, block_myoverview {{/str}}">
@@ -77,7 +77,7 @@
     </li>
     {{/displaygroupinginprogress}}
     {{#displaygroupingfuture}}
-    <li class="nav-item">
+    <li class="nav-item btn-primary">
         <a class="nav-link" href="#" data-filter="grouping" data-value="future" data-pref="future"
             aria-label="{{#str}} aria:future, block_myoverview {{/str}}" aria-controls="courses-view-{{uniqid}}"
             role="menuitem" {{#future}}aria-current="true" {{/future}} title="{{#str}} future, block_myoverview {{/str}}">
@@ -86,7 +86,7 @@
     </li>
     {{/displaygroupingfuture}}
     {{#displaygroupingpast}}
-    <li class="nav-item">
+    <li class="nav-item btn-primary">
         <a class="nav-link" href="#" data-filter="grouping" data-value="past" data-pref="past"
             aria-label="{{#str}} aria:past, block_myoverview {{/str}}" aria-controls="courses-view-{{uniqid}}"
             role="menuitem" {{#past}}aria-current="true" {{/past}} title="{{#str}} past, block_myoverview {{/str}}">
@@ -96,7 +96,7 @@
     {{/displaygroupingpast}}
     {{#displaygroupingcustomfield}}
     {{#customfieldvalues}}
-    <li class="nav-item">
+    <li class="nav-item btn-primary">
         <a class="nav-link" href="#" data-filter="grouping" data-value="customfield" data-pref="customfield"
             data-customfieldvalue="{{value}}" aria-label="{{#str}}aria:customfield, block_myoverview, {{name}}{{/str}}"
             aria-controls="courses-view-{{uniqid}}" role="menuitem" {{#active}}aria-current="true" {{/active}} title="{{name}}">
@@ -106,7 +106,7 @@
     {{/customfieldvalues}}
     {{/displaygroupingcustomfield}}
     {{#displaygroupingfavourites}}
-    <li class="nav-item">
+    <li class="nav-item btn-primary">
         <a class="nav-link" href="#" data-filter="grouping" data-value="favourites" data-pref="favourites"
             aria-label="{{#str}} aria:favourites, block_myoverview {{/str}}" aria-controls="courses-view-{{uniqid}}"
             role="menuitem" {{#favourites}}aria-current="true" {{/favourites}} title="{{#str}} favourites, block_myoverview {{/str}}">

@@ -110,9 +110,9 @@ tailwind.config = {
     },
 };
 </script>
-<style>
+<!-- <style>
 body { font-family: 'Poppins', sans-serif;  }
-</style>
+</style> -->
 </head>
 
 <body class="bg-background-light dark:bg-background-dark">
@@ -129,7 +129,7 @@ body { font-family: 'Poppins', sans-serif;  }
 <?php } else { ?>
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
     <?php foreach ($certificates as $cert) { ?>
-        <div class="group bg-card-light dark:bg-card-dark rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex flex-col" style="max-height: 269px;">
+        <div class="group bg-card-light dark:bg-card-dark rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex flex-col" >
             <div class="p-3 flex-grow">
                 <div class="flex items-start justify-between mb-4">
                     <div class="flex items-center space-x-4">
@@ -137,7 +137,7 @@ body { font-family: 'Poppins', sans-serif;  }
                             <span class="material-icons-outlined text-primary text-2xl">school</span>
                         </div>
                         <div>
-                            <h3 class="font-semibold text-lg text-text-light dark:text-text-dark">
+                            <h3 class="font-semibold text-lg text-text-light dark:text-text-dark ellipsis ellipsis-2">
                                 <?= format_string($cert['name']); ?>
                             </h3>
                             <p class="text-sm text-subtext-light dark:text-subtext-dark">Issued: <?= $cert['issued']; ?></p>

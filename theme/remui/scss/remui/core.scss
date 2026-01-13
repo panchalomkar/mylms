@@ -1399,6 +1399,31 @@ scrollbar-width: none;
   color: black;
   }
   }
+//   myoverview block
+.block-myoverview{
+.fourmenu li.nav-item{
+    a.nav-link{
+      color:$header-menu-text-color !important;
+    }
+}
+.fourmenu.nav-tabs .nav-link[aria-current="true"] {
+    background-color: $header-menu-element-bg-color;
+    color: $header-menu-text-color !important;
+}
+}
+
+.nav-display-selector ul{ 
+ li.nav-item{
+    a.nav-link{
+      color:$header-menu-text-color !important;
+    }}
+
+    .nav-link[aria-current="true"] {
+    background-color: $header-menu-element-bg-color;
+    color: $header-menu-text-color !important;
+}}
+
+
   .sidebar .sidecontent li#mainmenu12 a[title="Calendar"]{
   display: block !important;
   }
@@ -1722,7 +1747,7 @@ body.collapsed #page{ padding-left:5em !important;}
     font-weight: 500;
     font-size: 14px;}
 } 
-.btn-primary{background: #003152 !important; background-color: #003152 !important; color: #fff !important;}
+// .btn-primary{background: #003152 !important; background-color: #003152 !important; color: #fff !important;}
 .pagelayout-incourse{
 .tool-left-panel{display: none;}}
 .path-local-incourse{.tool-left-panel,.drawer-left-toggle,.secondary-navigation,#page-header{display: none;}
