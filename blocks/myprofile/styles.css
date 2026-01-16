@@ -26,3 +26,124 @@
 .block_myprofile .myprofileitem span {
     font-weight: bold;
 }
+#page-my-index{
+#theme_remui-drawers-blocks{ 
+ .block-header {
+    display: none;
+}
+ .block-body-wrapper .block-content-area {
+  padding: 0;
+    margin: 0;
+}
+.block-body-wrapper .footer {
+    display: none;
+}
+}
+
+/* ====== PROFILE CARD STYLING ====== */
+.myprofile-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f9f9f9;
+      width: 100%;
+}
+
+.rightb-card {
+  background: #fff;
+  border-radius: 16px;
+     padding: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 420px;
+  transition: all 0.3s ease;
+}
+
+.rightb-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+}
+
+.myprofile-header {
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 8px;
+}
+
+.myprofile-title {
+  font-size: 15px;
+  font-weight: 400;
+  color: #333;
+  margin: 0;
+}
+
+.myprofile-body {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.profile-image img {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #eee;
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.profile-info .user-name {
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 4px;
+  text-transform: capitalize; /* ✅ Capitalize each word */
+  color: #222;
+}
+
+.profile-info .user-email {
+  font-size: 13px;
+  color: #777;
+  margin-bottom: 2px;
+  word-break: break-all;
+}
+
+
+
+.user-location {
+  font-size: 13px;
+  color: #666;
+}
+
+.myprofile-stats {
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+  margin-top: 24px;
+}
+
+.myprofile-stats .stat h5 {
+  font-weight: 700;
+  margin: 0;
+  font-size: 16px;
+}
+
+.myprofile-stats .stat p {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+}
+
+.divider {
+  width: 1px;
+  background-color: #e0e0e0;
+  height: 30px;
+  align-self: center;
+}
+
+.edit-icon {
+  font-size: 16px;
+  color: #666;
+  cursor: pointer;
+}}
