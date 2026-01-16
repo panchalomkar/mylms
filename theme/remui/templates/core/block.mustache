@@ -35,20 +35,67 @@
     }
 }}
 {{! Block Skip Link }}
+
 {{#showskiplink}}
 <a href="#sb-{{skipid}}" class="sr-only sr-only-focusable">{{#str}}skipa, access, {{{title}}}{{/str}}</a>
 {{/showskiplink}}
 
 {{! Start Block Container }}
+
 <section id="{{id}}"
     class="{{#hidden}}hidden{{/hidden}} {{class}} {{#hascontrols}}block_with_controls{{/hascontrols}} " role="{{ariarole}}" data-block="{{type}}" data-instance-id="{{blockinstanceid}}" {{#arialabel}} aria-label="{{arialabel}}" {{/arialabel}} {{^arialabel}} {{#title}}aria-labelledby="instance-{{blockinstanceid}}-header"{{/title}} {{/arialabel}}>
 
     {{! Block contents }}
-    <div class="block-body-wrapper">
+    <div class="block-body-wrapper gap-0">
         {{! Block header }}
         <div class="block-header-wrapper d-flex justify-content-between align-items-center">
             {{#title}}
-            <h4 id="instance-{{blockinstanceid}}-header" class="block-header" style="padding-left: 10px !important;" title="{{{title}}} block">{{{title}}}</h4>
+            <h4 id="instance-{{blockinstanceid}}-header"
+    class="block-header align-items-center gap-2"
+    title="{{{title}}} block">
+
+    {{! Timeline icon }}
+    <svg class="block-icon icon-timeline"
+         xmlns="http://www.w3.org/2000/svg"
+         viewBox="0 0 24 24"
+         fill="none"
+         stroke="currentColor"
+         stroke-width="2"
+         stroke-linecap="round"
+         stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+    </svg>
+
+    {{! Course overview icon }}
+    <svg class="block-icon icon-overview"
+         xmlns="http://www.w3.org/2000/svg"
+         viewBox="0 0 24 24"
+         fill="none"
+         stroke="currentColor"
+         stroke-width="2"
+         stroke-linecap="round"
+         stroke-linejoin="round">
+        <path d="M12 7v14"></path>
+        <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path>
+    </svg>
+
+    {{! Recently accessed icon }}
+    <svg class="block-icon icon-recent"
+         xmlns="http://www.w3.org/2000/svg"
+         viewBox="0 0 24 24"
+         fill="none"
+         stroke="currentColor"
+         stroke-width="2"
+         stroke-linecap="round"
+         stroke-linejoin="round">
+        <path d="M12 8v5l3 3"></path>
+        <path d="M3.05 11a9 9 0 1 1 .5 4"></path>
+    </svg>
+
+    {{{title}}}
+</h4>
+
             {{/title}}
             {{^title}}<span></span>{{/title}}
             {{#hascontrols}}
@@ -74,3 +121,4 @@
 {{#showskiplink}}
 <span id="sb-{{skipid}}"></span>
 {{/showskiplink}}
+

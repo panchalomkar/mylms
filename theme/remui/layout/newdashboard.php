@@ -45,6 +45,15 @@ if (!is_guest($coursecontext, $USER) &&
 if (!is_siteadmin($USER)) {
     $templatecontext['userdashboard_stats'] = $OUTPUT->userdashboard_stats($USER);
 }
+if(is_siteadmin($USER)){
+ // Admin dashboard stats (Iomad / System admin)
+    $templatecontext = array_merge(
+        $templatecontext,
+        $OUTPUT->admindashboard_stats(
+            optional_param('filter', 'all', PARAM_TEXT)
+        )
+    );
+}
 }
 // Only set slider on Dashboard (pagetype my-index).
 if ($PAGE->pagetype === 'my-index') {

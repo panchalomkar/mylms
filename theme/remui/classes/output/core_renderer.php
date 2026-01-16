@@ -281,7 +281,7 @@ if ($DB->get_manager()->table_exists('iomadcertificate')) {
             [
                 'label'      => 'Courses Completed',
                 'value'      => "$completedcourses / $totalcourses",
-                'icon'       => 'bi bi-book',
+                'icon'       => 'bi bi-check-circle',
                 'color'      => 'rgb(30, 58, 138)',
                 'percentage' => $totalcourses ? round($completedcourses / $totalcourses * 100) : 0
             ],
@@ -318,6 +318,164 @@ if ($DB->get_manager()->table_exists('iomadcertificate')) {
         'allcourses'      => $coursesdata        // all courses for popup
         ]
     ];
+}
+
+/**
+ * Admin dashboard statistics for RemUI (Iomad)
+ *
+ * @param string $filter all|today|thisweek|thismonth
+ * @return array
+ */
+public function admindashboard_stats(string $filter = 'all'): array {
+    global $DB, $USER;
+
+    $now = time();
+
+    /* ================================
+     * IOMAD COMPANY COUNT
+     * ================================ */
+    $totalcompanies = 0;
+    if ($DB->get_manager()->table_exists('company')) {
+        $totalcompanies = $DB->count_records('company', ['suspended' => 0]);
+    }
+
+    /* ================================
+     * COURSES COUNT
+     * ================================ */
+    $coursesql = "SELECT id, timecreated FROM {course} WHERE id > 1";
+    $courses   = $DB->get_records_sql($coursesql);
+
+    $filteredcourses = [];
+    foreach ($courses as $course) {
+        if ($this->match_time_filter($course->timecreated, $filter, $now)) {
+            $filteredcourses[] = $course;
+        }
+    }
+    $totalcourses = count($filteredcourses);
+
+    /* ================================
+     * USERS COUNT (IOMAD AWARE)
+     * ================================ */
+    $usersql = "
+        SELECT u.id, u.timecreated
+          FROM {user} u
+         WHERE u.deleted = 0
+           AND u.suspended = 0
+           AND u.id > 1
+    ";
+    $users = $DB->get_records_sql($usersql);
+
+    $filteredusers = [];
+    foreach ($users as $user) {
+        if ($this->match_time_filter($user->timecreated, $filter, $now)) {
+            $filteredusers[] = $user;
+        }
+    }
+    $totalusers = count($filteredusers);
+
+    /* ================================
+     * LEARNING PATHS (IOMAD)
+     * ================================ */
+    $totalpaths = 0;
+    if ($DB->get_manager()->table_exists('iomad_learningpath')) {
+        $totalpaths = $DB->count_records('iomad_learningpath');
+    }
+
+    /* ================================
+     * ADMIN STATS ARRAY (Mustache-ready)
+     * ================================ */
+    return [
+        'userdashboard_stats-admin' => true,
+
+        'adminstats' => [
+            [
+                'label' => 'Companies',
+                'value' => $totalcompanies,
+                'trend' => '+12%',
+                'trendtype' => [
+                    'up' => true
+                ],
+                'accent' => 'rose',
+                'icon' => $this->get_admin_icon_svg('building-2'),
+            ],
+            [
+                'label' => 'Courses',
+                'value' => $totalcourses,
+                'trend' => '+8%',
+                'trendtype' => [
+                    'up' => true
+                ],
+                'accent' => 'emerald',
+                'icon' => $this->get_admin_icon_svg('book-open'),
+            ],
+            [
+                'label' => 'Users',
+                'value' => $totalusers,
+                'trend' => '-5%',
+                'trendtype' => [
+                    'down' => true
+                ],
+                'accent' => 'violet',
+                'icon' => $this->get_admin_icon_svg('users'),
+            ],
+            [
+                'label' => 'Learning Paths',
+                'value' => $totalpaths,
+                'trend' => '+15%',
+                'trendtype' => [
+                    'up' => true
+                ],
+                'accent' => 'sky',
+                'icon' => $this->get_admin_icon_svg('git-branch'),
+            ]
+        ]
+    ];
+}
+
+/**
+ * Match record against date filter
+ */
+private function match_time_filter(?int $timecreated, string $filter, int $now): bool {
+    if (empty($timecreated)) {
+        return false;
+    }
+
+    switch ($filter) {
+        case 'today':
+            return date('Y-m-d', $timecreated) === date('Y-m-d', $now);
+
+        case 'thisweek':
+            $weekstart = strtotime('monday this week', $now);
+            $weekend   = strtotime('sunday this week', $now);
+            return ($timecreated >= $weekstart && $timecreated <= $weekend);
+
+        case 'thismonth':
+            return date('Y-m', $timecreated) === date('Y-m', $now);
+
+        default:
+            return true;
+    }
+}
+
+private function get_admin_icon_svg(string $icon): string {
+    switch ($icon) {
+        case 'building-2':
+            return '    <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
+                <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
+                <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path>
+                <path d="M10 6h4"></path>
+                <path d="M10 10h4"></path>
+                <path d="M10 14h4"></path>
+                <path d="M10 18h4"></path>';
+        case 'book-open':
+            return '<path d="M2 4h6a4 4 0 0 1 4 4v12a4 4 0 0 0-4-4H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a4 4 0 0 1 4-4h6z"/>';
+        case 'users':
+            return '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>';
+        case 'git-branch':
+            return '<line x1="6" y1="3" x2="6" y2="15"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>';
+        default:
+            return '';
+    }
 }
 
 

@@ -1,359 +1,10 @@
-<style>
 
-.block_course_overview, section.block_myoverview {
-    display: block;
-}
-.user_stat{
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.user_stat .card{
-    background: #fff;
-    border-radius: 15px;
-    padding: 10px;
-    width: 280px;
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    position: relative;
-}
-.stat_course_due .card {
-    background: #fff;
-    border-radius: 15px;
-    padding: 10px;
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    position: relative;
-}
-.stat_course_due .card h3 {
-    font-size: 14px !important;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: start;
-    gap: 10px;
-}
-.user_stat .card h3 {
-    font-size: 14px !important;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-
-
-
-
-
-.user_stat .completion {
-display: inline-block;
-    background: hsl(240 4.8% 95.9%);
-    color: #000;
-    border-radius: .3rem;
-    font-size: 12px;
-    margin-top: 5px;
-    font-weight: 600;
-    line-height: 1.25rem;
-}
-
-.user_stat .footer-stat{
-display: flex;
-justify-content: center;
-}
-
-
-
-/* Text Inside the Circle */
-.circular-progress .inner-circle span {
-font-size: 1.5rem;
-font-weight: bold;
-}
-
-    #user_course_stat {
-      display: flex;
-      align-items: center;
-      gap: 2rem;
-      font-family: Arial, sans-serif;
-        justify-content:center;
-        padding:0px 68px 0px 72px;;
-    }
-#user_course_stat .circle {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-#user_course_stat .circle::before {
-  content: "";
-  position: absolute;
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: #fff;
-}
-
-#user_course_stat .legend {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-left: 1rem;
-
-}
-
-#user_course_stat .legend-item {
-  font-size: 16px;
-  font-weight: 600;
-  text-align: left;
-  
-}
-
- .legend-item span {
-  display: inline-block;
-  width: 30px;
-      font-size: 20px !important;
-}
-
-.red { color: #e74c3c; }
-.yellow { color: #f1c40f; }
-.blue { color: #1abc9c; }
-.stat_course_date{
-.course-list { display:flex; flex-direction:column; gap:1rem; }
-.course-header { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;
-  font-size:0.875rem; font-weight:700; color:#4b5563; border-bottom:1px solid #e5e7eb; padding-bottom:0.5rem; }
-.course-row { display:grid; grid-template-columns:40px 1fr 1fr 1fr; gap:1rem; align-items:center; }
-.course-avatar { width:40px; height:40px; border-radius:50%; object-fit:cover; }
-.progress-container { display:flex; align-items:center; gap:0.5rem; }
-.progress-bar { flex:1; height:8px; background:#e5e7eb; border-radius:9999px; overflow:hidden; }
-.progress-fill { height:100%; transition:width 0.3s ease; }
-.progress-fill.green { background:#16a34a; }
-.progress-fill.yellow { background:#facc15; }
-.progress-fill.red { background:#ef4444; }
-.progress-label { font-size:0.75rem; padding:2px 6px; border-radius:4px; color:#fff; }
-.progress-label.yellow { color:#000; }
-.progress-label.green { background:#16a34a; }
-.progress-label.yellow { background:#facc15; }
-.progress-label.red { background:#ef4444; }
-.due-date { font-size:0.875rem;font-weight:400; color:#4b5563; }
-}
-.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:999; }
-.modal-content { background:#fff; padding:1rem; border-radius:0.5rem; width:60%; max-height:80%; overflow-y:auto; position:relative; }
-.hidden { display:none; }
-.close { position:absolute; top:1rem; right:1rem; font-size:1.5rem; cursor:pointer; }
-.modal {
-    display: flex; /* changed from none */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    justify-content: center;
-    align-items: center;
-    z-index: 999;
-}
-.hidden { display: none; }
-
-.view-more-container { text-align:right; margin-top:0.5rem; }
-/* Card styling */
-.card.flex-fill {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    text-align: center;
-    padding: 20px 15px;
-    margin-bottom: 20px;
-}
-
-.user_stat .card {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    text-align: center;
-    padding: 20px 15px;
-    margin-bottom: 20px;
-}
-
-.user_stat .card h3 i {
-    margin-right: 6px;
-    font-size: 18px;
-}
-
-.user_stat .circle-progress {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 10px;
-    position: relative;
-}
-
-.user_stat .circular-chart {
-    display: block;
-    max-width: 100%;
-    max-height: 100%;
-}
-
-.user_stat .circle-bg {
-    fill: none;
-    stroke: #eee;
-    stroke-width: 3.8;
-}
-
-.user_stat .circle {
-    fill: none;
-    stroke-width: 3.8;
-    stroke-linecap: round;
-    transform: rotate(-90deg);
-    transform-origin: 50% 50%;
-    transition: stroke-dasharray 0.6s ease;
-}
-
-.user_stat .percentage {
-  font-weight: 700;
-    text-anchor: middle;
-    dominant-baseline: middle;
-    font-size: 0.4rem;
-    line-height: 2rem;
-}
-.highcharts-credits{display:none !important;}
-#highcharts-he2tu4n-0{width:100% !important;}
-
-@media (max-width: 1500px) and (min-width: 1100px) {
-
-    .user_stat {
-        gap: 15px;
-    }
-
-    .user_stat .card {
-        width: 200px;
-        padding: 12px;
-    }
-
-    #user_course_stat {
-        gap: 1.5rem;
-        padding: 0px 40px;
-    }
-
-    #user_course_stat .circle {
-        width: 130px;
-        height: 130px;
-    }
-
-    #user_course_stat .legend-item {
-        font-size: 14px;
-    }
-    
-.edw-course-card-grid {
-    gap: 35px;
-}
-}
-
-
-/* 1100px to 992px */
-@media (max-width: 1100px) and (min-width: 992px) {
-
-    .user_stat {
-        gap: 12px;
-    }
-
-    .user_stat .card {
-        width: 240px;
-        padding: 12px;
-    }
-
-    #user_course_stat {
-        flex-direction: column;
-        text-align: center;
-        padding: 20px;
-    }
-
-    #user_course_stat .legend {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
-        margin-left: 0;
-    }
-
-    #user_course_stat .circle {
-        width: 120px;
-        height: 120px;
-    }
-}
-
-/* Tablets (max-width: 991px) */
-@media (max-width: 991px) {
-
-    .user_stat .card {
-        width: 220px;
-    }
-
-    #user_course_stat {
-        flex-direction: column;
-        padding: 10px;
-    }
-
-    #user_course_stat .legend-item {
-        font-size: 13px;
-    }
-}
-
-/* Small screens */
-@media (max-width: 768px) {
-
-    .user_stat {
-        gap: 10px;
-    }
-
-    .user_stat .card {
-        width: 100%;
-        max-width: 300px;
-    }
-
-    #user_course_stat .circle {
-        width: 110px;
-        height: 110px;
-    }
-
-    .modal-content {
-        width: 90%;
-    }
-}
-
-/* Extra small screens */
-@media (max-width: 480px) {
-
-    .user_stat .card {
-        width: 100%;
-        padding: 15px;
-    }
-
-    #user_course_stat .circle {
-        width: 100px;
-        height: 100px;
-    }
-
-    #user_course_stat .legend-item {
-        font-size: 12px;
-    }
-
-    .course-row {
-        grid-template-columns: 30px 1fr;
-    }
-}
-.cst{overflow:visible !important;}
-</style>
-
+{{#userdashboard_stats}}
 <div class="user_stat mb-3">
 {{#stats}}
   <div class="card flex-fill text-center p-4">
       <h3 style="font-size:16px;" class="mb-5">
-          <i class="{{icon}}"></i> {{label}}
+          <i class="{{icon}} orange-icon-c"></i> {{label}}
       </h3>
       <div class="circle-progress">
           <svg viewBox="0 0 36 36" class="circular-chart">
@@ -382,13 +33,25 @@ font-weight: bold;
 
 <div class="stat_course_due  d-flex flex-row gap-2 col-md-12">
 {{#stat_course_due}}
-<div class="card flex-fill col-md-6 mb-4">
-    <h3 style="justify-content: space-between;">
-        <span><span class=" mr-1">📊</span>{{label}}</span>
+<div class="card block-header-wrapper-1 flex-fill col-md-6 mb-4">
+    <h3 class="block-header text-light" style="justify-content: space-between;">
+        <span><span class=" mr-1"><svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 24 24"
+     fill="none"
+     stroke="currentColor"
+     stroke-width="2"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     class="lucide block-icon-stat lucide-pie-chart">
+
+    <path d="M21 12c0 5-4 9-9 9s-9-4-9-9 4-9 9-9"></path>
+    <path d="M12 3v9l9 0"></path>
+</svg>
+</span>{{label}}</span>
     </h3>
 
     <!-- Chart container -->
-    <div class="progress-wrapper-user-stat mt-3 d-flex" style="align-items: center;">
+    <div class="progress-wrapper-user-stat mt-3 d-flex" style="align-items: center;padding:10px;">
         <div class="cst" id="course-donut-{{id}}" style="width:50%; margin-right:30px; height:250px; "></div>
 
         <!-- Legend -->
@@ -453,8 +116,8 @@ Highcharts.chart('course-donut-{{id}}', {
 {{/stat_course_due}}
 
 {{#stat_course_date}}
-<div class="card flex-fill col-md-6 stat_course_date">
-  <h3>🔔 {{label}}</h3>
+<div class="card block-header-wrapper-1  flex-fill col-md-6 stat_course_date">
+  <h3 class="block-header text-light"><svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide block-icon-stat lucide-book-open w-4 h-4 text-accent"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg> {{label}}</h3>
 
   <div class="course-list">
     <div class="course-header">
@@ -518,6 +181,85 @@ Highcharts.chart('course-donut-{{id}}', {
 {{/stat_course_date}}
 
 </div>
+
+{{/userdashboard_stats}}
+{{#userdashboard_stats-admin}}
+
+<div class="admin-dashboard-stats admin-dashboard-stats-grid d-flex mb-3">
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 d-flex">
+
+{{#adminstats}}
+<div class="relative bg-white rounded-2xl px-4 py-3 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden stat-card">
+
+    <!-- Accent strip -->
+    <div class="absolute left-0 top-0 h-full w-1.5 bg-{{accent}}-500 rounded-l-2xl stat-accent"></div>
+
+    <div class="flex items-center gap-5 stat-inner">
+
+        <!-- Icon -->
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-{{accent}}-100 stat-icon">
+            <span class="text-{{accent}}-600">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="22" height="22"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+                    {{{icon}}}
+                </svg>
+            </span>
+        </div>
+
+        <!-- Text -->
+        <div class="flex-1">
+            <div class="flex items-center gap-2 d-flex">
+                <span class="text-3xl font-bold text-gray-900 leading-none stat-value">
+                    {{value}}
+                </span>
+
+                {{#trend}}
+                <span class="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold stat-trend
+                    {{#trendtype.up}}trend-up{{/trendtype.up}}
+                    {{#trendtype.down}}trend-down{{/trendtype.down}}">
+
+                    {{#trendtype.up}}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                        <polyline points="16 7 22 7 22 13"></polyline>
+                    </svg>
+                    {{/trendtype.up}}
+
+                    {{#trendtype.down}}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="22 17 13.5 8.5 8.5 13.5 2 7"></polyline>
+                        <polyline points="16 17 22 17 22 11"></polyline>
+                    </svg>
+                    {{/trendtype.down}}
+
+                    {{trend}}
+                </span>
+                {{/trend}}
+            </div>
+
+            <p class="mt-1 text-sm font-medium text-gray-500 stat-label">
+                {{label}}
+            </p>
+        </div>
+    </div>
+</div>
+{{/adminstats}}
+
+</div>
+</div>
+
+{{/userdashboard_stats-admin}}
+
+
 <script>
 function openCoursesModal() {
     var modal = document.getElementById('coursesModal');
