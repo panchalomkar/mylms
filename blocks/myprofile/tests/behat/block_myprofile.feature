@@ -252,3 +252,58 @@ Feature: The logged in user block allows users to view their profile information
     And I log out
     And I log in as "teacher1"
     And I should see "Last login:" in the "Logged in user" "block"
+
+
+
+
+<div class="myprofile-container">
+  <div class="rightb-card">
+    <div class="myprofile-header d-flex justify-content-between align-items-center">
+      <h5 class="myprofile-title">
+        <i class="bi bi-person-circle mr-2"></i> My Profile
+      </h5>
+      <a href="{{editprofileurl}}" class="edit-profile-link"> <i class="fa fa-edit"></i></a>
+    </div>
+
+    <div class="myprofile-body">
+      <div class="profile-image me-3">
+        {{{ userpicture }}}
+      </div>
+      <div class="profile-info">
+        <h4 class="user-name ellipsis ellipsis-1">{{ userfullname }}</h4>
+        <p class="user-email ellipsis ellipsis-1">{{ designation }}</p>
+        {{#userlocation}}
+        <p class="user-location ellipsis ellipsis-1">
+          <i class="bi bi-geo-alt-fill text-primary"></i> {{ userlocation }}
+        </p>
+        {{/userlocation}}
+      </div>
+    </div>
+
+<div class="myprofile-stats d-flex align-items-center justify-content-center">
+  <div class="stat text-center mx-3">
+   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide orange-icon-c lucide-user w-4 h-4"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+    <h5 class="mt-1 mb-0">{{attendance}}</h5>
+    <p class="mb-0">Attendance</p>
+  </div>
+
+  <div class="divider mx-2" style="width:1px; height:40px; background:#ddd;"></div>
+
+  <div class="stat text-center mx-3">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-target orange-icon-c w-4 h-4"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+    <h5 class="mt-1 mb-0">{{mypoints}}</h5>
+    <p class="mb-0">Points</p>
+  </div>
+
+  <div class="divider mx-2" style="width:1px; height:40px; background:#ddd;"></div>
+
+  <div class="stat text-center mx-3">
+   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trophy orange-icon-c w-4 h-4"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
+    <h5 class="mt-1 mb-0">{{myrank}}</h5>
+    <p class="mb-0">Rank</p>
+  </div>
+</div>
+
+  </div>
+</div>
+

@@ -91,13 +91,13 @@
 }
 </style>
 
-<div class="rightb-card">
-  <div class="myprofile-header d-flex justify-content-between align-items-center">
-    <h5 class="myprofile-title">
-      <i class="bi bi-megaphone mr-2"></i> Announcements
+<div class="rightb-card p-0">
+  <div class="myprofile-header d-flex justify-content-between align-items-center block-header-right p-2">
+    <h5 class="myprofile-title text-light">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide block-icon1 lucide-bell w-4 h-4 text-accent"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg> Announcements
     </h5>
   </div>
-
+<div class="p-4 pt-0">
   {{#announcements}}
     <div class="announcement-item">
     <div class="row" style="align-items: center;">
@@ -125,7 +125,7 @@
     View more
   </a>
 </div>
-
+</div>
   {{#canaddtopic}}
     <div class="add-topic">
       <a href="{{addtopicurl}}"><i class="bi bi-plus-circle"></i> Add new topic</a>

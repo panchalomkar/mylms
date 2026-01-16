@@ -1,2 +1,2 @@
 <?php
-$string['pluginname'] = '🕐 Recent Access Courses';
+$string['pluginname'] = ' Recent Access Courses';
