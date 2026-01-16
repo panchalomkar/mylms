@@ -1,0 +1,215 @@
+<div class="row g-4">
+
+<!-- ================= COURSE PROGRESS ================= -->
+<div class="col-lg-6">
+
+  <div class="card shadow-sm border-0 rounded-4">
+
+    <!-- Header -->
+    <div class="card-header text-white rounded-4"
+         style="background: linear-gradient(to right, #334155, #0f172a);">
+      <div class="d-flex justify-content-between align-items-center">
+
+        <div class="d-flex align-items-center gap-3">
+          <span class="material-icons bg-warning bg-opacity-25 p-2 rounded text-warning">
+            bar_chart
+          </span>
+          <div>
+            <h6 class="mb-0 fw-semibold">Course Progress</h6>
+            <small class="text-light opacity-75">Track learner engagement</small>
+          </div>
+        </div>
+
+        <div class="d-flex gap-2">
+          <select class="form-select form-select-sm bg-dark text-white border-secondary">
+            <option>Select Cohort</option>
+          </select>
+          <select class="form-select form-select-sm bg-dark text-white border-secondary">
+            <option>Select Course</option>
+          </select>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="card-body">
+
+      <div class="d-flex gap-4 align-items-center flex-wrap">
+
+        <!-- Avg Progress -->
+        <div class="bg-warning bg-opacity-10 rounded-4 p-4 text-center" style="width:180px;">
+          <small class="text-warning text-uppercase fw-semibold">Average Progress</small>
+          <div class="display-5 fw-bold text-dark">
+            {{courseprogress.average}}%
+          </div>
+          <small class="text-success">+5% from last month</small>
+
+          <div class="mt-3 fw-medium text-secondary">
+            {{courseprogress.totallearners}} Total Learners
+          </div>
+        </div>
+
+        <!-- Donut -->
+        <div style="width:220px;">
+         <canvas id="progressDonut"
+        data-distribution='{{#courseprogress.distribution}}{{value}},{{/courseprogress.distribution}}'
+        height="220"></canvas>
+
+        </div>
+
+        <!-- Legend -->
+<div class="small" style="width:180px;">
+  {{#courseprogress.distribution}}
+  <div class="d-flex justify-content-between align-items-center mb-2
+              cp-legend cursor-pointer" data-range="{{range}}">
+    <span class="d-flex align-items-center gap-2">
+      <span class="rounded-circle bg-secondary d-inline-block"
+            style="width:10px;height:10px;"></span>
+      {{label}}
+    </span>
+    <strong>{{value}}%</strong>
+  </div>
+  {{/courseprogress.distribution}}
+</div>
+
+
+      </div>
+
+      <div class="text-end mt-4">
+        <button class="btn btn-warning text-white rounded-pill px-4">
+          View Details
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ================= COURSE PROGRESS MODAL (Bootstrap 4) ================= -->
+<div class="modal fade" id="cpModal" tabindex="-1" role="dialog" aria-labelledby="cpModalLabel" aria-hidden="true" data-courseid="{{courseprogress.courseid}}">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content rounded-4">
+
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="cpModalLabel">Course Progress Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <!-- Filters -->
+      <div class="modal-body">
+        <div class="d-flex gap-2 flex-wrap mb-3">
+          <button class="btn btn-sm btn-outline-secondary cp-range" data-range="0to20">0–20%</button>
+          <button class="btn btn-sm btn-outline-secondary cp-range" data-range="21to40">21–40%</button>
+          <button class="btn btn-sm btn-outline-secondary cp-range" data-range="41to60">41–60%</button>
+          <button class="btn btn-sm btn-outline-secondary cp-range" data-range="61to80">61–80%</button>
+          <button class="btn btn-sm btn-outline-secondary cp-range" data-range="81to100">81–100%</button>
+        </div>
+
+        <!-- Table -->
+        <div style="max-height:50vh; overflow:auto;">
+          <table class="table table-sm table-striped">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Email</th>
+                <th>Progress</th>
+              </tr>
+            </thead>
+            <tbody id="cpModalBody">
+              <tr>
+                <td colspan="3" class="text-center text-muted">
+                  Select a range to view learners
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ================= SITE OVERVIEW ================= -->
+<div class="col-lg-6">
+
+  <div class="card shadow-sm border-0 rounded-4">
+
+    <!-- Header -->
+    <div class="card-header text-white rounded-4"
+         style="background: linear-gradient(to right, #334155, #0f172a);">
+      <div class="d-flex justify-content-between align-items-center">
+
+        <div class="d-flex align-items-center gap-3">
+          <span class="material-icons bg-warning bg-opacity-25 p-2 rounded text-warning">
+            show_chart
+          </span>
+          <div>
+            <h6 class="mb-0 fw-semibold">Site Overview Stats</h6>
+            <small class="text-light opacity-75">
+              Monitor key performance metrics
+            </small>
+          </div>
+        </div>
+
+        <button class="btn btn-sm btn-secondary rounded-pill">
+          View Details
+        </button>
+
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="card-body">
+
+      <div class="row g-3 text-center">
+
+        <div class="col-4">
+          <div class="bg-light rounded-4 p-3">
+            <span class="material-icons text-secondary">groups</span>
+            <div class="h4 fw-bold mb-0">{{siteoverview.activeusers}}</div>
+            <small class="text-muted">Total Active Users</small>
+            <div class="text-success small">▲ +12%</div>
+          </div>
+        </div>
+
+        <div class="col-4">
+          <div class="bg-light rounded-4 p-3">
+            <span class="material-icons text-warning">school</span>
+            <div class="h4 fw-bold mb-0">{{siteoverview.enrollments}}</div>
+            <small class="text-muted">Total Enrollments</small>
+            <div class="text-success small">▲ +8%</div>
+          </div>
+        </div>
+
+        <div class="col-4">
+          <div class="bg-light rounded-4 p-3">
+            <span class="material-icons text-success">check_circle</span>
+            <div class="h4 fw-bold mb-0">{{siteoverview.completions}}</div>
+            <small class="text-muted">Total Completions</small>
+            <div class="text-danger small">▼ -3%</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Line Chart -->
+      <div class="mt-4">
+        <canvas id="overviewChart"
+          data-trendactiveusers="{{siteoverview.trendActiveUsers}}"
+          data-trendenrollments="{{siteoverview.trendEnrollments}}"
+          data-trendcompletions="{{siteoverview.trendCompletions}}"
+          height="220"></canvas>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</div>
