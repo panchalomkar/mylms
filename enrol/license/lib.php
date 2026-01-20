@@ -284,7 +284,21 @@ class enrol_license_plugin extends enrol_plugin {
                            AND cl.type = 4
                            AND cl.used < cl.allocation";
             if (!$license = $DB->get_record_sql($blanketsql, ['courseid' => $instance->courseid, 'companyid' => $companyid, 'startdate' => time(), 'expirydate' => time()])) {
-                return get_string('nolicenseinformationfound', 'enrol_license');
+               $catalogurl = new moodle_url('/course/', [
+    'companyid' => $companyid
+]);
+
+return html_writer::div(
+    html_writer::tag('p', get_string('nolicenseinformationfound', 'enrol_license')) .
+    html_writer::link(
+        $catalogurl,
+        get_string('continue'),
+        ['class' => 'btn btn-primary mt-3']
+    ),
+    'p-4 bg-light border rounded text-center'
+);
+
+
             }
         }
 

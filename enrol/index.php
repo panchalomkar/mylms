@@ -26,7 +26,7 @@ require('../config.php');
 require_once("$CFG->libdir/formslib.php");
 
 $id = required_param('id', PARAM_INT);
-$returnurl = optional_param('returnurl', null, PARAM_LOCALURL);
+$returnurl = optional_param('returnurl', 0, PARAM_LOCALURL);
 
 if (!isloggedin()) {
     $referer = get_local_referer();
@@ -38,11 +38,6 @@ if (!isloggedin()) {
     // do not use require_login here because we are usually coming from it,
     // it would also mess up the SESSION->wantsurl
     redirect(get_login_url());
-}
-
-// Check if we can see this course.
-if (!iomad::iomad_check_course($id)) {
-	$id = 0;
 }
 
 $course = $DB->get_record('course', array('id'=>$id), '*', MUST_EXIST);
@@ -58,7 +53,6 @@ if (!$course->visible && !has_capability('moodle/course:viewhiddencourses', cont
 }
 
 $PAGE->set_course($course);
-$PAGE->set_context($context->get_parent_context());
 $PAGE->set_pagelayout('incourse');
 $PAGE->set_url('/enrol/index.php', array('id'=>$course->id));
 $PAGE->set_secondary_navigation(false);
@@ -66,7 +60,7 @@ $PAGE->add_body_class('limitedwidth');
 
 // do not allow enrols when in login-as session
 if (\core\session\manager::is_loggedinas() and $USER->loginascontext->contextlevel == CONTEXT_COURSE) {
-    throw new \moodle_exception('loginasnoenrol', '', $CFG->wwwroot.'/course/view.php?id='.$USER->loginascontext->instanceid);
+    throw new \moodle_exception('loginasnoenrol', '', $CFG->wwwroot.'/local/incourse/view.php?id='.$USER->loginascontext->instanceid);
 }
 
 // Check if user has access to the category where the course is located.
@@ -74,17 +68,17 @@ if (!core_course_category::can_view_course_info($course) && !is_enrolled($contex
     throw new \moodle_exception('coursehidden', '', $CFG->wwwroot . '/');
 }
 
-// Get all enrol widgets available in this course.
+// get all enrol forms available in this course
 $enrols = enrol_get_plugins(true);
 $enrolinstances = enrol_get_instances($course->id, true);
-$widgets = [];
+$forms = array();
 foreach($enrolinstances as $instance) {
     if (!isset($enrols[$instance->enrol])) {
         continue;
     }
-    $widget = $enrols[$instance->enrol]->enrol_page_hook($instance);
-    if ($widget) {
-        $widgets[$instance->id] = $widget;
+    $form = $enrols[$instance->enrol]->enrol_page_hook($instance);
+    if ($form) {
+        $forms[$instance->id] = $form;
     }
 }
 
@@ -94,7 +88,7 @@ if (is_enrolled($context, $USER, '', true)) {
         $destination = $SESSION->wantsurl;
         unset($SESSION->wantsurl);
     } else {
-        $destination = "$CFG->wwwroot/course/view.php?id=$course->id";
+        $destination = "$CFG->wwwroot/local/incourse/view.php?id=$course->id";
     }
     redirect($destination);   // Bye!
 }
@@ -103,10 +97,30 @@ $PAGE->set_title($course->shortname);
 $PAGE->set_heading($course->fullname);
 $PAGE->navbar->add(get_string('enrolmentoptions','enrol'));
 
-/** @var core_course_renderer $courserenderer */
-$courserenderer = $PAGE->get_renderer('core', 'course');
-$content = $courserenderer->enrolment_options($course, $widgets,
-    $returnurl ? new \core\url($returnurl) : null);
 echo $OUTPUT->header();
-echo $content;
+echo $OUTPUT->heading(get_string('enrolmentoptions','enrol'));
+
+$courserenderer = $PAGE->get_renderer('core', 'course');
+echo $courserenderer->course_info_box($course);
+
+//TODO: find if future enrolments present and display some info
+
+foreach ($forms as $form) {
+    echo $form;
+}
+
+if (!$forms) {
+    if (isguestuser()) {
+        notice(get_string('noguestaccess', 'enrol'), get_login_url());
+    } else if ($returnurl) {
+        notice(get_string('notenrollable', 'enrol'), $returnurl);
+    } else {
+        $url = get_local_referer(false);
+        if (empty($url)) {
+            $url = new moodle_url('/index.php');
+        }
+        notice(get_string('notenrollable', 'enrol'), $url);
+    }
+}
+
 echo $OUTPUT->footer();
