@@ -143,7 +143,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.querySelectorAll('.cp-legend').forEach(function(el) {
       el.addEventListener('click', function () {
-        loadModal(el.dataset.range);
+        
+      // loadModal(el.dataset.range);
       });
     });
   }
