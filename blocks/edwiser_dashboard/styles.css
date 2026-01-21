@@ -1,0 +1,25 @@
+.block_edwiser_dashboard .block-header-wrapper {
+    display: none !important;
+}
+
+.block_edwiser_dashboard .edw-block-body {
+    background-color: transparent !important;
+    border: unset !important;
+    box-shadow: unset !important;
+    padding: 0px !important;}
+
+.block_edwiser_dashboard .block-body-wrapper {
+    border: none !important;}
+
+.is-site-admin {
+    .drawer.drawer-right.show {
+display: none !important;
+}
+
+@media (min-width: 992px) {
+    #page.drawers.show-drawer-right {
+        margin-left: 0;
+        margin-right: 10px !important;
+    }
+}
+}

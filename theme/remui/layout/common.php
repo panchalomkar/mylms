@@ -230,6 +230,29 @@ $userurl = [
     // 'mycourse' => $CFG->wwwroot . "/my/courses.php",
 ];
 
+$managerurl1 = [
+    'dashboard' => $CFG->wwwroot . "/my",
+    'mycourse' => $mycourseurl,
+     'myteam' => $CFG->wwwroot . "/local/my_team/index.php",
+    'leaderboard' => $CFG->wwwroot . "/blocks/xp/index.php/ladder/1",
+    'learningpath' => $CFG->wwwroot . "/local/learningpaths",
+    'sandileader' => $CFG->wwwroot . "/local/mydashboard/index.php",
+    'smeleaders' => $CFG->wwwroot . "/local/mydashboard/smeleader_report.php",
+    'report&analytics' => $CFG->wwwroot . "/local/edwiserreports/index.php",
+    'calender' => $CFG->wwwroot . "/calendar/view.php",
+    'multitenant' => $CFG->wwwroot . "/local/mt_dashboard/index.php?company=0&tabid=&showsuspendedcompanies=/",
+    'createuser' => $CFG->wwwroot . "/blocks/iomad_company_admin/company_user_create_form.php",
+    'edituser' => $CFG->wwwroot . "/blocks/iomad_company_admin/editusers.php",
+    'createcourse' => $CFG->wwwroot . "/blocks/iomad_company_admin/company_course_create_form.php",
+    'users_Assign_To_Company' => $CFG->wwwroot . "/blocks/iomad_company_admin/company_users_form.php",
+    'Userenrollments' => $CFG->wwwroot . "/blocks/iomad_company_admin/company_course_users_form.php",
+    'ManageCourses' => $CFG->wwwroot . "/blocks/iomad_company_admin/iomad_courses_form.php",
+    'Course_Assign_To_Company' => $CFG->wwwroot . "/blocks/iomad_company_admin/company_courses_form.php",
+    'bulkuploaduser' => $CFG->wwwroot . "/blocks/iomad_company_admin/uploaduser.php",
+    'Reports' => $CFG->wwwroot . "/local/report_users/index.php",
+    'performance' => $CFG->wwwroot . "/local/competency/mainheading.php",
+    'logouturl' => $CFG->wwwroot . "/login/logout.php?sesskey=" . $USER->sesskey,
+];
 $managerurl = [
     'dashboard' => $CFG->wwwroot . "/my",
     'mycourse' => $mycourseurl,
@@ -265,28 +288,65 @@ $teacherrurl = [
     'report&analytics' => $CFG->wwwroot . "/local/edwiserreports/index.php",
 ];
 
+// added by omkar
+//code changes - 21/jun/2026
+global $USER;
+
+// Get system context
+$systemcontext = context_system::instance();
+$rolesinsystem = get_user_roles($systemcontext, $USER->id);
 
 if (is_siteadmin()) {
     $sidebarurldata = [
         'admin' => $adminurl,
     ];
 
-} else if ($getmanager->managertype == 1) {
-    $manager = true;
+} else if (!empty($rolesinsystem)) {
+    // User has role at system context → treat as manager (including system manager)
+    $sidebarurldata = [
+        'manager1' => $managerurl1,
+    ];
+
+} else if (!empty($getmanager) && $getmanager->managertype == 1) {
+    // If user is custom manager (e.g., from your own `company_users` table)
     $sidebarurldata = [
         'manager' => $managerurl,
     ];
-} else if ($roles->roleid == 3) {
-    $teacher = true;
+
+} else if (isset($roles->roleid) && $roles->roleid == 3) {
     $sidebarurldata = [
         'teacher' => $teacherrurl,
-
     ];
+
 } else {
+    // Default: student
     $sidebarurldata = [
         'student' => $userurl,
     ];
 }
+
+
+// if (is_siteadmin()) {
+//     $sidebarurldata = [
+//         'admin' => $adminurl,
+//     ];
+
+// } else if ($getmanager->managertype == 1) {
+//     $manager = true;
+//     $sidebarurldata = [
+//         'manager' => $managerurl,
+//     ];
+// } else if ($roles->roleid == 3) {
+//     $teacher = true;
+//     $sidebarurldata = [
+//         'teacher' => $teacherrurl,
+
+//     ];
+// } else {
+//     $sidebarurldata = [
+//         'student' => $userurl,
+//     ];
+// }
 $showpointonheader = get_config('local_mydashboard', 'showpointonheader');
 
 

@@ -21,6 +21,15 @@ echo $OUTPUT->header();
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <style>
+    .course-action {
+    display: block;
+    padding: 8px 14px;
+    cursor: pointer;
+}
+.course-action:hover {
+    background: #f3f4f6;
+}
+
    .courseindex-active {
     background: #2e3740 !important;
     border-radius: 8px;
@@ -143,9 +152,25 @@ echo $OUTPUT->header();
                     <span class="material-icons text-accent-light mr-2" style="color:#ec9707;">campaign</span>
                     Announcements
                 </button>
-                <button style="border-color:#ec9707;" class="bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-2 text-sm">
-                    <span class="material-icons" style="color:#ec9707;">expand_more</span>
-                </button>
+               <div class="relative">
+    <button id="courseActionsBtn"
+        style="border-color:#ec9707;"
+        class="bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-2 text-sm">
+        <span class="material-icons" style="color:#ec9707;">expand_more</span>
+    </button>
+
+    <!-- Dropdown -->
+    <div id="courseActionsDropdown"
+        class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg hidden z-50">
+
+        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+            <li><a class="course-action" data-url="user/index.php?id=<?= $courseid ?>">Participants</a></li>
+            <li><a class="course-action" data-url="grade/report/user/index.php?id=<?= $courseid ?>">Grades</a></li>
+            <li><a class="course-action" data-url="admin/tool/lp/coursecompetencies.php?courseid=<?= $courseid ?>">Competencies</a></li>
+        </ul>
+    </div>
+</div>
+
             </div>
         </div>
 
@@ -225,7 +250,55 @@ document.addEventListener("click", function(e) {
 
 // -----------------------------------------
 
+document.addEventListener('DOMContentLoaded', () => {
 
+    const btn = document.getElementById('courseActionsBtn');
+    const dropdown = document.getElementById('courseActionsDropdown');
+    const area = document.getElementById('content-area');
+
+    // Toggle dropdown
+    btn.addEventListener('click', e => {
+        e.stopPropagation();
+        dropdown.classList.toggle('hidden');
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', () => {
+        dropdown.classList.add('hidden');
+    });
+
+    // Handle menu click
+    document.querySelectorAll('.course-action').forEach(item => {
+        item.addEventListener('click', async () => {
+            dropdown.classList.add('hidden');
+
+            const base = (typeof M !== "undefined" && M.cfg)
+                ? M.cfg.wwwroot
+                : window.location.origin;
+
+            const url = base + '/' + item.dataset.url;
+
+            area.innerHTML = `<div class="text-gray-400 p-8">Loading...</div>`;
+
+            try {
+                const html = await fetch(url).then(r => r.text());
+                const doc = new DOMParser().parseFromString(html, 'text/html');
+
+                const main =
+                    doc.querySelector('#region-main') ||
+                    doc.querySelector('.region-main-content') ||
+                    doc.body;
+
+                area.innerHTML = main.innerHTML;
+
+            } catch (err) {
+                console.error(err);
+                area.innerHTML = `<div class="text-red-500 p-8">Failed to load content</div>`;
+            }
+        });
+    });
+
+});
 document.addEventListener('DOMContentLoaded', () => {
 
     // 📜 Inline module content loader

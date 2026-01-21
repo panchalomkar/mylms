@@ -5,36 +5,43 @@ defined('MOODLE_INTERNAL') || die();
 
 use local_edwiserreports\blocks\courseprogressblock;
 use local_edwiserreports\blocks\inactiveusersblock;
+use local_edwiserreports\blocks\customreportsblock;
 
 class helper {
 
-    /* =========================
-       DASHBOARD DATA
-    ========================= */
     public static function get_dashboard_data(): array {
+        $selectedcourseid = optional_param('courseid', 0, PARAM_INT);
+
+        $courses = self::get_user_courses();
+        foreach ($courses as &$c) {
+            $c['selected'] = ($c['id'] == $selectedcourseid);
+        }
+
         return [
-            'siteoverview'    => self::get_site_overview(),
-            'courseprogress' => self::get_course_progress_from_edwiser(),
+            'courses'        => $courses,
+            'cohort'         => self::get_cohorts_for_course($selectedcourseid), 
+            'siteoverview'   => self::get_site_overview(),
+            'customreport'   => self::get_custom_report_block(3),
+            'courseprogress' => self::get_course_progress_from_edwiser($selectedcourseid),
             'certificates'   => self::get_certificates(),
-            'inactiveusers'  => self::get_inactive_users()
+            'inactiveusers'  => self::get_inactive_users(),
+            'activeusers'    => self::get_active_users()
         ];
     }
 
-    /* =========================
-       COURSE PROGRESS (REAL DATA)
-    ========================= */
-    private static function get_course_progress_from_edwiser(): array {
+
+    /* ================= COURSE PROGRESS ================= */
+    private static function get_course_progress_from_edwiser(int $courseid = 0): array {
         global $USER;
 
         $block = new courseprogressblock();
-
-        // Pick first enrolled course (same logic Edwiser uses)
         $courses = enrol_get_users_courses($USER->id, true);
+
         if (empty($courses)) {
             return self::empty_course_progress();
         }
 
-        $course = reset($courses);
+        $course = ($courseid && isset($courses[$courseid])) ? $courses[$courseid] : reset($courses);
 
         $params = (object)[
             'course' => $course->id,
@@ -48,54 +55,48 @@ class helper {
             return self::empty_course_progress();
         }
 
-        // Map Edwiser output to your UI format
-        $labels = ['0-20%', '21-40%', '41-60%', '61-80%', '81-100%'];
+        $ranges = [
+            ['label' => '0–20%',   'range' => '0to20'],
+            ['label' => '21–40%',  'range' => '21to40'],
+            ['label' => '41–60%',  'range' => '41to60'],
+            ['label' => '61–80%',  'range' => '61to80'],
+            ['label' => '81–100%', 'range' => '81to100']
+        ];
+
         $distribution = [];
-        $totallearners = array_sum($response->data);
+        foreach ($ranges as $i => $range) {
+            $distribution[] = [
+                'label'    => $range['label'],
+                'value'    => (int)($response->data[$i] ?? 0),
+                'range'    => $range['range'],
+                'courseid' => $course->id
+            ];
+        }
 
-      $map = [
-    '0-20%'   => '0to20',
-    '21-40%'  => '21to40',
-    '41-60%'  => '41to60',
-    '61-80%'  => '61to80',
-    '81-100%' => '81to100'
-];
+        // Create dynamic trend for chart (e.g., last 7 days of course progress)
+        $trend = array_map(function($val) { return (int)$val; }, $response->data ?? []);
 
-foreach ($labels as $i => $label) {
-    $distribution[] = [
-        'label' => $label,
-        'value' => $response->data[$i] ?? 0,
-        'range' => $map[$label]
-    ];
-}
-
-
-       return [
-    'average'       => round($response->average),
-    'distribution'  => $distribution,
-    'totallearners' => $totallearners,
-    'courseid'      => $course->id
-];
-
+        return [
+            'average'       => round($response->average, 1),
+            'distribution'  => $distribution,
+            'totallearners' => array_sum($response->data),
+            'courseid'      => $course->id,
+            'trend'         => $trend
+        ];
     }
 
     private static function empty_course_progress(): array {
         return [
             'average' => 0,
-            'distribution' => [
-                ['label' => '0-20%', 'value' => 0],
-                ['label' => '21-40%', 'value' => 0],
-                ['label' => '41-60%', 'value' => 0],
-                ['label' => '61-80%', 'value' => 0],
-                ['label' => '81-100%', 'value' => 0],
-            ],
-            'totallearners' => 0
+            'distribution' => [],
+            'totallearners' => 0,
+            'courseid' => 0,
+            'trend' => []
         ];
     }
 
-    /* =========================
-       INACTIVE USERS
-    ========================= */
+
+    /* ================= INACTIVE USERS ================= */
     private static function get_inactive_users(): array {
         $block = new inactiveusersblock();
 
@@ -106,38 +107,132 @@ foreach ($labels as $i => $label) {
         $response = $block->get_data($params);
 
         return [
-            'list' => $response->data ?? []
+            'list' => $response->data ?? [],
+            'count' => count($response->data ?? [])
         ];
     }
 
-    /* =========================
-       SITE OVERVIEW
-    ========================= */
-    private static function get_site_overview(): array {
+    /* ================= COHORTS ================= */
+    private static function get_cohorts_for_course(int $courseid): array {
+        global $DB, $USER;
+
+        if (!$courseid) return [];
+
+        $cohorts = $DB->get_records_sql("
+            SELECT c.id, c.name
+            FROM {cohort} c
+            JOIN {cohort_members} cm ON cm.cohortid = c.id
+            WHERE cm.userid = :userid
+        ", ['userid' => $USER->id]);
+
+        return array_map(fn($c) => ['id'=>$c->id,'name'=>$c->name], $cohorts);
+    }
+
+    /* ================= USER COURSES ================= */
+    private static function get_user_courses(): array {
+        global $DB, $USER;
+
+        $courses = is_siteadmin()
+            ? $DB->get_records('course', ['visible' => 1])
+            : enrol_get_users_courses($USER->id, true);
+
+        $list = [];
+        foreach ($courses as $course) {
+            if ($course->id == SITEID) continue;
+            $list[] = [
+                'id' => $course->id,
+                'fullname' => format_string($course->fullname),
+            ];
+        }
+        return $list;
+    }
+
+
+    /* ================= CUSTOM REPORTS ================= */
+    public static function get_custom_report_block(int $reportid): array {
         global $DB;
 
-        $since = time() - (30 * DAYSECS);
+        $report = $DB->get_record('edwreports_custom_reports', ['id' => $reportid]);
+
+        if (!$report) {
+            return ['title' => 'Report not found', 'columns' => [], 'rows' => []];
+        }
+
+        $params = json_decode($report->data);
+        $params->fields = $params->selectedfield ?? [];
+        unset($params->selectedfield);
+
+        $block = new customreportsblock();
+        $block->blockid = $reportid;
+
+        $data = $block->get_data($params);
+
+        $rows = [];
+        if (!empty($data->reportsdata)) {
+            foreach ($data->reportsdata as $row) {
+                $rows[] = array_values((array)$row);
+            }
+        }
 
         return [
-            'activeusers' => $DB->count_records_sql(
-                "SELECT COUNT(DISTINCT userid)
-                   FROM {logstore_standard_log}
-                  WHERE timecreated >= :since",
-                ['since' => $since]
-            ),
-            'enrollments' => $DB->count_records('user_enrolments'),
-            'completions' => $DB->count_records_select(
-                'course_completions', 'timecompleted > 0'
-            ),
-            'trendActiveUsers' => [120,145,130,170,155,195,190],
-            'trendEnrollments' => [85,90,110,135,125,145,160],
-            'trendCompletions' => [45,50,65,80,95,105,120]
+            'title'   => format_string($report->fullname),
+            'columns' => $data->columns ?? [],
+            'rows'    => $rows
         ];
     }
 
-    /* =========================
-       CERTIFICATES
-    ========================= */
+
+    /* ================= SITE OVERVIEW ================= */
+  private static function get_site_overview(): array {
+    global $DB;
+
+    // Instantiate active users block
+    $activeusersblock = new \local_edwiserreports\blocks\activeusersblock();
+
+    // Get last 7 days data (or filter dynamically)
+    $params = (object)[
+        'filter' => 'last7days',
+        'cohortid' => 0
+    ];
+    $data = $activeusersblock->get_data($params);
+
+    // Extract totals
+    $totalActiveUsers = array_sum($data->data->activeUsers ?? []);
+    $totalEnrollments = array_sum($data->data->enrolments ?? []);
+    $totalCompletions = array_sum($data->data->completionRate ?? []);
+
+    return [
+        'activeusers'       => $totalActiveUsers,
+        'enrollments'       => $totalEnrollments,
+        'completions'       => $totalCompletions,
+        'trendActiveUsers'  => $data->data->activeUsers ?? [],
+        'trendEnrollments'  => $data->data->enrolments ?? [],
+        'trendCompletions'  => $data->data->completionRate ?? [],
+        'trendDates'        => $data->dates ?? []
+    ];
+}
+
+
+
+    /* ================= ACTIVE USERS ================= */
+    private static function get_active_users(): array {
+        $block = new \local_edwiserreports\blocks\activeusersblock();
+
+        $params = (object)[
+            'filter' => 'last7days',
+            'cohortid' => 0
+        ];
+
+        $response = $block->get_data($params);
+
+        return [
+            'dates' => $response->dates ?? [],
+            'data'  => $response->data ?? [],
+            'insight' => $response->insight ?? []
+        ];
+    }
+
+    /* ================= CERTIFICATES ================= */
     private static function get_certificates(): array {
         global $DB;
 
@@ -147,4 +242,5 @@ foreach ($labels as $i => $label) {
 
         return ['issued' => $DB->count_records('customcert_issues')];
     }
+
 }

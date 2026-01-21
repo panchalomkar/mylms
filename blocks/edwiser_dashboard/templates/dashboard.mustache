@@ -3,29 +3,40 @@
 <!-- ================= COURSE PROGRESS ================= -->
 <div class="col-lg-6">
 
-  <div class="card shadow-sm border-0 rounded-4">
+  <div class="card shadow-sm border-0 rounded-4 h-100">
 
     <!-- Header -->
-    <div class="card-header text-white rounded-4"
+    <div class="card-header text-white rounded-1"
          style="background: linear-gradient(to right, #334155, #0f172a);">
       <div class="d-flex justify-content-between align-items-center">
 
         <div class="d-flex align-items-center gap-3">
-          <span class="material-icons bg-warning bg-opacity-25 p-2 rounded text-warning">
-            bar_chart
-          </span>
+          <svg xmlns="http://www.w3.org/2000/svg" style="width:40px;height:40px;" class="block-icon1" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 3v16a2 2 0 0 0 2 2h16"></path>
+            <path d="M18 17V9"></path>
+            <path d="M13 17V5"></path>
+            <path d="M8 17v-3"></path>
+          </svg>
           <div>
-            <h6 class="mb-0 fw-semibold">Course Progress</h6>
+            <h6 class="mb-0 fw-semibold text-light">Course Progress</h6>
             <small class="text-light opacity-75">Track learner engagement</small>
           </div>
         </div>
 
         <div class="d-flex gap-2">
-          <select class="form-select form-select-sm bg-dark text-white border-secondary">
-            <option>Select Cohort</option>
+          <select id="cpCohort" class="form-select form-select-sm bg-dark text-white d-none">
+            <option value="0">Select Cohort</option>
+            {{#cohort}}
+              <option value="{{id}}">{{name}}</option>
+            {{/cohort}}
           </select>
-          <select class="form-select form-select-sm bg-dark text-white border-secondary">
-            <option>Select Course</option>
+
+          <select id="cpCourse" class="form-select form-select-sm bg-dark text-white">
+            {{#courses}}
+              <option value="{{id}}" {{#selected}}selected{{/selected}}>
+                {{fullname}}
+              </option>
+            {{/courses}}
           </select>
         </div>
 
@@ -33,105 +44,53 @@
     </div>
 
     <!-- Body -->
-    <div class="card-body">
+    <div class="card-body d-flex gap-4 flex-wrap align-items-center" style="justify-content: center;">
 
-      <div class="d-flex gap-4 align-items-center flex-wrap">
-
-        <!-- Avg Progress -->
-        <div class="bg-warning bg-opacity-10 rounded-4 p-4 text-center" style="width:180px;">
-          <small class="text-warning text-uppercase fw-semibold">Average Progress</small>
-          <div class="display-5 fw-bold text-dark">
-            {{courseprogress.average}}%
-          </div>
-          <small class="text-success">+5% from last month</small>
-
-          <div class="mt-3 fw-medium text-secondary">
-            {{courseprogress.totallearners}} Total Learners
-          </div>
+      <!-- Average Progress -->
+      <div class=" text-center" style="width:100px;">
+      <div class="bg-warning bg-opacity-10 p-2 mb-2 rounded-3 text-center">
+        <small class="text-warning text-uppercase fw-semibold">Average Progress</small>
+        <div class="text-2xl fw-bold text-dark" id="cpAverage">{{courseprogress.average}}%</div>
+        <small class="text-success">+5% from last month</small>
         </div>
-
-        <!-- Donut -->
-        <div style="width:220px;">
-         <canvas id="progressDonut"
-        data-distribution='{{#courseprogress.distribution}}{{value}},{{/courseprogress.distribution}}'
-        height="220"></canvas>
-
+        <div class="bg-secondary bg-opacity-10 p-2 rounded-4 text-center">
+        <div class="mt-3 text-2xl fw-bold text-dark" id="cpTotal">{{courseprogress.totallearners}} Total Learners</div>
+        <small class="text-muted">
+        Total Learners
+        </small>
         </div>
-
-        <!-- Legend -->
-<div class="small" style="width:180px;">
-  {{#courseprogress.distribution}}
-  <div class="d-flex justify-content-between align-items-center mb-2
-              cp-legend cursor-pointer" data-range="{{range}}">
-    <span class="d-flex align-items-center gap-2">
-      <span class="rounded-circle bg-secondary d-inline-block"
-            style="width:10px;height:10px;"></span>
-      {{label}}
-    </span>
-    <strong>{{value}}%</strong>
-  </div>
-  {{/courseprogress.distribution}}
-</div>
-
-
       </div>
 
-      <div class="text-end mt-4">
-        <button class="btn btn-warning text-white rounded-pill px-4">
-          View Details
-        </button>
+      <!-- Donut Chart -->
+      <div style="width:180px;">
+        <canvas id="progressDonut" height="180"
+          data-distribution='{{#courseprogress.distribution}}{{value}},{{/courseprogress.distribution}}'></canvas>
+      </div>
+
+      <!-- Legend -->
+      <div class="small" style="width:140px;" id="cpLegend">
+        {{#courseprogress.distribution}}
+          <div class="d-flex justify-content-between align-items-center mb-2 cp-legend cursor-pointer" data-range="{{range}}">
+            <span class="d-flex align-items-center gap-2">
+              <span class="rounded-circle" style="width:10px;height:10px;background-color:{{color}};"></span>
+              {{label}}
+            </span>
+            <div class="text-end">
+              <strong>{{value}}</strong>
+              <div class="text-muted small">students</div>
+            </div>
+          </div>
+        {{/courseprogress.distribution}}
       </div>
 
     </div>
-  </div>
 
-</div>
-
-<!-- ================= COURSE PROGRESS MODAL (Bootstrap 4) ================= -->
-<div class="modal fade" id="cpModal" tabindex="-1" role="dialog" aria-labelledby="cpModalLabel" aria-hidden="true" data-courseid="{{courseprogress.courseid}}">
-  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-    <div class="modal-content rounded-4">
-
-      <!-- Header -->
-      <div class="modal-header">
-        <h5 class="modal-title" id="cpModalLabel">Course Progress Details</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-
-      <!-- Filters -->
-      <div class="modal-body">
-        <div class="d-flex gap-2 flex-wrap mb-3">
-          <button class="btn btn-sm btn-outline-secondary cp-range" data-range="0to20">0–20%</button>
-          <button class="btn btn-sm btn-outline-secondary cp-range" data-range="21to40">21–40%</button>
-          <button class="btn btn-sm btn-outline-secondary cp-range" data-range="41to60">41–60%</button>
-          <button class="btn btn-sm btn-outline-secondary cp-range" data-range="61to80">61–80%</button>
-          <button class="btn btn-sm btn-outline-secondary cp-range" data-range="81to100">81–100%</button>
-        </div>
-
-        <!-- Table -->
-        <div style="max-height:50vh; overflow:auto;">
-          <table class="table table-sm table-striped">
-            <thead>
-              <tr>
-                <th>Student</th>
-                <th>Email</th>
-                <th>Progress</th>
-              </tr>
-            </thead>
-            <tbody id="cpModalBody">
-              <tr>
-                <td colspan="3" class="text-center text-muted">
-                  Select a range to view learners
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
+    <div class="text-end m-3">
+      <a href="{{viewdetailsurl}}" class="btn btn-warning text-white rounded-pill px-4">
+        View Details
+      </a>
     </div>
+
   </div>
 </div>
 
@@ -139,28 +98,27 @@
 <!-- ================= SITE OVERVIEW ================= -->
 <div class="col-lg-6">
 
-  <div class="card shadow-sm border-0 rounded-4">
+  <div class="card shadow-sm border-0 rounded-4" style="height: -webkit-fill-available;">
 
     <!-- Header -->
-    <div class="card-header text-white rounded-4"
+    <div class="card-header text-white rounded-1"
          style="background: linear-gradient(to right, #334155, #0f172a);">
       <div class="d-flex justify-content-between align-items-center">
 
         <div class="d-flex align-items-center gap-3">
-          <span class="material-icons bg-warning bg-opacity-25 p-2 rounded text-warning">
-            show_chart
-          </span>
+         <svg xmlns="http://www.w3.org/2000/svg" style="width: 40px;
+    height: 40px;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-activity block-icon1"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path></svg>
           <div>
-            <h6 class="mb-0 fw-semibold">Site Overview Stats</h6>
+            <h6 class="mb-0 fw-semibold text-light">Site Overview Stats</h6>
             <small class="text-light opacity-75">
               Monitor key performance metrics
             </small>
           </div>
         </div>
 
-        <button class="btn btn-sm btn-secondary rounded-pill">
+        <a href="{{viewdetailsurl1}}" class="btn btn-sm btn-secondary rounded-pill">
           View Details
-        </button>
+        </a>
 
       </div>
     </div>
@@ -213,3 +171,235 @@
 
 </div>
 </div>
+<!-- ================= ADDITIONAL DASHBOARD BLOCKS ================= -->
+<div class="row g-4 mt-2">
+
+  <!-- ================= COURSE REPORT ================= -->
+  <div class="col-12">
+    <div class="card shadow-sm border-0 rounded-4" style="height: -webkit-fill-available;">
+
+      <div class="card-header text-white rounded-1"
+           style="background: linear-gradient(to right, #334155, #0f172a);">
+
+  <div class="d-flex align-items-center gap-3">
+         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text block-icon1"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg>
+          <div style="width:40%;">
+            <h6 class="mb-0 fw-semibold text-light">Course Report</h6>
+            <small class="text-light opacity-75">Track learner progress across courses</small>
+          </div>
+           <div class="d-flex w-100 justify-content-end">
+           <input type="text" class="form-control form-control-sm w-25"
+                 placeholder="Search in all columns">
+                 </div>
+        </div>
+
+      
+      </div>
+
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>User Name</th>
+                <th>Email</th>
+                <th>Department</th>
+                <th>Course</th>
+                <th style="width:160px;">Progress</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>John Smith</td>
+                <td>john.smith@company.com</td>
+                <td>Engineering</td>
+                <td>React Fundamentals</td>
+                <td>
+                  <div class="progress" style="height:6px;">
+                    <div class="progress-bar bg-warning" style="width:85%"></div>
+                  </div>
+                  <small class="fw-medium">85%</small>
+                </td>
+                <td><span class="badge bg-warning-subtle text-warning">In Progress</span></td>
+              </tr>
+
+              <tr>
+                <td>Sarah Johnson</td>
+                <td>sarah.j@company.com</td>
+                <td>Marketing</td>
+                <td>Digital Marketing</td>
+                <td>
+                  <div class="progress" style="height:6px;">
+                    <div class="progress-bar bg-success" style="width:100%"></div>
+                  </div>
+                  <small class="fw-medium">100%</small>
+                </td>
+                <td><span class="badge bg-success-subtle text-success">Completed</span></td>
+              </tr>
+
+              <tr>
+                <td>Michael Brown</td>
+                <td>m.brown@company.com</td>
+                <td>Sales</td>
+                <td>Sales Techniques</td>
+                <td>
+                  <div class="progress" style="height:6px;">
+                    <div class="progress-bar bg-warning" style="width:45%"></div>
+                  </div>
+                  <small class="fw-medium">45%</small>
+                </td>
+                <td><span class="badge bg-warning-subtle text-warning">In Progress</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= CERTIFICATE STATS ================= -->
+  <div class="col-lg-6">
+    <div class="card shadow-sm border-0 rounded-4" style="height: -webkit-fill-available;">
+
+      <div class="card-header text-white rounded-1"
+         style="background: linear-gradient(to right, #334155, #0f172a);">
+      <div class="d-flex justify-content-between align-items-center">
+
+        <div class="d-flex align-items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-award block-icon1"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"></path><circle cx="12" cy="8" r="6"></circle></svg>
+          <div>
+            <h6 class="mb-0 fw-semibold text-light">Certificate Stats</h6>
+            <small class="text-light opacity-75">
+             Track certificate issuance and pending
+            </small>
+          </div>
+        </div>
+
+        <button class="btn btn-sm btn-secondary rounded-pill">
+          View Details
+        </button>
+
+      </div>
+    </div>
+
+      <div class="card-body p-0">
+        <table class="table mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Name</th>
+              <th>Course</th>
+              <th>Issued</th>
+              <th>Not Issued</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>John Smith</td>
+              <td>React Fundamentals</td>
+              <td><span class="badge bg-success">1</span></td>
+              <td><span class="badge bg-danger">0</span></td>
+            </tr>
+            <tr>
+              <td>Emily Davis</td>
+              <td>HR Compliance</td>
+              <td><span class="badge bg-success">3</span></td>
+              <td><span class="badge bg-danger">0</span></td>
+            </tr>
+            <tr>
+              <td>David Wilson</td>
+              <td>Financial Planning</td>
+              <td><span class="badge bg-success">1</span></td>
+              <td><span class="badge bg-danger">2</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card-footer text-end bg-white">
+        <button class="btn btn-warning rounded-pill px-4 text-white">
+          View Details
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= ANNOUNCEMENTS ================= -->
+  <div class="col-lg-6">
+    <div class="card shadow-sm border-0 rounded-4" style="height: -webkit-fill-available;">
+
+        <div class="card-header text-white rounded-1"
+         style="background: linear-gradient(to right, #334155, #0f172a);">
+      <div class="d-flex justify-content-between align-items-center">
+
+        <div class="d-flex align-items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide block-icon1 lucide-megaphone"><path d="m3 11 18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path></svg>
+
+          <div>
+            <h6 class="mb-0 fw-semibold text-light">Announcements</h6>
+            <small class="text-light opacity-75">
+              Latest updates and notifications
+            </small>
+          </div>
+        </div>
+
+        <button class="btn btn-sm btn-secondary rounded-pill">
+          View Details
+        </button>
+
+      </div>
+    </div>
+
+      <div class="card-body">
+        <div class="border rounded-3 p-3 mb-3">
+          <small class="text-muted">Dec 5, 2024</small>
+          <div class="fw-semibold">New Course Available: Advanced TypeScript</div>
+          <small class="text-muted">Posted by Admin</small>
+        </div>
+
+        <div class="border rounded-3 p-3 mb-3">
+          <small class="text-muted">Dec 3, 2024</small>
+          <div class="fw-semibold">Mandatory Compliance Training Reminder</div>
+          <small class="text-muted">Posted by HR Team</small>
+        </div>
+
+        <div class="border rounded-3 p-3">
+          <small class="text-muted">Dec 1, 2024</small>
+          <div class="fw-semibold">Platform Maintenance Scheduled</div>
+          <small class="text-muted">Posted by System</small>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div id="courseProgressModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg w-[700px] p-4">
+    <div class="flex justify-between mb-3">
+      <h3 class="font-semibold">Course Progress</h3>
+      <button id="cpModalCloseCourse" class="text-gray-500 hover:text-black text-xl">&times;</button>
+    </div>
+
+    <table class="w-full">
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Email</th>
+          <th>Progress</th>
+        </tr>
+      </thead>
+      <tbody id="cpModalBodyCourse">
+        <tr>
+          <td colspan="3" class="text-center py-6 text-gray-400">Loading…</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+
