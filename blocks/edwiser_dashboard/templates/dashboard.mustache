@@ -158,12 +158,16 @@
       </div>
 
       <!-- Line Chart -->
-      <div class="mt-4">
-        <canvas id="overviewChart"
-          data-trendactiveusers="{{siteoverview.trendActiveUsers}}"
-          data-trendenrollments="{{siteoverview.trendEnrollments}}"
-          data-trendcompletions="{{siteoverview.trendCompletions}}"
-          height="220"></canvas>
+      <div class="mt-4" style="width: 520px; height: 220px;">
+    <canvas
+  id="overviewChart"
+  height="220"
+  data-trendactiveusers="{{{siteoverview.trendActiveUsers}}}"
+  data-trendenrollments="{{{siteoverview.trendEnrollments}}}"
+  data-trendcompletions="{{{siteoverview.trendCompletions}}}"
+  data-trenddates="{{{siteoverview.trendDates}}}">
+</canvas>
+
       </div>
 
     </div>

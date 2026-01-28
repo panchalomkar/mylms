@@ -703,10 +703,10 @@ function startSpin() {
     if (spinning) return;
 
     const todayKey = getTodayKey();
-    if (localStorage.getItem(todayKey)) {
-        replaceSpinButton();
-        return;
-    }
+    // if (localStorage.getItem(todayKey)) {
+    //     replaceSpinButton();
+    //     return;
+    // }
 
     spinning = true;
 
@@ -722,7 +722,7 @@ function startSpin() {
         spinning = false;
 
         // Save spin for today
-        localStorage.setItem(todayKey, "1");
+        // localStorage.setItem(todayKey, "1");
 
         // Replace button immediately after spin
         replaceSpinButton();
@@ -757,6 +757,7 @@ function startSpin() {
 
 function closeSpinPopup() {
     document.getElementById("spinSuccessModal").classList.add("hidden");
+    window.location.reload();
 }
 
 

@@ -44,6 +44,25 @@ public function init(): void {
         require_once($CFG->dirroot . '/blocks/edwiser_dashboard/classes/helper.php');
 
         $data = \block_edwiser_dashboard\helper::get_dashboard_data();
+// $block = new \local_edwiserreports\blocks\customreportsblock();
+// $block->blockid = 1;
+
+// $layout = $block->get_layout();
+
+// $data['customreporthtml'] = $layout->blockview ?? '';
+
+// $PAGE->requires->js_call_amd(
+//     'local_edwiserreports/blocks/customreport',
+//     'init',
+//     [
+//         $layout->id,
+//         $layout->params
+//     ]
+// );
+
+
+// // print_r($layout); // For debugging purposes
+// $data['customreporthtml'] = $layout->blockview;
 
         // Encode arrays safely
         $data['viewdetailsurl'] = $CFG->wwwroot . '/local/edwiserreports/allcoursessummary.php';
@@ -54,6 +73,8 @@ public function init(): void {
             json_encode($data['siteoverview']['trendEnrollments'], JSON_NUMERIC_CHECK);
         $data['siteoverview']['trendCompletions'] =
             json_encode($data['siteoverview']['trendCompletions'], JSON_NUMERIC_CHECK);
+            $data['siteoverview']['trendDates'] =json_encode($data['siteoverview']['trendDates']);
+
 $edwisersecret = (string) get_config('local_edwiserreports', 'secret');
 $lang = (string) current_language();
 
@@ -248,27 +269,66 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* ================= LINE CHART (UNCHANGED) ================= */
 
-  var chart = document.getElementById('overviewChart');
-  if (chart && typeof Chart !== 'undefined') {
-    chart.style.height = '250px';
-  chart.style.maxHeight = '250px';
-    new Chart(chart, {
-      type: 'line',
-      data: {
-        labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul'],
-        datasets: [
-          { label: 'Active Users', data: JSON.parse(chart.dataset.trendactiveusers || '[]'), borderColor: '#0f172a', tension: 0.35 },
-          { label: 'Enrollments', data: JSON.parse(chart.dataset.trendenrollments || '[]'), borderColor: '#f97316', tension: 0.35 },
-          { label: 'Completions', data: JSON.parse(chart.dataset.trendcompletions || '[]'), borderColor: '#22c55e', tension: 0.35 }
-        ]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { position: 'bottom' } },
-        scales: { y: { beginAtZero: true } }
-      }
-    });
+var chart = document.getElementById('overviewChart');
+
+if (chart && typeof Chart !== 'undefined') {
+
+ const rawDates = JSON.parse(chart.dataset.trenddates || '[]');
+
+const labels = rawDates.map(d => {
+  const date = new Date(d * 86400000); // ✅ days → ms
+  return date.toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'short'
+  });
+});
+
+
+
+  new Chart(chart.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Active Users',
+          data: JSON.parse(chart.dataset.trendactiveusers || '[]'),
+          borderColor: '#0f172a',
+          tension: 0.35
+        },
+        {
+          label: 'Enrollments',
+          data: JSON.parse(chart.dataset.trendenrollments || '[]'),
+          borderColor: '#f97316',
+          tension: 0.35
+        },
+        {
+          label: 'Completions',
+          data: JSON.parse(chart.dataset.trendcompletions || '[]'),
+          borderColor: '#22c55e',
+          tension: 0.35
+        }
+      ]
+    },
+    options: {
+       responsive: true,
+  maintainAspectRatio: false, 
+      plugins: { legend: { position: 'bottom' } },
+      scales: {
+        y: {
+  beginAtZero: true,
+  suggestedMax: 4,   // ensures top is 5
+  ticks: {
+    stepSize: 1,     // 🔥 show 0,1,2,3,4,5
+    precision: 0
   }
+}
+
+      }
+    }
+  });
+}
+
 
 });
 </script>

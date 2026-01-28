@@ -96,15 +96,15 @@ function get_available_points($userid)
 function set_my_rank($userid)
 {
     global $USER, $CFG, $DB, $OUTPUT, $SESSION;
-    if (!empty($SESSION->currenteditingcompany)) {
-        $selectedcompany = $SESSION->currenteditingcompany;
-    } else if (!empty($USER->profile->company)) {
-        $usercompany = company::by_userid($USER->id);
-        $selectedcompany = $usercompany->id;
-    } else {
-        $selectedcompany = "";
-    }
-
+    // if (!empty($SESSION->currenteditingcompany)) {
+    //     $selectedcompany = $SESSION->currenteditingcompany;
+    // } else if (!empty($USER->profile->company)) {
+    //     $usercompany = company::by_userid($USER->id);
+    //     $selectedcompany = $usercompany->id;
+    // } else {
+    //     $selectedcompany = "";
+    // }
+   $selectedcompany = resolve_company_id();
     $record = $DB->get_record('user_points', array('userid' => $userid));
 
     $total_points = ($record->total_points > 0) ? $record->total_points : 0;
@@ -138,6 +138,23 @@ function set_my_rank($userid)
     }
 }
 
+// added by omkar
+function resolve_company_id() {
+    global $SESSION, $USER;
+
+    if (!empty($SESSION->currenteditingcompany)) {
+        return (int)$SESSION->currenteditingcompany;
+    }
+
+    if (!empty($USER->profile->company)) {
+        $company = company::by_userid($USER->id);
+        if (!empty($company->id)) {
+            return (int)$company->id;
+        }
+    }
+
+    return 1;
+}
 function get_my_rank($userid)
 {
     global $DB, $CFG;
@@ -153,14 +170,8 @@ function get_my_rank($userid)
 function get_new_rank($userid, $total_points, $usergrade)
 {
     global $USER, $CFG, $DB, $OUTPUT, $SESSION;
-    if (!empty($SESSION->currenteditingcompany)) {
-        $selectedcompany = $SESSION->currenteditingcompany;
-    } else if (!empty($USER->profile->company)) {
-        $usercompany = company::by_userid($USER->id);
-        $selectedcompany = $usercompany->id;
-    } else {
-        $selectedcompany = "";
-    }
+   $selectedcompany = resolve_company_id();
+   
     if ($selectedcompany) {
         $SQL = "SELECT * FROM {custom_level} WHERE point <= $total_points AND grade <= $usergrade AND companyid = $selectedcompany
             ORDER BY point DESC LIMIT 1";
@@ -212,70 +223,126 @@ function get_new_rank1($userid, $total_points, $usergrade)
         return '-';
     }
 }
+// updated by omkar
+// function get_next_level($userid)
+// {
+//     global $DB;
 
+//     $companyid = resolve_company_id();
+
+//     $record = $DB->get_record_sql(
+//         "SELECT *
+//          FROM {user_points}
+//          WHERE userid = :userid
+//          ORDER BY id DESC",
+//         ['userid' => $userid],
+//         IGNORE_MISSING
+//     );
+
+//     if (!$record) {
+//         return ['-', '-', '-'];
+//     }
+
+//     $total_points = (int)$record->total_points;
+//     $usergrade    = round(get_user_grade($userid), 2);
+
+//     $sql = "
+//         SELECT *
+//         FROM {custom_level}
+//         WHERE grade > :grade
+//           AND companyid = :companyid
+//         ORDER BY grade ASC, point ASC
+//         LIMIT 1
+//     ";
+
+//     $params = [
+//         'grade'     => $usergrade,
+//         'companyid' => $companyid
+//     ];
+
+//     if ($next = $DB->get_record_sql($sql, $params)) {
+//         return [
+//             max(0, $next->point - $total_points),
+//             $next->grade . '%',
+//             $next->level
+//         ];
+//     }
+
+//     return ['-', '-', '-'];
+// }
 function get_next_level($userid)
 {
-    global $USER, $CFG, $DB, $OUTPUT, $SESSION;
-    if (!empty($SESSION->currenteditingcompany)) {
-        $selectedcompany = $SESSION->currenteditingcompany;
-    } else if (!empty($USER->profile->company)) {
-        $usercompany = company::by_userid($USER->id);
-        $selectedcompany = $usercompany->id;
-    } else {
-        $selectedcompany = "";
+    global $DB;
+
+    $companyid = resolve_company_id();
+    debugging("get_next_level() → companyid={$companyid}", DEBUG_DEVELOPER);
+
+    $record = $DB->get_record_sql(
+        "SELECT *
+           FROM {user_points}
+          WHERE userid = :userid
+       ORDER BY id DESC",
+        ['userid' => $userid],
+        IGNORE_MISSING
+    );
+
+    if (!$record) {
+        debugging("get_next_level() → user_points NOT found for userid={$userid}", DEBUG_DEVELOPER);
+        return ['-', '-', '-'];
     }
 
-    $record = $DB->get_record('user_points', array('userid' => $userid));
+    $total_points = (int)$record->total_points;
+    $usergrade    = round(get_user_grade($userid), 2);
 
-    $total_points = ($record->total_points > 0) ? $record->total_points : 0;
-    $usergrade = get_user_grade($userid);
-    if ($selectedcompany) {
-        $SQL = "SELECT * FROM `mdl_custom_level` WHERE point >= $total_points AND grade >= $usergrade AND companyid = $selectedcompany
-            ORDER BY point LIMIT 1";
-    } else {
-        $SQL = "SELECT * FROM `mdl_custom_level` WHERE point >= $total_points AND grade >= $usergrade
-            ORDER BY point LIMIT 1";
+    debugging(
+        "get_next_level() inputs → userid={$userid}, points={$total_points}, grade={$usergrade}%",
+        DEBUG_DEVELOPER
+    );
+
+    $sql = "
+        SELECT *
+          FROM {custom_level}
+         WHERE grade > :grade
+           AND companyid = :companyid
+      ORDER BY grade ASC, point ASC
+         LIMIT 1
+    ";
+
+    $params = [
+        'grade'     => $usergrade,
+        'companyid' => $companyid
+    ];
+
+    debugging(
+        "get_next_level() SQL params → grade>{$usergrade}, companyid={$companyid}",
+        DEBUG_DEVELOPER
+    );
+
+    if ($next = $DB->get_record_sql($sql, $params)) {
+
+        debugging(
+            "Next level matched → level={$next->level}, point={$next->point}, grade={$next->grade}",
+            DEBUG_DEVELOPER
+        );
+
+        $points_needed = max(0, $next->point - $total_points);
+
+        debugging(
+            "Next level calc → points_needed={$points_needed}",
+            DEBUG_DEVELOPER
+        );
+
+        return [
+            $points_needed,
+            $next->grade . '%',
+            $next->level
+        ];
     }
 
-    if ($record = $DB->get_record_sql($SQL)) {
-
-        return array(($record->point - $total_points), $record->grade . '%', $record->level);
-    }
-    return array('-', '-', '-');
-
-    //
-//    if ($total_points >= 500000) {
-//        return array('', 'Top Level');
-//    } else if ($total_points >= 300000 && $total_points < 500000) {
-//        return array((500000 - $total_points), 'Fire Chief');
-//    } else if ($total_points >= 100000 && $total_points < 300000) {
-//        return array((300000 - $total_points), 'Assistant Chief');
-//    } else if ($total_points >= 90000 && $total_points < 100000) {
-//        return array((100000 - $total_points), 'Battalion Chief');
-//    } else if ($total_points >= 70000 && $total_points < 90000) {
-//        return array((90000 - $total_points), 'Assistant Battalion Chief');
-//    } else if ($total_points >= 60000 && $total_points < 70000) {
-//        return array((70000 - $total_points), 'Senior Captain');
-//    } else if ($total_points >= 50000 && $total_points < 60000) {
-//        return array((60000 - $total_points), 'Captain');
-//    } else if ($total_points >= 30000 && $total_points < 50000) {
-//        return array((50000 - $total_points), 'Junior Captain');
-//    } else if ($total_points >= 25000 && $total_points < 30000) {
-//        return array((30000 - $total_points), 'Senior Lieutenant');
-//    } else if ($total_points >= 20000 && $total_points < 25000) {
-//        return array((25000 - $total_points), 'Lieutenant');
-//    } else if ($total_points >= 15000 && $total_points < 20000) {
-//        return array((20000 - $total_points), 'Junior Lieutenant');
-//    } else if ($total_points >= 10000 && $total_points < 15000) {
-//        return array((15000 - $total_points), 'Senior Firefighter');
-//    } else if ($total_points >= 2100 && $total_points < 10000) {
-//        return array((10000 - $total_points), 'Firefighter');
-//    } else if ($total_points >= 2000 && $total_points < 2100) {
-//        return array((2100 - $total_points), 'Probationary firefighter');
-//    } else if ($total_points < 2000) {
-//        return array((2000 - $total_points), 'Cadet');
-//    }
+    debugging("get_next_level() → NO next level found", DEBUG_DEVELOPER);
+    return ['-', '-', '-'];
 }
+
 
 function get_user_grade($userid)
 {
@@ -579,9 +646,9 @@ function get_spinwheel_button($userid)
     $SQL = "SELECT * FROM {user_points_log} WHERE userid = $userid AND point_type = 'spinwheel'
                 AND DATE_FORMAT(FROM_UNIXTIME(`timecreated`), '%Y-%m-%d') = CURDATE()";
     if (!$DB->record_exists_sql($SQL)) {
-        return '<img id="spin_button" src="spin_off.png" alt="Spin" height="20" onClick="startSpin();"/>';
+        return '<span class="py-2 d-flex px-6 rounded gap-2" style="align-items: center; font-size: 13px;" onClick="startSpin();"><span class="material-symbols-rounded text-white spin-refresh-icon" style="font-size: 16px;">refresh</span> Spin</span>';
     }
-    return '<i>You have won today\'s luck on wheel, try next day.</i>';
+    return '<i style="padding:10px;" >You have won today\'s luck on wheel, try next day.</i>';
 }
 
 //leaderboard top three

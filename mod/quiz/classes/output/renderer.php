@@ -471,11 +471,12 @@ protected function render_navigation_question_button(navigation_question_button 
 
     $commonclasses = "w-10 h-10 flex items-center justify-center rounded-xl font-semibold 
                       shadow-sm transition-all hover:scale-105 cursor-pointer $bg";
-
+      $buttonid = 'quiznavbutton' . $button->number;
     $content = html_writer::tag('span', $button->number);
 
     if ($button->url) {
         return html_writer::link($button->url, $content, [
+            'id' => $buttonid,
             'class' => $commonclasses,
             'data-quiz-page' => $button->page,
             'title' => $button->statestring,
@@ -484,6 +485,7 @@ protected function render_navigation_question_button(navigation_question_button 
     }
 
     return html_writer::tag('span', $content, [
+        'id' => $buttonid,
         'class' => $commonclasses,
         'title' => $button->statestring
     ]);
