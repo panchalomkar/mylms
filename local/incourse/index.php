@@ -15,7 +15,7 @@ $PAGE->set_pagelayout('standard');
 
 echo $OUTPUT->header();
 ?>
-
+ 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -193,6 +193,7 @@ echo $OUTPUT->header();
 <?php
 $PAGE->requires->js(new moodle_url('/local/incourse/js/main.js'));?>
 <script>
+
 
 // ----  REQUIRED FOR ARROWS TO WORK ----
 let activityOrder = [];
@@ -2167,6 +2168,24 @@ function safeScroll(element) {
         behavior: "smooth"
     });
 }
+document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const cmid = params.get('cmid');
+
+    if (!cmid) return;
+
+    // Wait until activity links are registered
+    const tryOpen = () => {
+        const link = document.querySelector(`.activity-link[data-cmid="${cmid}"]`);
+        if (link) {
+            link.click(); //  reuse your entire inline system
+        } else {
+            setTimeout(tryOpen, 300);
+        }
+    };
+
+    tryOpen();
+});
 
 </script>
 

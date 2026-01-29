@@ -236,6 +236,55 @@ function getCourseList($courseid = '')
 	return $courselists = $DB->get_records_sql($sqlForcoures . $where, array());
 }
 
+// added by omkar
+
+// function getCourseList($courseid = '') {
+//     global $DB, $USER, $SESSION;
+
+//     // Detect selected company
+//     if (!empty($SESSION->currenteditingcompany)) {
+//         $selectedcompany = (int)$SESSION->currenteditingcompany;
+//     } else if (!empty($USER->profile->company)) {
+//         $usercompany = company::by_userid($USER->id);
+//         $selectedcompany = (int)$usercompany->id;
+//     } else {
+//         $selectedcompany = 0;
+//     }
+
+//     $params = [];
+//     $where  = ' WHERE c.id <> 1 ';
+
+//     if (!empty($courseid)) {
+//         $where .= ' AND c.id = :courseid ';
+//         $params['courseid'] = $courseid;
+//     }
+
+//     // 🔑 MAIN TENANT → ALL COURSES
+//     if ($selectedcompany == 1 || $selectedcompany == 0) {
+
+//         $sql = "
+//             SELECT c.*
+//             FROM {course} c
+//             $where
+//             ORDER BY c.fullname
+//         ";
+
+//     } else {
+//         // 🏢 SUB COMPANY → ONLY ASSIGNED COURSES
+//         $sql = "
+//             SELECT c.*
+//             FROM {course} c
+//             JOIN {company_course} cc ON cc.courseid = c.id
+//             $where
+//             AND cc.companyid = :companyid
+//             ORDER BY c.fullname
+//         ";
+//         $params['companyid'] = $selectedcompany;
+//     }
+
+//     return $DB->get_records_sql($sql, $params);
+// }
+
 
 //get sub sub competency list count
 function getListSubSubCompetencyCount($id = '', $subccid = '', $companyid = '')

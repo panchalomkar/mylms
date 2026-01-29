@@ -255,7 +255,7 @@ foreach ($plugins as $plugintype) {
         $menus += $menufunction();
     }
 }
-
+redirect(new moodle_url('/local/mt_dashboard/index.php'));
 $somethingtodisplay = false;
 foreach ($menus as $key => $menu) {
     $tab = $menu['tab'];
