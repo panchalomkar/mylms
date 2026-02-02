@@ -211,79 +211,79 @@ function getAllroles($roleid = '')
 	return $roleResultId;
 }
 
-function getCourseList($courseid = '')
-{
-	global $CFG, $DB, $USER, $PAGE, $SESSION;
-	if (!empty($SESSION->currenteditingcompany)) {
-		$selectedcompany = $SESSION->currenteditingcompany;
-	} else if (!empty($USER->profile->company)) {
-		$usercompany = company::by_userid($USER->id);
-		$selectedcompany = $usercompany->id;
-	} else {
-		$selectedcompany = 0;
-	}
+// function getCourseList($courseid = '')
+// {
+// 	global $CFG, $DB, $USER, $PAGE, $SESSION;
+// 	if (!empty($SESSION->currenteditingcompany)) {
+// 		$selectedcompany = $SESSION->currenteditingcompany;
+// 	} else if (!empty($USER->profile->company)) {
+// 		$usercompany = company::by_userid($USER->id);
+// 		$selectedcompany = $usercompany->id;
+// 	} else {
+// 		$selectedcompany = 0;
+// 	}
 
-	if ($selectedcompany) {
-		$sqlForcoures = "SELECT c.* FROM {course} c INNER JOIN {company_course} cc ON c.id = cc.courseid WHERE c.id != 1 AND cc.companyid = $selectedcompany";
-	} else {
-		$sqlForcoures = "SELECT * FROM {course} WHERE id != 1 ";
-	}
+// 	if ($selectedcompany) {
+// 		$sqlForcoures = "SELECT c.* FROM {course} c INNER JOIN {company_course} cc ON c.id = cc.courseid WHERE c.id != 1 AND cc.companyid = $selectedcompany";
+// 	} else {
+// 		$sqlForcoures = "SELECT * FROM {course} WHERE id != 1 ";
+// 	}
 
-	$where = ' ';
-	if (!empty($courseid)) {
-		$where .= ' AND id = ' . $courseid;
-	}
-	return $courselists = $DB->get_records_sql($sqlForcoures . $where, array());
-}
+// 	$where = ' ';
+// 	if (!empty($courseid)) {
+// 		$where .= ' AND id = ' . $courseid;
+// 	}
+// 	return $courselists = $DB->get_records_sql($sqlForcoures . $where, array());
+// }
 
 // added by omkar
 
-// function getCourseList($courseid = '') {
-//     global $DB, $USER, $SESSION;
+function getCourseList($courseid = '') {
+    global $DB, $USER, $SESSION;
 
-//     // Detect selected company
-//     if (!empty($SESSION->currenteditingcompany)) {
-//         $selectedcompany = (int)$SESSION->currenteditingcompany;
-//     } else if (!empty($USER->profile->company)) {
-//         $usercompany = company::by_userid($USER->id);
-//         $selectedcompany = (int)$usercompany->id;
-//     } else {
-//         $selectedcompany = 0;
-//     }
+    // Detect selected company
+    if (!empty($SESSION->currenteditingcompany)) {
+        $selectedcompany = (int)$SESSION->currenteditingcompany;
+    } else if (!empty($USER->profile->company)) {
+        $usercompany = company::by_userid($USER->id);
+        $selectedcompany = (int)$usercompany->id;
+    } else {
+        $selectedcompany = 0;
+    }
 
-//     $params = [];
-//     $where  = ' WHERE c.id <> 1 ';
+    $params = [];
+    $where  = ' WHERE c.id <> 1 ';
 
-//     if (!empty($courseid)) {
-//         $where .= ' AND c.id = :courseid ';
-//         $params['courseid'] = $courseid;
-//     }
+    if (!empty($courseid)) {
+        $where .= ' AND c.id = :courseid ';
+        $params['courseid'] = $courseid;
+    }
 
-//     // 🔑 MAIN TENANT → ALL COURSES
-//     if ($selectedcompany == 1 || $selectedcompany == 0) {
+    // 🔑 MAIN TENANT → ALL COURSES
+    if ($selectedcompany == 1 || $selectedcompany == 0) {
 
-//         $sql = "
-//             SELECT c.*
-//             FROM {course} c
-//             $where
-//             ORDER BY c.fullname
-//         ";
+        $sql = "
+            SELECT c.*
+            FROM {course} c
+            $where
+            ORDER BY c.fullname
+        ";
 
-//     } else {
-//         // 🏢 SUB COMPANY → ONLY ASSIGNED COURSES
-//         $sql = "
-//             SELECT c.*
-//             FROM {course} c
-//             JOIN {company_course} cc ON cc.courseid = c.id
-//             $where
-//             AND cc.companyid = :companyid
-//             ORDER BY c.fullname
-//         ";
-//         $params['companyid'] = $selectedcompany;
-//     }
+    } else {
+        // 🏢 SUB COMPANY → ONLY ASSIGNED COURSES
+        $sql = "
+            SELECT c.*
+            FROM {course} c
+            JOIN {company_course} cc ON cc.courseid = c.id
+            $where
+            AND cc.companyid = :companyid
+            ORDER BY c.fullname
+        ";
+        $params['companyid'] = $selectedcompany;
+    }
 
-//     return $DB->get_records_sql($sql, $params);
-// }
+    return $DB->get_records_sql($sql, $params);
+}
 
 
 //get sub sub competency list count

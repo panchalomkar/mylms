@@ -865,6 +865,7 @@ function rap_has_company_id($returnid = false){
     
     return $extraclasses;
 }
+
 function show_active_tenant_menu(){
     global $DB, $SESSION;
     $output = '';

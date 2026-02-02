@@ -267,6 +267,7 @@ foreach ($activities as $cmid) {
         'videotime' => 'video_library',
         'pdfjsfolder' => 'picture_as_pdf',
         'h5p' => 'extension',
+        'scorm'=> 'inventory_2',
         default => 'article',
     };
 

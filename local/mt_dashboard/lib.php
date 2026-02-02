@@ -281,10 +281,10 @@ function get_company_overview_stats(int $companyid): array {
 
     // Certifications (optional / safe)
     $certcount = 0;
-    if ($DB->get_manager()->table_exists('certificate_issues')) {
+    if ($DB->get_manager()->table_exists('iomadcertificate_issues')) {
         $certcount = $DB->count_records_sql("
             SELECT COUNT(ci.id)
-            FROM {certificate_issues} ci
+            FROM {iomadcertificate_issues} ci
             JOIN {company_users} cu ON cu.userid = ci.userid
             WHERE cu.companyid = :companyid
         ", ['companyid' => $companyid]);

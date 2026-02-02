@@ -166,8 +166,22 @@ if (is_siteadmin()) {
     $admin = false;
     $mycourseurl = $CFG->wwwroot . "/course";
 }
-$roles = $DB->get_record_sql("SELECT * FROM mdl_role_assignments WHERE userid = $USER->id");
-$getmanager = $DB->get_record('company_users', array('userid' => $USER->id),IGNORE_MULTIPLE);
+$roles = $DB->get_records_sql(
+    "SELECT * FROM {role_assignments} WHERE userid = :userid",
+    ['userid' => $USER->id]
+);
+
+$getmanagerrecords = $DB->get_records('company_users', ['userid' => $USER->id]);
+$getmanager = null;
+foreach ($getmanagerrecords as $record) {
+    if (!empty($record->managertype) && $record->managertype == 1) {
+        $getmanager = $record;
+        break;
+    }
+}
+
+
+
 $CFG->wwwroot . '/login/logout.php?sesskey=' . sesskey();
 global $CFG, $USER;
 

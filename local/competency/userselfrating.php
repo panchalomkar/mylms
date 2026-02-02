@@ -26,7 +26,7 @@ require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/local/competency/pagination.php');
 require_once($CFG->dirroot . '/local/competency/lib.php');
 $activepage = 'usersrating';
-$context = context_system::instance();
+$context = context_user::instance($USER->id);
 require_login();
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('userselfrating', 'local_competency'));
@@ -43,6 +43,7 @@ if (!has_capability('local/competency:userselfrating', $context)) {
     redirect($CFG->wwwroot . '/my/', \core\notification::error('No access...'));
     exit();
 }
+
 global $USER;
 
 if (optional_param('submituserselfrating', '', PARAM_TEXT) === 'addrating') {

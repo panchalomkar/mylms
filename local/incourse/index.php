@@ -601,9 +601,12 @@ if (modname === 'scorm') {
             // 🎨 Always show the first "intro" screen (Google Meet style)
             area.innerHTML = `
                 <div class="flex flex-col items-center justify-center min-h-[60vh] text-center">
-                    <div class="bg-gray-200 rounded-full p-5 mb-5">
-                        <span class="material-icons text-gray-700 text-4xl">school</span>
-                    </div>
+                    <div class="bg-gray-200 rounded-full p-4 mb-4">
+    <span class="material-icons text-gray-700 text-4xl">
+        inventory_2
+    </span>
+</div>
+
                     <div class="px-4 py-1 rounded-full bg-blue-100 text-sm font-medium mb-4">
                         SCORM Activity
                     </div>
@@ -621,43 +624,22 @@ if (modname === 'scorm') {
                 </div>
             `;
 
-            // ▶️ Start button action based on backend flag
-            document.getElementById('startScorm').addEventListener('click', () => {
-                if (data.openinnewtab) {
-                    // Open in new tab if backend says so
-                    window.open(data.launchurl, '_blank');
-                    area.innerHTML = `
-                        <div class="text-center text-gray-500 p-8">
-                            <h2 class="text-lg font-semibold mb-2">SCORM Activity Opened in New Tab</h2>
-                            <p>You can continue learning in the new tab that was opened.</p>
-                        </div>
-                    `;
-                } else {
-                    // Otherwise, open inline (iframe view)
-                    area.innerHTML = `
-                        <div class="flex items-center gap-3 mb-4">
-                            <button id="backToCourse"
-                                class="flex items-center text-[#003152] hover:text-[#ec9707] font-medium transition">
-                                <span class="material-icons mr-1">arrow_back</span>Back to Course
-                            </button>
-                        </div>
-                        <div id="scormContainer"
-                            class="rounded-lg border border-gray-200 bg-white overflow-hidden"
-                            style="width:100%">
-                            <iframe
-                                src="${data.launchurl}"
-                                class="w-full h-[85vh] border-0 bg-white"
-                                allowfullscreen
-                                allow="fullscreen; autoplay; encrypted-media">
-                            </iframe>
-                        </div>
-                    `;
+       // ▶️ Start button – ALWAYS open in new tab
+document.getElementById('startScorm').addEventListener('click', () => {
+    window.open(data.launchurl, '_blank', 'noopener,noreferrer');
 
-                    document.getElementById('backToCourse').addEventListener('click', () => {
-                        window.location.reload();
-                    });
-                }
-            });
+    area.innerHTML = `
+        <div class="text-center text-gray-500 p-8">
+            <h2 class="text-lg font-semibold mb-2">
+                SCORM Activity Opened in New Tab
+            </h2>
+            <p>
+                Please check your browser tabs to continue the activity.
+            </p>
+        </div>
+    `;
+});
+
 
         } else {
             area.innerHTML = `

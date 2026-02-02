@@ -16,7 +16,7 @@
     </a>
   </div>
 <div class="p-4 pt-0">
-  {{!--> core_calendar/month_navigation --}}
+  {{> core_calendar/month_navigation }}
   {{> core/overlay_loading}}
 
   <!-- Horizontal scroll wrapper -->
@@ -303,9 +303,6 @@ $(document).on('click', '.event-item', async function (e) {
         window.location.href = activityUrl;
     }
 });
-
-
-
 
     // Auto-show today
     if(todayCell.length) {
