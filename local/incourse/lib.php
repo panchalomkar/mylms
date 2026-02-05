@@ -63,6 +63,29 @@ function local_incourse_parse_availability_condition($cond, $modinfo) {
 
     return $msgs;
 }
+function local_incourse_get_supervideo_completion_text(cm_info $cm) {
+    global $DB;
+
+    if ($cm->modname !== 'supervideo') {
+        return '';
+    }
+
+    // Try main table
+    $video = $DB->get_record('supervideo', [
+        'id' => $cm->instance
+    ], '*', IGNORE_MISSING);
+
+    if (!$video) {
+        return '';
+    }
+
+    // Common field names used by Super Video
+    if (!empty($video->completionpercent) && (int)$video->completionpercent > 0) {
+        return "Watch at least {$video->completionpercent}%";
+    }
+
+    return '';
+}
 
 function local_incourse_get_completion_and_restriction_string(cm_info $cm, $course) {
 
@@ -81,7 +104,12 @@ function local_incourse_get_completion_and_restriction_string(cm_info $cm, $cour
             $auto = [];
 
             if (!empty($cm->completionview)) {
-                $auto[] = "View";
+                  if ($cm->modname === 'supervideo') {
+        $videotext = local_incourse_get_supervideo_completion_text($cm);
+        $auto[] = $videotext ?: "View";
+    } else {
+        $auto[] = "View";
+    }
             }
             if (!empty($cm->completionusegrade)) {
                 $auto[] = "Receive a grade";

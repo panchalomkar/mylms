@@ -188,11 +188,12 @@
   <div class="d-flex align-items-center gap-3">
          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text block-icon1"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg>
           <div style="width:40%;">
+          
             <h6 class="mb-0 fw-semibold text-light">Course Report</h6>
             <small class="text-light opacity-75">Track learner progress across courses</small>
           </div>
            <div class="d-flex w-100 justify-content-end">
-           <input type="text" class="form-control form-control-sm w-25"
+           <input type="text" class="form-control form-control-sm w-25" id="edwiser-search"
                  placeholder="Search in all columns">
                  </div>
         </div>
@@ -202,63 +203,79 @@
 
       <div class="card-body p-0">
         <div class="table-responsive">
-          <table class="table align-middle mb-0">
+          <table class="table align-middle mb-0" id="edwiser-report-body">
             <thead class="table-light">
               <tr>
                 <th>User Name</th>
-                <th>Email</th>
+                <th>User Email</th>
+                <th>First Name</th>
                 <th>Department</th>
-                <th>Course</th>
+                <th>Designation</th>
+                <th>Course Name</th>
                 <th style="width:160px;">Progress</th>
                 <th>Status</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>John Smith</td>
-                <td>john.smith@company.com</td>
-                <td>Engineering</td>
-                <td>React Fundamentals</td>
-                <td>
-                  <div class="progress" style="height:6px;">
-                    <div class="progress-bar bg-warning" style="width:85%"></div>
-                  </div>
-                  <small class="fw-medium">85%</small>
-                </td>
-                <td><span class="badge bg-warning-subtle text-warning">In Progress</span></td>
-              </tr>
+{{#customreport.rows}}
+  <tr class="edwiser-row">
+    <!-- User Name -->
+    <td>{{0}}</td>
 
-              <tr>
-                <td>Sarah Johnson</td>
-                <td>sarah.j@company.com</td>
-                <td>Marketing</td>
-                <td>Digital Marketing</td>
-                <td>
-                  <div class="progress" style="height:6px;">
-                    <div class="progress-bar bg-success" style="width:100%"></div>
-                  </div>
-                  <small class="fw-medium">100%</small>
-                </td>
-                <td><span class="badge bg-success-subtle text-success">Completed</span></td>
-              </tr>
+    <!-- Email -->
+    <td>{{1}}</td>
+    <!-- First Name -->
+<td>{{2}}</td>
+<!-- Department -->
+<td>{{3}}</td>
+     <!-- Designation -->
+    <td>{{4}}</td>
+    <!-- Course name -->
+    <td>{{6}}</td>
+    <!-- Progress -->
+    <td>
+      <div class="progress" style="height:6px;">
+        <div class="progress-bar bg-warning"
+             style="width:{{7}}"></div>
+      </div>
+      <small class="fw-medium">{{7}}</small>
+    </td>
+    <!-- Status -->
+    <td>
+      {{#9}}
+        <span class="badge bg-success-subtle text-success">
+          {{9}}
+        </span>
+      {{/9}}
+      {{^9}}
+        <span class="badge bg-warning-subtle text-warning">
+          In Progress
+        </span>
+      {{/9}}
+    </td>
+  </tr>
+{{/customreport.rows}}
 
-              <tr>
-                <td>Michael Brown</td>
-                <td>m.brown@company.com</td>
-                <td>Sales</td>
-                <td>Sales Techniques</td>
-                <td>
-                  <div class="progress" style="height:6px;">
-                    <div class="progress-bar bg-warning" style="width:45%"></div>
-                  </div>
-                  <small class="fw-medium">45%</small>
-                </td>
-                <td><span class="badge bg-warning-subtle text-warning">In Progress</span></td>
-              </tr>
-            </tbody>
+{{^customreport.rows}}
+  <tr>
+    <td colspan="6" class="text-center text-muted py-4">
+      No data available
+    </td>
+  </tr>
+{{/customreport.rows}}
+</tbody>
+
           </table>
         </div>
       </div>
+<div class="d-flex justify-content-between align-items-center p-3">
+  <small class="text-muted">
+    Showing <span id="edwiser-start">1</span>–
+    <span id="edwiser-end">10</span>
+  </small>
+
+  <ul class="pagination pagination-sm mb-0" id="edwiser-pagination"></ul>
+</div>
 
     </div>
   </div>
@@ -280,11 +297,6 @@
             </small>
           </div>
         </div>
-
-        <button class="btn btn-sm btn-secondary rounded-pill">
-          View Details
-        </button>
-
       </div>
     </div>
 
@@ -298,86 +310,125 @@
               <th>Not Issued</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>John Smith</td>
-              <td>React Fundamentals</td>
-              <td><span class="badge bg-success">1</span></td>
-              <td><span class="badge bg-danger">0</span></td>
-            </tr>
-            <tr>
-              <td>Emily Davis</td>
-              <td>HR Compliance</td>
-              <td><span class="badge bg-success">3</span></td>
-              <td><span class="badge bg-danger">0</span></td>
-            </tr>
-            <tr>
-              <td>David Wilson</td>
-              <td>Financial Planning</td>
-              <td><span class="badge bg-success">1</span></td>
-              <td><span class="badge bg-danger">2</span></td>
-            </tr>
-          </tbody>
+          <tbody id="certificateStatsBody">
+  {{#certificates1.rows}}
+    <tr class="certificate-row">
+      <td>{{name}}</td>
+      <td>{{coursename}}</td>
+      <td><span class="badge bg-success">{{issued}}</span></td>
+      <td><span class="badge bg-danger">{{notissued}}</span></td>
+    </tr>
+  {{/certificates1.rows}}
+
+  {{^certificates1.rows}}
+    <tr>
+      <td colspan="4" class="text-center text-muted">
+        No certificates found
+      </td>
+    </tr>
+  {{/certificates1.rows}}
+</tbody>
+
         </table>
       </div>
+<div class="d-flex justify-content-between align-items-center mb-3 px-3 mt-2">
 
-      <div class="card-footer text-end bg-white">
-        <button class="btn btn-warning rounded-pill px-4 text-white">
-          View Details
-        </button>
-      </div>
+  <!-- Certificate Pagination (LEFT) -->
+  <nav>
+    <ul class="pagination mb-0"
+        style="align-items:center;"
+        id="certificate-pagination"></ul>
+  </nav>
+
+  <!-- View Details Button (RIGHT) -->
+  <a href="{{config.wwwroot}}/local/edwiserreports/certificates.php"
+     class="btn btn-sm text-white rounded-pill" style="background: rgb(245, 114, 21); font-size: 11px;">
+    View Details
+  </a>
+
+</div>
 
     </div>
   </div>
 
-  <!-- ================= ANNOUNCEMENTS ================= -->
-  <div class="col-lg-6">
-    <div class="card shadow-sm border-0 rounded-4" style="height: -webkit-fill-available;">
+ <!-- ================= ANNOUNCEMENTS ================= -->
+<div class="col-lg-6 rounded-4">
+  <div class="card shadow-sm border-0 rounded-4 h-100">
 
-        <div class="card-header text-white rounded-1"
-         style="background: linear-gradient(to right, #334155, #0f172a);">
+    <div class="card-header text-white rounded-1"
+      style="background: linear-gradient(to right, #334155, #0f172a);">
       <div class="d-flex justify-content-between align-items-center">
 
         <div class="d-flex align-items-center gap-3">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide block-icon1 lucide-megaphone"><path d="m3 11 18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path></svg>
-
+          <i class="material-icons lucide lucide-award block-icon1" style="padding: 4px;">campaign</i>
           <div>
-            <h6 class="mb-0 fw-semibold text-light">Announcements</h6>
-            <small class="text-light opacity-75">
-              Latest updates and notifications
-            </small>
+            <h6 class="mb-0 text-white fw-semibold">Announcements</h6>
+            <small class="opacity-75">Latest updates and notifications</small>
           </div>
         </div>
 
-        <button class="btn btn-sm btn-secondary rounded-pill">
-          View Details
-        </button>
+       
+      <a href="{{addtopicurl}}" class="btn btn-sm text-white rounded-pill" style="background: rgb(245, 114, 21); font-size: 11px;">
+     Add Topic
+        </a>
+
+
 
       </div>
     </div>
 
-      <div class="card-body">
-        <div class="border rounded-3 p-3 mb-3">
-          <small class="text-muted">Dec 5, 2024</small>
-          <div class="fw-semibold">New Course Available: Advanced TypeScript</div>
-          <small class="text-muted">Posted by Admin</small>
-        </div>
+    <div class="card-body">
 
-        <div class="border rounded-3 p-3 mb-3">
-          <small class="text-muted">Dec 3, 2024</small>
-          <div class="fw-semibold">Mandatory Compliance Training Reminder</div>
-          <small class="text-muted">Posted by HR Team</small>
-        </div>
+      {{#hasannouncements}}
+      <div id="announcement-list">
 
-        <div class="border rounded-3 p-3">
-          <small class="text-muted">Dec 1, 2024</small>
-          <div class="fw-semibold">Platform Maintenance Scheduled</div>
-          <small class="text-muted">Posted by System</small>
-        </div>
-      </div>
+      {{#announcements}}
+    <div class="announcement-row  align-items-center gap-3 p-2 mb-2 rounded-3 border bg-white">
 
+  <!-- Date box -->
+  <div class="text-center px-3 py-2 "
+       style="min-width:70px; border-right: 1px solid #0000003d;">
+    <div class="fw-semibold small text-muted">
+     {{date}}
+    </div>
+    <div class="fw-bold">
+      {{date_year}}
     </div>
   </div>
+
+  <!-- Content -->
+  <div class="flex-grow-1">
+    <a href="{{url}}" class="fw-semibold text-decoration-none text-dark ellipsis ellipsis-1">
+      {{title}}
+    </a>
+    <small class="text-muted">
+      Posted by {{author}}
+    </small>
+  </div>
+
+   </div>
+  {{/announcements}}
+      </div>
+      {{/hasannouncements}}
+
+      {{^hasannouncements}}
+        <div class="text-muted text-center py-5">
+          No announcements available
+        </div>
+      {{/hasannouncements}}
+
+    </div>
+    <div class="card-footer bg-white border-0 d-flex justify-content-end mb-2">
+       <!-- Pagination -->
+      <nav>
+      <ul class="pagination justify-content-end mb-0 mr-3"
+      style="align-items: center;"
+      id="announcement-pagination"></ul>
+       </nav>
+    </div>
+  </div>
+</div>
+
 
 </div>
 

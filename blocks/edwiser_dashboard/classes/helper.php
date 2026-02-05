@@ -6,28 +6,108 @@ defined('MOODLE_INTERNAL') || die();
 use local_edwiserreports\blocks\courseprogressblock;
 use local_edwiserreports\blocks\inactiveusersblock;
 use local_edwiserreports\blocks\customreportsblock;
+use local_edwiserreports\blocks\certificatesblock;
+
 
 class helper {
 
     public static function get_dashboard_data(): array {
+        global $DB;
         $selectedcourseid = optional_param('courseid', 0, PARAM_INT);
 
         $courses = self::get_user_courses();
         foreach ($courses as &$c) {
             $c['selected'] = ($c['id'] == $selectedcourseid);
         }
+$customreport = self::get_custom_report_block(1);
 
+// 🔥 REQUIRED for export
+$customreport['params'] = json_decode(
+    $DB->get_field('edwreports_custom_reports', 'data', ['id' => 1])
+);
         return [
             'courses'        => $courses,
             'cohort'         => self::get_cohorts_for_course($selectedcourseid), 
             'siteoverview'   => self::get_site_overview(),
-            'customreport'   => self::get_custom_report_block(3),
+            'customreport' => $customreport,
             'courseprogress' => self::get_course_progress_from_edwiser($selectedcourseid),
             'certificates'   => self::get_certificates(),
             'inactiveusers'  => self::get_inactive_users(),
-            'activeusers'    => self::get_active_users()
+            'activeusers'    => self::get_active_users(),
+            'certificates1' => self::get_certificates1(),
+
         ];
     }
+
+/* ================= CERTIFICATES ================= */
+private static function get_certificates1(): array {
+    $block = new certificatesblock();
+
+    // Same params Edwiser uses
+    $params = (object)[
+        'cohort' => optional_param('cohortid', 0, PARAM_INT)
+    ];
+
+    $response = $block->get_data($params);
+
+    return [
+        'blockid' => 'certificatesblock',
+        'rows'    => $response->data ?? []
+    ];
+}
+/* ================= ANNOUNCEMENTS ================= */
+public static function get_announcements(): array {
+    global $DB, $COURSE;
+
+    // Course or site
+    $courseid = (!empty($COURSE->id) && $COURSE->id > 1)
+        ? $COURSE->id
+        : SITEID;
+
+    // Find News forum
+    $forum = $DB->get_record('forum', [
+        'course' => $courseid,
+        'type'   => 'news'
+    ]);
+
+    if (!$forum) {
+        return [
+            'forumid' => 0,
+            'items'   => []
+        ];
+    }
+
+    $sql = "
+        SELECT d.id AS discussionid, d.name AS title, p.modified,
+               u.firstname, u.lastname
+        FROM {forum_discussions} d
+        JOIN {forum_posts} p ON p.discussion = d.id
+        JOIN {user} u ON u.id = p.userid
+        WHERE d.forum = :forumid
+          AND p.parent = 0
+        ORDER BY p.modified DESC
+    ";
+
+    $posts = $DB->get_records_sql($sql, ['forumid' => $forum->id], 0, 10);
+
+    $items = [];
+    foreach ($posts as $p) {
+        $items[] = [
+            'title'  => format_string($p->title),
+            'author' => fullname($p),
+            'date'   => userdate($p->modified, '%d %b %Y'),
+            'url'    => (new \moodle_url(
+                '/mod/forum/discuss.php',
+                ['d' => $p->discussionid]
+            ))->out(false)
+        ];
+    }
+
+    return [
+        'forumid' => $forum->id,
+        'items'   => $items
+    ];
+}
 
 
     /* ================= COURSE PROGRESS ================= */
@@ -148,38 +228,48 @@ class helper {
     }
 
 
-    /* ================= CUSTOM REPORTS ================= */
-    public static function get_custom_report_block(int $reportid): array {
-        global $DB;
 
-        $report = $DB->get_record('edwreports_custom_reports', ['id' => $reportid]);
+public static function get_custom_report_block(int $reportid): array {
+    global $DB;
 
-        if (!$report) {
-            return ['title' => 'Report not found', 'columns' => [], 'rows' => []];
-        }
-
-        $params = json_decode($report->data);
-        $params->fields = $params->selectedfield ?? [];
-        unset($params->selectedfield);
-
-        $block = new customreportsblock();
-        $block->blockid = $reportid;
-
-        $data = $block->get_data($params);
-
-        $rows = [];
-        if (!empty($data->reportsdata)) {
-            foreach ($data->reportsdata as $row) {
-                $rows[] = array_values((array)$row);
-            }
-        }
-
+    // Fetch custom report definition
+    $report = $DB->get_record('edwreports_custom_reports', ['id' => $reportid]);
+    if (!$report) {
         return [
-            'title'   => format_string($report->fullname),
-            'columns' => $data->columns ?? [],
-            'rows'    => $rows
+            'title' => 'Report not found',
+            'columns' => [],
+            'rows' => []
         ];
     }
+
+    // Decode saved report config
+    $params = json_decode($report->data);
+    $params->fields = $params->selectedfield ?? [];
+    unset($params->selectedfield);
+
+    // Load Edwiser custom report block
+    $block = new \local_edwiserreports\blocks\customreportsblock();
+
+    // IMPORTANT: this maps to `customreportsblock-1`
+    $block->blockid = 'customreportsblock-' . $reportid;
+
+    // Fetch data
+    $data = $block->get_data($params);
+
+    $rows = [];
+    if (!empty($data->reportsdata)) {
+        foreach ($data->reportsdata as $row) {
+            $rows[] = array_values((array)$row);
+        }
+    }
+
+    return [
+        'blockid' => 'customreportsblock-' . $reportid,
+        'title'   => format_string($report->fullname),
+        'columns' => $data->columns ?? [],
+        'rows'    => $rows
+    ];
+}
 
 
     /* ================= SITE OVERVIEW ================= */
@@ -242,5 +332,7 @@ class helper {
 
         return ['issued' => $DB->count_records('customcert_issues')];
     }
+
+    
 
 }

@@ -43,7 +43,28 @@ public function init(): void {
 
         require_once($CFG->dirroot . '/blocks/edwiser_dashboard/classes/helper.php');
 
+
         $data = \block_edwiser_dashboard\helper::get_dashboard_data();
+       $ann = \block_edwiser_dashboard\helper::get_announcements();
+
+$data['announcements']     = $ann['items'];
+$data['hasannouncements']  = !empty($ann['items']);
+$data['forumid']           = $ann['forumid'];
+
+if (!empty($ann['forumid'])) {
+    $data['addtopicurl'] = (new moodle_url(
+        '/mod/forum/post.php',
+        ['forum' => $ann['forumid']]
+    ))->out(false);
+
+    $data['viewmoreurl'] = (new moodle_url(
+        '/mod/forum/view.php',
+        ['id' => $ann['forumid']]
+    ))->out(false);
+} else {
+    $data['addtopicurl'] = '';
+    $data['viewmoreurl'] = '';
+}
 // $block = new \local_edwiserreports\blocks\customreportsblock();
 // $block->blockid = 1;
 
@@ -90,6 +111,23 @@ $edwiserjs = [
 $this->content->text .= <<<HTML
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+/* 🔥 FORCE PAGINATION VISIBILITY */
+#edwiser-pagination ,#certificate-pagination,#announcement-pagination{.page-link {
+  color: #0f172a !important;
+  font-size: 14px !important;
+  opacity: 1 !important;
+  background: #fff !important;
+  border: 1px solid #e5e7eb !important;
+}}
+
+#edwiser-pagination ,#certificate-pagination,#announcement-pagination{.page-item.active .page-link {
+  background: #0f172a !important;
+  color: #fff !important;
+  border-color: #0f172a !important;
+}}
+
+  </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 HTML;
@@ -331,6 +369,163 @@ const labels = rawDates.map(d => {
 
 
 });
+document.addEventListener('DOMContentLoaded', function () {
+
+  const rowsPerPage = 8;
+  let allRows = Array.from(document.querySelectorAll('.edwiser-row'));
+  let filteredRows = [...allRows];
+
+  const pagination = document.getElementById('edwiser-pagination');
+  const start = document.getElementById('edwiser-start');
+  const end = document.getElementById('edwiser-end');
+
+  if (!allRows.length) return;
+
+  let currentPage = 1;
+
+  function renderPage(page) {
+    currentPage = page;
+    const startIndex = (page - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+
+    allRows.forEach(r => r.style.display = 'none');
+
+    filteredRows.slice(startIndex, endIndex).forEach(r => {
+      r.style.display = '';
+    });
+
+    start.textContent = filteredRows.length ? startIndex + 1 : 0;
+    end.textContent = Math.min(endIndex, filteredRows.length);
+
+    renderPagination();
+  }
+
+  function renderPagination() {
+    pagination.innerHTML = '';
+    const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+
+    if (totalPages <= 1) return;
+
+    for (let i = 1; i <= totalPages; i++) {
+      const li = document.createElement('li');
+      li.className = 'page-item ' + (i === currentPage ? 'active' : '');
+      li.innerHTML = `<a href="#" class="page-link mr-2">\${i}</a>`;
+      li.onclick = e => {
+        e.preventDefault();
+        renderPage(i);
+      };
+      pagination.appendChild(li);
+    }
+  }
+
+  // 🔍 SEARCH
+  const searchInput = document.getElementById('edwiser-search');
+  if (searchInput) {
+    searchInput.addEventListener('keyup', function () {
+      const keyword = this.value.toLowerCase();
+
+      filteredRows = allRows.filter(row =>
+        row.innerText.toLowerCase().includes(keyword)
+      );
+
+      currentPage = 1;
+      renderPage(1);
+    });
+  }
+
+  renderPage(1);
+// below is announcement pagination
+  const rows = Array.from(document.querySelectorAll('.announcement-row'));
+  const perPage = 5;
+  const pager = document.getElementById('announcement-pagination');
+
+  if (!rows.length || !pager) return;
+
+  let current = 1;
+  const totalPages = Math.ceil(rows.length / perPage);
+
+  function render(page) {
+    current = page;
+
+    // Hide all
+    rows.forEach(r => r.style.display = 'none');
+
+    // Show current page rows (flex!)
+    rows
+      .slice((page - 1) * perPage, page * perPage)
+      .forEach(r => r.style.display = 'flex');
+
+    // Build pagination
+    pager.innerHTML = '';
+
+    for (let i = 1; i <= totalPages; i++) {
+      const li = document.createElement('li');
+      li.className = 'page-item' + (i === current ? ' active' : '');
+
+      const a = document.createElement('a');
+      a.href = '#';
+      a.className = 'page-link mr-2'; // ⚠️ no inline styles
+      a.textContent = i;
+
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        render(i);
+      });
+
+      li.appendChild(a);
+      pager.appendChild(li);
+    }
+  }
+
+  render(1);
+  
+// ================= CERTIFICATE PAGINATION =================
+const certRows = Array.from(document.querySelectorAll('.certificate-row'));
+const certPerPage = 8;
+const certPager = document.getElementById('certificate-pagination');
+
+if (certRows.length && certPager) {
+
+  let certCurrent = 1;
+  const certTotalPages = Math.ceil(certRows.length / certPerPage);
+
+  function renderCertPage(page) {
+    certCurrent = page;
+
+    certRows.forEach(r => r.style.display = 'none');
+
+    certRows
+      .slice((page - 1) * certPerPage, page * certPerPage)
+      .forEach(r => r.style.display = '');
+
+    certPager.innerHTML = '';
+
+    if (certTotalPages <= 1) return;
+
+    for (let i = 1; i <= certTotalPages; i++) {
+      const li = document.createElement('li');
+      li.className = 'page-item' + (i === certCurrent ? ' active' : '');
+
+      const a = document.createElement('a');
+      a.href = '#';
+      a.className = 'page-link mr-2';
+      a.textContent = i;
+
+      a.onclick = e => {
+        e.preventDefault();
+        renderCertPage(i);
+      };
+
+      li.appendChild(a);
+      certPager.appendChild(li);
+    }
+  }
+
+  renderCertPage(1);
+}
+});
+
+
 </script>
 
 
