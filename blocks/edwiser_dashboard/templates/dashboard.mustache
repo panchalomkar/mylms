@@ -115,6 +115,24 @@
             </small>
           </div>
         </div>
+<div class="d-flex gap-2">
+
+  <!-- Cohort -->
+  <select id="soCohort" class="form-select form-select-sm">
+    <option value="0">All Cohorts</option>
+    {{#cohorts}}
+      <option value="{{id}}">{{name}}</option>
+    {{/cohorts}}
+  </select>
+
+  <!-- Days -->
+  <select id="soFilter" class="form-select form-select-sm d-none">
+    <option value="last7days">Last 7 Days</option>
+    <option value="last30days">Last 30 Days</option>
+    <option value="thismonth">This Month</option>
+  </select>
+
+</div>
 
         <a href="{{viewdetailsurl1}}" class="btn btn-sm btn- rounded-pill text-white" style="background: #f57215;">
           View Details
@@ -131,7 +149,7 @@
         <div class="col-4">
           <div class="bg-light rounded-4 p-3">
             <span class="material-icons text-secondary">groups</span>
-            <div class="h4 fw-bold mb-0">{{siteoverview.activeusers}}</div>
+            <div class="h4 fw-bold mb-0" data-so="activeusers">{{siteoverview.activeusers}}</div>
             <small class="text-muted">Total Active Users</small>
             <div class="text-success small">▲ +12%</div>
           </div>
@@ -140,7 +158,7 @@
         <div class="col-4">
           <div class="bg-light rounded-4 p-3">
             <span class="material-icons text-warning">school</span>
-            <div class="h4 fw-bold mb-0">{{siteoverview.enrollments}}</div>
+            <div class="h4 fw-bold mb-0" data-so="enrollments">{{siteoverview.enrollments}}</div>
             <small class="text-muted">Total Enrollments</small>
             <div class="text-success small">▲ +8%</div>
           </div>
@@ -149,7 +167,7 @@
         <div class="col-4">
           <div class="bg-light rounded-4 p-3">
             <span class="material-icons text-success">check_circle</span>
-            <div class="h4 fw-bold mb-0">{{siteoverview.completions}}</div>
+            <div class="h4 fw-bold mb-0" data-so="completions">{{siteoverview.completions}}</div>
             <small class="text-muted">Total Completions</small>
             <div class="text-danger small">▼ -3%</div>
           </div>

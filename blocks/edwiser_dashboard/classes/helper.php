@@ -27,7 +27,7 @@ $customreport['params'] = json_decode(
 );
         return [
             'courses'        => $courses,
-            'cohort'         => self::get_cohorts_for_course($selectedcourseid), 
+            'cohorts'         => self::get_cohorts_for_course($selectedcourseid), 
             'siteoverview'   => self::get_site_overview(),
             'customreport' => $customreport,
             'courseprogress' => self::get_course_progress_from_edwiser($selectedcourseid),
@@ -193,20 +193,36 @@ public static function get_announcements(): array {
     }
 
     /* ================= COHORTS ================= */
-    private static function get_cohorts_for_course(int $courseid): array {
-        global $DB, $USER;
+private static function get_cohorts_for_course(int $courseid): array {
+    global $DB, $USER;
 
-        if (!$courseid) return [];
-
+    // 🔥 Admins can see ALL cohorts
+    if (is_siteadmin()) {
+        $cohorts = $DB->get_records('cohort', null, 'name ASC', 'id, name');
+    } else {
+        // Non-admins → only cohorts they belong to
         $cohorts = $DB->get_records_sql("
-            SELECT c.id, c.name
+            SELECT DISTINCT c.id, c.name
             FROM {cohort} c
             JOIN {cohort_members} cm ON cm.cohortid = c.id
             WHERE cm.userid = :userid
+            ORDER BY c.name
         ", ['userid' => $USER->id]);
-
-        return array_map(fn($c) => ['id'=>$c->id,'name'=>$c->name], $cohorts);
     }
+
+    if (empty($cohorts)) {
+        return [];
+    }
+
+    return array_values(array_map(function ($c) {
+        return [
+            'id'   => (int)$c->id,
+            'name' => format_string($c->name)
+        ];
+    }, $cohorts));
+}
+
+
 
     /* ================= USER COURSES ================= */
     private static function get_user_courses(): array {
@@ -273,35 +289,64 @@ public static function get_custom_report_block(int $reportid): array {
 
 
     /* ================= SITE OVERVIEW ================= */
-  private static function get_site_overview(): array {
-    global $DB;
+//   private static function get_site_overview(): array {
+//     global $DB;
 
+//     // Instantiate active users block
+//     $activeusersblock = new \local_edwiserreports\blocks\activeusersblock();
+
+//     // Get last 7 days data (or filter dynamically)
+//     $params = (object)[
+//         'filter' => 'last7days',
+//         'cohortid' => 0
+//     ];
+//     $data = $activeusersblock->get_data($params);
+
+//     // Extract totals
+//     $totalActiveUsers = array_sum($data->data->activeUsers ?? []);
+//     $totalEnrollments = array_sum($data->data->enrolments ?? []);
+//     $totalCompletions = array_sum($data->data->completionRate ?? []);
+
+//     return [
+//         'activeusers'       => $totalActiveUsers,
+//         'enrollments'       => $totalEnrollments,
+//         'completions'       => $totalCompletions,
+//         'trendActiveUsers'  => $data->data->activeUsers ?? [],
+//         'trendEnrollments'  => $data->data->enrolments ?? [],
+//         'trendCompletions'  => $data->data->completionRate ?? [],
+//         'trendDates'        => $data->dates ?? []
+//     ];
+// }
+
+public static function get_site_overview(
+    string $filter = 'last7days',
+    int $cohortid = 0
+): array {
     // Instantiate active users block
     $activeusersblock = new \local_edwiserreports\blocks\activeusersblock();
 
-    // Get last 7 days data (or filter dynamically)
     $params = (object)[
-        'filter' => 'last7days',
-        'cohortid' => 0
+        'filter'   => $filter,    // last7days | last30days | thismonth
+        'cohortid' => $cohortid
     ];
+
     $data = $activeusersblock->get_data($params);
 
-    // Extract totals
     $totalActiveUsers = array_sum($data->data->activeUsers ?? []);
     $totalEnrollments = array_sum($data->data->enrolments ?? []);
     $totalCompletions = array_sum($data->data->completionRate ?? []);
 
     return [
-        'activeusers'       => $totalActiveUsers,
-        'enrollments'       => $totalEnrollments,
-        'completions'       => $totalCompletions,
-        'trendActiveUsers'  => $data->data->activeUsers ?? [],
-        'trendEnrollments'  => $data->data->enrolments ?? [],
-        'trendCompletions'  => $data->data->completionRate ?? [],
-        'trendDates'        => $data->dates ?? []
+        'activeusers'  => $totalActiveUsers,
+        'enrollments'  => $totalEnrollments,
+        'completions'  => $totalCompletions,
+
+        'trendActiveUsers' => $data->data->activeUsers ?? [],
+        'trendEnrollments' => $data->data->enrolments ?? [],
+        'trendCompletions' => $data->data->completionRate ?? [],
+        'trendDates'       => $data->dates ?? []
     ];
 }
-
 
 
     /* ================= ACTIVE USERS ================= */

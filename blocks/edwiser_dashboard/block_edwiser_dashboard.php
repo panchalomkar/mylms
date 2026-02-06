@@ -323,48 +323,138 @@ const labels = rawDates.map(d => {
 
 
 
-  new Chart(chart.getContext('2d'), {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [
-        {
-          label: 'Active Users',
-          data: JSON.parse(chart.dataset.trendactiveusers || '[]'),
-          borderColor: '#0f172a',
-          tension: 0.35
+var chartEl = document.getElementById('overviewChart');
+var overviewChart = null;
+
+if (chartEl && typeof Chart !== 'undefined') {
+
+    // ---------- INITIAL DATA FROM MUSTACHE ----------
+    function getLabels(rawDates) {
+        return rawDates.map(function (d) {
+            var date = new Date(d * 86400000); // Moodle days → ms
+            return date.toLocaleDateString('en-IN', {
+                day: 'numeric',
+                month: 'short'
+            });
+        });
+    }
+
+    var trendDates        = JSON.parse(chartEl.dataset.trenddates || '[]');
+    var trendActiveUsers  = JSON.parse(chartEl.dataset.trendactiveusers || '[]');
+    var trendEnrollments  = JSON.parse(chartEl.dataset.trendenrollments || '[]');
+    var trendCompletions  = JSON.parse(chartEl.dataset.trendcompletions || '[]');
+
+    overviewChart = new Chart(chartEl.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: getLabels(trendDates),
+            datasets: [
+                {
+                    label: 'Active Users',
+                    data: trendActiveUsers,
+                    borderColor: '#0f172a',
+                    tension: 0.35
+                },
+                {
+                    label: 'Enrollments',
+                    data: trendEnrollments,
+                    borderColor: '#f97316',
+                    tension: 0.35
+                },
+                {
+                    label: 'Completions',
+                    data: trendCompletions,
+                    borderColor: '#22c55e',
+                    tension: 0.35
+                }
+            ]
         },
-        {
-          label: 'Enrollments',
-          data: JSON.parse(chart.dataset.trendenrollments || '[]'),
-          borderColor: '#f97316',
-          tension: 0.35
-        },
-        {
-          label: 'Completions',
-          data: JSON.parse(chart.dataset.trendcompletions || '[]'),
-          borderColor: '#22c55e',
-          tension: 0.35
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        precision: 0
+                    }
+                }
+            }
         }
-      ]
-    },
-    options: {
-       responsive: true,
-  maintainAspectRatio: false, 
-      plugins: { legend: { position: 'bottom' } },
-      scales: {
-        y: {
-  beginAtZero: true,
-  suggestedMax: 4,   // ensures top is 5
-  ticks: {
-    stepSize: 1,     // 🔥 show 0,1,2,3,4,5
-    precision: 0
-  }
+    });
 }
 
-      }
+/* ======================================================
+   AJAX UPDATE (OLD JS – NO FETCH, NO MUSTACHE CHANGE)
+====================================================== */
+
+function reloadSiteOverview() {
+    if (!overviewChart) {
+        return;
     }
-  });
+
+    var filterEl  = document.getElementById('soFilter');
+    var cohortEl  = document.getElementById('soCohort');
+
+    var filter   = filterEl ? filterEl.value : 'last7days';
+    var cohortid = cohortEl ? cohortEl.value : 0;
+
+    var xhr = new XMLHttpRequest();
+    xhr.open(
+        'GET',
+        M.cfg.wwwroot +
+            '/blocks/edwiser_dashboard/ajax/siteoverview.php' +
+            '?filter=' + encodeURIComponent(filter) +
+            '&cohortid=' + encodeURIComponent(cohortid),
+        true
+    );
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+
+            var data = JSON.parse(xhr.responseText);
+
+            // 🔢 Update numbers (if present)
+            var au = document.querySelector('[data-so="activeusers"]');
+            var en = document.querySelector('[data-so="enrollments"]');
+            var co = document.querySelector('[data-so="completions"]');
+
+            if (au) au.textContent = data.activeusers;
+            if (en) en.textContent = data.enrollments;
+            if (co) co.textContent = data.completions;
+
+            // 📈 Update chart
+            overviewChart.data.labels = getLabels(data.trendDates || []);
+            overviewChart.data.datasets[0].data = data.trendActiveUsers || [];
+            overviewChart.data.datasets[1].data = data.trendEnrollments || [];
+            overviewChart.data.datasets[2].data = data.trendCompletions || [];
+
+            overviewChart.update();
+        }
+    };
+
+    xhr.send();
+}
+
+/* ======================================================
+   EVENT HOOKS
+====================================================== */
+
+var soFilter  = document.getElementById('soFilter');
+var soCohort  = document.getElementById('soCohort');
+
+if (soFilter) {
+    soFilter.addEventListener('change', reloadSiteOverview);
+}
+
+if (soCohort) {
+    soCohort.addEventListener('change', reloadSiteOverview);
+}
+
 }
 
 
