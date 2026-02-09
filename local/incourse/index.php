@@ -21,6 +21,18 @@ echo $OUTPUT->header();
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <style>
+    /* Block YouTube Share + Watch Later + Title */
+.sv-yt-blocker {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 200px;   /* covers Share + Watch later */
+    height: 80px;   /* covers title bar */
+    z-index: 15;
+    background: transparent;
+    pointer-events: all;
+}
+
     .course-action {
     display: block;
     padding: 8px 14px;
@@ -136,7 +148,7 @@ echo $OUTPUT->header();
                 <p class="mt-2 text-subtext-light dark:text-subtext-dark">No course summary available.</p>
             <?php endif; ?>
 
-            <div class="flex items-center mt-4 text-sm text-subtext-light dark:text-subtext-dark space-x-4">
+            <div class="flex items-center mt-4 d-none text-sm text-subtext-light dark:text-subtext-dark space-x-4">
                 <div class="flex items-center">
                     <span class="material-icons text-accent-light mr-1" style="color:#ec9707;">star</span>
                     <span class="font-bold"><?php echo rand(4,5) . '.' . rand(0,9); ?></span>
@@ -887,28 +899,32 @@ if (modname === 'supervideo') {
         : window.location.origin;
 
     // Clear area immediately
-    area.innerHTML = `
-        <div class="relative w-full h-[85vh] bg-black rounded-2xl overflow-hidden">
+   area.innerHTML = `
+    <div class="relative w-full h-[85vh] bg-black rounded-2xl overflow-hidden">
 
-            <!-- Loader -->
-            <div id="sv-loader"
-                 class="absolute inset-0 flex flex-col items-center justify-center text-white bg-black/70 z-10">
-                <span class="material-symbols-outlined text-5xl mb-2 animate-pulse">
-                    smart_display
-                </span>
-                <p class="text-sm opacity-80">Loading Super Video…</p>
-            </div>
-
-            <!-- IFRAME -->
-            <iframe
-                src="${base}/mod/supervideo/view.php?id=${cmid}"
-                class="w-full h-full border-0 bg-white"
-                allowfullscreen
-                allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-                sandbox="allow-scripts allow-same-origin allow-forms allow-popups">
-            </iframe>
+        <!-- Loader -->
+        <div id="sv-loader"
+             class="absolute inset-0 flex flex-col items-center justify-center text-white bg-black/70 z-20">
+            <span class="material-symbols-outlined text-5xl mb-2 animate-pulse">
+                smart_display
+            </span>
+            <p class="text-sm opacity-80">Loading Super Video…</p>
         </div>
-    `;
+
+        <!-- 🔒 UI BLOCKER (THIS IS THE FIX) -->
+        <div class="sv-yt-blocker"></div>
+
+        <!-- IFRAME -->
+        <iframe
+            src="${base}/mod/supervideo/view.php?id=${cmid}"
+            class="w-full h-full border-0 bg-white relative z-10"
+            allowfullscreen
+            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups">
+        </iframe>
+    </div>
+`;
+
 
     // Remove loader after short delay (iframe onload is unreliable)
     setTimeout(() => {
@@ -1428,79 +1444,61 @@ startBtn.addEventListener("click", () => {
 
 
 // 🎯 GOONE Activity (same UI as H5P)
+// 🎯 GOONE – behave EXACTLY like SCORM
 if (modname === 'goone') {
-
     const params = new URLSearchParams(link.href.split('?')[1]);
     const cmid = params.get('id');
 
-    if (!cmid) {
-        console.error("Goone CMID missing");
-        return;
-    }
-
     area.innerHTML = `
-        <div class="text-gray-400 p-8 text-center animate-pulse">
-            Loading Goone content...
+        <div class="flex flex-col items-center justify-center min-h-[60vh] text-center">
+            <div class="bg-gray-200 rounded-full p-4 mb-4">
+                <span class="material-icons text-gray-700 text-4xl">school</span>
+            </div>
+            <div class="px-4 py-1 rounded-full bg-blue-100 text-sm font-medium mb-4">
+                Go1 Activity
+            </div>
+            <h2 class="text-gray-900 mb-2 text-xl font-semibold">
+                ${link.textContent}
+            </h2>
+            <p class="text-gray-500 mb-6">
+                Click start to launch the activity inline. Progress will be tracked automatically.
+            </p>
+            <button id="startGoOne" class="inline-flex items-center gap-2 bg-[#003152] hover:bg-[#ec9707] text-white px-5 py-2 rounded-md font-medium transition">
+                <span class="material-icons">play_arrow</span>
+                Start Go1 Activity
+            </button>
         </div>
     `;
 
-    try {
-        const base = (typeof M !== "undefined" && M.cfg && M.cfg.wwwroot)
-            ? M.cfg.wwwroot
-            : window.location.origin;
+    const btn = document.getElementById('startGoOne');
+    btn.addEventListener('click', async () => {
+        area.innerHTML = `<div class="text-center py-20">Loading Go1 activity...</div>`;
+        try {
+            const response = await fetch(`${M.cfg.wwwroot}/local/incourse/get_token.php?cmid=${cmid}`);
+            const data = await response.json();
 
-        // ✅ updated endpoint - now uses fetch_goone.php
-        const response = await fetch(`${base}/local/incourse/fetch_goone.php?courseid=${cmid}`);
-        const data = await response.json();
-
-        if (data?.status === 'success' && data?.launchurl) {
+            if (!data.success) throw new Error(data.message || 'Failed to get Go1 token');
 
             area.innerHTML = `
-                <div class="flex items-center gap-3 mb-2 mt-2">
-                    <button id="backToCourse"
-                        class="flex items-center text-[#003152] hover:text-[#ec9707] font-medium transition">
-                        <span class="material-icons mr-1 text-lg">arrow_back</span>
-                        Back to Course
-                    </button>
-                    <h2 class="text-lg font-semibold text-[#003152]">${data.name || 'Go1 Activity'}</h2>
-                </div>
-
-                <div id="gooneContainer"
-                    class="rounded-xl border border-gray-200 bg-white overflow-hidden shadow-md"
-                    style="width:93%;">
-                    <iframe
-                        src="${data.launchurl}"
-                        class="w-full h-[88vh] border-0 bg-white"
-                        allowfullscreen
-                        allow="fullscreen; autoplay; encrypted-media">
-                    </iframe>
+                <div role="main">
+                    <div class="container" style="height: 680px;">
+                        <iframe
+                            src="${data.url}"
+                            allowfullscreen
+                            loading="eager"
+                            allow="autoplay *; camera *; display-capture *; fullscreen *; microphone *"
+                            style="width: 100%; height: 100%; border: 0;">
+                        </iframe>
+                    </div>
                 </div>
             `;
-
-            document.getElementById('backToCourse')?.addEventListener('click', () => {
-                window.location.reload();
-            });
-
-        } else {
-            area.innerHTML = `
-                <div class="text-center text-gray-500 p-8">
-                    <h2 class="text-lg font-semibold mb-2">Go1 Launch Error</h2>
-                    <p>${data?.message || 'Unable to load Go1 content.'}</p>
-                </div>
-            `;
+        } catch (err) {
+            area.innerHTML = `<div class="text-center text-red-600 py-20">Error loading Go1 activity: ${err.message}</div>`;
         }
-
-    } catch (err) {
-        console.error('Goone load error:', err);
-        area.innerHTML = `
-            <div class="text-center text-red-500 p-8">
-                <p>Failed to load Goone content.</p>
-            </div>
-        `;
-    }
-
-    return;
+    });
 }
+
+
 // 🧑‍🏫 Handle ILT (Instructor-Led Training) inline view
 if (modname === 'ilt') {
     const params = new URLSearchParams(link.href.split('?')[1]);

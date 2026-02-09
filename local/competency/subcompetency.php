@@ -96,7 +96,7 @@ if (!empty($competencyCategory) && !empty($mainHeading) && !empty($roleid)) {
 // edit competency category
 $competencyEditCategory = optional_param('competencyEditCategory', '', PARAM_TEXT);
 $editccid = optional_param('editccid', '', PARAM_INT);
-$courselist = optional_param('editcourseid', '', PARAM_TEXT);
+$courselist = optional_param_array('editcourseid', [], PARAM_TEXT);
 $roleid = optional_param('editroleid', '', PARAM_TEXT);
 $catid = optional_param('catid', '', PARAM_TEXT);
 $mainHeadingEditId = optional_param('mainHeadingEditId', '', PARAM_TEXT);

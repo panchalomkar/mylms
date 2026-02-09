@@ -351,96 +351,109 @@ class renderer extends plugin_renderer_base {
 public function navigation_panel(navigation_panel_base $panel) {
     global $PAGE;
 
-    // Load Material Symbols.
-    $PAGE->requires->css(new moodle_url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:wght@400;600&display=swap'));
+    // Icons
+    $PAGE->requires->css(new moodle_url(
+        'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:wght@400;600&display=swap'
+    ));
 
-    // Container card.
-    $output = html_writer::start_tag('div', [
-        'class' => 'w-full bg-white shadow-md rounded-2xl p-5 mt-4 quiz-nav-card border border-gray-100'
-    ]);
-  // Other nav section (autosave info, etc.)
-    $output .= html_writer::tag('div','',
-        ['class' => 'othernav']
+    // REQUIRED quiz JS
+    $this->page->requires->js_init_call(
+        'M.mod_quiz.nav.init',
+        null,
+        false,
+        quiz_get_js_module()
     );
 
-    // Title.
-    $output .= html_writer::tag('div',
+    // Card wrapper
+    $output = html_writer::start_div(
+        'w-full bg-white shadow-md rounded-2xl p-5 mt-4 quiz-nav-card border border-gray-100'
+    );
+
+    // 🔑 MUST KEEP (hidden autosave + form metadata)
+    $output .= html_writer::div(
+        $panel->render_before_button_bits($this),
+        'othernav'
+    );
+
+    // Title
+    $output .= html_writer::tag(
+        'div',
         '<span class="font-semibold text-lg text-gray-800">Quiz Navigation</span>',
         ['class' => 'mb-4']
     );
 
-    // Question buttons grid.
-    $output .= html_writer::start_tag('div', [
-        'class' => 'flex gap-3 mb-4 flex-wrap'
-    ]);
+    // Question buttons grid
+    $output .= html_writer::start_div('flex gap-3 mb-4 flex-wrap');
 
     $buttons = $panel->get_question_buttons();
     foreach ($buttons as $button) {
         $output .= $this->render($button);
     }
 
-    $output .= html_writer::end_tag('div');
+    $output .= html_writer::end_div();
 
-    // Stats (Answered / Unanswered / Flagged)
-    $answered = 0;
-    $unanswered = 0;
-    $flagged = 0;
-
+    // Stats
+    $answered = $unanswered = $flagged = 0;
     foreach ($buttons as $b) {
         if (!empty($b->flagged)) {
             $flagged++;
         }
-
-        if (isset($b->stateclass) && in_array($b->stateclass, ['answersaved', 'complete', 'correct', 'incorrect', 'partial'])) {
+        if (in_array($b->stateclass, ['answersaved','complete','correct','incorrect','partial'])) {
             $answered++;
-        } else { // notyetanswered
+        } else {
             $unanswered++;
         }
     }
 
-    // Stats below number palette
-    $output .= '
-        <div class="space-y-2 text-sm mt-3">
-            <div class="flex items-center gap-2">
-                <span class="w-3 h-3 rounded-sm bg-green-500 inline-block"></span>
-                <span class="text-gray-700">Answered: '.$answered.'</span>
+    $output .= "
+        <div class='space-y-2 text-sm mt-3 text-gray-700'>
+            <div class='flex items-center gap-2'>
+                <span class='w-3 h-3 rounded-sm bg-green-500 inline-block'></span>
+                <span>Answered: {$answered}</span>
             </div>
-            <div class="flex items-center gap-2">
-                <span class="w-3 h-3 rounded-sm bg-gray-300 inline-block"></span>
-                <span class="text-gray-700">Unanswered: '.$unanswered.'</span>
+            <div class='flex items-center gap-2'>
+                <span class='w-3 h-3 rounded-sm bg-gray-300 inline-block'></span>
+                <span>Unanswered: {$unanswered}</span>
             </div>
-         <div class="flex items-center gap-2">
-            <i class="fas fa-flag" style="color:#f97316;"></i>
-            <span class="text-gray-700">Flagged: '.$flagged.'</span>
+            <div class='flex items-center gap-2'>
+                <i class='fas fa-flag text-orange-500'></i>
+                <span>Flagged: {$flagged}</span>
+            </div>
         </div>
-        </div>
-    ';
+    ";
 
-// Get original button HTML.
-$finishhtml = $panel->render_end_bits($this);
+    /* ==============================
+       Finish Attempt — SAME UI
+       BUT SAFE
+    =============================== */
 
-// Extract ONLY the URL from <a> or <button>.
-preg_match('/href="([^"]+)"/', $finishhtml, $match);
-$finishurl = $match[1] ?? '#';
+    $finishhtml = $panel->render_end_bits($this);
 
-// Build a clean button yourself — no original styles, no "...".
-$finishbutton = html_writer::tag(
-    'a',
-    '<span class="material-symbols-rounded mr-1">check_circle</span>Finish Attempt',
-    [
-        'href' => $finishurl,
-        'class' =>
-            'px-4 py-2 bg-[#003152] text-white rounded-full font-semibold 
-             flex items-center justify-center gap-2 hover:brightness-110 transition-all'
-    ]
-);
+    // Extract Finish URL safely
+    preg_match('/href="([^"]+)"/', $finishhtml, $match);
+    $finishurl = $match[1] ?? '#';
 
-$output .= html_writer::tag('div', $finishbutton, ['class' => 'mt-5']);
+    $finishbutton = html_writer::tag(
+        'a',
+        '<span class="material-symbols-rounded mr-1">check_circle</span>Finish Attempt',
+        [
+            'href' => $finishurl,
+            'class' =>
+                'px-4 py-2 bg-[#003152] text-white rounded-full font-semibold
+                 flex items-center justify-center gap-2 hover:brightness-110 transition-all'
+        ]
+    );
 
+    // Hide original markup but keep it in DOM (autosave safety)
+    $output .= html_writer::div(
+        $finishhtml,
+        'hidden'
+    );
 
+    // Show your clean button
+    $output .= html_writer::div($finishbutton, 'mt-5');
 
-  
-    $output .= html_writer::end_tag('div');
+    $output .= html_writer::end_div();
 
     return $output;
 }
@@ -450,45 +463,69 @@ $output .= html_writer::tag('div', $finishbutton, ['class' => 'mt-5']);
 -----------------------------*/
 protected function render_navigation_question_button(navigation_question_button $button) {
 
-    // Default color
-    $bg = 'bg-gray-200 text-gray-700';
+    $bgcolor = '#e5e7eb'; // gray-200
+    $textcolor = '#374151'; // gray-700
+    $border = '';
 
-    // Color logic for answered questions
-    if (isset($button->stateclass) && in_array($button->stateclass, ['answersaved', 'complete', 'correct', 'incorrect', 'partial'])) {
-        $bg = 'bg-green-500 text-white';
+    if (isset($button->stateclass) &&
+        in_array($button->stateclass, ['answersaved', 'complete', 'correct', 'incorrect', 'partial'])) {
+        $bgcolor = '#22c55e'; // green-500
+        $textcolor = '#ffffff';
     }
 
-    // Flagged questions
     if ($button->flagged) {
-        $bg = 'bg-orange-500 text-white';
+        $bgcolor = '#f97316'; // orange-500
+        $textcolor = '#ffffff';
     }
 
-    // Highlight current question with #003152 and white text
     if ($button->currentpage) {
-        $bg = 'bg-[#003152] text-white';
-        $border=" border: double;";
+        $bgcolor = '#003152';
+        $textcolor = '#ffffff';
+        $border = 'border: 3px double #003152;';
     }
 
-    $commonclasses = "w-10 h-10 flex items-center justify-center rounded-xl font-semibold 
-                      shadow-sm transition-all hover:scale-105 cursor-pointer $bg";
-      $buttonid = 'quiznavbutton' . $button->number;
-    $content = html_writer::tag('span', $button->number);
+    // REQUIRED Moodle classes (JS depends on these)
+    $classes = implode(' ', [
+        'qnbutton',
+        $button->stateclass,
+        $button->navmethod,
+        'btn',
+        'thispageholder-fix'
+    ]);
+
+    // 🔥 FORCE UI INLINE (beats Moodle CSS)
+    $style = "
+        width:40px !important;
+        height:40px !important;
+        border-radius:12px !important;
+        background:$bgcolor !important;
+        color:$textcolor !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        font-weight:600 !important;
+        box-shadow:0 1px 3px rgba(0,0,0,.15) !important;
+        transition:transform .15s ease !important;
+        $border
+    ";
+
+    $content = html_writer::tag('span', s($button->number));
+
+    $attrs = [
+        'id' => $button->id, // 🔴 must keep
+        'class' => $classes,
+        'data-quiz-page' => $button->page,
+        'title' => $button->statestring,
+        'style' => $style,
+        'onmouseover' => "this.style.transform='scale(1.08)'",
+        'onmouseout'  => "this.style.transform='scale(1)'"
+    ];
 
     if ($button->url) {
-        return html_writer::link($button->url, $content, [
-            'id' => $buttonid,
-            'class' => $commonclasses,
-            'data-quiz-page' => $button->page,
-            'title' => $button->statestring,
-            'style' => $border ?? ''
-        ]);
+        return html_writer::link($button->url, $content, $attrs);
     }
 
-    return html_writer::tag('span', $content, [
-        'id' => $buttonid,
-        'class' => $commonclasses,
-        'title' => $button->statestring
-    ]);
+    return html_writer::tag('span', $content, $attrs);
 }
 
 

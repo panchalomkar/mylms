@@ -736,7 +736,7 @@ function get_leaderboard_top()
             </div>
 
             <!-- Rank circle -->
-            <div class="bg-[#003152] text-white font-bold w-10 h-10 flex items-center justify-center rounded-full -mt-5 mb-3 shadow" style="z-index: 999;">
+            <div class="bg-[#003152] text-white font-bold w-10 h-10 flex items-center justify-center rounded-full -mt-5 mb-3 shadow" style="z-index: 1;">
                 ' . $i . '
             </div>
 
