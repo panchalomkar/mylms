@@ -51,38 +51,31 @@ function local_mydashboard_myprofile_navigation(core_user\output\myprofile\tree 
 }
 
 
-function get_points_last7($userid, $weekday) {
+function get_points_last7_days($userid) {
     global $DB;
 
-    $daymap = [
-        'sun' => 1,
-        'mon' => 2,
-        'tue' => 3,
-        'wed' => 4,
-        'thu' => 5,
-        'fri' => 6,
-        'sat' => 7
-    ];
+    $points = [];
+    $labels = [];
 
-    if (!isset($daymap[$weekday])) {
-        return 0;
+    for ($i = 7; $i >= 1; $i--) {
+        $start = strtotime("-$i days midnight");
+        $end   = strtotime("-$i days 23:59:59");
+
+        $total = $DB->get_field_sql("
+            SELECT COALESCE(SUM(points), 0)
+            FROM {user_points_log}
+            WHERE userid = ?
+              AND timecreated BETWEEN ? AND ?
+        ", [$userid, $start, $end]);
+
+        // Label example: 04 Feb
+        $labels[] = date('d M', $start);
+        $points[] = (int)$total;
     }
 
-    $wd = $daymap[$weekday];
-
-    $sql = "
-        SELECT SUM(points) AS total
-        FROM {user_points_log}
-        WHERE userid = :uid
-          AND DAYOFWEEK(FROM_UNIXTIME(timecreated)) = :wd
-          AND timecreated >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 7 DAY))
-    ";
-
-    return (int) $DB->get_field_sql($sql, [
-        'uid' => $userid,
-        'wd'  => $wd
-    ]);
+    return [$labels, $points];
 }
+
 
 function get_available_points($userid)
 {
@@ -464,59 +457,112 @@ function get_admin_points_received($userid)
 
     return ($record->sumpoints > 0) ? $record->sumpoints : 0;
 }
+// updated by omkar
+function get_user_available_points() {
+    global $DB, $SESSION, $USER;
 
-function get_user_available_points()
-{
-    global $USER, $CFG, $DB, $OUTPUT, $SESSION;
+    // Resolve selected company
     if (!empty($SESSION->currenteditingcompany)) {
         $selectedcompany = $SESSION->currenteditingcompany;
-    } else if (!empty($USER->profile->company)) {
+    } else {
         $usercompany = company::by_userid($USER->id);
-        $selectedcompany = $usercompany->id;
-    } else {
-        $selectedcompany = "";
-    }
-    if ($selectedcompany) {
-        $SQL = "SELECT u.*, up.available_points FROM {user_points} up 
-    INNER JOIN {user} u ON u.id = up.userid
-    INNER JOIN {company_users} cu ON cu.userid = up.userid
-    WHERE cu.companyid = $selectedcompany
-    ";
-    } else {
-        $SQL = "SELECT u.*, up.available_points FROM {user_points} up 
-    INNER JOIN {user} u ON u.id = up.userid
-    ";
+        $selectedcompany = $usercompany->id ?? 0;
     }
 
+    $ismaincompany = ($selectedcompany == 0);
 
-    return $DB->get_records_sql($SQL);
-}
-
-function get_user_points_log()
-{
-    global $USER, $CFG, $DB, $OUTPUT, $SESSION;
-    if (!empty($SESSION->currenteditingcompany)) {
-        $selectedcompany = $SESSION->currenteditingcompany;
-    } else if (!empty($USER->profile->company)) {
-        $usercompany = company::by_userid($USER->id);
-        $selectedcompany = $usercompany->id;
-    } else {
-        $selectedcompany = "";
-    }
-    if ($selectedcompany) {
-        $SQL = "SELECT up.*, u.username, u.firstname, u.lastname, u.email  FROM {user_points_log} up 
-        INNER JOIN {user} u ON u.id = up.userid
-        INNER JOIN {company_users} cu ON cu.userid = up.userid
-        WHERE cu.companyid = $selectedcompany
+    if ($ismaincompany) {
+        // MAIN TENANT → ALL USERS
+        $sql = "
+            SELECT u.id,
+                   u.username,
+                   u.firstname,
+                   u.lastname,
+                   u.email,
+                   up.available_points
+            FROM {user_points} up
+            JOIN {user} u ON u.id = up.userid
         ";
+        $params = [];
     } else {
-        $SQL = "SELECT up.*, u.username, u.firstname, u.lastname, u.email  FROM {user_points_log} up 
-            INNER JOIN {user} u ON u.id = up.userid
-            ";
+        // SUB TENANT → COMPANY USERS ONLY
+        $sql = "
+            SELECT u.id,
+                   u.username,
+                   u.firstname,
+                   u.lastname,
+                   u.email,
+                   up.available_points
+            FROM {user_points} up
+            JOIN {user} u ON u.id = up.userid
+            JOIN {company_users} cu ON cu.userid = up.userid
+            WHERE cu.companyid = :companyid
+        ";
+        $params = ['companyid' => $selectedcompany];
     }
 
-    return $DB->get_records_sql($SQL);
+    return $DB->get_records_sql($sql, $params);
 }
+
+// updated by omkar
+function get_user_points_log() {
+    global $DB, $SESSION, $USER;
+
+    // Resolve selected company
+    if (!empty($SESSION->currenteditingcompany)) {
+        $selectedcompany = $SESSION->currenteditingcompany;
+    } else {
+        $usercompany = company::by_userid($USER->id);
+        $selectedcompany = $usercompany->id ?? 0;
+    }
+
+    $ismaincompany = ($selectedcompany == 0);
+
+    if ($ismaincompany) {
+        // MAIN TENANT → ALL USERS
+        $sql = "
+            SELECT up.id,
+                   up.userid,
+                   up.point_type,
+                   up.action,
+                   up.points,
+                   up.timecreated,
+                   up.ip_addr,
+                   u.username,
+                   u.firstname,
+                   u.lastname,
+                   u.email
+            FROM {user_points_log} up
+            JOIN {user} u ON u.id = up.userid
+            ORDER BY up.timecreated DESC
+        ";
+        $params = [];
+    } else {
+        // SUB TENANT → COMPANY USERS ONLY
+        $sql = "
+            SELECT up.id,
+                   up.userid,
+                   up.point_type,
+                   up.action,
+                   up.points,
+                   up.timecreated,
+                   up.ip_addr,
+                   u.username,
+                   u.firstname,
+                   u.lastname,
+                   u.email
+            FROM {user_points_log} up
+            JOIN {user} u ON u.id = up.userid
+            JOIN {company_users} cu ON cu.userid = up.userid
+            WHERE cu.companyid = :companyid
+            ORDER BY up.timecreated DESC
+        ";
+        $params = ['companyid' => $selectedcompany];
+    }
+
+    return $DB->get_records_sql($sql, $params);
+}
+
 
 function get_my_points_log($userid)
 {
@@ -527,60 +573,80 @@ function get_my_points_log($userid)
     return $DB->get_records_sql($SQL);
 }
 
-function get_user_points_share()
-{
-    global $USER, $CFG, $DB, $OUTPUT, $SESSION;
+// updated by omkar for main tanet and company wise points share
+function get_user_points_share() {
+    global $DB, $SESSION, $USER;
+
     if (!empty($SESSION->currenteditingcompany)) {
         $selectedcompany = $SESSION->currenteditingcompany;
-    } else if (!empty($USER->profile->company)) {
-        $usercompany = company::by_userid($USER->id);
-        $selectedcompany = $usercompany->id;
     } else {
-        $selectedcompany = "";
+        $usercompany = company::by_userid($USER->id);
+        $selectedcompany = $usercompany->id ?? 0;
     }
-    if ($selectedcompany) {
-        $SQL = "SELECT us.*, u.username, u1.username  AS tousername FROM {user_points_share} us 
-        INNER JOIN {user} u ON u.id = us.fromuserid
-        INNER JOIN {user} u1 ON u1.id = us.touserid
-        INNER JOIN {company_users} cu ON cu.userid = us.fromuserid
-        WHERE cu.companyid = $selectedcompany
+
+    $ismaincompany = ($selectedcompany == 0);
+
+    if ($ismaincompany) {
+        $sql = "
+            SELECT us.*,
+                   u.username AS username,
+                   u1.username AS tousername
+            FROM {user_points_share} us
+            JOIN {user} u  ON u.id = us.fromuserid
+            JOIN {user} u1 ON u1.id = us.touserid
         ";
     } else {
-        $SQL = "SELECT us.*, u.username, u1.username  AS tousername FROM {user_points_share} us 
-            INNER JOIN {user} u ON u.id = us.fromuserid
-            INNER JOIN {user} u1 ON u1.id = us.touserid
-            ";
+        $sql = "
+            SELECT us.*,
+                   u.username AS fromusername,
+                   u1.username AS tousername
+            FROM {user_points_share} us
+            JOIN {user} u  ON u.id = us.fromuserid
+            JOIN {user} u1 ON u1.id = us.touserid
+            JOIN {company_users} cu ON cu.userid = us.fromuserid
+            WHERE cu.companyid = :companyid
+        ";
+        $params = ['companyid' => $selectedcompany];
     }
 
-    return $DB->get_records_sql($SQL);
+    return $DB->get_records_sql($sql, $params ?? []);
 }
 
-function get_user_points_redeem()
-{
-    global $USER, $CFG, $DB, $OUTPUT, $SESSION;
+// updated by omkar
+function get_user_points_redeem() {
+    global $DB, $SESSION, $USER;
+
     if (!empty($SESSION->currenteditingcompany)) {
         $selectedcompany = $SESSION->currenteditingcompany;
-    } else if (!empty($USER->profile->company)) {
+    } else {
         $usercompany = company::by_userid($USER->id);
-        $selectedcompany = $usercompany->id;
-    } else {
-        $selectedcompany = "";
-    }
-    if ($selectedcompany) {
-        $SQL = "SELECT us.*, u.username, u.firstname, u.lastname, u.email FROM {user_points_log} us 
-        INNER JOIN {user} u ON u.id = us.userid 
-        INNER JOIN {company_users} cu ON cu.userid = us.userid
-        WHERE us.point_type = 'redeem' AND cu.companyid = $selectedcompany
-        ";
-    } else {
-        $SQL = "SELECT us.*, u.username, u.firstname, u.lastname, u.email FROM {user_points_log} us 
-        INNER JOIN {user} u ON u.id = us.userid 
-        WHERE us.point_type = 'redeem' GROUP BY us.points
-        ";
+        $selectedcompany = $usercompany->id ?? 0;
     }
 
-    return $DB->get_records_sql($SQL);
+    $ismaincompany = ($selectedcompany == 0);
+
+    if ($ismaincompany) {
+        $sql = "
+            SELECT up.*, u.username, u.firstname, u.lastname, u.email
+            FROM {user_points_log} up
+            JOIN {user} u ON u.id = up.userid
+            WHERE up.point_type = 'redeem'
+        ";
+    } else {
+        $sql = "
+            SELECT up.*, u.username, u.firstname, u.lastname, u.email
+            FROM {user_points_log} up
+            JOIN {user} u ON u.id = up.userid
+            JOIN {company_users} cu ON cu.userid = up.userid
+            WHERE up.point_type = 'redeem'
+              AND cu.companyid = :companyid
+        ";
+        $params = ['companyid' => $selectedcompany];
+    }
+
+    return $DB->get_records_sql($sql, $params ?? []);
 }
+
 
 function add_point_log($userid, $pointtype, $action, $points)
 {

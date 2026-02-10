@@ -889,7 +889,10 @@ class utility {
         // Courses Data.
         $coursecontext = array();
         foreach ($courses as $key => $course) {
-
+  if (is_plugin_available("block_edwiserratingreview")) {
+                $rnr = new \block_edwiserratingreview\ReviewManager();
+                $rnrshortdesign = $rnr->get_course_cardlayout_ratingdata($course['courseid']);
+            }
             $coursedata = array();
             $coursedata['id'] = $course['courseid'];
             $coursedata['grader']    = $course['grader'];
@@ -900,10 +903,10 @@ class utility {
             $coursedata['editcourse']  = $course['editcourse'];
             $coursedata['activity']    = $course['activity'];
             $coursedata['categoryname'] = strip_tags(format_text($course['categoryname']));
-             $coursedata['categorycolor'] = isset($course['categorycolor']) ? $course['categorycolor'] : '#64748b';
-    $coursedata['categorytextcolor'] = isset($course['categorytextcolor']) ? $course['categorytextcolor'] : '#ffffff';
+            $coursedata['categorycolor'] = isset($course['categorycolor']) ? $course['categorycolor'] : '#64748b';
+            $coursedata['categorytextcolor'] = isset($course['categorytextcolor']) ? $course['categorytextcolor'] : '#ffffff';
             $coursedata['categoryclass'] = $colorclass;
-            $coursedata['ernrshortdesign'] = $course['ernrshortdesign'];
+            $coursedata['ernrshortdesign'] = $rnrshortdesign ?? '';
             $coursedata['lessonstitletext'] = $course['lessonstitletext'];
             $coursedata['enrolledusertitletext'] = $course['enrolledusertitletext'];
             $coursedata['skillleveltag'] = $course['skillleveltag'];

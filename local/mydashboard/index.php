@@ -77,29 +77,23 @@ $output['scratchcounter'] = get_scratch_counter($userid);
 list($scratch1, $scratch2, $scratch3) = $cards[1];
 list($n1, $n2, $n3) = $cards[2];
 
+list($weeklabels, $weekpoints) = get_points_last7_days($userid);
+
 $context_data = [
     'user_stats' => $output,
 
-    // Chart values
     'chartdata' => [
-        'login'   => (int) $output['login_points'],
-        'spin'    => (int) $output['spinwheel_points'],
-        'rank'    => (int) $output['my_rank'],
-        'quiz'    => (int) $output['quiz_points'],
-        'rewards' => (int) $output['rewards_received_points'],
+        'login'   => (int)$output['login_points'],
+        'spin'    => (int)$output['spinwheel_points'],
+        'rank'    => (int)$output['my_rank'],
+        'quiz'    => (int)$output['quiz_points'],
+        'rewards' => (int)$output['rewards_received_points'],
 
-        // Weekly bar chart (dynamic last 7 days)
-        'weekgraph' => [
-            get_points_last7($userid, 'mon'),
-            get_points_last7($userid, 'tue'),
-            get_points_last7($userid, 'wed'),
-            get_points_last7($userid, 'thu'),
-            get_points_last7($userid, 'fri'),
-            get_points_last7($userid, 'sat'),
-            get_points_last7($userid, 'sun'),
-        ]
+        'weeklabels' => $weeklabels,
+        'weekgraph'  => $weekpoints,
     ]
 ];
+
 
 // print_r($context_data);
 
@@ -484,14 +478,15 @@ renderCustomLegend();
 
 
 const barCtx = document.getElementById('barChart').getContext('2d');
+
 new Chart(barCtx, {
     type: 'bar',
     data: {
-        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+        labels: <?php echo json_encode($context_data['chartdata']['weeklabels']); ?>,
         datasets: [{
             label: 'Points Earned',
-            borderRadius: 8,  
-            data: [<?php echo implode(', ', $context_data['chartdata']['weekgraph']); ?>],
+            borderRadius: 8,
+            data: <?php echo json_encode($context_data['chartdata']['weekgraph']); ?>,
             backgroundColor: '#003152'
         }]
     },
@@ -505,6 +500,7 @@ new Chart(barCtx, {
         }
     }
 });
+
 
 
 

@@ -88,7 +88,7 @@ function local_incourse_get_supervideo_completion_text(cm_info $cm) {
 }
 
 function local_incourse_get_completion_and_restriction_string(cm_info $cm, $course) {
-
+global $DB, $CFG;
     $completionmsgs = [];
     $restrictionmsgs = [];
 
@@ -100,28 +100,47 @@ function local_incourse_get_completion_and_restriction_string(cm_info $cm, $cour
             $completionmsgs[] = "To do: Mark as done";
         }
 
-        if ($cm->completion == COMPLETION_TRACKING_AUTOMATIC) {
-            $auto = [];
+    require_once($CFG->libdir . '/completionlib.php');
 
-            if (!empty($cm->completionview)) {
-                  if ($cm->modname === 'supervideo') {
-        $videotext = local_incourse_get_supervideo_completion_text($cm);
-        $auto[] = $videotext ?: "View";
-    } else {
-        $auto[] = "View";
-    }
-            }
-            if (!empty($cm->completionusegrade)) {
-                $auto[] = "Receive a grade";
-            }
-            if (!empty($cm->completionpassgrade)) {
-                $auto[] = "Achieve passing grade";
-            }
+if ($cm->completion == COMPLETION_TRACKING_AUTOMATIC) {
 
-            if ($auto) {
-                $completionmsgs[] = "To do: " . implode(", ", $auto);
-            }
+    $auto = [];
+
+    // View completion
+    if (!empty($cm->completionview)) {
+        if ($cm->modname === 'supervideo') {
+            $videotext = local_incourse_get_supervideo_completion_text($cm);
+            $auto[] = $videotext ?: "View";
+        } else {
+            $auto[] = "View";
         }
+    }
+
+    // 🔥 RELIABLE GRADE COMPLETION CHECK (DB-level)
+    $cmrecord = $DB->get_record(
+        'course_modules',
+        ['id' => $cm->id],
+        'completion, completiongradeitemnumber',
+        IGNORE_MISSING
+    );
+
+    if ($cmrecord && $cmrecord->completion == COMPLETION_TRACKING_AUTOMATIC) {
+
+        if ($cmrecord->completiongradeitemnumber !== null) {
+            $auto[] = "Receive a grade";
+        }
+    }
+
+    // Passing grade
+    if (!empty($cm->completionpassgrade)) {
+        $auto[] = "Achieve passing grade";
+    }
+
+    if ($auto) {
+        $completionmsgs[] = "To do: " . implode(", ", $auto);
+    }
+}
+
     }
 
     /* ================= RESTRICTIONS (ONLY IF NOT AVAILABLE) ================= */
@@ -296,6 +315,7 @@ foreach ($activities as $cmid) {
         'pdfjsfolder' => 'picture_as_pdf',
         'h5p' => 'extension',
         'scorm'=> 'inventory_2',
+        'zoom' => 'video_call',
         default => 'article',
     };
 

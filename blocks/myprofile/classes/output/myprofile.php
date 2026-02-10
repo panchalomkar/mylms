@@ -128,7 +128,7 @@ $data->designation = $designation ?: '';
         $data->myrank = '-';
 
         if (function_exists('get_total_points') && function_exists('get_my_rank')) {
-            $data->mypoints = get_total_points($USER->id);
+            $data->mypoints = get_available_points($USER->id);
             $data->myrank = get_my_rank($USER->id);
         }
 

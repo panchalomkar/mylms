@@ -1,17 +1,28 @@
 <?php
 require_once('../../config.php');
+require_once('lib.php');
 
-require_once 'lib.php';
 global $DB, $CFG, $USER;
 
 require_login();
+
+// ✅ SET CONTEXT FIRST (this fixes your error)
+$context = context_system::instance();
+$PAGE->set_context($context);
+
+// Page setup
 $PAGE->set_url('/local/mydashboard/report.php');
-$PAGE->set_title('Reports');
 $PAGE->set_pagelayout('standard');
-$reporturl = 'Home';
-$PAGE->navbar->add($reporturl, new moodle_url('/my'));
+$PAGE->set_title('Reports');
+$PAGE->set_heading('Reports');
+
+// Navbar
+$PAGE->navbar->add('Home', new moodle_url('/my'));
 $PAGE->navbar->add('Reports');
+
+// Output header
 echo $OUTPUT->header();
+
 
 //get user available points
 $user_points = get_user_available_points();
