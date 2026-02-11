@@ -1,8 +1,8 @@
-#page-blocks-iomad_company_admin-company_users_form .userselector select {
+.path-blocks-iomad_company_admin .userselector select {
     min-height: 48px !important;
 }
 #page-admin-user-user_bulk #fgroup_id_usersgrp .fitem{width: 40%;}
-#page-blocks-iomad_company_admin-company_users_form #existingcell{
+.path-blocks-iomad_company_admin #existingcell{
     padding: 10px
 }
 #page-local-iomad-dashboard-index .mt_boxing {
