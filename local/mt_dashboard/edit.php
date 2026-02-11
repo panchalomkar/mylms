@@ -356,14 +356,14 @@ if (!iomad::get_my_companyid(context_system::instance(), false)) {
             $action = '';
         }
 $iconmap = [
-    'Manage departments'           => ['icon' => 'settings', 'bg' => 'bg-blue'],
-    'Edit company'                 => ['icon' => 'edit_square', 'bg' => 'bg-sky'],
-    'Department users & managers'  => ['icon' => 'groups', 'bg' => 'bg-cyan'],
-    'Optional profiles'            => ['icon' => 'person_add', 'bg' => 'bg-purple'],
-    'Assign users'                 => ['icon' => 'how_to_reg', 'bg' => 'bg-indigo'],
-    'Restrict capabilities'        => ['icon' => 'shield', 'bg' => 'bg-royal'],
-    'Email templates'              => ['icon' => 'mail', 'bg' => 'bg-teal'],
-    'Appearance Setting'           => ['icon' => 'palette', 'bg' => 'bg-ocean'],
+    'Manage departments'           => ['icon' => 'settings', 'bg' =>  'bg-[#003152]'],
+    'Edit company'                 => ['icon' => 'edit_square', 'bg' => 'bg-[#003152]'],
+    'Department users & managers'  => ['icon' => 'groups', 'bg' =>  'bg-[#003152]'],
+    'Optional profiles'            => ['icon' => 'person_add', 'bg' => 'bg-[#003152]'],
+    'Assign users'                 => ['icon' => 'how_to_reg', 'bg' =>  'bg-[#003152]'],
+    'Restrict capabilities'        => ['icon' => 'shield', 'bg' =>  'bg-[#003152]'],
+    'Email templates'              => ['icon' => 'mail', 'bg' =>  'bg-[#003152]'],
+    'Appearance Setting'           => ['icon' => 'palette', 'bg' =>  'bg-[#003152]'],
     'Create user'          => ['icon' => 'person_add', 'bg' => 'bg-green'],
     'Edit users'           => ['icon' => 'edit', 'bg' => 'bg-blue'],
     'Upload users'         => ['icon' => 'upload', 'bg' => 'bg-purple'],
@@ -372,10 +372,10 @@ $iconmap = [
     'Cohorts'              => ['icon' => 'groups', 'bg' => 'bg-cyan'],
     'Approve training events' => ['icon' => 'check_circle', 'bg' => 'bg-green'],
     'Merge user accounts'      => ['icon' => 'merge_type', 'bg' => 'bg-amber'],
-    'Advanced company settings' => ['icon' => 'settings', 'bg' => 'bg-blue'],
-    'Import companies'         => ['icon' => 'import_export', 'bg' => 'bg-purple'],
-    'Custom pages'             => ['icon' => 'pageview', 'bg' => 'bg-ocean'],
-    'Permission Control'       => ['icon' => 'lock', 'bg' => 'bg-indigo'],
+    'Advanced company settings' => ['icon' => 'settings', 'bg' =>  'bg-[#003152]'],
+    'Import companies'         => ['icon' => 'import_export', 'bg' =>  'bg-[#003152]'],
+    'Custom pages'             => ['icon' => 'pageview', 'bg' =>  'bg-[#003152]'],
+    'Permission Control'       => ['icon' => 'lock', 'bg' =>  'bg-[#003152]'],
      'Assign to company' => [ 'icon' => 'add_box', 'bg'   => 'bg-[#003152]','description' => 'Assign courses'],
     'User enrolments' => ['icon' => 'person_add', 'bg'   => 'bg-[#003152]','description' => 'Assign users '],
     'Create course' => ['icon' => 'menu_book','bg'   => 'bg-[#003152]','description' => 'New course'],
@@ -444,7 +444,7 @@ $data['is_tab_8'] = ($selectedtab == 8);
 
 $data['show_quick_actions'] = (($selectedtab == 1) ||($selectedtab == 3||($selectedtab == 5)||($selectedtab == 7)||($selectedtab == 6)||($selectedtab == 8)));//||($selectedtab == 5)
 $data['show_quick_actions_small'] = (($selectedtab == 2) ||($selectedtab == 4));
-$data['actions_child'] = (($selectedtab == 3) ||($selectedtab == 5)||($selectedtab == 7)||($selectedtab == 6))||($selectedtab == 8);//||($selectedtab == 7)
+$data['actions_child'] = (($selectedtab == 1) ||($selectedtab == 3) ||($selectedtab == 5)||($selectedtab == 7)||($selectedtab == 6))||($selectedtab == 8);//||($selectedtab == 7)
 switch ($selectedtab) {
 
     // TAB 1 – Company overview
@@ -505,43 +505,63 @@ WHERE cu.companyid = :companyid
 
     $records = $DB->get_records_sql($sql, ['companyid' => $selectedcompany]);
 
-    $users = [];
-    foreach ($records as $u) {
-$sesskey = sesskey();
+$users = [];
+$inactivecutoff = time() - (30 * 24 * 60 * 60);
 
-$users[] = [
-    'id'           => $u->id,
-    'fullname'     => fullname($u),
-    'email'        => $u->email,
-    'role'         => $u->role ?? '—',
-     'roleid'    => (string) ($u->roleid ?? ''),
-    'active'       => !$u->suspended,
-    'status'       => $u->suspended ? 'suspended' : 'active',
-    'lastlogin'    => $u->lastaccess ? date('Y-m-d', $u->lastaccess) : '—',
-    // EDIT (no sesskey required)
-    'editurl' => (new moodle_url(
-        '/user/editadvanced.php',
-        ['id' => $u->id]
-    ))->out(false),
+foreach ($records as $u) {
 
-    // SUSPEND / UNSUSPEND (sesskey REQUIRED)
-  'suspendurl' => (new moodle_url(
-    '/admin/user.php',
-    ['suspend' => $u->id, 'sesskey' => sesskey()]
-))->out(false),
+    $sesskey = sesskey();
 
-    'unsuspendurl' => (new moodle_url(
-        '/admin/user.php',
-        ['unsuspend' => $u->id, 'sesskey' => $sesskey]
-    ))->out(false),
-
-    // DELETE (sesskey REQUIRED)
-    'deleteurl' => (new moodle_url(
-        '/admin/user.php',
-        ['delete' => $u->id, 'sesskey' => $sesskey]
-    ))->out(false),
-];
+    // Determine status
+    if ($u->suspended) {
+        $status = 'suspended';
+        $activeflag = false;
+    } else if ($u->lastaccess >= $inactivecutoff) {
+        $status = 'active';
+        $activeflag = true;
+    } else {
+        $status = 'inactive';
+        $activeflag = false;
     }
+
+    $users[] = [
+        'id'        => $u->id,
+        'fullname'  => fullname($u),
+        'email'     => $u->email,
+        'role'      => $u->role ?? '—',
+        'roleid'    => (string) ($u->roleid ?? ''),
+        'active'    => $activeflag,
+        'status'    => $status,
+        'lastlogin' => $u->lastaccess 
+                        ? userdate($u->lastaccess) 
+                        : 'Never',
+
+        // EDIT
+        'editurl' => (new moodle_url(
+            '/user/editadvanced.php',
+            ['id' => $u->id]
+        ))->out(false),
+
+        // SUSPEND
+        'suspendurl' => (new moodle_url(
+            '/admin/user.php',
+            ['suspend' => $u->id, 'sesskey' => $sesskey]
+        ))->out(false),
+
+        // UNSUSPEND
+        'unsuspendurl' => (new moodle_url(
+            '/admin/user.php',
+            ['unsuspend' => $u->id, 'sesskey' => $sesskey]
+        ))->out(false),
+
+        // DELETE
+        'deleteurl' => (new moodle_url(
+            '/admin/user.php',
+            ['delete' => $u->id, 'sesskey' => $sesskey]
+        ))->out(false),
+    ];
+}
+
 
     $data['users'] = $users;
     break;

@@ -173,36 +173,43 @@ function get_company_creator_name(int $companyid): string {
     global $DB;
 
     if (empty($companyid)) {
-        return 'Unknown';
+        return '-';
     }
 
-    // 1️⃣ Try: company admin (ANY managertype, earliest record)
-    $user = $DB->get_record_sql("
-        SELECT u.firstname, u.lastname
+    // 1️⃣ First Preference: Company Manager (managertype = 2)
+    $manager = $DB->get_record_sql("
+        SELECT u.id, u.firstname, u.lastname
         FROM {company_users} cu
         JOIN {user} u ON u.id = cu.userid
         WHERE cu.companyid = :companyid
+          AND cu.managertype = 2
           AND u.deleted = 0
         ORDER BY cu.id ASC
     ", ['companyid' => $companyid]);
 
-    if ($user) {
-        return fullname($user);
+    if ($manager) {
+        return fullname($manager);
     }
 
-    // 2️⃣ Try: createdby column (if exists)
-    if ($DB->get_manager()->field_exists('company', 'createdby')) {
-        $creatorid = $DB->get_field('company', 'createdby', ['id' => $companyid]);
-        if ($creatorid) {
-            $u = $DB->get_record('user', ['id' => $creatorid], 'firstname, lastname');
-            if ($u) {
-                return fullname($u);
-            }
-        }
+    // 2️⃣ Second Preference: Company Admin (managertype = 1)
+    $admin = $DB->get_record_sql("
+        SELECT u.id, u.firstname, u.lastname
+        FROM {company_users} cu
+        JOIN {user} u ON u.id = cu.userid
+        WHERE cu.companyid = :companyid
+          AND cu.managertype = 1
+          AND u.deleted = 0
+        ORDER BY cu.id ASC
+    ", ['companyid' => $companyid]);
+
+    if ($admin) {
+        return fullname($admin);
     }
 
-    return 'Unknown';
+    return '-';
 }
+
+
 function get_company_user_stats(int $companyid): array {
     global $DB;
 
@@ -210,41 +217,59 @@ function get_company_user_stats(int $companyid): array {
         return [];
     }
 
+    $params = ['cid' => $companyid];
+    $thirtydaysago = time() - (30 * 24 * 60 * 60);
+    $params['inactivecutoff'] = $thirtydaysago;
+
+    // Total Users (excluding deleted)
     $total = $DB->count_records_sql("
         SELECT COUNT(DISTINCT cu.userid)
         FROM {company_users} cu
         JOIN {user} u ON u.id = cu.userid
-        WHERE cu.companyid = :cid AND u.deleted = 0
-    ", ['cid' => $companyid]);
+        WHERE cu.companyid = :cid
+          AND u.deleted = 0
+    ", $params);
 
+    // Active Users (not suspended + logged in recently)
     $active = $DB->count_records_sql("
         SELECT COUNT(DISTINCT cu.userid)
         FROM {company_users} cu
         JOIN {user} u ON u.id = cu.userid
-        WHERE cu.companyid = :cid AND u.suspended = 0 AND u.deleted = 0
-    ", ['cid' => $companyid]);
+        WHERE cu.companyid = :cid
+          AND u.deleted = 0
+          AND u.suspended = 0
+          AND u.lastaccess >= :inactivecutoff
+    ", $params);
 
+    // Suspended Users
     $suspended = $DB->count_records_sql("
         SELECT COUNT(DISTINCT cu.userid)
         FROM {company_users} cu
         JOIN {user} u ON u.id = cu.userid
-        WHERE cu.companyid = :cid AND u.suspended = 1
-    ", ['cid' => $companyid]);
+        WHERE cu.companyid = :cid
+          AND u.deleted = 0
+          AND u.suspended = 1
+    ", $params);
 
+    // Inactive Users (not suspended + not logged in 30 days)
     $inactive = $DB->count_records_sql("
         SELECT COUNT(DISTINCT cu.userid)
         FROM {company_users} cu
         JOIN {user} u ON u.id = cu.userid
-        WHERE cu.companyid = :cid AND u.lastaccess = 0
-    ", ['cid' => $companyid]);
+        WHERE cu.companyid = :cid
+          AND u.deleted = 0
+          AND u.suspended = 0
+          AND (u.lastaccess = 0 OR u.lastaccess < :inactivecutoff)
+    ", $params);
 
     return [
         ['icon'=>'groups',        'label'=>'Total Users',     'value'=>$total,     'bg'=>'bg-blue-card',   'iconbg'=>'icon-blue'],
-        ['icon'=>'person_check',  'label'=>'Active Users',    'value'=>$active,    'bg'=>'bg-sky-card',  'iconbg'=>'icon-sky'],
-        ['icon'=>'person_cancel',  'label'=>'Inactive Users',  'value'=>$inactive,  'bg'=>'bg-teal-card', 'iconbg'=>'icon-teal'],
-        ['icon'=>'shield',         'label'=>'Suspended Users', 'value'=>$suspended, 'bg'=>'bg-indigo-card',    'iconbg'=>'icon-indigo'],
+        ['icon'=>'person_check',  'label'=>'Active Users',    'value'=>$active,    'bg'=>'bg-sky-card',    'iconbg'=>'icon-sky'],
+        ['icon'=>'person_cancel', 'label'=>'Inactive Users',  'value'=>$inactive,  'bg'=>'bg-teal-card',   'iconbg'=>'icon-teal'],
+        ['icon'=>'shield',        'label'=>'Suspended Users', 'value'=>$suspended, 'bg'=>'bg-indigo-card', 'iconbg'=>'icon-indigo'],
     ];
 }
+
 
 /**
  * Company overview dashboard stats (Tab 1)
@@ -342,14 +367,17 @@ function get_company_course_stats(int $companyid): array {
         WHERE cc.companyid = :companyid
     ", ['companyid' => $companyid]);
 
-    // 2. Total Enrollments (unique users enrolled in company courses)
-    $totalenrollments = $DB->count_records_sql("
-        SELECT COUNT(DISTINCT ue.userid)
-        FROM {user_enrolments} ue
-        JOIN {enrol} e ON e.id = ue.enrolid
-        JOIN {company_course} cc ON cc.courseid = e.courseid
-        WHERE cc.companyid = :companyid
-    ", ['companyid' => $companyid]);
+
+$totalenrollments = $DB->count_records_sql("
+    SELECT COUNT(DISTINCT cu.userid)
+    FROM {company_users} cu
+    JOIN {user_enrolments} ue ON ue.userid = cu.userid
+    JOIN {enrol} e ON e.id = ue.enrolid
+    JOIN {company_course} cc ON cc.courseid = e.courseid 
+        AND cc.companyid = cu.companyid
+    WHERE cu.companyid = :companyid
+", ['companyid' => $companyid]);
+
 
     // 3. Active Groups (groups with members in company courses)
     $activegroups = $DB->count_records_sql("

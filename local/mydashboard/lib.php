@@ -469,7 +469,7 @@ function get_user_available_points() {
         $selectedcompany = $usercompany->id ?? 0;
     }
 
-    $ismaincompany = ($selectedcompany == 0);
+    $ismaincompany = ($selectedcompany == 1);
 
     if ($ismaincompany) {
         // MAIN TENANT → ALL USERS
@@ -516,7 +516,7 @@ function get_user_points_log() {
         $selectedcompany = $usercompany->id ?? 0;
     }
 
-    $ismaincompany = ($selectedcompany == 0);
+    $ismaincompany = ($selectedcompany == 1);
 
     if ($ismaincompany) {
         // MAIN TENANT → ALL USERS
@@ -584,7 +584,7 @@ function get_user_points_share() {
         $selectedcompany = $usercompany->id ?? 0;
     }
 
-    $ismaincompany = ($selectedcompany == 0);
+    $ismaincompany = ($selectedcompany == 1);
 
     if ($ismaincompany) {
         $sql = "
@@ -623,7 +623,7 @@ function get_user_points_redeem() {
         $selectedcompany = $usercompany->id ?? 0;
     }
 
-    $ismaincompany = ($selectedcompany == 0);
+    $ismaincompany = ($selectedcompany == 1);
 
     if ($ismaincompany) {
         $sql = "

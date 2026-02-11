@@ -4761,9 +4761,6 @@ select#id_overall_aggregation
     height: 34px;
 }
 
-.form-inline .form-control{
-    height: 37px;
-}
 #fitem_fgroup_id_grade label {
     margin-top: -16px;
 }
@@ -10655,9 +10652,6 @@ select#id_overall_aggregation
     height: 34px;
 }
 
-.form-inline .form-control{
-    height: 37px;
-}
 #fitem_fgroup_id_grade label {
     margin-top: -16px;
 }
@@ -10909,7 +10903,14 @@ body#page-course-view-remuiformat .remui-format-card.all-section-format .section
 .switch .txt_switch {
     padding-left: 43px;
 }
+#courseDetailModal .generalbox .coursename a.aalink {
+    /* pointer-events: none;
+    color: #000 !important;
+    text-decoration: none !important;
+    font-weight: 500; */
+}
 
+#usernavigation .companymenu{display: none;}
 .modal-body fieldset .p-py-lg-8 {
     padding-top: 0;
     padding-bottom: 0;
