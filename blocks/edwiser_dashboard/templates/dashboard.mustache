@@ -119,7 +119,7 @@
 
   <!-- Cohort -->
   <select id="soCohort" class="form-select form-select-sm">
-    <option value="0">All Cohorts</option>
+    
     {{#cohorts}}
       <option value="{{id}}">{{name}}</option>
     {{/cohorts}}
@@ -176,7 +176,7 @@
       </div>
 
       <!-- Line Chart -->
-      <div class="mt-4" style="width: 520px; height: 220px;">
+      <div class="mt-4" style="width: 100%; height: 220px;">
     <canvas
   id="overviewChart"
   height="220"
