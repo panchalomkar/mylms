@@ -82,6 +82,11 @@
   font-weight: 500;
   color: #000;
 }
+.licence-e[data-isenrolled="0"]{    
+margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 30px !important;}
+    
 </style>
 
 
@@ -204,7 +209,7 @@
                         {{/enrollmenticonsremainig}}
                     </div>
 <a 
-   class="btn btn-primary mb-2 mt-3 justify-content-center d-flex w-100 btn-sm view-course-btn course-detail-trigger"
+   class="btn btn-primary mb-2 mt-3 justify-content-center d-flex w-100 btn-sm view-course-btn  {{#enrollmenticons }}licence-e{{/enrollmenticons }} course-detail-trigger"
    data-course-id="{{id}}"
    data-isenrolled="{{#isenrolled}}1{{/isenrolled}}{{^isenrolled}}0{{/isenrolled}}"
    data-course-url="{{courseurl}}"
