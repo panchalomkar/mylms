@@ -214,7 +214,7 @@ $tearms .= '<select name="tearmsid" id="tearmsid" class="form-control">
 $tearms .='</select>';
 
 
-$viewcontent ='<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px;">
+$viewcontent ='<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px; padding: 0px 10px 0px 10px;">
   <div class="col-md-2">
      '.$buselct.'
   </div>

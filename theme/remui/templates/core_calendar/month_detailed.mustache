@@ -251,8 +251,7 @@ require(['jquery', 'core_calendar/month_view_drag_drop'], function($, DragDrop) 
     $('#open-full-calendar').on('click', function(e){
         e.preventDefault();
         window.location.href = M.cfg.wwwroot + '/calendar/view.php?view=month';
-    });
-
+    });  
 $(document).on('click', '.event-item', async function (e) {
     e.preventDefault();
     e.stopPropagation();

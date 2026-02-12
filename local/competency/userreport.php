@@ -475,7 +475,7 @@ if ($terms == 1) {
 }
 $termsselect .= '</select>';
 
-$viewcontentbody = '<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px;">
+$viewcontentbody = '<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px; padding: 0px 10px 0px 10px;">
 	<div class="col-md-3">
 		' . $viewselct . '
 	</div>
@@ -486,7 +486,7 @@ $viewcontentbody = '<div class="row" style="text-align:center;margin-bottom:10px
 		' . $subsubselct . '
 	</div>
 	</div>
-	<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px;">
+	<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px; padding: 0px 10px 0px 10px;">
 	<div class="col-md-3">
 		' . $ratstatus . '
 	</div>

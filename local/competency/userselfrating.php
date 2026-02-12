@@ -224,7 +224,7 @@ $studentData = getexistingStudentRanking($USER->id, 1);
                                     <option value="2">Second Half</option>';
                 $tearms .= '</select>';
 
-                $viewcontent = '<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px;">
+                $viewcontent = '<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px; padding: 0px 10px 0px 10px;">
                           <div class="col-md-4" >
                              ' . $tearms . '
                           </div>

@@ -62,3 +62,10 @@
     top: 30px;
 }
 }
+
+.path-local-competency #page-wrapper #page {
+    div[role="main"] {
+       background: transparent !important;
+	   box-shadow: none;
+    }
+}

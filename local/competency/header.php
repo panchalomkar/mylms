@@ -215,7 +215,7 @@ th.sticky-col.first-col, th.userlist {
 		padding-left: 18em;
 
 		div[role="main"] {
-			padding: 10px 20px 0px 0px;
+			padding: 25px 20px 0px 0px;
 		}
 	}
 	.path-local-competency .collapsed #page-wrapper #page,
@@ -247,7 +247,7 @@ th.sticky-col.first-col, th.userlist {
 	.path-local-competency #page-header {
 		/* font-size: 12px !important; */
 		margin-bottom: 0px !important;
-		margin-top: 65px;
+		margin-top: 100px;
 	.header-heading{display: none;}
 	}
 

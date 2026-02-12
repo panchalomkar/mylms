@@ -10904,10 +10904,10 @@ body#page-course-view-remuiformat .remui-format-card.all-section-format .section
     padding-left: 43px;
 }
 #courseDetailModal .generalbox .coursename a.aalink {
-    /* pointer-events: none;
+    pointer-events: none;
     color: #000 !important;
     text-decoration: none !important;
-    font-weight: 500; */
+    font-weight: 500;
 }
 
 #usernavigation .companymenu{display: none;}

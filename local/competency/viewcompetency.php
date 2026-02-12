@@ -134,7 +134,7 @@ foreach ($searchcompetencyheading as $key => $seachVal) {
 	$buselct = $search[0];
 	$viewselct = $search[1];
 	
-	$viewcontentbody ='<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px;">
+	$viewcontentbody ='<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px;padding: 15px 10px 0px 10px;">
 	<div class="col-md-4">
 		'.$buselct.'
 	</div>

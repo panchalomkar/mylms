@@ -305,15 +305,59 @@ function get_company_overview_stats(int $companyid): array {
     $completionrate = get_company_completion_rate($companyid);
 
     // Certifications (optional / safe)
-    $certcount = 0;
-    if ($DB->get_manager()->table_exists('iomadcertificate_issues')) {
-        $certcount = $DB->count_records_sql("
-            SELECT COUNT(ci.id)
-            FROM {iomadcertificate_issues} ci
-            JOIN {company_users} cu ON cu.userid = ci.userid
-            WHERE cu.companyid = :companyid
-        ", ['companyid' => $companyid]);
-    }
+ // Certifications
+$certcount = 0;
+
+$params = ['companyid' => $companyid];
+
+/* ================================
+   Custom Certificate Count
+   ================================ */
+if (
+    $DB->get_manager()->table_exists('customcert') &&
+    $DB->get_manager()->table_exists('customcert_issues')
+) {
+
+    $customsql = "
+        SELECT COUNT(ci.id)
+        FROM {customcert_issues} ci
+        JOIN {customcert} cc ON cc.id = ci.customcertid
+        JOIN {course_modules} cm ON cm.instance = cc.id
+        JOIN {modules} m ON m.id = cm.module
+        JOIN {company_users} cu ON cu.userid = ci.userid
+        WHERE cu.companyid = :companyid
+          AND m.name = 'customcert'
+          AND cm.deletioninprogress = 0
+          AND cm.visible = 1
+    ";
+
+    $certcount += (int)$DB->count_records_sql($customsql, $params);
+}
+
+/* ================================
+   IOMAD Certificate Count
+   ================================ */
+if (
+    $DB->get_manager()->table_exists('iomadcertificate') &&
+    $DB->get_manager()->table_exists('iomadcertificate_issues')
+) {
+
+    $iomadsql = "
+        SELECT COUNT(ii.id)
+        FROM {iomadcertificate_issues} ii
+        JOIN {iomadcertificate} ic ON ic.id = ii.iomadcertificateid
+        JOIN {course_modules} cm ON cm.instance = ic.id
+        JOIN {modules} m ON m.id = cm.module
+        JOIN {company_users} cu ON cu.userid = ii.userid
+        WHERE cu.companyid = :companyid
+          AND m.name = 'iomadcertificate'
+          AND cm.deletioninprogress = 0
+          AND cm.visible = 1
+    ";
+
+    $certcount += (int)$DB->count_records_sql($iomadsql, $params);
+}
+
 
     return [
         [

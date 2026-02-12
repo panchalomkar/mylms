@@ -55,7 +55,7 @@ $search = getSearchFieldsCompetency();
 $buselct = $search[0];
 $viewselct = $search[1];
 
-$approvalcontentbody .= '<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px;">
+$approvalcontentbody .= '<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px; padding: 0px 10px 0px 10px;">
   <div class="col-md-4">
      ' . $buselct . '
   </div>

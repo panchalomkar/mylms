@@ -272,7 +272,7 @@ if (empty($subcid) && empty($subccid)) {
 
 	$subsubselct .= '</select>';
 }
-$viewcontentbody = '<form method="post"><div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px;">
+$viewcontentbody = '<form method="post"><div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px; padding: 0px 10px 0px 10px;">
 	<div class="col-md-3">
 		' . $subselct . '
 	</div>

@@ -7,6 +7,13 @@ defined('MOODLE_INTERNAL') || die();
  * @param stdClass $course The course object.
  * @return string          HTML with lock icon and restriction info (empty if visible).
  */
+/**
+ * Get human-readable restriction info for a course module (with previous activity completion status).
+ *
+ * @param stdClass $cond     The availability condition object.
+ * @param core_course_modinfo $modinfo The modinfo object for the course.
+ * @return array             Array of human-readable messages.
+ */
 function local_incourse_parse_availability_condition($cond, $modinfo) {
     global $DB;
 
@@ -15,54 +22,79 @@ function local_incourse_parse_availability_condition($cond, $modinfo) {
 
     switch ($type) {
 
-        /* Activity completion */
-        case 'completion':
-            if (!empty($cond->cm) && isset($modinfo->cms[$cond->cm])) {
-                $name = format_string($modinfo->cms[$cond->cm]->get_formatted_name());
-                $msgs[] = "Not available unless <strong>{$name}</strong> is completed.";
-            }
-            break;
+        /* ================= ACTIVITY COMPLETION ================= */
+case 'completion':
+    if (!empty($cond->cm)) {
+        if (isset($modinfo->cms[$cond->cm])) {
+            $cm = $modinfo->cms[$cond->cm];
+            $name = format_string($cm->get_formatted_name());
 
-        /* Date restriction */
+            // Check if previous activity is completed
+            $completion = new completion_info($cm->course);
+            $completed = $completion->is_enabled($cm) &&
+                         $completion->get_data($cm)->completionstate > 0;
+            $status = $completed ? 'Completed' : 'Incomplete';
+
+            $msgs[] = "Not available unless <strong>{$name}</strong> is completed (<em>{$status}</em>).";
+
+        } else {
+            // Module ID not found in course modinfo
+            $msgs[] = "Not available unless <strong>Previous activity</strong> is completed.";
+        }
+    }
+    break;
+
+
+        /* ================= DATE RESTRICTION ================= */
         case 'date':
             if (!empty($cond->t)) {
                 $msgs[] = "Not available until <strong>" . userdate($cond->t) . "</strong>.";
             }
             break;
 
-        /* Grade restriction */
+        /* ================= GRADE RESTRICTION ================= */
         case 'grade':
             if (!empty($cond->id)) {
                 $item = $DB->get_record('grade_items', ['id' => $cond->id], '*', IGNORE_MISSING);
                 if ($item) {
                     $min = $cond->min ?? 0;
                     $msgs[] = "Not available unless you achieve <strong>{$min} Grade</strong> in <strong>{$item->itemname}</strong>.";
+                } else {
+                    $msgs[] = "Not available unless you achieve required grade (Grade item ID: {$cond->id}).";
                 }
             }
             break;
 
-        /* User profile restriction */
+        /* ================= USER PROFILE RESTRICTION ================= */
         case 'userprofile':
             if (!empty($cond->sf)) {
-                $msgs[] = "Restricted by user profile field <strong>{$cond->sf}</strong>.";
+                $fieldname = $cond->sf;
+                $operator = $cond->op ?? '';
+                $value = $cond->v ?? '';
+                $msgs[] = "Restricted by user profile field <strong>{$fieldname}</strong> {$operator} <strong>{$value}</strong>.";
             }
             break;
 
-        /* Restriction set (AND / OR logic) */
+        /* ================= RESTRICTION SET (AND / OR LOGIC) ================= */
         case 'restrictionset':
             if (!empty($cond->c)) {
+                $logic = ($cond->op ?? 'all') === 'any' ? 'One of the following:' : 'All of the following:';
+                $msgs[] = "<em>{$logic}</em>";
                 foreach ($cond->c as $child) {
-                    $msgs = array_merge(
-                        $msgs,
-                        local_incourse_parse_availability_condition($child, $modinfo)
-                    );
+                    $msgs = array_merge($msgs, local_incourse_parse_availability_condition($child, $modinfo));
                 }
             }
+            break;
+
+        /* ================= CUSTOM / UNKNOWN TYPES ================= */
+        default:
+            $msgs[] = "Restricted due to unknown condition type: <strong>{$type}</strong>.";
             break;
     }
 
     return $msgs;
 }
+
 function local_incourse_get_supervideo_completion_text(cm_info $cm) {
     global $DB;
 
@@ -145,7 +177,7 @@ if ($cm->completion == COMPLETION_TRACKING_AUTOMATIC) {
 
     /* ================= RESTRICTIONS (ONLY IF NOT AVAILABLE) ================= */
 
-    if (!$cm->available && !empty($cm->availability)) {
+    if (!$cm->uservisible && !empty($cm->availability)){
 
         $availability = json_decode($cm->availability);
         $modinfo = get_fast_modinfo($course);
@@ -296,10 +328,43 @@ foreach ($activities as $cmid) {
     }
 
     // --- RESTRICTION ---
-    $restricted = !$cm->available;
+// --- RESTRICTION ---
+$restricted = !$cm->uservisible;
+$restrictionhtml = '';
 
-    $restrictionhtml = local_incourse_get_completion_and_restriction_string($cm, $course);
-    $completionhtml = $restrictionhtml ? '<div class="mt-2">' . $restrictionhtml . '</div>' : '';
+if ($restricted && !empty($cm->availability)) {
+    $availability = json_decode($cm->availability);
+    if (!empty($availability->c)) {
+        $msgs = [];
+        foreach ($availability->c as $cond) {
+            // Only pass the original modinfo (do NOT call get_fast_modinfo again)
+            $msgs = array_merge($msgs, local_incourse_parse_availability_condition($cond, $modinfo));
+        }
+
+        if (!empty($msgs)) {
+            $restrictionhtml .= '<div class="mt-2 text-xs text-red-300 flex items-start gap-2">';
+            $restrictionhtml .= '<span class="material-icons" style="font-size:15px;">lock</span>';
+            $restrictionhtml .= '<span>' . implode('<br>', $msgs) . '</span></div>';
+        }
+    }
+}
+
+$completionhtml = local_incourse_get_completion_and_restriction_string($cm, $course);
+if ($completionhtml) {
+    $completionhtml = '<div class="mt-2">' . $completionhtml . '</div>';
+}
+
+
+
+
+   $completionhtml = local_incourse_get_completion_and_restriction_string($cm, $course);
+
+// if (!empty($restrictionhtml)) {
+//     $completionhtml .= $restrictionhtml;
+// }
+
+$completionhtml = $completionhtml ? '<div class="mt-2">' . $completionhtml . '</div>' : '';
+
 
     // --- ICONS ---
     $iconname = match ($cm->modname) {
