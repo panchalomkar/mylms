@@ -899,7 +899,7 @@ function get_leaderboard()
 
         // ROW UI
         $table .= '
-<div class="grid grid-cols-7 items-center py-2 px-2 hover:bg-gray-50 '.$rowClass.'">
+<div class="grid grid-cols-6 items-center py-2 px-2 hover:bg-gray-50 '.$rowClass.'">
 
     <!-- Rank -->
     <div class="text-gray-700 font-semibold" style="width:fit-content;">'.$i.'</div>
@@ -939,7 +939,7 @@ function get_leaderboard()
     </div>
 
     <!-- Action -->
-    <div>'.$requestbtn.'</div>
+    <div class="d-none">'.$requestbtn.'</div>
 
 </div>';
 

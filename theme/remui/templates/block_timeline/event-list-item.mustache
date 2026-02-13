@@ -93,3 +93,29 @@
         </div>
     </div>
 </div>
+{{#js}}
+require(['jquery'], function($) {
+
+    $(document).on('click', '.timeline-event-list-item a[href*="/mod/"]', function(e) {
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        var originalUrl = this.href;
+        var url = new URL(originalUrl);
+
+        var cmid = url.searchParams.get('id');
+
+        if (!cmid) {
+            window.location.href = originalUrl;
+            return;
+        }
+
+        window.location.href =
+            M.cfg.wwwroot +
+            '/local/incourse/index.php?id={{course.id}}&cmid=' + cmid;
+
+    });
+
+});
+{{/js}}

@@ -166,11 +166,20 @@ class certificatesblock extends block_base {
             // Get only enrolled students.
             $enrolledusers = \local_edwiserreports\utility::get_enrolled_students($certificate->course, $modulecontext, $cohort);
 
-            $sql = "SELECT ci.*
-                      FROM {customcert_issues} ci
-                      $cohortjoin
-                     WHERE ci.customcertid = :customcertid";
-            $params['customcertid'] = $certificate->id;
+            $sql = "SELECT DISTINCT ci.*
+          FROM {customcert_issues} ci
+          JOIN {user} u ON u.id = ci.userid AND u.deleted = 0
+          JOIN {user_enrolments} ue ON ue.userid = ci.userid AND ue.status = 0
+          JOIN {enrol} e ON e.id = ue.enrolid AND e.courseid = :courseid AND e.status = 0
+          $cohortjoin
+         WHERE ci.customcertid = :customcertid
+           AND u.id <> 2";
+
+
+            $params = [
+                'customcertid' => $certificate->id,
+                'courseid' => $course->id 
+            ];
 
             // Cohort params.
             if ($cohort) {
@@ -229,8 +238,9 @@ class certificatesblock extends block_base {
             $certificate = $DB->get_record("customcert", array("id" => $certid));
             $course = get_course($certificate->course);
 
-            $params = [
-                'customcertid' => $certid
+             $params = [
+                'customcertid' => $certid,
+                'courseid' => $course->id 
             ];
 
             // Cohort sql.
@@ -240,10 +250,14 @@ class certificatesblock extends block_base {
                             JOIN {cohort} c ON c.id = cm.cohortid AND c.visible = 1';
                 $params['cohortid'] = $cohortid;
             }
-            $sql = "SELECT ci.*
-                      FROM {customcert_issues} ci
-                      $cohortjoin
-                     WHERE ci.customcertid = :customcertid";
+            $sql = "SELECT DISTINCT ci.*
+          FROM {customcert_issues} ci
+          JOIN {user} u ON u.id = ci.userid AND u.deleted = 0
+          JOIN {user_enrolments} ue ON ue.userid = ci.userid AND ue.status = 0
+          JOIN {enrol} e ON e.id = ue.enrolid AND e.courseid = :courseid AND e.status = 0
+          $cohortjoin
+         WHERE ci.customcertid = :customcertid
+           AND u.id <> 2";
 
             $issued = $DB->get_recordset_sql($sql, $params);
             $issuedcert = array();

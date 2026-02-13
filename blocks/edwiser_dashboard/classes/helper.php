@@ -210,17 +210,26 @@ private static function get_cohorts_for_course(int $courseid): array {
         ", ['userid' => $USER->id]);
     }
 
-    if (empty($cohorts)) {
-        return [];
+    $result = [];
+
+    // ✅ Always add "All Cohorts" as first option
+    $result[] = [
+        'id'   => 0,   // 0 means ALL
+        'name' => 'All Cohorts'
+    ];
+
+    if (!empty($cohorts)) {
+        foreach ($cohorts as $c) {
+            $result[] = [
+                'id'   => (int)$c->id,
+                'name' => format_string($c->name)
+            ];
+        }
     }
 
-    return array_values(array_map(function ($c) {
-        return [
-            'id'   => (int)$c->id,
-            'name' => format_string($c->name)
-        ];
-    }, $cohorts));
+    return $result;
 }
+
 
 
 

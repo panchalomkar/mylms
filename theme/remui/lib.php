@@ -874,7 +874,17 @@ function show_active_tenant_menu(){
     if( is_siteadmin() && isset($SESSION->currenteditingcompany) && ! empty( $SESSION->currenteditingcompany ) ){
 
         
-        $companyrecord = $DB->get_record('company', array('id' => $SESSION->currenteditingcompany) );
+       $companyid = $SESSION->currentcompany ?? $SESSION->currenteditingcompany ?? null;
+
+if (!$companyid) {
+    return false;
+}
+
+$companyrecord = $DB->get_record('company', ['id' => $companyid]);
+if (!$companyrecord) {
+    return false;
+}
+
         
         $output = html_writer::start_tag('div', array('class' => 'companyindication'));
         $output .= html_writer::start_tag('ul', array('class'=> 'list-unstyled components'));
