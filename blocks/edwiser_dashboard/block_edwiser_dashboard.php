@@ -455,6 +455,24 @@ if (soCohort) {
     soCohort.addEventListener('change', reloadSiteOverview);
 }
 
+// 🔥 ADD THIS BLOCK
+if (soFilter) {
+    soFilter.selectedIndex = 0;
+}
+
+if (soCohort) {
+    soCohort.value = 0;
+}
+
+reloadSiteOverview();
+if (soFilter) {
+    soFilter.addEventListener('change', reloadSiteOverview);
+}
+
+if (soCohort) {
+    soCohort.addEventListener('change', reloadSiteOverview);
+}
+
 }
 
 
