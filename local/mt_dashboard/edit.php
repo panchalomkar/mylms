@@ -184,7 +184,11 @@ if( is_siteadmin() && isset($SESSION->currenteditingcompany) ){
  * @since 2018122800
  * @paradiso 
  */
+<<<<<<< HEAD
 $backlink = new moodle_url("/local/mt_dashboard/index.php?companyss=1&company=1");
+=======
+$backlink = new moodle_url("/local/mt_dashboard/index.php?companyss=0&company=0");
+>>>>>>> origin/main
 $data['compnay_name'] = $compnay_name;
 $data['backlink'] = $backlink;
 $company_name = $DB->get_record('company', array('id' => $SESSION->currenteditingcompany));

@@ -127,7 +127,7 @@ class certificatesblock extends block_base {
      * @param  int   $cohort Cohort id
      * @return array         Array of Certifcates
      */
-    public function get_certificate_list($cohort=0) {
+    public function get_certificate_list($cohort) {
         global $DB;
 
         $cohortjoin = '';

@@ -1758,7 +1758,10 @@ if (modname === 'goone') {
 }
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main
 // 🧑‍🏫 Handle ILT (Instructor-Led Training) inline view
 if (modname === 'ilt') {
     const params = new URLSearchParams(link.href.split('?')[1]);
