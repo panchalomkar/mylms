@@ -517,8 +517,6 @@ $questions[] = [
 // {
 //     global $DB;
 
-//     $api_key = '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'; // 🔒 Regenerate it now!
-//     $youtube_key = 'AIzaSyDbNZjjZHw285wITRZr1sEfQTOCtEY-zis';
 
 //     // 1. Regenerate summary
 //     $summary = generate_section_summary($title, $api_key);
