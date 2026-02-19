@@ -1,0 +1,54 @@
+{{#customstyles}}
+    <style type="text/css">
+        {{{customstyles}}}
+    </style>
+{{/customstyles}}
+{{#userisediting}}
+{{#deleted}}
+<div class="section-delete-overlay">
+    <div class="section-delete-message">
+        <h3 class="text-white">
+            {{#str}} sectiondelete, local_remuihomepage {{/str}}
+        </h3>
+        <button type="button" class="btn btn-warning confirm-delete-section mx-10" data-instance="{{id}}" >
+            {{#str}} confirm {{/str}}
+        </button>
+        <button type="button" class="btn btn-primary cancel-delete-section mx-10" data-instance="{{id}}" >
+            {{#str}} undo, local_remuihomepage {{/str}}
+            <span class="section-deletion-timer">30</span> sec
+        </button>
+    </div>
+</div>
+{{/deleted}}
+{{^deleted}}
+<div class="btn-group edit-menu bg-white" aria-label="Basic example" role="group">
+    <button type="button" class="btn btn-icon btn-default d-flex justify-content-center align-items-center p-p-3 edit-section rounded-0 btn-outline border-0" data-instance="{{id}}" data-sectionname="{{sectionname}}" title="{{#str}}edit,local_remuihomepage{{/str}}">
+        <i class="large edw-icon edw-icon-Configure" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="btn btn-icon btn-default d-flex justify-content-center align-items-center p-p-3 moveup-section rounded-0 btn-outline border-0" data-instance="{{id}}" data-sectionname="{{sectionname}}" title="{{#str}}moveup, local_remuihomepage{{/str}}">
+        <i class="large edw-icon edw-icon-UpArrow" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="btn btn-icon btn-default d-flex justify-content-center align-items-center p-p-3 movedown-section rounded-0 btn-outline border-0" data-instance="{{id}}" data-sectionname="{{sectionname}}" title="{{#str}}movedown, local_remuihomepage{{/str}}">
+        <i class="large edw-icon edw-icon-Down-Arrow" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="btn btn-icon btn-default d-flex justify-content-center align-items-center p-p-3 section-visibility rounded-0 btn-outline border-0" data-instance="{{id}}" data-sectionname="{{sectionname}}" data-visible="{{visible}}" title="{{#visible}}{{#str}}hide, local_remuihomepage{{/str}}{{/visible}} {{^visible}}{{#str}}show, local_remuihomepage{{/str}}{{/visible}}">
+        <i class="large edw-icon {{#visible}}edw-icon-Show{{/visible}}{{^visible}}edw-icon-Hide{{/visible}}" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="btn btn-icon btn-default d-flex justify-content-center align-items-center p-p-3 delete-section rounded-0 btn-outline border-0" data-instance="{{id}}" data-sectionname="{{sectionname}}" title="{{#str}}delete, local_remuihomepage{{/str}}">
+        <i class="large edw-icon edw-icon-Delete-Course" aria-hidden="true"></i>
+    </button>
+    {{>local_remuihomepage/dep_warning_tooltip_overlay}}
+</div>
+{{/deleted}}
+<div class="section-loader-wrapper d-none" data-instance="{{id}}">
+    <div class="section-loader">
+        {{#loader}}
+            <img class="icon" src="{{loader}}"/>
+        {{/loader}}
+        {{^loader}}
+            {{#pix}} owl_loader, local_remuihomepage {{/pix}}
+        {{/loader}}
+    </div>
+</div>
+{{/userisediting}}
+

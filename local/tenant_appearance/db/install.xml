@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/tenant_appearance/db" VERSION="2020093003" COMMENT="XMLDB file for paradiso reports central"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+	<TABLES>
+		<TABLE NAME="font_upload_setting" COMMENT="Table for font upload seeting">
+			<FIELDS>
+				<FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" COMMENT="Tracks the font ids" NEXT="font_file"/>
+				<FIELD NAME="font_file" TYPE="text" LENGTH="355" NOTNULL="false" SEQUENCE="false" COMMENT="Name of the Font File" PREVIOUS="id" NEXT="font_family"/>
+				<FIELD NAME="font_family" TYPE="text" LENGTH="355" NOTNULL="false" SEQUENCE="false" COMMENT="Font Family" PREVIOUS="font_file" NEXT="font_style"/>
+				<FIELD NAME="font_style" TYPE="text" LENGTH="355" NOTNULL="false"  SEQUENCE="false"  COMMENT="Font style" PREVIOUS="font_family" NEXT="font_type"/>
+				<FIELD NAME="font_type" TYPE="text" LENGTH="355" NOTNULL="false"  SEQUENCE="false" COMMENT="Font Type" PREVIOUS="font_style" NEXT="font_weight"/>
+				<FIELD NAME="font_weight" TYPE="text" LENGTH="355" NOTNULL="false"  SEQUENCE="false" COMMENT="Font Weight" PREVIOUS="font_type" NEXT="companyid"/>
+				<FIELD NAME="companyid" TYPE="int" LENGTH="10" NOTNULL="true"  SEQUENCE="false" DEFAULT="0" COMMENT="Company id" PREVIOUS="font_weight" />
+			</FIELDS>
+			<KEYS>
+				<KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+			</KEYS>
+		</TABLE>
+		
+	</TABLES>
+</XMLDB>

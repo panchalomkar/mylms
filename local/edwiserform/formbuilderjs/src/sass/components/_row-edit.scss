@@ -1,0 +1,81 @@
+.row-edit {
+  margin-top: 2rem;
+  .panel-conditions {
+    .conditions {
+      padding: 10px;
+      .svg-icon {
+        width: 1em;
+        height: 1em;
+        vertical-align: middle;
+      }
+      .condition {
+        position: relative;
+        padding: 5px 0px;
+        &:first-child {
+          padding-top: 0px;
+        }
+        &:last-child {
+          padding-bottom: 0px;
+        }
+        .condition-inputs {
+          width: 100%;
+          padding-right: calc(#{$action-btn-width} + 4px);
+          select {
+            display: inline-flex;
+            line-height: 2em;
+            width: 45%;
+          }
+          .condition-operator {
+            width: 10%;
+          }
+        }
+        .condition-controls {
+          position: absolute;
+          top: 50%;
+          right: 0;
+          bottom: 0;
+          height: $action-btn-width;
+          width: $action-btn-width;
+          text-align: right;
+          transform: translateY(-50%);
+          border: none;
+          overflow: hidden;
+          white-space: nowrap;
+          button {
+            position: absolute;
+            width: $action-btn-width;
+            height: 100%;
+            right: 0;
+            padding: 0px;
+            border-radius: 50%;
+            .svg-icon {
+              position: absolute;
+              left: 50%;
+              top: 50%;
+              transform: translate(-50%, -50%);
+            }
+          }
+        }
+        &:last-child {
+          .condition-inputs {
+            select {
+              width: 50%;
+            }
+            .condition-operator {
+              display: none;
+            }
+          }
+        }
+      }
+    }
+  }
+  .row-config {
+    padding: 10px;
+  }
+}
+
+.input-group-addon {
+  label {
+    margin-bottom: 0;
+  }
+}

@@ -1,0 +1,63 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_sitesetting/customise
+
+    Note: collapse/show functionality as well as check/uncheck functionality is 
+          developed using javascript (custom.js) file. Any change in HTML DOM 
+          structure can break these functionalities, so change cautiously.
+
+    @author: 2021 Akashy Pingale (akashy.p@paradisosolution.com)
+    @paradiso
+
+}}
+<div class="filterslist">
+    <div class="panel-heading">
+        <h5 class="panel-title">
+            <a href="#collapse15" class="plms-reports-dropdown collapsed" data-toggle="collapse" data-parent="#accordion">
+                {{#str}}firstaccessd, local_people{{/str}}
+                <i class="reports-dropdown fa fa-angle-down collapsed"></i>
+            </a>
+        </h5>
+    </div>
+    <div id="collapse15" class="panel-collapse collapse">
+        <div class="panel-body">
+            <div class="row">
+                {{#firstaccessd}}
+                    <a href="#" data-name="firstaccessd" class="reset">{{#str}}clear, local_people{{/str}}</a>
+                {{/firstaccessd}}
+                
+                <div class="clr_button"></div>
+                <div class="col-md-12 searchbox select-option">
+                    <form id="form-firstaccessd" method="post" action="">
+                        {{#firstaccessd}}
+                            <input type="hidden" class="filter-true" name="filter-true" value="true">
+                        {{/firstaccessd}}
+                        <div class="row date-time">
+                            {{{dateisafter}}}
+                        </div>
+                        <div class="form-group col-sm-12">
+                            {{{neveraccesscheckbox}}}
+                        </div>
+                        <div class="text-center mar-rgt"></div>
+                        <input type="hidden" name="datefilter" value="firstaccessd" class="form-control">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

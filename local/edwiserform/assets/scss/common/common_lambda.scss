@@ -1,0 +1,12 @@
+.efb-form {
+	box-sizing: border-box !important;
+	* {
+		box-sizing: border-box !important;
+	}
+	.form-control:not(textarea) {
+		height: 34px;
+	}
+	.d-none {
+		display: none !important;
+	}
+}

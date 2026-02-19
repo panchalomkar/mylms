@@ -1,0 +1,19 @@
+{{#GetActionButtons}}
+	<a href="#" class="btn btn-lg btn-white btn-delete pull-right" alt="{{#str}} addcond_del,local_enroll_by_profile {{/str}}" title="{{#str}} addcond_del,local_enroll_by_profile {{/str}}" data-target="#enroll_by_profile_modal">
+		<i class="fa wid wid-icon-delete"></i>
+		<small class="title"></small>
+	</a>
+	{{#negated}}
+		<input type="checkbox" name="negated" value="true" id="id_negated{{id}}" checked="checked" />
+		<span class="mar_left_display ml-2">{{#str}} negated_rule,local_enroll_by_profile {{/str}}</span>
+		<label class="form-checkbox form-normal form-icon-text form-plms col-md-6 pull-right pl-0 " style="margin-top:0px">
+		</label>
+	{{/negated}}
+
+	{{^negated}}
+		<input type="checkbox" name="negated" value="true" id="id_negated{{id}}" />
+		<span class="mar_left_display ml-2">{{#str}} negated_rule,local_enroll_by_profile {{/str}}</span>
+		<label class="form-checkbox form-normal form-icon-text form-plms col-md-6 pull-right pl-0 " style="margin-top:0px">
+		</label>
+	{{/negated}}
+{{/GetActionButtons}}

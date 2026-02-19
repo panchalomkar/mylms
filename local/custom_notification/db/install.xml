@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/custom_notification/db" VERSION="20231103" COMMENT="XMLDB file for Moodle local/custom_notification"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="custom_notification" COMMENT="custom notification created">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="courseid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+
+        <FIELD NAME="course_completion_noti" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="course_completion_tem" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+
+        <FIELD NAME="course_module_completion_noti" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="course_module_completion_tem" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+
+        <FIELD NAME="course_in_progress_noti" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="course_in_progress_tem" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+
+        <FIELD NAME="course_expiration_noti" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="course_expiration_when" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="course_expiration_tem" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+
+        <FIELD NAME="course_not_completed_noti" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="course_not_completed_when" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="course_not_completed_tem" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+
+        <FIELD NAME="not_loggedin_noti" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="not_loggedin_when" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="not_loggedin_tem" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+
+        <FIELD NAME="user_enrolled_noti" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="user_enrolled_tem" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+
+        <FIELD NAME="user_unenrolled_noti" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="user_unenrolled_tem" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="courseid" UNIQUE="false" FIELDS="courseid"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>

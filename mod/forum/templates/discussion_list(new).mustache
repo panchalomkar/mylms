@@ -1,0 +1,123 @@
+<div id="discussion-list-{{uniqid}}" class="discussion-card-list">
+
+    {{#notifications}}
+        {{> core/notification}}
+    {{/notifications}}
+
+    {{{groupchangemenu}}}
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            {{#forum.capabilities.create}}
+                {{#enablediscussioncreation}}
+                    <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseAddForm">
+                       
+                    </a>
+                {{/enablediscussioncreation}}
+            {{/forum.capabilities.create}}
+        </div>
+        <div>
+            {{$discussion_top_pagination}}
+                {{{ pagination }}}
+            {{/discussion_top_pagination}}
+        </div>
+    </div>
+
+    {{#forum.capabilities.create}}
+        <div class="collapse mb-3" id="collapseAddForm">
+            {{{newdiscussionhtml}}}
+        </div>
+    {{/forum.capabilities.create}}
+
+    {{#state.hasdiscussions}}
+        <div class="row g-3">
+            {{#summaries}}
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title mb-0">
+                                <a href="{{discussion.urls.view}}" class="text-decoration-none text-dark" title="{{discussion.name}}">
+                                    {{#shortentext}}100, {{{discussion.name}}}{{/shortentext}}
+                                </a>
+                            </h5>
+                            {{#discussion.userstate.favourited}}
+                                <span class="text-warning">&#9733;</span>
+                            {{/discussion.userstate.favourited}}
+                            {{^discussion.userstate.favourited}}
+                                <span class="text-secondary">&#9734;</span>
+                            {{/discussion.userstate.favourited}}
+                        </div>
+                        <p class="card-text text-truncate mb-3">
+                            {{#shortentext}}200, {{{discussion.message}}}{{/shortentext}}
+                        </p>
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                {{#firstpostauthor}}
+                                    <img class="rounded-circle me-2" src="{{urls.profileimage}}" width="32" height="32" alt="{{fullname}}">
+                                    <span class="small text-truncate">{{fullname}}</span>
+                                {{/firstpostauthor}}
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="me-2"><i class="icon-comment"></i> {{replies}}</span>
+                                {{#forum.capabilities.subscribe}}
+                                <div class="form-check form-switch mb-0">
+                                    <input type="checkbox" class="form-check-input"
+                                        id="subscription-toggle-{{id}}"
+                                        data-type="subscription-toggle"
+                                        data-action="toggle"
+                                        data-discussionid="{{id}}"
+                                        data-forumid="{{forumid}}"
+                                        {{#userstate.subscribed}}data-targetstate="0" checked{{/userstate.subscribed}}
+                                        {{^userstate.subscribed}}data-targetstate="1"{{/userstate.subscribed}}>
+                                </div>
+                                {{/forum.capabilities.subscribe}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{/summaries}}
+        </div>
+
+        {{$discussion_bottom_pagination}}
+            {{{ pagination }}}
+        {{/discussion_bottom_pagination}}
+
+    {{/state.hasdiscussions}}
+    {{^state.hasdiscussions}}
+        <div class="alert alert-info">
+            {{$no_discussions_text}}
+                {{#str}}nodiscussions, forum{{/str}}
+            {{/no_discussions_text}}
+        </div>
+    {{/state.hasdiscussions}}
+
+</div>
+
+{{#js}}
+require(['jquery', 'mod_forum/discussion_list'], function($, View) {
+    var root = $('#discussion-list-{{uniqid}}');
+    View.init(root);
+});
+{{/js}}
+
+<style>
+.discussion-card-list .card {
+    border-radius: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.discussion-card-list .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+.discussion-card-list .card-title {
+    font-weight: 600;
+}
+.discussion-card-list .text-truncate {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+</style>

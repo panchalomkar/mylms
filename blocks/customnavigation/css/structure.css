@@ -1,0 +1,221 @@
+.navigation_tree {
+	border: 1px solid #ccc;
+	padding: 10px 10px 15px 10px;
+	margin: 5px 0px;
+}
+
+.sortable_container .sortable li div {
+	border: 1px solid rgba(212,212,212,.47);
+    -webkit-border-radius: o;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    cursor: move;
+    border-color: #D4D4D4 #D4D4D4 #BCBCBC;
+    margin: 0;
+    padding: 3px;
+    height: 50px;
+    padding: 15px 0 0 28px !important;
+	vertical-align: middle;
+	border-left: none;
+	border-right: none;
+}
+.sortable_container .sortable li ol li div {
+	border: none;
+	height: 40px;
+	padding: 10px 0 10px 10px !important;
+}
+.single-menu-form-title{
+	margin: 0;
+}
+.sortable_container .sortable li:last-child div {
+	border-bottom: 1px solid rgba(212,212,212,.47);
+}
+.sortable_container .sortable > li + li {
+	margin-top: -1px !important;
+}
+.sortable_container a {
+	text-decoration: none;
+}
+
+pre,
+code {
+	font-size: 12px;
+}
+
+pre {
+	width: 100%;
+	overflow: auto;
+}
+
+.placeholder {
+	outline: 1px dashed #4183C4;
+}
+
+.mjs-nestedSortable-error {
+	background: #fbe3e4;
+	border-color: transparent;
+}
+.sortable_container {
+	max-width: 400px;
+}
+.sortable_container ol, 
+p.preview-title {
+	margin-left: 30px;
+	font-size: 15px;
+	font-weight: 600;
+}
+.sortable_container ol.sortable {
+	border: 1px solid #ddd;
+}
+
+.sortable_container ol.sortable,
+.sortable_container ol.sortable ol {
+	list-style-type: none;
+}
+
+.sortable_container li.mjs-nestedSortable-collapsed.mjs-nestedSortable-hovering div {
+	border-color: #999;
+}
+
+.sortable_container .disclose,
+.expandEditor {
+	cursor: pointer;
+	width: 20px;
+	display: none;
+}
+
+.sortable_container .sortable li.mjs-nestedSortable-collapsed>ol {
+	display: none;
+}
+
+.sortable_container .sortable li.mjs-nestedSortable-branch>div>.disclose {
+	display: inline-block;
+}
+
+.sortable_container .sortable span.ui-icon {
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+}
+
+.sortable_container .menuEdit {
+	background: #FFF;
+}
+
+.sortable_container .itemTitle {
+	vertical-align: middle;
+	cursor: pointer;
+	margin-left: 10px;
+	font-size: 14px;
+	font-weight: 400;
+}
+
+.sortable_container .deleteMenu {
+    float: right;
+    cursor: pointer;
+    margin-right: 10px !important;
+}
+
+.sortable_container .editMenu {
+	float: right;
+	cursor: pointer;
+}
+
+.sortable_container .sortable li {
+	display: list-item;
+}
+
+.item_label {
+	text-align: right
+}
+
+.item_element {
+	padding-left: 10px
+}
+
+.form_container table td {
+	padding-bottom: 15px;
+	padding-left: 3%;
+}
+
+.item_element label {
+	font-weight: normal
+}
+
+#tr_module {
+	display: none
+}
+
+#save_menu {
+	margin-left: 25px;
+	float: right;
+}
+
+#item_menu_template {
+	display: none;
+}
+
+.sortable_container .itemObject {
+	display: none
+}
+
+.item_label .required {
+	color: red;
+}
+
+/**
+ * @author Andres
+ * @since 19/03/2015
+ * @rlms
+ * Styles of icon type element
+ */
+#fa-type input[type="text"] {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+#fa-type a {
+	cursor: pointer;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+#page-blocks-customnavigation-structure .select2-container--default .select2-selection--multiple .select2-selection__clear {
+	margin-right: 0px;
+}
+
+#page-blocks-customnavigation-structure label.form-check-label {
+	padding-left: 22px;
+}
+body#page-blocks-customnavigation-structure .select2-selection.select2-selection--multiple{
+	width: 100% !important;
+}
+#page-blocks-customnavigation-structure .single-menu-setting form > .form-group {
+	padding: 0 20px !important;
+}
+#page-blocks-customnavigation-structure .single-menu-setting form > .form-group.last {
+	padding: 10px 20px !important;
+}
+#page-blocks-customnavigation-structure label[for="roles"] {
+    width: 100%;
+}
+#page-blocks-customnavigation-structure #clearall {
+	float: right;
+	cursor: pointer;
+}
+#page-blocks-customnavigation-structure .form_container {
+	padding: 15px;
+}
+@media screen and (min-width: 768px) {
+	#page-blocks-customnavigation-structure .half:nth-child(2){
+		margin-top: -20px;
+	}
+}
+@media (max-width: 767px) {
+	#page-blocks-customnavigation-structure .sortable_container{
+		border-left: none !important;
+	}
+	#page-blocks-customnavigation-structure .sortable_container ol, p.preview-title{
+		margin-left: 0px !important;
+	}
+}

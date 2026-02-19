@@ -1,0 +1,298 @@
+.question-chart {
+    max-width: 500px;
+    margin: 20px auto;
+}
+
+
+#page-local-quizreport-index{
+ .circle-boxes {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .circle-box {
+            text-align: center;
+            width: 140px;
+        }
+
+        .circle-progress {
+            position: relative;
+            width: 140px;
+            height: 140px;
+        }
+
+        .circle-progress svg {
+            transform: rotate(-90deg);
+        }
+
+        .circle-progress circle {
+            fill: none;
+            stroke-width: 10;
+            stroke-linecap: round;
+        }
+
+        .circle-bg {
+            stroke: #eee;
+        }
+
+        .circle-fg {
+            stroke: #ec9707;
+            /* orange default */
+            stroke-dasharray: 440;
+            stroke-dashoffset: 440;
+            transition: stroke-dashoffset 1s ease;
+        }
+
+        .circle-text {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 22px;
+            font-weight: bold;
+            color: #003152;
+        }
+
+        .circle-subtext {
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 13px;
+            color: #666;
+        }
+
+        .circle-label {
+            margin-top: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #003152;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .circle-box .circle-fg[data-color="blue"] {
+            stroke: #003152;
+        }
+
+        .circle-box .circle-fg[data-color="orange"] {
+            stroke: #ec9707;
+        }
+
+        .circle-report-card {
+            display: flex;
+            flex-direction: column;
+            background: #fdfdfd;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 30px auto;
+            max-width: 1000px;
+            position: relative;
+        }
+
+        .circle-boxes-horizontal {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .circle-box {
+            flex: 1;
+            min-width: 280px;
+            background: #fff;
+            border-radius: 10px;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .circle-label {
+            margin-top: 10px;
+            color: #003152;
+            font-weight: bold;
+        }
+
+        .circle-progress {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: auto;
+        }
+
+        .circle-text {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            font-weight: bold;
+            color: #003152;
+        }
+
+        .circle-subtext {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .circle-bg {
+            fill: none;
+            stroke: #e6e6e6;
+            stroke-width: 12;
+        }
+
+        .circle-fg {
+            fill: none;
+            stroke: #003152;
+            stroke-width: 12;
+            stroke-dasharray: 377;
+            stroke-dashoffset: 377;
+            transition: stroke-dashoffset 1s ease;
+        }
+
+        .report-download-bar-card {
+            text-align: right;
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-download {
+            background-color: #003152;
+            color: white;
+            padding: 10px 18px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+
+        .btn-download.csv {
+            background-color: #003152;
+        }
+
+        .btn-download.pdf {
+            background-color: #ec9707;
+        }
+
+        .btn-download:hover {
+            opacity: 0.85;
+        }
+
+        .btn-download i {
+            margin-right: 6px;
+        }
+
+        .pag-btn {
+            padding: 8px 16px;
+            background-color: #ec9707;
+            border: none;
+            color: #fff;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .pag-btn:hover {
+            background-color: #cf8104;
+        }
+
+        .chart-container {
+            width: 100%;
+            max-width: 350px;
+            height: 300px;
+            margin: 0 auto;
+        }
+
+        .chart-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .btn-download {
+            padding: 10px 20px;
+            margin: 5px;
+            color: #fff;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .btn-download.csv {
+            background-color: #003152;
+        }
+
+        .btn-download.pdf {
+            background-color: #ec9707;
+        }
+
+        .btn-download:hover {
+            opacity: 0.9;
+        }
+
+        .question-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .question-block.card {
+            display: flex;
+            flex-direction: column;
+            background: #f9f9f9;
+            border-radius: 10px;
+            border-left: 5px solid #ec9707;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: row;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+
+        .card-left {
+            flex: 1 1 50%;
+            padding-right: 20px;
+        }
+
+        .card-right {
+            flex: 1 1 300px;
+            max-width: 350px;
+            padding-top: 10px;
+        }
+
+        .question-text {
+            color: #003152;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .response-list {
+            list-style: disc;
+            padding-left: 20px;
+            color: #003152;
+        }
+
+        .response-list li {
+            margin-bottom: 5px;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 250px !important;
+        }}

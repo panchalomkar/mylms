@@ -1,0 +1,270 @@
+/* Center video player. */
+.videofile .video-js { margin: 0 auto }
+
+/* Not playing message. */
+.videofile .videofile-not-playing-msg { margin-top: 1em; font-size: 120%; text-align: center; font-style: italic; display:none; }
+
+/* Responsive mode. */
+.videofile.videofile-responsive .vjs-tech { margin: 0 auto }
+.videofile.videofile-responsive { width: 100%; height: 600px; max-height: 600px; }
+
+/* Override videojs styles. */
+.videofile .vjs-big-play-button { font-size: 175% }
+.videofile .vjs-poster { background-color: #ddd;background: no-repeat; }
+
+/* Prevent size limit in full screen mode. */
+.videofile .vjs-fullscreen { max-width: 100% !important; max-height: 100% !important }
+
+/* Workaround for videojs "Sorry, no compatible source and playback technology..." message not showing properly. */
+.videofile .video-js p { color: #fff; background-color: #111;  z-index: 100; width: 100%; text-align: center }
+
+
+#plms-video {
+	display: block;
+    width: 100%;
+}
+
+#video-general-settings .col-sm-6:nth-child(1), #video-general-settings .col-sm-6:nth-child(2) {
+	width: 100% !important;
+}
+
+#video-upload-hidden, #posters-upload-hidden, #captions-upload-hidden {
+	display: none;
+}
+
+#video-upload-button > div, #posters-upload > div, #captions-upload > div {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+#video-upload-or {
+	float: right;
+	position: relative;
+	top: 9px;
+}
+
+#video-upload-placeholder, #posters-upload-placeholder, #captions-upload-placeholder {
+	font-style: italic;
+	padding-left: 25px;
+}
+
+#posters-upload, #captions-upload {
+	margin-bottom: 15px;
+    float: left;
+}
+
+#page-mod-videofile-mod #video-upload-button{
+	padding-left: 17px;
+    float: left;
+}
+
+#page-mod-videofile-mod h1 span.icon i{
+	font-size: 32px;
+    	margin: 2px 4px;
+}
+
+/**
+* Styles for can do responsive the video
+* @author Andres Ag.
+* @since September 06 of 2016
+* @paradiso
+*/
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    padding-top: 35px;
+    height: 0;
+    overflow: hidden;
+}
+
+.video-container iframe {
+    position: absolute;
+    top:0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/**
+ * Activity video, I enable the video progress completion is not working
+ * when the completion tracking is the third option
+ *
+ * @author Diego Pinzón
+ * 2017-07-07
+ * @paradiso
+ */
+body#page-mod-videofile-mod #id_activitycompletionheader .form-checkbox.form-disabled:before, body#page-mod-videofile-mod .form-radio.form-normal:before {
+	border-color: #c3cedb !important;
+	background-color: #eee;
+	opacity: 0.5;
+}
+
+#page-mod-videofile-mod form.mform fieldset#id_video_fieldset div[id*="fitem_id"]{
+	width: 50% !important;
+}
+/**
+ * Add two features to the id_video_field that fix the field set
+ *
+ * @author Hugo S.
+ * 07-06-2018
+ * @paradiso
+ * @ticket 8
+ */
+#page-mod-videofile-mod form.mform fieldset#id_video_fieldset{
+	width: 100%;
+	margin-top: 100px;
+}
+
+#page-mod-videofile-mod div#fitem_id_cmidnumber{
+	margin-top: -5px;
+}
+
+#page-course-view-paradisotabs iframe#activity-view, 
+#page-mod-videofile-view, 
+#page-mod-videofile-view #no-padding, 
+#page-mod-videofile-view #no-padding  .wrapper.boxed, 
+#page-mod-videofile-view #no-padding  .wrapper.boxed .pad-no,
+#page-mod-videofile-view #no-padding  .wrapper.boxed #content-container, 
+#page-mod-videofile-view #no-padding  .wrapper.boxed #content-container #page-content, 
+#page-mod-videofile-view #no-padding  .wrapper.boxed #content-container #page-content .div-content-container-child-two,
+#page-mod-videofile-view #no-padding  .wrapper.boxed #content-container #page-content .div-content-container-child-two .container-fluid,
+#page-mod-videofile-view #no-padding  .wrapper.boxed #content-container #page-content .div-content-container-child-two .container-fluid .bg-light,
+#page-mod-videofile-view #no-padding  .wrapper.boxed #content-container #page-content .div-content-container-child-two .container-fluid .bg-light #region-main-box, 
+#page-mod-videofile-view #no-padding  .wrapper.boxed #content-container #page-content .div-content-container-child-two .container-fluid .bg-light #region-main-box #region-main-wrap, 
+#page-mod-videofile-view #no-padding  .wrapper.boxed #content-container #page-content .div-content-container-child-two .container-fluid .bg-light #region-main-box #region-main-wrap #region-main, 
+#page-mod-videofile-view #no-padding  .wrapper.boxed #content-container #page-content .div-content-container-child-two .container-fluid .bg-light #region-main-box #region-main-wrap #region-main .region-content,
+#page-mod-videofile-view #no-padding  .wrapper.boxed #content-container #page-content .div-content-container-child-two .container-fluid .bg-light #region-main-box #region-main-wrap #region-main div[role="main"],
+#page-mod-videofile-view #no-padding  .wrapper.boxed #content-container #page-content .div-content-container-child-two .container-fluid .bg-light #region-main-box #region-main-wrap #region-main .region-content .videofile-responsive, 
+#page-mod-videofile-view #no-padding  .wrapper.boxed #content-container #page-content .div-content-container-child-two .container-fluid .bg-light #region-main-box #region-main-wrap #region-main .region-content .video-js,
+#page-mod-videofile-view #no-padding  .wrapper.boxed #content-container #page-content .div-content-container-child-two .container-fluid .bg-light #region-main-box #region-main-wrap #region-main .region-content .vjs-tech, 
+#page-mod-videofile-view #no-padding  .wrapper.boxed #content-container #page-content .div-content-container-child-two .container-fluid .bg-light #region-main-box #region-main-wrap #region-main .region-content .vjs-poster {
+    /*position: relative;*/
+    height: 100% !important;
+}
+
+#page-mod-videofile-view #no-padding  .wrapper.boxed #content-container #page-content .div-content-container-child-two .container-fluid .bg-light #region-main-box #region-main-wrap #region-main .region-content .vjs-poster {
+    position: absolute !important;
+    top: 0px;
+    left: 0px;
+}
+#page-mod-videofile-mod .helptooltip{
+    padding-left: 10px;
+}
+#page-mod-videofile-mod .fitemtitle{
+    padding-left: 0px; 
+}
+#page-mod-videofile-mod #id_competenciessection{
+    margin-bottom: 20px;
+}
+#page-mod-videofile-mod #posters-upload, captions-upload
+{
+  padding-right: 10px;
+    padding-bottom: 4px;  
+}
+#video-general-settings-upload .form-group .felement {
+    float: right;
+}
+#video-general-settings div[data-fieldtype=editor]>div {
+    padding: 0px !important;
+}
+
+.videofile .video-js{
+    max-width: 96%;
+    max-height: 500px;
+}
+@media (min-width: 768px) and (max-width: 1366px) {
+ html.h5p-iframe .h5p-content{
+    display:none !important;
+    height: 400px !important;
+}
+.h5p-slide.has-background{
+    display:none !important;
+    height: 440px;
+}
+.h5p-course-presentation .h5p-box-wrapper{
+       height: 96%;
+}
+.h5p-course-presentation .h5p-wrapper{
+    height: 440px !important;
+}
+ }
+ @media (min-width: 300px) and (max-width: 767px) {
+    .videofile .video-js {
+    height: 283px !important;
+    width: 409px !important;
+    margin-left: 0px;
+ }
+ }
+ #page-mod-hvp-view.format-paradiso .course-content .tab-content{
+    margin-top: 0px;
+ }
+#page-mod-videofile-view.format-paradiso .course-content .tab-content{
+    margin-top: 70px !important;
+ }
+ #page-mod-videofile-view #course_content #intro .no-overflow{
+    overflow: initial;
+}
+#page-mod-hvp-view .h5p-course-presentation .h5p-box-wrapper {
+    height: 90%;
+    z-index: 99999;
+}
+.h5p-course-presentation .h5p-wrapper{height: 440px !important;}
+#page-mod-hvp-view .h5p-course-presentation .h5p-summary-slide{
+    height: 335px;
+    max-height: 500px;
+}
+.video-js .vjs-play-progress:before {
+    font-size: 1.7em !important;
+    top: -2.6px !important;
+}
+.video-js .vjs-volume-level:before{
+    display: none;
+}
+.vjs-default-skin .vjs-volume-handle:before {
+    font-size: 1.2em !important;
+    top: -.2em;
+    left: -.2em;
+    width: 1em;
+    height: 1em;
+    transform: none !important;
+    line-height: 13px !important;
+    content: "" !important;
+}
+#page-mod-videofile-view .videofile .vjs-current-time.vjs-time-controls.vjs-control {
+    display: block;
+}
+#page-mod-videofile-view .videofile .vjs-duration.vjs-time-controls.vjs-control {
+    display: block;
+}
+#page-mod-videofile-view .videofile .vjs-time-divider {
+    display: block;
+}
+
+.vjs-default-skin .vjs-resume-modal .vjs-resume-modal-buttons button{
+    padding :8px !important;
+    border-radius : 20px !important;
+}
+
+.vjs-default-skin .vjs-resume-modal .vjs-resume-modal-buttons p{
+    margin: 0 0 5px 0 !important;
+}
+
+.aftervideocomplete {
+    text-align: center;
+    margin-top: 25px;
+}
+.aftervideocomplete p {
+    font-size: 20px;
+    color: red;
+}
+.aftervideocomplete p {
+    font-size: 20px;
+    color: #1ba2dd!important;
+}
+.videobuttons span {
+    padding: 6px 15px;
+    background: #1BABDD!important;
+    margin-left: 15px;
+    color: #fff;
+    cursor: pointer;
+}

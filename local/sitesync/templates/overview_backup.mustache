@@ -1,0 +1,71 @@
+<div id="backupList">
+  <div class="revisions-bar">
+    <h3>Revisions</h3>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">{{#str}}backuptablehead_version, local_sitesync{{/str}}</th>
+          <th scope="col">{{#str}}backuptablehead_time, local_sitesync{{/str}}</th>
+          <th scope="col">{{#str}}backuptablehead_action, local_sitesync{{/str}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#backupcontext}}
+        <tr>
+          <td>{{version}}</td>
+          <td>{{#tstamp}}<span class="mr-2">{{{tstamp}}}</span>{{/tstamp}}</td>
+          <td>
+            <button type="button" class="btn btn-secondary show-changes-btn"
+              data-toggle="modal"
+              data-target="#backupModal"
+              data-version="{{version}}">
+              {{#str}}showchanges, local_sitesync{{/str}}
+            </button>
+          </td>
+        </tr>
+        {{/backupcontext}}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{{#js}}
+require(['jquery', 'local_sitesync/backup_restore'], function($, BackupRestore) {
+  BackupRestore.init();
+});
+{{/js}}
+
+<!-- Hidden Data Containers for Backup Content -->
+{{#backupcontext}}
+<div class="d-none backupdatacontainer" data-version-content="{{version}}">
+  {{#backup}}
+  <p>{{name}}</p>
+  {{/backup}}
+</div>
+{{/backupcontext}}
+
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="backupModal" tabindex="-1" role="dialog" aria-labelledby="backupModalLabel" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="backupModalLabel">{{#str}}backupdata, local_sitesync{{/str}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="notification-wrapper"></div>
+      <div class="modal-body">
+        <p id="modalVersion" class="font-weight-bold"></p>
+        <div id="modalBackupContent"></div>
+      </div>
+      <div class="modal-footer">
+        <div class="info-wrapper">
+          <span class="fa fa-info-circle mr-1"></span>
+          <p class="m-0">{{#str}}restoreinfo, local_sitesync{{/str}}</p>
+        </div>
+        <button type="button" class="btn btn-primary" id="restorebackup">{{#str}}restore, local_sitesync{{/str}}</button>
+      </div>
+    </div>
+  </div>
+</div>

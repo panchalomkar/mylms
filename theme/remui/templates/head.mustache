@@ -1,0 +1,242 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Edwiser RemUI
+    @package theme_remui
+    @copyright (c) 2023 WisdmLabs (https://wisdmlabs.com/)
+    @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+{{!
+    Page header.
+}}
+{{{ output.doctype }}}
+<html {{{ output.htmlattributes }}}>
+<head>
+    <title>{{{ output.page_title }}}</title>
+    <link rel="shortcut icon" href="{{{ output.favicon }}}" />
+    {{{ output.standard_head_html }}}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        {{#fonts}}
+            @import "https://fonts.googleapis.com/css?family={{.}}:100,200,300,400,500,600,700,800,900";
+        {{/fonts}}
+    </style>
+    
+<script>
+(function($) {
+    $(document).ready(function() {
+        $('.slider-hero').slick({
+            dots: true,
+            infinite: true,
+            cssEase: 'linear',
+            swipe: false,
+        });
+    });
+    
+});
+</script>
+ <script>
+function openNav() {
+  document.getElementById("mySidebar").style.width = "250px";
+  document.getElementById("main").style.marginLeft = "250px";
+}
+
+function closeNav() {
+  document.getElementById("mySidebar").style.width = "50px";
+  document.getElementById("main").style.marginLeft= "0";
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const body = document.body;
+    const path = window.location.pathname;
+
+    const isIncourseIndex = body.classList.contains('page-local-incourse-index');
+    const isStartAttemptPage = path.includes('/mod/quiz/startattempt.php');
+
+    if (!isIncourseIndex && !isStartAttemptPage) return;
+
+    const startAttemptButton = document.getElementById('id_submitbutton');
+    const mainContent = document.getElementById('page-content');
+
+    if (!startAttemptButton) return;
+
+    // Prevent duplicate loader in **same page load**
+    if (document.getElementById('quizLoadingOverlay')) return;
+
+    // Hide page content
+    if (mainContent) mainContent.style.display = 'none';
+
+    // Loader overlay
+    const loader = document.createElement('div');
+    loader.id = 'quizLoadingOverlay';
+    loader.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(255,255,255,0.95);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    `;
+    loader.innerHTML = `
+        <div style="font-size:20px;font-weight:600;margin-bottom:12px;">
+            Loading Quiz...
+        </div>
+        <div class="quiz-spinner"></div>
+    `;
+    document.body.appendChild(loader);
+
+    // Spinner style (once)
+    if (!document.getElementById('quizSpinnerStyle')) {
+        const style = document.createElement('style');
+        style.id = 'quizSpinnerStyle';
+        style.innerHTML = `
+            .quiz-spinner {
+                border: 4px solid #f3f3f3;
+                border-top: 4px solid #003152;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                animation: quizspin 1s linear infinite;
+            }
+            @keyframes quizspin {
+                from { transform: rotate(0deg); }
+                to   { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    // Auto-submit
+    startAttemptButton.click();
+
+});
+</script >
+
+
+{{#js}}
+   $(document).ready(function() {
+    
+
+
+    // Check if dark mode is stored in localStorage
+    var darkMode = localStorage.getItem('darkMode');
+    if (darkMode === 'enabled') {
+      enableDarkMode();
+    }
+
+    // Handle click event
+    $('#darkmodeid').on('click', function() {
+      // Toggle dark mode
+      if ($('body').hasClass('dark-mode')) {
+        disableDarkMode();
+      } else {
+        enableDarkMode();
+      }
+    });
+
+    function enableDarkMode() {
+      // Enable dark mode
+      $('body').addClass('dark-mode');
+      // Store dark mode state in localStorage
+      localStorage.setItem('darkMode', 'enabled');
+    }
+
+    function disableDarkMode() {
+      // Disable dark mode
+      $('body').removeClass('dark-mode');
+      // Remove dark mode state from localStorage
+      localStorage.setItem('darkMode', 'disabled');
+    }
+
+    
+   
+    // Current page path (no domain, no trailing slash)
+    var currentPath = window.location.pathname.replace(/\/$/, "");
+
+    // Reset menu
+    $(".menu li").removeClass("selectedactive selectedmenu active");
+
+    var matched = false;
+
+    /* =========================
+       1️⃣ URL-BASED MATCH (ID REQUIRED)
+       ========================= */
+    $(".menu a").each(function () {
+
+        var href = $(this).attr("href");
+        if (!href || href === "#") return;
+
+        var $li = $(this).closest("li");
+
+        // ❌ Skip if li has no ID
+        if (!$li.attr("id")) return;
+
+        // Convert full URL → pathname
+        var link = document.createElement("a");
+        link.href = href;
+        var linkPath = link.pathname.replace(/\/$/, "");
+
+        if (
+            currentPath === linkPath ||
+            currentPath.startsWith(linkPath + "/")
+        ) {
+            $li.addClass("selectedactive selectedmenu");
+            matched = true;
+        }
+    });
+
+    /* =========================
+       2️⃣ ID-BASED MATCH (SECONDARY)
+       ========================= */
+    if (!matched) {
+        $(".menu li[id]").each(function () {
+
+            var liId = this.id;
+
+            // Normalize id (menuitem123 → menuitem)
+            var cleanId = liId.replace(/\d+$/, "");
+
+            if (cleanId && currentPath.indexOf(cleanId) !== -1) {
+                $(this).addClass("selectedactive selectedmenu");
+                matched = true;
+            }
+        });
+    }
+
+    /* =========================
+       3️⃣ FINAL FALLBACK → DASHBOARD (ID REQUIRED)
+       ========================= */
+    if (!matched && (
+        currentPath === "/my" ||
+        currentPath === "/lms5/my"
+    )) {
+        $(".menu a[href*='/my']")
+            .filter(function () {
+                return $(this).closest("li").attr("id");
+            })
+            .first()
+            .closest("li")
+            .addClass("selectedactive selectedmenu");
+    }
+
+});
+{{/js}}
+
+
+</head>

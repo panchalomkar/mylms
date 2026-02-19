@@ -1,0 +1,20 @@
+video{
+    position: fixed;
+    left: 0px;
+    right: 0px;
+    margin: auto;
+    width: 95%;
+    z-index: 999999;
+    top: 0px;
+    bottom: 0px;
+    height: 85%;
+}
+iframe{
+    width: 95%;
+    margin: auto;
+    position: fixed;
+    left: 0px;
+    right: 0px;
+    top: 15%;
+    height: 64%;
+}

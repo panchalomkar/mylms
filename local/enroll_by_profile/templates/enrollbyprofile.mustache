@@ -1,0 +1,188 @@
+{{!
+    @template local_enroll_by_profile/enrollbyprofile
+
+    This template renders the main content area for the local_enroll_by_profile plufin.
+
+    Example context (json):
+    {
+    	"is_index": 1,
+    	"is_tag"	: 1,
+    	"rules" : [
+    		"0" : 1,
+    		"1"	: rule name,
+    		"2"	: rule statement,
+    		"3"	: http://course/url,
+    		"4"	: category,
+    		"5"	: checked/uncheked (keepunenroll),
+    		"6"	: course name,
+    		"7"	: 1/'' (to show disabled icon or not),
+    		"8" : enable/disable,
+    		"9"	: 1/''(to show arrow or not)
+    	] ,
+    	"pagination" : [
+    		"pages" : [
+    			"url" : http://page/url,
+    			"page" : 1/2/3....,
+    			"active": active/''
+    		],
+    		"previous" : [
+    			"url" : http://previous/page/url
+    		] OR 0,
+    		"next" : [
+    			"url" : http://next/page/url
+    		] OR 0
+    	],
+    	"notsearch" : 0/1
+    }
+}}
+{{#is_index}}
+	<div class="titleenrollbyprofile row">
+		<div class="col-md-7">
+			<h2 class="main">{{#str}} page_title,local_enroll_by_profile {{/str}}</h2>
+		</div>
+		<div class="col-md-5 rules_buttons">
+			<a class="add rules_btn" data-target="#enroll_by_profile_modal" data-toggle="modal">
+				<i class="fa fa-plus mr-1" data-placement="left" data-toggle="tooltip" data-original-title="{{#str}} addrule_title,local_enroll_by_profile {{/str}}" aria-hidden="true"></i>
+				<span class="text_local_enroll">{{#str}} addrule_btn,local_enroll_by_profile {{/str}}</span>
+			</a>
+			<a class="add rules_btn delete_rule_all" data-target="">
+				<i class="mr-1 delete_icon fa fa-trash" data-placement="left" data-toggle="tooltip" data-original-title="{{#str}} delete_rule,local_enroll_by_profile {{/str}}" aria-hidden="true"></i>
+				<span class="text_local_enroll">{{#str}} delete_rule,local_enroll_by_profile {{/str}}</span>
+			</a>
+			<a class="add rules_btn disable_rule_all" data-target="#">
+				<i class="mr-0 disable_icon fa fa-eye fa-fw" data-placement="left" data-toggle="tooltip" data-original-title="{{#str}} disable,local_enroll_by_profile {{/str}}" aria-hidden="true"></i>
+				<span class="text_local_enroll">{{#str}} btndisable,local_enroll_by_profile {{/str}}</span>
+			</a>
+			<input id="choise_select" type="hidden">
+			<input id="choise_selected" name="choise_selected[]" type="hidden">
+		</div>
+	</div>
+	<div class="error_notification" role="alert"></div>
+{{/is_index}}
+{{#is_tag}}
+	<div class="col-lg-3 col-md-5 search_rule_box">
+		<input class="form-control-sm" type="text" id="search" placeholder="{{#str}} search_rule,local_enroll_by_profile {{/str}}" aria-label="Search">
+		<i class="fa fa-search header-txtmen men men-search-phx" aria-hidden="true"></i>
+	</div>
+	<input type="hidden" id="id_rulescount">
+{{/is_tag}}
+<div class="row">
+	<div id="done_alert" class="alert alert-success col-sm-12">
+		<label id="label_notify">
+			
+		</label>
+	</div>
+
+	<div id="rules_table" class="col-md-12">
+		
+		<div class="mar-top pl-0 table-responsive">
+			<table class="generaltable" id="mortalEngines"> 
+				<thead> 
+					<tr> 
+						<th class="header c0" style="" scope="col">
+							<input id="main_select_all" class="checkAll" type="checkbox" value="1" name="mainselectall" />
+						</th> 
+						<th class="header c1" style="" scope="col">{{#str}} namerule,local_enroll_by_profile {{/str}}</th> 
+						<th class="header c2" style="" scope="col">{{#str}} rule,local_enroll_by_profile {{/str}}</th> 
+						<th class="header c3" style="" scope="col">{{#str}} elements,local_enroll_by_profile {{/str}}</th> 
+						<th class="header c4" style="" scope="col">{{#str}} category,local_enroll_by_profile {{/str}}</th> 
+						<th class="header c5" style="" scope="col">
+							<input id="main_keep_unenroll" class="unenrollAll mr-2" type="checkbox" value="1" name="mainkeepunenroll" checked="checked" />{{#str}} keep_unenroll,local_enroll_by_profile {{/str}}
+							<span class="fa fa-info-circle" aria-hidden="true" title="{{#str}} checked_all,local_enroll_by_profile {{/str}}&#010;&#010;{{#str}} unchecked_all,local_enroll_by_profile {{/str}}"></span>
+						</th> 
+						<th class="header c6 lastcol" style="" scope="col"> </th> 
+					</tr> 
+				</thead> 
+				<tbody>
+					{{#rules}}
+					<tr class="lastrow"> 
+						<td class="cell c0" style="">
+							<input id="selectall{{0}}" data-ruleid="{{0}}" class="selectall" type="checkbox" value="1" name="selectall" />
+						</td> 
+						<td class="cell c1" style="">{{1}}</td> 
+						<td class="cell c2" style=""> {{2}}  </td> 
+						<td class="cell c3" style="">
+							<a target="_blank" href="{{3}}">{{6}}</a><br />
+							<div class="collapse out" id="collapseme_1"></div>
+						</td> 
+						<td class="cell c4" style="">{{4}}</td>
+						<td class="cell c5" style="">
+							<input id="keepunenroll{{0}}" data-ruleid="{{0}}" class="keepunenroll" type="checkbox" value="1" name="keepunenroll" {{5}}="{{5}}" />
+						</td>
+						<td class="cell c6 lastcol" style=""> 
+							{{#7}}
+								<span class="ruledisable">
+									{{#str}} disabledrule,local_enroll_by_profile {{/str}}
+								</span>
+							{{/7}}
+							<span>
+								<div class="dropdown options-table">
+									<a class="" href="#" data-toggle="dropdown"><i class="fa fa-ellipsis-v"></i></a>
+									<div class="dropdown-menu">
+										<a href="#" class="edit_rule dropdown-item" data-ruletoedit="{{0}}" data-toggle="modal" data-backdrop="static" data-keyboard="false" id="edit_rule-{{0}}" alt="{{#str}} editrule_title,local_enroll_by_profile {{/str}}" title="{{#str}} editrule_title,local_enroll_by_profile {{/str}}" data-target="#enroll_by_profile_modal">{{#str}} editrule_title,local_enroll_by_profile {{/str}}</a>
+										<a href="#" data-ruleid="{{0}}" class="delete_rule dropdown-item" id="delete_rule-{{0}}" alt="{{#str}} delete_rule,local_enroll_by_profile {{/str}}" title="{{#str}} delete_rule,local_enroll_by_profile {{/str}}">{{#str}} delete_rule,local_enroll_by_profile {{/str}}</a>
+										{{#7}}
+										<a href="#" data-ruleid="{{0}}" class="enable_rule dropdown-item 111" id="enable_rule-{{0}}" alt="{{#str}} enable,local_enroll_by_profile {{/str}}" title="{{#str}} enable,local_enroll_by_profile {{/str}}">{{#str}} enable,local_enroll_by_profile {{/str}}</a>
+										{{/7}}
+										{{^7}}
+											<a href="#" data-ruleid="{{0}}" class="disable_rule dropdown-item 222" id="disable_rule-{{0}}" alt="{{#str}} disable,local_enroll_by_profile {{/str}}" title="{{#str}} disable,local_enroll_by_profile {{/str}}">{{#str}} disable,local_enroll_by_profile {{/str}}</a>
+										{{/7}}
+									</div>
+								</div>
+							</span>
+							<a href="#collapseme_{{9}}" data-ruleid="{{9}}" data-toggle="collapse" data-target="#collapseme_{{9}}" class="collapsed ml-4" id="enable_rule-{{9}}" alt="" title=""><i class="fa fa-chevron-down" aria-label="" aria-hidden="true"></i></a>
+						</td>
+					</tr>
+					{{/rules}}
+					{{^rules}}
+						<div class="alert alert-mtlms fade in mar-topget">
+							{{#str}} warning_no_elements,local_enroll_by_profile {{/str}}
+						</div>
+					{{/rules}}
+				</tbody>
+			</table>
+			{{#pagination}}
+			<nav aria-label="Page">
+				<ul class="pagination">
+					{{#previous}}
+					<li class="page-item">
+	                    <a href="{{previous}}" class="page-link previous">
+	                        <span aria-hidden="true">«</span>
+	                        <span class="sr-only">Previous</span>
+	                    </a>
+	                </li>
+	                {{/previous}}
+	                {{#pages}}
+					<li class="page-item {{#active}}active{{/active}} {{#disabled}}disabled{{/disabled}}"
+					    data-region="page-item"
+					    data-page-number="{{$pagenumber}}{{number}}{{/pagenumber}}">
+
+					    <a href="{{url}}"
+					       class="page-link"
+					       data-region="page-link">
+					        
+					            {{{page}}}
+					        
+					    </a>
+					</li>
+					{{/pages}}
+                    {{#next}}
+					<li class="page-item">
+						<a href="{{next}}" class="page-link next"> <span aria-hidden="true">»</span> <span class="sr-only">Next</span> </a>
+					</li>
+					{{/next}}
+				</ul>
+			</nav>
+			{{/pagination}}
+		</div>
+	</div>
+	{{#notsearch}}
+	<div id="rules_form" class="col-md-12 mar-all">
+		{{> local_enroll_by_profile/rules_form }}
+	</div>
+	
+	<div class="col-md-12 right add-content-link">
+		
+	</div>
+	{{/notsearch}}
+</div>

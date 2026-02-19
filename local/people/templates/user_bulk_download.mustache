@@ -1,0 +1,34 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_sitesetting/customise
+
+    Note: collapse/show functionality as well as check/uncheck functionality is 
+          developed using javascript (custom.js) file. Any change in HTML DOM 
+          structure can break these functionalities, so change cautiously.
+
+    @author: 2021 Akashy Pingale (akashy.p@paradisosolution.com)
+    @paradiso
+
+}}
+<ul><li>
+<a href="user_bulk_download.php?format=csv">{{#str}}downloadtext{{/str}}</a></li>
+<li>
+<a href="user_bulk_download.php?format=ods">{{#str}}downloadods{{/str}}</a></li>
+<li>
+<a href="user_bulk_download.php?format=xls">{{#str}}downloadexcel{{/str}}</a></li>
+</ul>

@@ -1,0 +1,760 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_remui/admin_setting_tabs
+
+
+    Example context (json):
+    {
+        "tabs": [
+         {
+            "name": "tab1",
+            "active": 0,
+            "displayname": "Inactive tab1",
+            "html": "<p>Tab 1 content</p>"
+         },
+         {
+            "name": "tab2",
+            "active": 1,
+            "displayname": "Active tab2",
+            "html": "<p>Tab 2 content</p>"
+         }
+        ]
+    }
+}}
+
+<main>
+{{#user_stats}}
+
+<!-- ======= Dashboard Wrapper ======= -->
+<div class="w-full min-h-screen bg-[#f5f6f8]">
+
+    <!-- PAGE TITLE -->
+    <div class="text-center mb-3">
+        <h1 class="text-2xl font-bold text-gray-800 tracking-wide text-game to-accent">Gamification Dashboard</h1>
+        <p class="text-gray-500 mt-1">Track your progress, earn rewards, and climb the leaderboard!</p>
+    </div>
+
+    <!-- TOP GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- PROFILE CARD -->
+        <div class="lg:col-span-8 bg-white rounded-lg shadow p-3 transition-all duration-300 hover:scale-[1.03]">
+            <div class="flex items-start gap-6">
+
+                <!-- PROFILE IMAGE -->
+                <div class="relative">
+                    <div class="w-28 h-28 rounded-full border-4 border-yellow-400 overflow-hidden shadow top-user-img">
+                        <img src="{{profileimage}}" class="w-full h-full object-cover" />
+                    </div>
+                    <span class="material-symbols-rounded text-yellow-500 bg-white p-1  rounded-full shadow absolute -bottom-2 left-1/2 -translate-x-1/2">
+                        emoji_events
+                    </span>
+                </div>
+
+                <!-- PROFILE DETAILS -->
+                <div class="flex-1">
+                    <h1 class="text-xl font-bold mb-2 text-gray-900">{{fullname}}</h1>
+                    <p class="text-gray-500 mb-2">{{designation}}</p>
+
+                    <span class="mt-1 inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold">
+                        {{my_rank}}
+                    </span>
+
+                    <div class="grid grid-cols-2 gap-5 mt-5 text-sm">
+
+                        <!-- LEFT -->
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-rounded text-gray-600 text-lg">apartment</span>
+                                <span class="text-gray-500">Department:</span>
+                                <b class="text-gray-800">{{department}}</b>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-rounded text-gray-600 text-lg">badge</span>
+                                <span class="text-gray-500">Employee ID:</span>
+                                <b class="text-gray-800">{{empcode}}</b>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-rounded text-gray-600 text-lg">call</span>
+                                <span class="text-gray-500">Contact:</span>
+                                <b class="text-gray-800">{{phone}}</b>
+                            </div>
+                        </div>
+
+                        <!-- RIGHT -->
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-rounded text-yellow-500 text-lg">trending_up</span>
+                                <span class="text-gray-500">Next Level:</span>
+                                <b class="text-gray-700">{{nextlevel}}</b>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-rounded text-yellow-500 text-lg">military_tech</span>
+                                <span class="text-gray-500">Points to Next:</span>
+                                <b class="text-yellow-600">{{points_needed}}</b>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-rounded text-yellow-500 text-lg">percent</span>
+                                <span class="text-gray-500">Course Average:</span>
+                                <b class="text-blue-700">{{grade_needed}}</b>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACHIEVEMENTS CARD -->
+        <div class="lg:col-span-4 bg-white rounded-lg shadow p-3 transition-all duration-300 hover:scale-[1.03]">
+
+            <h3 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                <span class="material-symbols-rounded text-yellow-500 text-3xl">trophy</span>
+                Achievements
+            </h3>
+
+            <div class="mt-6 flex justify-around items-center">
+
+                <div class="text-center">
+                    <div class="bg-yellow-50 p-4 rounded-full top-user-img shadow-inner inline-block">
+                        <span class="material-symbols-rounded text-yellow-500 text-4xl">emoji_events</span>
+                    </div>
+                    <p class="text-lg font-bold text-yellow-500 mt-3" style="color: #eab308 !important;">{{lifetime_points}}</p>
+                    <p class="text-xs text-gray-500">Points</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="bg-blue-50 p-4 rounded-full top-user-img shadow-inner inline-block">
+                        <span class="material-symbols-rounded text-blue-500 text-4xl">workspace_premium</span>
+                    </div>
+                    <p class="text-lg font-bold text-gray-800 mt-3">0</p>
+                    <p class="text-xs text-gray-500">Badges</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="bg-yellow-50 p-4 rounded-full top-user-img shadow-inner inline-block">
+                        <span class="material-symbols-rounded text-yellow-500 text-4xl">grade</span>
+                    </div>
+                    <p class="text-lg font-bold text-yellow-600 mt-3" style="color: #eab308 !important;">{{my_rank}}</p>
+                    <p class="text-xs text-gray-500">Level</p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div> <!-- END TOP GRID -->
+
+    <!-- BOTTOM CHART GRID -->
+    <div class="bg-white rounded-lg shadow p-3 mt-3">
+        <div class="lg:col-span-12  rounded-2xl">
+
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                    <div class=" trophydata text-center">
+                        <img src="images/coins1.png" class="card-img-top rounded-circle wh-50 rounded-circle" style="    width: 46px;" alt="User">
+                      </div>
+                    My Active Points
+                </h3>
+
+                <button onclick="openPointsModal()" 
+                    class="px-4 py-2 rounded-lg shadow flex items-center gap-2 text-white"
+                    style="background: linear-gradient(90deg, #0B2964, #23468D);">
+                    <span class="material-symbols-rounded text-white text-base">list_alt</span>
+                    Points log
+                </button>
+            </div>
+
+            <p class="text-3xl font-bold text-yellow-600" style="position: relative;
+    bottom: 37px;
+    left: 48px;
+    font-size: 19px;
+    display: flex;
+    margin-bottom: -25px;
+    align-items: center;"><svg class="text-yellow-500 mr-2" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-coins text-accent" data-lov-id="src/components/MyPoints.tsx:148:16" data-lov-name="Coins" data-component-path="src/components/MyPoints.tsx" data-component-line="148" data-component-file="MyPoints.tsx" data-component-name="Coins" data-component-content="%7B%22className%22%3A%22text-accent%22%7D"><circle cx="8" cy="8" r="6"></circle><path d="M18.09 10.37A6 6 0 1 1 10.34 18"></path><path d="M7 6h1v4"></path><path d="m16.71 13.88.7.71-2.82 2.82"></path></svg>{{available_points}}</p>
+
+            <div class=" grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+                <!-- DONUT CHART -->
+                <div class="w-full flex flex-col items-center">
+                    <h4 class="text-gray-700 text-sm mb-4 flex items-center font-bold  w-100 gap-2">
+                        <span class="material-symbols-rounded text-gray-600 text-base ">monitoring</span>
+                        Points Distribution
+                    </h4>
+
+                   <div class="d-flex gap-5">
+                    <div style="width:190px;height:190px;">
+                        <canvas id="donutChart"></canvas>
+                    </div>
+
+                    <div id="customLegend" class="d-flex flex-column justify-center gap-3"></div>
+                   </div>
+                </div>
+
+                <!-- BAR CHART -->
+                <div>
+                    <h4 class="text-gray-700 text-sm mb-4 flex items-center font-bold  gap-2">
+                        <span class="material-symbols-rounded text-gray-600 text-base">timeline</span>
+                        7-Day Trends
+                    </h4>
+
+                    <canvas id="barChart" width="480" height="190" class="w-full h-64"></canvas>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+<div class="bg-white rounded-lg shadow p-3 mt-3">
+
+    <!-- Header Title -->
+    <div class="flex items-center gap-3 mb-3">
+        <span class="material-symbols-rounded text-blue-700 text-yellow-500">monitoring</span>
+        <h2 class="text-xl font-semibold text-gray-800">Daily Quiz and Login Analytics</h2>
+    </div>
+
+    <!-- =========================== QUIZ + LOGIN GRID =========================== -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 px-4">
+
+        <!-- =============== LEFT SIDE — DAILY QUIZ =============== -->
+        <div>
+            <!-- Section Title -->
+            <h3 class="text-md font-bold text-gray-800 mb-2">DAILY QUIZ</h3>
+
+            <div class="flex items-center gap-4 mb-2">
+                <!-- Avatar -->
+              <div style="    width: 50px;height: 50px;" class=" rounded-full border-4 border-yellow-400 overflow-hidden shadow">
+                        <img src="{{profileimage}}" class="w-full h-full object-cover" />
+                    </div>
+                
+                <!-- Attempt Button -->
+              
+                  <a style="background: linear-gradient(90deg, #0B2964, #23468D);" class="flex items-center gap-2 hover:bg-blue-900 text-white px-3 py-1 rounded-lg shadow font-medium" href="{{dailyquiz_url}}"
+                                    class="g_btn-primary px-4" type="button">  <span class="material-symbols-rounded">play_circle</span> Attempt Now</a>
+                
+            </div>
+
+            <!-- Sub title -->
+            <div class="text-gray-600 text-sm font-medium mt-4 mb-1">Points Graph</div>
+
+            <!-- Chart -->
+            <div class="bg-white rounded-lg border p-2">
+                <div id="chart_quiz" class="h-40"></div>
+            </div>
+        </div>
+
+
+
+        <!-- =============== RIGHT SIDE — DAILY LOGIN =============== -->
+        <div>
+            <h3 class="text-md font-bold text-gray-800 mb-2">DAILY LOGIN</h3>
+
+            <div class="flex items-center gap-4 mb-4">
+                <!-- Login Icon (circle) -->
+                <div class="w-11 h-11 rounded-full text-white flex items-center justify-center shadow" style="background: linear-gradient(90deg, #0B2964, #23468D);">
+                    <span class="material-symbols-rounded text-3xl">login</span>
+                </div>
+
+                <!-- Points -->
+                <div>
+                    <div class="text-2xl font-bold text-gray-900">{{login_points}}</div>
+                </div>
+            </div>
+
+            <div class="text-gray-600 text-sm font-medium mt-4 mb-1 flex justify-between">
+                <span>Points Graph</span>
+                <span class="text-yellow-500 text-xs">Login Points</span>
+            </div>
+
+            <!-- Chart -->
+            <div class="bg-white rounded-lg border p-2">
+                <div id="chart_login" class="h-40"></div>
+            </div>
+        </div>
+
+    </div> <!-- END GRID -->
+
+</div>
+
+        <!-- ======Daily Login Section end here====== -->
+        <!-- SCRATCH CARDS SECTION -->
+<div class="bg-white rounded-lg shadow p-3 mt-3">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+            <span class="material-symbols-rounded text-yellow-500">star</span> Scratch Card
+        </h2>
+        <span class="text-gray-600 text-sm">Available scratch card: <strong>{{scratchcounter}}</strong></span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 d-flex justify-center mb-2">
+        {{{scratchcards}}}
+    </div>
+</div>
+         <!-- ======Rewards and Redemption start here====== -->
+<div class="bg-white rounded-lg shadow p-3 mt-3">
+    <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+        <span class="material-symbols-rounded text-yellow-500">card_giftcard</span> 
+        Rewards and Redemption
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-3">
+        <!-- Spin Wheel -->
+        <div class=" rounded-lg p-2 flex flex-col items-center text-center  transition" >
+            <div class="bg-[#003152] w-20 h-20 rounded-full flex items-center justify-center mb-2 top-user-img" style="border: solid 8px #486398;">
+               <span class="material-symbols-rounded text-3xl text-white spin-refresh-icon">refresh</span>
+            </div>
+            <h3 class="font-semibold text-gray-900 mb-2 mt-3">Spin Wheel</h3>
+            <p class="text-gray-800 mb-2 d-none" style="font-size: 12px;">Spin the wheel and luck your chance to get points benefit</p>
+         
+            <div class="">
+                        <button class=" bg-yellow-500  hover:bg-yellow-600 text-white font-semibold d-flex rounded" type="button"> {{{spinbutton}}}</button>
+                        </div> 
+        </div>
+
+        <!-- Poll -->
+        <div class="rounded-lg p-2 flex flex-col items-center text-center  transition ">
+            <div class="bg-[#003152] w-20 h-20 rounded-full flex items-center justify-center mb-2 top-user-img" style="border: solid 8px #486398;">
+                <span class="material-symbols-rounded text-3xl text-white ">poll</span>
+            </div>
+            <h3 class="font-semibold text-gray-900 mt-3">Poll</h3>
+            <a href="{{pollurl}}" class="bg-yellow-500 d-flex hover:bg-yellow-600 text-white font-semibold py-2 px-6 gap-2 rounded mt-2" style="align-items:center;"><span class="material-symbols-rounded text-white " style="font-size: 16px;">poll</span> Take Poll</a>
+        </div>
+
+        <!-- Redemption Zone -->
+        <div class=" rounded-lg p-2 flex flex-col items-center text-center  transition" >
+            <div class="bg-[#003152] w-20 h-20 rounded-full flex items-center justify-center mb-2 top-user-img" style="border: solid 8px #486398;">
+                <span class="material-symbols-rounded text-3xl text-white">card_giftcard</span>
+            </div>
+            <h3 class="font-semibold text-gray-900 mt-3">Redemption Zone</h3>
+            <div class="flex flex-row w-100 justify-center gap-2 mt-2 ">
+                <button id="redeem-point"
+        data-toggle="modal"
+        data-target="#redeemModal"
+        class="px-2 bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded flex items-center gap-1">
+    <svg class="text-white mr-1 " xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lov-id="src/components/MyPoints.tsx:148:16" data-lov-name="Coins" data-component-path="src/components/MyPoints.tsx" data-component-line="148" data-component-file="MyPoints.tsx" data-component-name="Coins" data-component-content="%7B%22className%22%3A%22text-accent%22%7D"><circle cx="8" cy="8" r="6"></circle><path d="M18.09 10.37A6 6 0 1 1 10.34 18"></path><path d="M7 6h1v4"></path><path d="m16.71 13.88.7.71-2.82 2.82"></path></svg>
+    <span class="bg-yellow-500 d-flex hover:bg-yellow-600 text-white font-semibold ">Point Redeem</span>
+</button>
+
+<button id="gift-reward"
+        data-toggle="modal"
+        data-target="#exampleModal"
+        class="px-3 bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded flex items-center gap-1">
+    <span class="material-symbols-rounded  text-white "style="font-size: 16px;">redeem</span>
+    <span class="bg-yellow-500 d-flex hover:bg-yellow-600 text-white font-semibold ">Gift Rewards</span>
+</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- reward and redemption end here -->
+
+<!--- top theree -->
+<!-- Leaderboard Title -->
+<div class="bg-white rounded-lg shadow p-3  mt-3">
+<div class="flex items-center gap-3 mb-4 pl-3">
+    <span class="material-symbols-rounded text-yellow-500 text-3xl">groups</span>
+    <h2 class="text-2xl font-bold text-[#003152]">Leader Board</h2>
+</div>
+
+<!-- TOP 3 USERS -->
+
+    {{{leaderboard_top}}}
+
+<!-- BOTTOM TABLE -->
+<div class="bg-white shadow rounded-xl overflow-hidden w-full">
+
+    <!-- Table Header -->
+    <div class="bg-[#00245c] rounded-lg text-white font-semibold grid grid-cols-6 py-3 px-4 text-sm">
+        <div>#</div>
+        <div>Name</div>
+        <div>Rank</div>
+        <div>Department</div>
+        <div>Points</div>
+        <div>Badges</div>
+        <div class="d-none">Action</div>
+    </div>
+
+    <!-- Table Body -->
+    <div class="divide-y">
+
+        {{{leaderboard}}}
+
+    </div>
+
+</div>
+</div>
+       <!--*******dashboard ends here *******-->
+</div> <!-- END MAIN WRAPPER -->
+
+
+<!-- SPIN POPUP -->
+<div id="spinSuccessModal" class="fixed inset-0 bg-[#003152] bg-opacity-40 flex justify-center items-center hidden z-50">
+    <div class="bg-white rounded-2xl shadow-xl p-8 w-96 relative text-center">
+
+        <!-- Close Button -->
+        <button onclick="closeSpinPopup()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+            <span class="material-symbols-rounded text-2xl">close</span>
+        </button>
+
+        <!-- Title -->
+        <div class="flex justify-center items-center gap-2 mb-3">
+            <span class="text-3xl">🎉</span>
+            <h2 class="text-2xl font-bold text-gray-800">Congratulations!</h2>
+        </div>
+
+        <!-- Trophy Icon -->
+        <div class="flex justify-center mb-4">
+            <div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center shadow-inner">
+                <span class="material-symbols-rounded text-yellow-500 text-5xl">emoji_events</span>
+            </div>
+        </div>
+
+        <!-- Text -->
+        <p class="text-gray-600 mb-1 text-lg">You have won</p>
+        <p class="text-yellow-500 font-extrabold mb-6" style="font-size:20px;color;color: rgb(234, 179, 8) !important;">
+            <span id="wonPoints" style="font-size:20px;color;color: rgb(234, 179, 8);">0</span> Points
+        </p>
+
+    </div>
+</div>
+
+<!-- BETTER LUCK POPUP -->
+<div id="betterLuckModal" class="modal fixed inset-0 bg-black/40 backdrop-blur-sm hidden justify-center items-center z-50">
+    <div class="bg-white rounded-2xl shadow-xl p-3 w-[420px] relative animate-fadeIn">
+        <button class="closeModal absolute right-4 top-4 text-gray-500 hover:text-black text-xl">✕</button>
+        <h2 class="text-xl font-bold text-center mb-6 flex items-center justify-center gap-2">😢 Better Luck Next Time!</h2>
+        <div class="d-flex justify-center">
+        <div class="bg-gray-200 rounded-xl p-4 shadow-lg text-center w-50 mb-3">
+            <div class="text-5xl mb-2">🎁</div>
+            <div id="rewardPointsZero" class="text-2xl font-semibold">0 Points</div>
+        </div>
+        </div>
+        <h3 class="text-xl font-bold text-center mb-2">Try Again! 🎯</h3>
+        <p class="text-center text-gray-700 mb-1">Better luck next time!</p>
+    </div>
+</div>
+<!-- SCRATCH REWARD POPUP -->
+<div id="scratchRevealModal"
+     class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden justify-center items-center z-50">
+
+    <div class="bg-white rounded-2xl shadow-xl p-3 w-[420px] relative animate-fadeIn">
+
+        <!-- Close Button -->
+        <button id="closeScratchModal"
+                class="absolute right-4 top-4 text-gray-500 hover:text-black text-xl">
+            ✕
+        </button>
+
+        <!-- Title -->
+        <h2 class="text-xl font-bold text-center mb-6 flex items-center justify-center gap-2">
+            🎉 Scratch Card Reveal!
+        </h2>
+
+        <!-- Green Reward Box -->
+       <div class="d-flex justify-center">
+        <div class="bg-gradient-to-r from-green-400 to-green-500
+                    text-white rounded-xl p-4 shadow-lg text-center mb-3 w-50">
+            <div class="text-5xl mb-2">🎁</div>
+            <div id="rewardPoints" class="text-2xl font-semibold">0 Points</div>
+        </div>
+       </div>
+
+        <!-- Message -->
+        <h3 class="text-xl font-bold text-center mb-2">Congratulations! 🎊</h3>
+
+        <p class="text-center text-yellow-500 mb-1" style="color:rgb(234 179 8) !important;">
+            You won: <span id="wonPoints1" class="text-yellow-600 font-semibold" style="color:rgb(234 179 8);"></span>
+        </p>
+
+        <p class="text-center text-gray-500 text-sm">
+            Reward has been added to your account
+        </p>
+
+        <!-- Confetti -->
+        <canvas id="confettiCanvas"
+                class="pointer-events-none absolute inset-0 w-full h-full rounded-2xl"></canvas>
+
+    </div>
+</div>
+
+<!-- CONFETTI LIBRARY -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+
+<!--MODAL -->
+<!-- GIFT POINTS MODAL -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:18px;">
+
+            <!-- HEADER -->
+            <div class="modal-header border-0 px-3 pb-0 pt-2">
+                <h5 class="modal-title font-weight-bold" style="color:#0b2c6d;font-size: 16px;">
+                    Gift your rewards to friends (Avl Pts: {{available_points}})
+                </h5>
+                <button type="button" class="close" data-dismiss="modal"
+                        style="font-size:28px; color:#666;">
+                    &times;
+                </button>
+            </div>
+
+            <!-- BODY -->
+            <div class="modal-body px-4">
+
+                <!-- SEARCH BAR -->
+                <div class="d-flex mb-4 gap-2">
+                    <input type="search"
+                           class="form-control"
+                           id="searchtext"
+                           placeholder="Search by employee name"
+                           style="border-radius:10px; height:30px;width: -webkit-fill-available;">
+
+                    <button class="btn d-flex align-items-center px-4"
+                            id="searchuser"
+                            style="background:#16a34a; color:#fff; border-radius:10px; height:30px;">
+                        <span class="material-symbols-rounded mr-2">search</span>
+                        Search
+                    </button>
+                </div>
+
+                <!-- USER LIST -->
+                <div id="getmatch"
+                     style="max-height:360px; overflow-y:auto; padding-right:6px;">
+
+                    <!-- SAMPLE USER ROW (JS SHOULD APPEND LIKE THIS) -->
+                    <!--
+                    <div class="d-flex align-items-center justify-content-between p-2 mb-2"
+                         style="border:1px solid #e6ebf2; border-radius:14px; background:#f9fbfd;">
+                        
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width:46px; height:46px; background:#0b2c6d; color:#fff; font-weight:600;">
+                                IS
+                            </div>
+                            <div style="font-weight:600; color:#1f2937;">
+                                Ishika Singh
+                            </div>
+                        </div>
+
+                        <input type="number"
+                               class="form-control text-center"
+                               placeholder="Points"
+                               style="width:110px; border-radius:10px;">
+                    </div>
+                    -->
+
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="modal-footer border-0 px-3 pt-0 pb-2 d-flex justify-content-center gap-2">
+                <button type="button"
+                        class="btn px-4"
+                        data-dismiss="modal"
+                        style="border-radius:10px; background:#f1f5f9;">
+                    Close
+                </button>
+
+                <button type="button"
+                        class="btn px-4"
+                        id="sharepoints"
+                        style="background:#0b2c6d; color:#fff; border-radius:10px; font-weight:600;">
+                    Send
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!--MODAL redeem -->
+<!-- REDEEM MODAL -->
+<!-- REDEEM MODAL -->
+<div class="modal fade" id="redeemModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:18px;">
+
+            <!-- HEADER -->
+            <div class="modal-header border-0 px-4 pt-4">
+                <h5 class="modal-title font-weight-bold" style="color:#0b2c6d;">
+                    Redeem (Avl Pts: <span id="modalAvailablePoints"class="available-points">{{available_points}}</span>)
+                </h5>
+                <button type="button" class="close" data-dismiss="modal"
+                        style="font-size:28px; color:#666;">
+                    &times;
+                </button>
+            </div>
+
+            <!-- BODY -->
+            <div class="modal-body px-4 pb-2">
+
+                <!-- TOP STATS -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="p-3 text-center"
+                             style="background:#f7f9fc; border-radius:14px;">
+                             <span class="material-symbols-rounded text-[#0b2c6d] fs-2">
+                trophy
+            </span>
+
+                            <div class="text-muted">Lifetime Points</div>
+                            <div id="lifetimePoints"
+                                 style="font-size:25px; font-weight:700; color:#0b2c6d;">
+                                0
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="p-3 text-center"
+                             style="background:#f7f9fc; border-radius:14px;">
+                              <span class="material-symbols-rounded text-danger fs-2">
+                local_fire_department
+            </span>
+                            <div class="text-muted">Burn Out Points</div>
+                            <div id="burnoutPoints"
+                                 style="font-size:25px; font-weight:700; color:#ff4d4f;">
+                                0
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- POINT DETAILS -->
+                <div class="row border-top pt-3 text-center">
+                    <div class="col-md-6">
+                    <span class="material-symbols-rounded text-[#0b2c6d]fs-3">
+            bolt
+        </span>
+                        <div class="text-muted">Active Points</div>
+                        <div id="totalPoints"
+                             style="font-size:20px; font-weight:700; color:#0b2c6d;">
+                            0
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                    <span class="material-symbols-rounded text-warning fs-3">
+            redeem
+        </span>
+                        <div class="text-muted">Redeemable Points</div>
+                        <div id="redeemablePoints"
+                             style="font-size:20px; font-weight:700; color:#f4b400;">
+                            0
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NOTE -->
+                <div class="text-center mt-3 text-muted" style="font-size:13px;">
+                    (*5000 points can be redeemed at once)
+                </div>
+
+                <!-- HIDDEN INPUT FOR REDEEM -->
+                <input type="hidden" id="idredeem-points" value="0">
+            </div>
+
+            <!-- FOOTER -->
+            <div class="modal-footer border-0 px-4 pb-4">
+                <button type="button"
+                        id="redeemnow"
+                        class="btn px-4 py-2"
+                        style="background:#0b2c6d; color:#fff; border-radius:10px; font-weight:600;">
+                    Redeem Now
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<!--MODAL REDEEM -->
+
+<div class="modal fade" id="spindWheel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document" style="max-width:300px !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">You have won <strong id="spinpoint"></strong> point(s)</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div> 
+                <div class="modal-body" id="popupimage">
+                    
+                    
+                </div>
+               
+            </div>
+        </div>
+    </div>
+
+    <div id="testmodal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h4 class="modal-title">Message</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                  <label for="exampleFormControlTextarea1">Type text</label>
+                  <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" id="submitdata">Send <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- POINTS LOG MODAL -->
+<!-- POINTS LOG MODAL -->
+<div id="pointsModal"
+     class="fixed inset-0 flex bg-black/50 hidden z-[99999] justify-center items-center transition-opacity duration-300" style="padding:0px;">
+
+    <div id="pointsModalBox"
+         class="bg-white w-full max-w-6xl rounded-2xl shadow-2xl relative 
+                p-0 overflow-auto max-h-[90vh] transform scale-95 opacity-0 
+                transition-all duration-300 overflow-hidden">
+
+        <!-- CLOSE BUTTON -->
+        <button id="closePointsModal"
+                class="absolute top-3 right-4 text-3xl text-gray-600 hover:text-red-600" style="z-index:999;">
+            &times;
+        </button>
+
+        <!-- CONTENT WILL BE LOADED HERE -->
+        <div id="pointsModalContent"></div>
+    </div>
+</div>
+
+
+
+
+    {{/user_stats}}
+    </main>

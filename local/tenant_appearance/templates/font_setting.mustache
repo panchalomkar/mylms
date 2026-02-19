@@ -1,0 +1,87 @@
+<div class="container">
+    <div class="col-md-6">
+        <h2 class="leftmar"> {{#str}}font_upload_setting, local_tenant_appearance{{/str}}</h2>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-5 leftmar">
+            <form id="fontuploadform" method="post" enctype="multipart/form-data" action="{{action}}">
+                <div class="form-group col-md-12">
+                    <label class="label_font_setting lmargin">{{#str}}fonts_upload_fontfile, local_tenant_appearance{{/str}}</label>
+                    <div class="custom-file form_input_property">
+                        <input type="file" class="custom-file-input selectfontfile form_input_property" id="inputGroupFile01" name="file" required="">
+                        <label class="custom-file-label" for="inputGroupFile01"></label>
+                    </div>
+                    </div>
+                    <div class="form-group col-md-12"><label class="label_font_setting" style="margin-left: -15px;">{{#str}}fonts_upload_fontfamily, local_tenant_appearance{{/str}}</label>
+                        <input id="fontfamily" name="fontfamily" type="text" placeholder="Ex:- La Belle Aurore, cursive" class="form-control input-md fontfamily form_input_property" required="">
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label class="label_font_setting lmargin">{{#str}}fonts_upload_selectstyle, local_tenant_appearance{{/str}}</label>
+                        <select id="selectstyle" name="selectstyle" class="form-control form_input_property">
+                            <option value="normal">normal</option>
+                            <option value="italic">italic</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label class="label_font_setting lmargin">{{#str}}fonts_upload_fonttype, local_tenant_appearance{{/str}}</label>
+                        <input id="fonttype" name="fonttype" type="text" placeholder="Font Type" class="form-control input-md fonttype form_input_property">
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label class="label_font_setting lmargin">{{#str}}fonts_upload_fontweight, local_tenant_appearance{{/str}}</label>
+                        <select id="fontweight" name="fontweight" class="form-control form_input_property">
+                            <option value="100">100</option>
+                            <option value="200">200</option>
+                            <option value="300">300</option>
+                            <option value="400">400</option>
+                            <option value="500">500</option>
+                            <option value="600">600</option>
+                            <option value="700">700</option>
+                            <option value="800">800</option>
+                            <option value="900">900</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary upload_data col-md-12 fonts_upload_btn" type="submit">{{#str}}upload, local_tenant_appearance{{/str}}</button>
+                </form><br>
+            <div class="col-md-12 text-center">
+                <span class="label_font_setting">Or</span>
+            </div>
+            <div class="col-md-12 text-center">
+                <span class="label_font_setting text-center">
+                    {{#str}}font_select_default, local_tenant_appearance{{/str}}<a href="{{link}}" class="thcolor">{{#str}}click, local_tenant_appearance{{/str}}</a>
+                </span>
+            </div><br><br><br><br>
+        </div>
+        <div class="col-md-7">
+            <table class="table font_list">
+                <thead>
+                    <tr class="font_list_header">
+                    <th class="label_font_setting thcolor">{{#str}}fonts_upload_fontfile, local_tenant_appearance{{/str}}</th>
+                    <th class="label_font_setting thcolor"></th>
+                    <th class="label_font_setting thcolor">{{#str}}fonts_upload_fontfamily, local_tenant_appearance{{/str}}</th>
+                    <th class="label_font_setting thcolor">{{#str}}font_action, local_tenant_appearance{{/str}}</th>
+                    </tr>
+                </thead>
+                <tbody id="append_data">
+                {{#records}}
+                  <tr class="trclass">
+                    <td class="label_font_setting">{{font_file}}</td>
+                    <td class="activebtn"></td>
+                    <td class="label_font_setting">{{font_family}}</td>
+                    <td class="disnone"><input type="hidden" class="form-control fontfile" id="fontfile" name="fontfile" value={{font_file}}></td>
+                    <td class="disnone"><input type="hidden" class="form-control fileindex" id="fileindex" name="fileindex" value={{id}}></td>
+                    <td>
+                    <a href="" class="delete_font"><i class="fa fa-trash font_trash" aria-hidden="true"></i>
+                    <span class="label_font_setting removed">{{#str}}font_remove_btn, local_tenant_appearance{{/str}}</span>
+                    </a>
+                    </td>
+                  </tr>
+                {{/records}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+	

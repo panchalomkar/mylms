@@ -1,0 +1,191 @@
+<div id='backgroundtaz' onclick='hidetazft()' style='position:fixed;left:0px;top:0;width:100%;height:100%;background:#000;z-index:999;display:none;opacity:0.5;'></div>
+<div id='mainroleassigntaz'></div>
+<span class="intro"></span>
+<div class="custom-navigation row">
+	
+	{{# result }}
+	<div colspan="2" class="col-md-12">		
+		<div class="{{ result.class }}">{{ result.message }}</div>
+	</div>
+	{{/ result }}
+	<div class="col-md-12 mb-4">
+		<a class="back_page" href="{{ root_url }}" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="{{#str}} back_to_home, block_customnavigation {{/str}}" style="display: inline-block;">
+			<i class="wid wid-icon-phback-to" aria-hidden="true"></i>
+		</a> 
+		<h3 style="display: inline-block;">
+			{{# str }} pluginname, block_customnavigation {{/ str }} 
+		</h3>
+	</div>
+	<div class="col-md-12 custom-navigation-two">
+		<!-- Start of left box -->
+		<div valign="top"class="form_container col-md-6 col-lg-6 col-sm-12 col-xs-12 half">
+			<div class="single-menu-setting">
+				<form method="post" action="{{ action }}" enctype="multipart/form-data" name="form">
+
+					<input type="hidden" id="id_item" name="id_item" value="0">
+					<input type="hidden" name="h_icon" value="0">
+					<input type="hidden" name="h_sort" value="0">
+					<input type="hidden" name="h_roleid" value="0">
+					<input type="hidden" name="h_parentid" value="0">
+					<input type="hidden" name="icon-type" value="font" id="icon_font">
+
+					<input id="action" type="hidden" name="action" value="add_item">
+					<div class="form-group ">
+						<h4 class="pb-2 single-menu-form-title">
+							{{# str }} menu_configration, block_customnavigation {{/ str }}
+						</h4>
+					</div>
+					<div class="form-group block_customnavigation_radio">
+						<label class="col-form-label tipo-label">{{# str }} type, block_customnavigation {{/ str }}</label>
+						
+						<div class="form-radio col-md-1">
+						<input class="custom-check-input" id="type_link" required="required" type="radio" name="type" value="link">
+						<label class="form-check-label" for="type_link">
+						<span></span>
+							{{# str }} link, block_customnavigation {{/ str }}
+							<span class="circle">
+								<span class="check"></span>
+							</span>
+						</label>
+						</div>
+
+						<div class="form-radio col-md-1">
+							<input class="custom-check-input" id="type_container" type="radio" name="type" value="container">
+							<label class="form-check-label" for="type_container">
+							<span></span>
+								{{# str }} container, block_customnavigation {{/ str }}
+								<span class="circle">
+									<span class="check"></span>
+								</span>
+							</label>
+						</div>
+					</div>
+
+					<!--Label field-->
+					<div class="form-group" id="tr_label">
+						<div class="form-group bmd-form-group">
+							<input placeholder="{{# str }} label, block_customnavigation {{/ str }}" required="required" type="text" name="label" id="label" class="form-control">
+						</div>
+					</div>
+
+					<!--Url-->
+					<div class="form-group" id="tr_href">
+						<div class="form-group bmd-form-group">
+							<input placeholder="{{# str }} url, block_customnavigation {{/ str }}" type="text" name="href" class="form-control">
+						</div>
+					</div>
+
+
+					<!--Language-->
+					<div class="form-group" id="tr_language">
+						<div class="input-group mb-3">
+							<select id="select_language" name="select_language" class="form-control">
+								<option value="" disabled="true" selected="selected">{{# str }} select_language, block_customnavigation {{/ str }}</option>
+								{{# files }}
+								<option value="{{key}}" {{# selected }} selected="selected" {{/ selected }}>{{value}}</option>
+								{{/ files }}
+							</select>
+						</div>
+					</div>
+
+					<!--Select index language-->
+					<div class="form-group" id="tr_index_language">
+						<div class="form-group bmd-form-group">
+							<input placeholder="{{# str }} select_index_language, block_customnavigation {{/ str }}" class="form-control" type="text" id="select_index_language" name="select_index_language" value="{{ select_index_language }}">
+						</div>
+					</div>
+
+					<!--Target-->
+					<div class="form-group" id="tr_target">
+						<div class="input-group mb-3">
+							<select name="target" class="form-control" id="select_target">
+								<option value="" selected="selected" disabled="disabled">{{# str }} target, block_customnavigation {{/ str }}</option>
+								<option value="_self">{{# str }} self_page, block_customnavigation {{/ str }}</option>
+								<option value="_blank">{{# str }} new_page, block_customnavigation {{/ str }}</option>
+							</select>
+						</div>
+					</div>
+
+					<!--Module-->
+					<div class="form-group" id="tr_module">
+						<div class="input-group mb-3">
+							<select name="module" class="custom-select" id="select_module">
+								<option value="" disabled="disabled" selected="selected">{{# str }} select_a_module, block_customnavigation {{/ str }}</option>
+								{{# modules }}
+								<option value="{{ code }}">{{ name }}</option>
+								{{/ modules }}
+							</select>
+						</div>
+					</div>
+					<!--Icon-->
+					<div class="form-group" id="tr_icon">
+						<div class="form-group bmd-form-group" id="fa-type">
+							<div class="input-group">
+								<input placeholder="{{# str }} icon, block_customnavigation {{/ str }}" type="text" class="form-control"  id="fa-type-text" name="fa-type" readonly>
+								<div class="input-group-prepend"  id="edit-font">
+									<span class="input-group-text">
+										<i class="fa fa-pencil"></i>
+									</span>
+								</div>
+							</div>
+						</div>
+						<div id="icon-type" style="display:none;">
+							<input type="file" name="icon">
+						</div>
+					</div>
+					<!--Assing roles-->
+					{{{roles}}}
+					<div class="form-group last">
+						<input type="submit" value="Add" id="item_add" class="btn btn-primary btn-round">
+						<input type="button" value="Cancel editing" class="btn btn-secundary btn-round" onclick="this.style.display = 'block';
+						document.form.reset();
+						document.getElementById('fa-type-text').value = '';
+						document.getElementById('id_item').value = 0;
+						document.getElementById('action').value = 'add_item';" id="item_cancel" style="display:none;">
+					</div>
+				</form>
+			</div>
+		</div>
+		<!-- End of left box -->
+
+		<!-- Start of right box -->
+		<div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 half">
+			<p class="preview-title"> {{#str}} preview_custom_menus, block_customnavigation {{/str}} </p>
+			<div class="sortable_container">
+				<div class="sortable_container">
+
+					{{{ tree }}}
+					<input class="btn btn-primary btn-round" type="submit" value="Save menu" id="save_menu" onclick="">
+				</div>
+			</div>
+		</div>
+		<!-- End of right box -->
+	</div>
+
+</div>
+
+
+<form method="post" id="customnavigation_structure_form" action="{{ action }}">
+	<input type="hidden" name="action" value="sort_items">
+	<input type="hidden" name="structure" id="customnavigation_structure">
+</form>
+
+<!-- Load fa-icons -->
+<div id="icon-fonts" class="">
+	<div>
+	  	<input placeholder="{{# str }} search, block_customnavigation {{/ str }}" type="text" id="search_icon" class="form-control">
+  		<a class="close-fa"><i class="fa fa-times"></i></a>
+		<div id="fonts">
+			<ul id="listicons">
+				{{# icons }}
+				<li>
+					<a data-font="{{.}}" data-palcement="bottom" data-toggle="tooltip" data-original-title="{{.}}" >
+						<i class="fa {{.}}"></i>
+					</a>
+				</li>
+				{{/ icons }}
+			</ul>
+		</div>
+	</div>
+</div>
+	<!-- /Load fa-icons -->

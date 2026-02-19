@@ -1,0 +1,29 @@
+
+
+        
+ <table class="table mt-5">
+                <thead class="thead-dark">
+                    <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Sub Competency</th>
+                    <th scope="col">Business Unit</th>
+                    <th scope="col">Improvement %</th> 
+                    <th scope="col">ROI</th>
+                    <th scope="col">Impression</th>
+                    </tr>
+                </thead>
+              {{#userreport}}
+        <tr>
+          <th scope="row">{{counts}}</th>
+          <td>{{subcompetancy}}</td>
+          <td>{{subcompetancybuid}}</td>
+          <td>{{totalroi}}</td>
+          <td>{{FinalROI}}</td>
+          <td>{{{ratingstatus}}}</td>
+        </tr>
+                {{/userreport}} 
+                   
+                </tbody>
+            </table>
+
+    

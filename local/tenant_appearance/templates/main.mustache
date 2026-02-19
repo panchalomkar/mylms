@@ -1,0 +1,56 @@
+
+<div class ="row">
+    <div class="col page-heading">  
+        <h2>{{#str}}tenant, local_tenant_appearance{{/str}} <h2>
+    <div>
+</div>
+
+       
+<div id="exTab2">
+	<ul class = "nav nav-tabs" id="exTab2s">
+        <li class  = "nav-item waves-effect waves-light">
+            <a href = "#color" data-toggle = 'tab' class="nav-link active">
+            {{#str}}color, local_tenant_appearance{{/str}}
+            </a>
+        </li>
+    
+        <li class = "nav-item waves-effect waves-light">
+            <a href = "#font" data-toggle = 'tab' class ="nav-link">
+            {{#str}}fonts, local_tenant_appearance{{/str}}
+            </a>
+        </li>
+
+        <li class = "nav-item waves-effect waves-light">
+            <a href = "#logo" data-toggle = 'tab' class ="nav-link">
+            {{#str}}logo, local_tenant_appearance{{/str}}
+            </a>
+        </li>
+
+        <li class = "nav-item waves-effect waves-light">
+            <a href = "#slideshow" data-toggle = 'tab' class ="nav-link">
+            {{#str}}slide_show, local_tenant_appearance{{/str}}
+            </a>
+        </li>
+    </ul>
+</div>   
+<div class ="tab-content space">
+    <div class = "tab-pane active" id="color">
+        <h4> {{#str}}color_setting, local_tenant_appearance{{/str}}</h4></hr>
+        {{{color}}}
+    </div>
+
+    <div class = "tab-pane space" id="font">
+        <h4>{{#str}}fonts, local_tenant_appearance{{/str}}</h4></hr>
+        {{{font}}}
+    </div>
+
+    <div class = "tab-pane space" id="logo">
+        <h4>{{#str}}logo_setting, local_tenant_appearance{{/str}}</h4></hr>
+        {{{logo}}}
+    </div>
+
+    <div class = "tab-pane space" id="slideshow">
+        <h4>{{#str}}slide_show, local_tenant_appearance{{/str}}</h4></hr>
+        {{{slideshow}}}
+    </div>
+</div>

@@ -1,0 +1,24 @@
+<?php 
+$string['blocktitle'] = 'Tablero Multitenant';
+$string['dashboard'] = 'Multitenante';
+$string['iomad_dashboard:view'] = 'Ver el panel de multitenant';
+$string['iomad'] = 'Multitenante';
+$string['name'] = 'Tablero Multitenant';
+$string['pluginname'] = 'Tablero Multitenant';
+$string['privacy:metadata'] = 'El complemento del panel del Multitenant local solo muestra los datos almacenados en otras ubicaciones.';
+$string['addmtdescription'] = 'Para crear la nueva empresa, rellene los siguientes campos obligatorios y complete.';
+$string['mtdescription'] = 'Operar múltiples instancias independientes en un entorno compartido.';
+$string['selectcompanychoose'] = 'Selecciona una empresa';
+$string['reporttitle'] = 'Informes';
+$string['tenantselectedmessage'] = 'Actualmente está editando la Compañía de inquilinos <span> {$a->comapnyname} </span>. Para volver al panel de múltiples inquilinos, haga clic en <strong>{$a->tenantlink}</strong> enlazar..';
+$string['companyapperance'] = 'Ajuste de la apariencia';
+$string['companynotfound'] = 'La identificación de la compañía {$a} no existe en la base de datos.';
+$string['backtotenant'] = 'Volver al inquilino principal';
+$string['search_company'] = 'Buscar empresa';
+$string['addcompany'] = 'Añadir empresa';
+$string['backtodashboard'] = 'Volver al panel de control de múltiples inquilinos';
+$string['companies_overview'] = "Informe general de empresas";
+$string['mt_dashboard:managecompanycohort'] = "Administrar cohortes de la empresa";
+$string['mt_dashboard:companycohort_view'] = "View company cohort ";
+$string['mt_dashboard:companyapperance_view'] = "Ver la apariencia de la empresa";
+$string['mt_dashboard:assigncompanycohort'] = "Asignar cohorte de empresa";

@@ -1,0 +1,128 @@
+<style>
+
+.myprofile-header {
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+}
+.rightb-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 15px;
+}
+.myprofile-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+  margin: 0;
+}
+
+.mycert-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mycert-item {
+  background: #f2f6f9cf;
+  border-radius: 10px;
+  padding: 7px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: "Inter", sans-serif;
+}
+
+.mycert-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mycert-icon {
+  background: #f9f9f9;
+  border-radius: 50%;
+  width: 20px;
+  height: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mycert-icon i {
+  font-size: 15px;
+  color: #ec9707; /* gold tone */
+}
+
+.mycert-info h6 {
+  margin: 0;
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+}
+
+.mycert-info small {
+  font-size: 10px;
+  color: #888;
+}
+
+.mycert-download {
+  background: #003152;
+  border-radius: 50%;
+  width: 21px;
+  height: 21px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-decoration: none;
+}
+
+.mycert-download:hover {
+  background: #004b80;
+}
+</style>
+
+<div class="rightb-card p-0">
+  <div class="myprofile-header d-flex justify-content-between align-items-center block-header-right p-2">
+    <h5 class="myprofile-title text-light">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide block-icon1 lucide-award w-4 h-4 text-accent"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"></path><circle cx="12" cy="8" r="6"></circle></svg>
+      My Certificates
+    </h5>
+  </div>
+<div class="p-4 pt-0">
+  {{#hascertificates}}
+    <div class="mycert-list">
+      {{#certificates}}
+        <div class="mycert-item">
+          <div class="mycert-left">
+            <div class="mycert-icon">
+              <i class="bi bi-award"></i>
+            </div>
+            <div class="mycert-info">
+              <h6 style="font-size: 12px;">{{name}}</h6>
+              <small>Last accessed: {{lastaccessed}}</small>
+            </div>
+          </div>
+          <a style="font-size:12px" href="{{url}}" class="mycert-download" target="_blank">
+            <i class="bi bi-download"></i>
+          </a>
+        </div>
+      {{/certificates}}
+    </div>
+
+    
+      <div class="text-end mt-2">
+        <a href="{{viewmoreurl}}" class="btn btn-sm btn-outline-primary"
+           style="font-size: 9px !important; padding: 5px;">
+          View more
+        </a>
+      </div>
+      </div>
+  {{/hascertificates}}
+
+  {{^hascertificates}}
+    <p style="text-align:center; color:#777; margin-top:10px;">You have no issued certificates yet.</p>
+  {{/hascertificates}}
+</div>

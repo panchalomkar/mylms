@@ -1,0 +1,545 @@
+<div class="tab-wrapper ">
+<!-- Top Header -->
+<div class="w-full bg-gradient-to-r from-slate-400 to-slate-700 p-10 rounded-xl mb-6">
+<a href="{{{backlink}}}"  style="position: relative;
+    bottom: 36px;
+    right: 40px;
+    background: #003152;
+    color: #fff;
+    padding: 5px;
+    border-radius: 10px;">
+						<span class="fa fa-chevron-circle-left" aria-hidden="true"></span>
+						<span class="backtenant-message">{{#str}} backtenant,local_mt_dashboard {{/str}}</span>
+					</a>
+  <div class="flex items-center gap-6">
+    
+    <!-- Avatar -->
+    <div class="w-20 h-20 rounded-xl text-white text-2xl font-bold flex items-center justify-center {{avatar_class}}">
+      {{avatar_text}}
+    </div>
+
+    <!-- Company Info -->
+    <div>
+      <h1 class="text-3xl font-semibold text-white">{{compnay_name}}</h1>
+      <p class="text-white/80 mt-1">
+        {{location}} • Managed by {{company_creator_name}}
+      </p>
+    </div>
+  </div>
+</div>
+<div class="mb-6 d-flex justify-row items-center">
+<div class="bg-white rounded-xl p-4 col-md-9">
+  {{{tabhtml}}}
+</div>
+  <div class="relative col-md-3 d-none">
+    <span class="material-icons absolute left-3 top-3 text-gray-400">search</span>
+    <input
+      type="text"
+      name="search-mt"
+      value="{{search}}"
+      placeholder="Search for Company"
+      class="w-full pl-10 px-6 py-3 mr-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+</div>
+
+{{#hasstats}}
+<div class="grid grid-cols-1 {{^is_tab_3}} md:grid-cols-4 {{/is_tab_3}} {{#is_tab_3}}md:grid-cols-3{{/is_tab_3}} gap-3 mb-10 top-stat-e">
+  {{#stats}}
+    <div class="stat-card {{bg}}" style="border:1px solid hsl(240 6% 90%)">
+
+      <div class="flex justify-between items-start">
+        <div class="stat-icon {{iconbg}}">
+          <span class="material-symbols-rounded">
+            {{icon}}
+          </span>
+        </div>
+      </div>
+
+      <p class="stat-label">{{label}}</p>
+      <span class=" font-bold text-3xl">{{value}}</span>
+
+    </div>
+  {{/stats}}
+</div>
+{{/hasstats}}
+
+{{#show_quick_actions}}
+{{#has_quick_actions}}
+<h2 class="text-2xl font-semibold mb-6 ">Quick Actions</h2>
+
+<div class="grid grid-cols-1 {{#is_tab_3}}md:grid-cols-4 gap-3{{/is_tab_3}}  {{^is_tab_3}} md:grid-cols-3 gap-4 {{/is_tab_3}} edit-ui-t ">
+  {{#tenant_menus}}
+    <a href="{{{url_new}}}" class="group">
+      <div class="menu-card {{#actions_child}}d-flex gap-4{{/actions_child}}" style="border:1px solid hsl(240 6% 90%);{{#actions_child}}padding:17px; gap:10px !important;{{/actions_child}}">
+
+        <div class="icon-box {{icon_bg}}">
+          <span class="material-symbols-rounded">
+            {{icon}}
+          </span>
+        </div>
+        <div>
+        <h3 class="menu-title" style="{{#actions_child}}font-size:15px;{{/actions_child}}">{{action}}</h3>
+        <p class="menu-desc">
+        {{#is_tab_1}}Manage and configure {{action}}{{/is_tab_1}}
+          {{description}}
+        </p>
+        </div>
+      </div>
+    </a>
+  {{/tenant_menus}}
+</div>
+{{/has_quick_actions}}
+{{/show_quick_actions}}
+
+
+{{#show_quick_actions_small}}
+<!-- QUICK ACTIONS -->
+<h2 class="text-2xl font-semibold mb-6">Quick Actions</h2>
+<div class="flex flex-wrap gap-3 mb-8 user_tab">
+  {{#tenant_menus}}
+    <a href="{{{url_new}}}" class="bg-[#003152] text-white px-3 py-2 rounded-xl flex items-center gap-2 hover:bg-[#00263d]">
+      <span class="material-symbols-rounded text-white">{{icon}}</span>
+      {{action}}
+    </a>
+  {{/tenant_menus}}
+</div>
+{{/show_quick_actions_small}}
+{{#is_tab_2}}
+<!-- USERS MANAGEMENT CARD -->
+<div class="bg-white rounded-xl p-6 border user_tab ">
+
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-6">
+    <h3 class="text-xl font-semibold item-center align-center d-flex"><span class="material-icons text-[#003152]">admin_panel_settings</span>
+ Users & Team Management</h3>
+    <div class="flex gap-3 d-none">
+      <a href="{{adduserurl}}" class="btn-primary">Add User</a>
+      <a href="{{bulkuploadurl}}" class="btn-secondary">Bulk Upload</a>
+    </div>
+  </div>
+
+<!-- Filters -->
+<div class="bg-white p-4 rounded-xl shadow-sm mb-6">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    
+    <input
+      id="userSearch"
+      type="text"
+      placeholder="Search by name or email"
+      class="input-style w-full"
+    />
+
+    <select id="roleFilter" class="input-style w-full">
+      <option value="">All Roles</option>
+      {{#roles}}
+        <option value="{{id}}">{{name}}</option>
+      {{/roles}}
+    </select>
+
+    <select id="statusFilter" class="input-style w-full ">
+      <option value="">All Status</option>
+      <option value="active">Active</option>
+      <option value="suspended">Inactive</option>
+    </select>
+
+  </div>
+</div>
+
+
+  <!-- Table -->
+  <div class=" bg-white  shadow-sm" >
+  <table class="w-full text-sm">
+    <thead class="border-b bg-[#003152]">
+      <tr class="text-white">
+        <th class="px-4 py-2 text-left">User</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th>Last Login</th>
+        <th class="text-right px-6">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody id="userTableBody">
+      {{#users}}
+      <tr
+        class="border-b hover:bg-gray-50 user-row"
+        data-name="{{fullname}} {{email}}"
+        data-role="{{roleid}}"
+        data-status="{{status}}"
+      >
+
+        <!-- USER -->
+        <td class="px-4 py-2 flex items-center gap-3">
+          {{{profileimageurl}}}
+          <span class="font-medium text-gray-800">{{fullname}}</span>
+        </td>
+
+        <td>{{email}}</td>
+        <td>{{role}}</td>
+
+        <!-- STATUS -->
+        <td>
+          {{#active}}
+            <span class="badge badge-success">Active</span>
+          {{/active}}
+          {{^active}}
+            <span class="badge badge-muted">Inactive</span>
+          {{/active}}
+        </td>
+
+        <td>{{lastlogin}}</td>
+
+        <!-- ACTIONS -->
+        <td class="relative text-right px-6">
+          <button
+            class="action-btn p-2 rounded-full hover:bg-gray-100"
+            aria-label="Actions">
+            <span class="material-icons">more_vert</span>
+          </button>
+
+          <div class="action-menu hidden absolute right-6 top-12 w-44 bg-white border rounded-lg shadow-xl z-50" style="text-align: center;">
+            <a href="{{editurl}}" class="dropdown-item">Edit user</a>
+
+          {{#active}}
+<button
+  class="dropdown-item text-orange-600 js-user-action"
+  data-action="suspend"
+  data-userid="{{id}}">
+  Suspend
+</button>
+{{/active}}
+
+{{^active}}
+<button
+  class="dropdown-item text-green-600 js-user-action"
+  data-action="activate"
+  data-userid="{{id}}">
+  Activate
+</button>
+{{/active}}
+
+        <button
+  class="dropdown-item text-red-600 js-user-action"
+  data-action="delete"
+  data-userid="{{id}}">
+  Delete
+</button>
+
+          </div>
+        </td>
+
+      </tr>
+      {{/users}}
+    </tbody>
+  </table>
+</div>
+
+
+</div>
+{{/is_tab_2}}
+
+{{#is_tab_4}}
+<!-- LICENSE MANAGEMENT CARD -->
+<div class="bg-white rounded-xl p-6 border user_tab ">
+
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-6">
+    <h3 class="text-xl font-semibold flex items-center gap-2">
+      <span class="material-icons text-[#003152]">verified_user</span>
+      License Overview
+    </h3>
+
+  </div>
+
+  <!-- Table -->
+  <div class="bg-white shadow-sm">
+    <table class="w-full text-sm">
+      <thead class="border-b bg-[#003152]">
+        <tr class="text-white">
+          <th class="px-4 py-2 text-left">License Type</th>
+          <th>Course</th>
+          <th>Quantity</th>
+          <th>Assigned</th>
+          <th>Available</th>
+          <th>Expiry Date</th>
+          <th class="text-right px-6">Status</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {{#licenses}}
+        <tr class="border-b hover:bg-gray-50">
+
+          <td class="px-4 py-3 font-medium">{{name}}</td>
+          <td>{{course}}</td>
+          <td>{{quantity}}</td>
+          <td>{{assigned}}</td>
+          <td>{{available}}</td>
+          <td>{{expir}}</td>
+
+      <td class="text-right px-6">
+  {{#status.active}}
+    <span class="badge badge-success">Active</span>
+  {{/status.active}}
+
+  {{#status.expiring}}
+    <span class="badge badge-warning">Expiring Soon</span>
+  {{/status.expiring}}
+
+  {{#status.expired}}
+    <span class="badge badge-danger">Expired</span>
+  {{/status.expired}}
+</td>
+
+
+        </tr>
+        {{/licenses}}
+
+        {{^licenses}}
+        <tr>
+          <td colspan="6" class="text-center py-6 text-gray-400">
+            No licenses found
+          </td>
+        </tr>
+        {{/licenses}}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{{/is_tab_4}}
+
+{{#is_tab_5}}
+<div class="bg-white rounded-xl p-6 border user_tab mt-3">
+
+  <h3 class="text-xl font-semibold mb-6 flex items-center gap-2">
+    <span class="material-icons text-[#003152]">psychology</span>
+    Competency Framework
+  </h3>
+
+  {{#competencyframeworks}}
+    <div class="mb-10">
+
+      <!-- Framework title -->
+      <h4 class="text-lg font-bold mb-4 text-[#003152]">
+        {{frameworkname}}
+      </h4>
+
+      <!-- ONE flex wrapper -->
+      <div class="flex gap-6">
+
+        <!-- ONE continuous vertical bar -->
+        <div class="w-1 bg-[#003152] rounded-full self-stretch"></div>
+
+        <!-- Categories + competencies -->
+        <div class="space-y-6">
+
+          {{#categories}}
+            <div>
+              <h5 class="text-md font-semibold mb-2">
+                {{categoryname}}
+              </h5>
+
+              <ul class="list-disc pl-6 space-y-1 text-gray-700">
+                {{#competencies}}
+                  <li>
+                    {{name}}
+                    <span class="text-gray-400">– {{proficiency}}</span>
+                  </li>
+                {{/competencies}}
+
+                {{^competencies}}
+                  <li class="text-gray-400 italic">
+                    No competencies under this category
+                  </li>
+                {{/competencies}}
+              </ul>
+            </div>
+          {{/categories}}
+
+        </div>
+
+      </div>
+    </div>
+  {{/competencyframeworks}}
+
+  {{^competencyframeworks}}
+    <p class="text-gray-400 text-center py-6">
+      No competencies configured
+    </p>
+  {{/competencyframeworks}}
+
+</div>
+{{/is_tab_5}}
+
+
+
+{{#is_tab_7}}
+<div class="bg-white rounded-xl border p-6 user_tab mt-3 d-none">
+
+    <!-- Header -->
+    <h3 class="text-xl font-semibold mb-6">
+        Recent Reports
+    </h3>
+
+    {{#reports}}
+    <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+
+            <!-- Table Head -->
+            <thead>
+                <tr class="text-left text-gray-500 text-sm border-b">
+                    <th class="pb-3">Report Name</th>
+                    <th class="pb-3">Generated Date</th>
+                    <th class="pb-3">Type</th>
+                    <th class="pb-3">Status</th>
+                    <th class="pb-3 text-right">Actions</th>
+                </tr>
+            </thead>
+
+            <!-- Table Body -->
+            <tbody class="text-sm">
+                {{#list}}
+                <tr class="border-b last:border-0">
+
+                    <!-- Report Name -->
+                    <td class="py-4 font-medium text-gray-900">
+                        {{name}}
+                    </td>
+
+                    <!-- Date -->
+                    <td class="py-4 text-gray-700">
+                        {{generateddate}}
+                    </td>
+
+                    <!-- Type -->
+                    <td class="py-4 text-gray-700">
+                        {{type}}
+                    </td>
+
+                    <!-- Status -->
+                    <td class="py-4">
+                        {{#completed}}
+                        <span class="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700">
+                            Completed
+                        </span>
+                        {{/completed}}
+
+                        {{#pending}}
+                        <span class="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700">
+                            Pending
+                        </span>
+                        {{/pending}}
+
+                        {{#failed}}
+                        <span class="px-3 py-1 text-xs rounded-full bg-red-100 text-red-700">
+                            Failed
+                        </span>
+                        {{/failed}}
+                    </td>
+
+                    <!-- Actions -->
+                    <td class="py-4 text-right">
+                        {{#downloadurl}}
+                        <a href="{{downloadurl}}"
+                           class="inline-block px-4 py-2 text-sm font-medium border rounded-lg hover:bg-gray-50">
+                            Download
+                        </a>
+                        {{/downloadurl}}
+                    </td>
+
+                </tr>
+                {{/list}}
+            </tbody>
+
+        </table>
+    </div>
+    {{/reports}}
+
+    <!-- Empty State -->
+    {{^reports}}
+    <div class="text-center py-10 text-gray-400">
+        No recent reports available
+    </div>
+    {{/reports}}
+
+</div>
+{{/is_tab_7}}
+
+
+
+
+{{#show_company_info}}
+<div class="bg-white rounded-xl p-6 mt-10 {{#is_tab_2}}d-none{{/is_tab_2}}">
+  <h3 class="text-xl font-semibold mb-6">Company Information</h3>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <div class="flex items-center gap-4 border p-4 rounded-lg">
+      <div class="icon-box bg-[#5f948d]">
+        <span class="material-icons text-white">location_on</span>
+      </div>
+      <div>
+        <p class="text-gray-500">Address</p>
+        <p class="font-medium">{{company_address}}</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4 border p-4 rounded-lg">
+      <div class="icon-box bg-[#003152]">
+        <span class="material-icons text-white">email</span>
+      </div>
+      <div>
+        <p class="text-gray-500">Email</p>
+        <p class="font-medium">{{company_email}}</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4 border p-4 rounded-lg">
+      <div class="icon-box bg-[#042b26]">
+        <span class="material-icons text-white">phone</span>
+      </div>
+      <div>
+        <p class="text-gray-500">Phone</p>
+        <p class="font-medium">{{company_phone}}</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4 border p-4 rounded-lg">
+      <div class="icon-box bg-[#2dd4bf]">
+        <span class="material-icons text-white">check</span>
+      </div>
+      <div>
+        <p class="text-gray-500">Status</p>
+        <p class="font-medium">{{company_status}}</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+{{/show_company_info}}
+<div id="userActionModal"
+     class="fixed inset-0 hidden bg-black/50 flex items-center justify-center z-50">
+
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 text-center">
+    <span class="material-icons text-4xl mb-3" id="modalIcon">warning</span>
+
+    <h3 class="text-lg font-semibold mb-2" id="modalTitle"></h3>
+    <p class="text-gray-600 mb-6" id="modalText"></p>
+
+    <div class="flex justify-center gap-4">
+      <button id="modalCancel"
+              class="px-4 py-2 rounded-lg border">
+        Cancel
+      </button>
+
+      <button id="modalConfirm"
+              class="px-4 py-2 rounded-lg text-white bg-indigo-600">
+        Confirm
+      </button>
+    </div>
+  </div>
+</div>
+</div>

@@ -1,0 +1,195 @@
+<div class="w-full flex flex-col gap-2">
+
+    <!-- Welcome Text -->
+    <div class="text-center d-none ">
+        <h2 class="text-2xl font-semibold text-[#0052cc]">
+            {{#str}}welcometobrand, theme_remui, {{sitename}}{{/str}}
+        </h2>
+        <p class="text-gray-500 text-sm">
+            {{#str}}entertologin, theme_remui{{/str}}
+        </p>
+    </div>
+        <div class="text-center mb-4 ">
+                <h2 class="text-3xl font-semibold text-[#0052cc]">Welcome</h2>
+                <p class="text-gray-500 text-sm mt-1">Login with Username</p>
+            </div>
+
+    {{#maintenance}}
+        <div class="bg-red-100 text-red-700 p-3 rounded text-sm">
+            {{{maintenance}}}
+        </div>
+    {{/maintenance}}
+
+    {{#error}}
+        <div class="bg-red-100 text-red-700 p-2 rounded text-sm mb-2">
+            {{error}}
+        </div>
+    {{/error}}
+
+    <form action="{{loginurl}}" method="post" id="login" class="space-y-4">
+        <input type="hidden" name="logintoken" value="{{logintoken}}">
+
+        <!-- Username -->
+        <div class="flex flex-col gap-1 mt-4">
+            <label class="text-sm font-medium d-none text-gray-700">
+                {{^canloginbyemail}}{{#str}}username{{/str}}{{/canloginbyemail}}
+                {{#canloginbyemail}}{{#str}}usernameemail{{/str}}{{/canloginbyemail}}
+            </label>
+
+            <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-2 text-gray-400 text-xl">
+                    person
+                </span>
+                <input
+                    type="text"
+                    name="username"
+                    id="username"
+                    value="{{username}}"
+                    class="w-full pl-6 py-2 border rounded-lg focus:ring-2 focus:ring-[#0052cc] focus:outline-none"
+                    autocomplete="username"
+                    placeholder="{{#cleanstr}}username{{/cleanstr}}"
+                >
+            </div>
+        </div>
+
+        <!-- Password -->
+        <div class="flex flex-col gap-1">
+            <label class="text-sm d-none font-medium text-gray-700">
+                {{#str}}password{{/str}}
+            </label>
+
+            <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-2 text-gray-400 text-xl">
+                    lock
+                </span>
+                <input
+                    type="password"
+                    name="password"
+                    id="password"
+                    class="w-full pl-6 py-2 border rounded-lg focus:ring-2 focus:ring-[#0052cc] focus:outline-none"
+                    placeholder="{{#cleanstr}}password{{/cleanstr}}"
+                    autocomplete="current-password"
+                >
+                <span class="material-symbols-outlined absolute right-3 top-3 text-gray-400 cursor-pointer show-password-icon">
+                    visibility
+                </span>
+            </div>
+        </div>
+
+        {{#recaptcha}}
+            <div class="my-2">{{{recaptcha}}}</div>
+        {{/recaptcha}}
+
+        <div class="text-right">
+            <a href="{{forgotpasswordurl}}" class="text-xs text-[#0052cc] font-medium hover:underline">
+                {{#str}}forgotaccount, theme_remui{{/str}}
+            </a>
+        </div>
+
+        <!-- Login Button -->
+        <button
+            type="submit"
+            id="loginbtn"
+            class="w-full bg-[#003152] hover:bg-[#ec9707] text-white py-2 rounded-lg font-medium transition">
+            {{#str}}login{{/str}}
+        </button>
+    </form>
+
+    <!-- Signup -->
+    {{#cansignup}}
+    <p class="text-center text-sm text-gray-600 d-none">
+        {{#str}}firsttime, theme_remui{{/str}}
+        <a href="{{signupurl}}" class="font-semibold text-[#0052cc] hover:underline">
+            {{#str}}startsignup{{/str}}
+        </a>
+    </p>
+    {{/cansignup}}
+
+    <!-- Guest Login -->
+    {{#canloginasguest}}
+    <form action="{{loginurl}}" method="post" id="guestlogin" class="mt-2">
+        <input type="hidden" name="logintoken" value="{{logintoken}}">
+        <input type="hidden" name="username" value="guest">
+        <input type="hidden" name="password" value="guest">
+        <button
+            id="loginguestbtn"
+            class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded-lg font-medium transition d-none">
+            {{#str}}loginguest{{/str}}
+        </button>
+    </form>
+    {{/canloginasguest}}
+          <!-- OR Separator -->
+            <div class="flex items-center my-2">
+                <div class="flex-grow h-px bg-gray-300"></div>
+                <span class="px-3 text-gray-500 text-sm">OR</span>
+                <div class="flex-grow h-px bg-gray-300"></div>
+            </div>
+
+     <!-- Social Login Buttons -->
+<div class="flex justify-center gap-4 mb-3">
+
+    <!-- Gmail / Google -->
+    <button class="w-10 h-10 border  flex items-center justify-center hover:bg-gray-100" style="border-radius: 99% !important; padding: 4px;">
+        <svg viewBox="-0.5 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>Google-color</title> <desc>Created with Sketch.</desc> <defs> </defs> <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Color-" transform="translate(-401.000000, -860.000000)"> <g id="Google" transform="translate(401.000000, 860.000000)"> <path d="M9.82727273,24 C9.82727273,22.4757333 10.0804318,21.0144 10.5322727,19.6437333 L2.62345455,13.6042667 C1.08206818,16.7338667 0.213636364,20.2602667 0.213636364,24 C0.213636364,27.7365333 1.081,31.2608 2.62025,34.3882667 L10.5247955,28.3370667 C10.0772273,26.9728 9.82727273,25.5168 9.82727273,24" id="Fill-1" fill="#FBBC05"> </path> <path d="M23.7136364,10.1333333 C27.025,10.1333333 30.0159091,11.3066667 32.3659091,13.2266667 L39.2022727,6.4 C35.0363636,2.77333333 29.6954545,0.533333333 23.7136364,0.533333333 C14.4268636,0.533333333 6.44540909,5.84426667 2.62345455,13.6042667 L10.5322727,19.6437333 C12.3545909,14.112 17.5491591,10.1333333 23.7136364,10.1333333" id="Fill-2" fill="#EB4335"> </path> <path d="M23.7136364,37.8666667 C17.5491591,37.8666667 12.3545909,33.888 10.5322727,28.3562667 L2.62345455,34.3946667 C6.44540909,42.1557333 14.4268636,47.4666667 23.7136364,47.4666667 C29.4455,47.4666667 34.9177955,45.4314667 39.0249545,41.6181333 L31.5177727,35.8144 C29.3995682,37.1488 26.7323182,37.8666667 23.7136364,37.8666667" id="Fill-3" fill="#34A853"> </path> <path d="M46.1454545,24 C46.1454545,22.6133333 45.9318182,21.12 45.6113636,19.7333333 L23.7136364,19.7333333 L23.7136364,28.8 L36.3181818,28.8 C35.6879545,31.8912 33.9724545,34.2677333 31.5177727,35.8144 L39.0249545,41.6181333 C43.3393409,37.6138667 46.1454545,31.6490667 46.1454545,24" id="Fill-4" fill="#4285F4"> </path> </g> </g> </g> </g></svg>
+    </button>
+
+    <!-- Microsoft 365 -->
+    <button class="w-10 h-10 border  flex items-center justify-center hover:bg-gray-100"  style="border-radius: 99% !important; padding: 4px;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" 
+        alt="Microsoft" class="w-5">
+    </button>
+
+    <!-- LinkedIn -->
+    <button class="w-10 h-10 border  flex items-center justify-center bg-[#1a73e8]"  style="border-radius: 99% !important; padding: 4px;">
+        <svg class="w-5 h-5" style="color:#fff;" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M4.98 3.5C4.98 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.22 8h4.55v13H.22zM8.12 8h4.36v1.78h.06c.61-1.15 2.11-2.36 4.34-2.36 4.64 0 5.5 3.05 5.5 7.02V21H17.8v-6.51c0-1.55-.03-3.55-2.17-3.55-2.17 0-2.5 1.69-2.5 3.44V21h-4.54V8z"/>
+        </svg>
+    </button>
+
+</div>
+
+
+            <!-- Register -->
+            <p class="text-center text-sm text-gray-600 mb-2">
+                Don't have account?
+                <a href="{{ config.wwwroot }}/login/signup.php" class="text-[#0052cc] font-medium">Register Now</a>
+            </p>
+
+            <!-- Description Area -->
+            {{#canshowdesc}}
+            <div class="mt-4 text-center text-sm text-gray-500">
+                {{{ brandlogotext }}}
+            </div>
+            {{/canshowdesc}}
+
+    <!-- Language & Cookies -->
+    <div class="flex justify-center gap-4 text-xs pt-2 text-gray-500 d-none">
+        {{#languagemenu}} <div>{{>core/action_menu}}</div> {{/languagemenu}}
+        <a href="#" data-modal="alert" data-modal-title-str='["cookiesenabled","core"]' data-modal-content-str='["cookiesenabled_help_html","core"]'
+           class="underline">Cookies</a>
+    </div>
+</div>
+
+{{#js}}
+require(['core_form/submit'], function(Submit) {
+    Submit.init("loginbtn");
+    Submit.init("loginguestbtn");
+});
+{{/js}}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const toggleIcon = document.querySelector(".show-password-icon");
+    const passwordField = document.getElementById("password");
+
+    if (toggleIcon && passwordField) {
+        toggleIcon.addEventListener("click", function () {
+            const isHidden = passwordField.type === "password";
+            passwordField.type = isHidden ? "text" : "password";
+
+            // Change icon
+            this.textContent = isHidden ? "visibility_off" : "visibility";
+        });
+    }
+});
+</script>
+

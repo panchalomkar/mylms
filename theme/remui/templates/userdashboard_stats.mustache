@@ -1,0 +1,273 @@
+
+{{#userdashboard_stats}}
+<div class="user_stat mb-3">
+{{#stats}}
+  <div class="card flex-fill text-center p-4">
+      <h3 style="font-size:16px;" class="mb-5">
+          <i class="{{icon}} orange-icon-c"></i> {{label}}
+      </h3>
+      <div class="circle-progress">
+          <svg viewBox="0 0 36 36" class="circular-chart">
+              <!-- Background Circle -->
+              <path class="circle-bg"
+                    d="M18 2.0845
+                       a 15.9155 15.9155 0 0 1 0 31.831
+                       a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              <!-- Progress Circle -->
+              <path class="circle" 
+                    stroke="{{color}}"
+                    stroke-dasharray="{{percentage}}, 100"
+                    d="M18 2.0845
+                       a 15.9155 15.9155 0 0 1 0 31.831
+                       a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              <!-- Center Text -->
+              <text x="18" y="18" fill="{{color}}" class="percentage">{{value}}{{total}}</text>
+          </svg>
+      </div>
+      <div class="footer-stat mt-2">
+          <div class="completion py-1 px-4" style="color:#000">{{percentage}}% Completion</div>
+      </div>
+  </div>
+{{/stats}}
+</div>
+
+<div class="stat_course_due  d-flex flex-row gap-2 col-md-12">
+{{#stat_course_due}}
+<div class="card block-header-wrapper-1 flex-fill col-md-6 mb-4">
+    <h3 class="block-header text-light" style="justify-content: space-between;">
+        <span><span class=" mr-1"><svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 24 24"
+     fill="none"
+     stroke="currentColor"
+     stroke-width="2"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     class="lucide block-icon-stat lucide-pie-chart">
+
+    <path d="M21 12c0 5-4 9-9 9s-9-4-9-9 4-9 9-9"></path>
+    <path d="M12 3v9l9 0"></path>
+</svg>
+</span>{{label}}</span>
+    </h3>
+
+    <!-- Chart container -->
+    <div class="progress-wrapper-user-stat mt-3 d-flex" style="align-items: center;padding:10px;">
+        <div class="cst" id="course-donut-{{id}}" style="width:50%; margin-right:30px; height:250px; "></div>
+
+        <!-- Legend -->
+        <div class="legend d-flex text-start flex-column justify-content-around" style="align-items: center; width:165px;">
+            <div class="legend-item mb-3 red"><span>{{notstarted}}</span><br>Not Started</div>
+            <div class="legend-item mb-3 yellow"><span>{{inprogress}}</span><br>In Progress</div>
+            <div class="legend-item mb-2 blue"><span>{{completed}}</span><br>Completed</div>
+        </div>
+    </div>
+</div>
+
+<script>
+Highcharts.chart('course-donut-{{id}}', {
+    chart: {
+        type: 'pie',
+        width: 250,  // width in pixels
+        height: 240, // height in pixels
+        events: {
+            render() {
+                const chart = this;
+                const series = chart.series[0];
+                let customLabel = chart.options.chart.custom?.label;
+//total removed
+                const label = customLabel.label;
+                const x = series.center[0] + chart.plotLeft;
+                const y = series.center[1] + chart.plotTop - (label.getBBox().height / 2);
+
+                label.attr({ x: x, y: y });
+                label.css({ fontSize: `${series.center[2] / 12}px` });
+            }
+        }
+    },
+    title: { text: '' },
+    tooltip: { pointFormat: '{series.name}: <b>{point.percentage:.0f}%</b>' },
+    legend: { enabled: false },
+    plotOptions: {
+        series: {
+            allowPointSelect: false,
+            cursor: 'pointer',
+            borderRadius: 8,
+            innerSize: '75%',
+            dataLabels: {
+                enabled: false,
+                distance: -30,
+                format: '{point.percentage:.0f}%',
+                style: { fontSize: '0.9em' }
+            }
+        }
+    },
+    series: [{
+        name: 'Courses',
+        colorByPoint: true,
+        data: [
+            { name: 'Not Started', y: {{notstarted}}, color: '#e74c3c' },
+            { name: 'In Progress', y: {{inprogress}}, color: '#f1c40f' },
+            { name: 'Completed', y: {{completed}}, color: '#1abc9c' }
+        ]
+    }]
+});
+
+</script>
+{{/stat_course_due}}
+
+{{#stat_course_date}}
+<div class="card block-header-wrapper-1  flex-fill col-md-6 stat_course_date">
+  <h3 class="block-header text-light"><svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide block-icon-stat lucide-book-open w-4 h-4 text-accent"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg> {{label}}</h3>
+
+  <div class="course-list">
+    <div class="course-header">
+      <span>Courses</span>
+      <span>Progress %</span>
+      <span>Due Date</span>
+    </div>
+
+    {{#initialcourses}}
+    <div class="course-row">
+      <img src="{{image}}" alt="{{name}}" class="course-avatar">
+      <span class="due-date text-left"><a href="{{href}}">{{name}}</a></span>
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill {{progresscolor}}" style="width: {{progress}}%"></div>
+        </div>
+        <span class="progress-label {{progresscolor}}">{{progress}}%</span>
+      </div>
+      <span class="due-date">{{duedate}}</span>
+    </div>
+    {{/initialcourses}}
+
+  <div class="view-more-container">
+    <a href="javascript:void(0)" onclick="openCoursesModal()">View More</a>
+</div>
+<!-- Popup Modal (place outside the loop if possible) -->
+<div id="coursesModal" class="modal hidden">
+  <div class="modal-content">
+    <span class="close" onclick="closeCoursesModal()">&times;</span>
+
+    <!-- Header Row -->
+    <div class="course-list-popup">
+      <div class="course-header">
+        <span style="padding-right:75px;">Courses</span>
+        <span>Progress %</span>
+        <span>Due Date</span>
+      </div>
+
+      <!-- Course Rows -->
+      {{#allcourses}}
+      <div class="course-row pt-2" style="border-bottom: solid 1px #e7dfdf;padding-bottom: 5px;">
+        <img src="{{image}}" alt="{{name}}" class="course-avatar">
+        <span class="due-date" style="text-align:left;"><a style="font-size: 14px;color: #003152;text-transform: capitalize; font-weight: 400;" href="{{href}}">{{name}}</a></span>
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress-fill {{progresscolor}}" style="width: {{progress}}%"></div>
+          </div>
+          <span class="progress-label {{progresscolor}}">{{progress}}%</span>
+        </div>
+        <span class="due-date">{{duedate}}</span>
+      </div>
+      {{/allcourses}}
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" id="coursesPagination"></div>
+  </div>
+</div>
+  </div>
+</div>
+{{/stat_course_date}}
+
+</div>
+
+{{/userdashboard_stats}}
+{{#userdashboard_stats-admin}}
+
+<div class="admin-dashboard-stats admin-dashboard-stats-grid d-flex mb-3">
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 d-flex">
+
+{{#adminstats}}
+<div class="relative bg-white rounded-2xl px-4 py-3 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden stat-card">
+
+    <!-- Accent strip -->
+    <div class="absolute left-0 top-0 h-full w-1.5 bg-{{accent}}-500 rounded-l-2xl stat-accent"></div>
+
+    <div class="flex items-center gap-5 stat-inner">
+
+        <!-- Icon -->
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-{{accent}}-100 stat-icon">
+            <span class="text-{{accent}}-600">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="22" height="22"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+                    {{{icon}}}
+                </svg>
+            </span>
+        </div>
+
+        <!-- Text -->
+        <div class="flex-1">
+            <div class="flex items-center gap-2 d-flex">
+                <span class="text-3xl font-bold text-gray-900 leading-none stat-value">
+                    {{value}}
+                </span>
+
+                {{#trend}}
+                <span class="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold stat-trend
+                    {{#trendtype.up}}trend-up{{/trendtype.up}}
+                    {{#trendtype.down}}trend-down{{/trendtype.down}}">
+
+                    {{#trendtype.up}}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                        <polyline points="16 7 22 7 22 13"></polyline>
+                    </svg>
+                    {{/trendtype.up}}
+
+                    {{#trendtype.down}}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="22 17 13.5 8.5 8.5 13.5 2 7"></polyline>
+                        <polyline points="16 17 22 17 22 11"></polyline>
+                    </svg>
+                    {{/trendtype.down}}
+
+                    {{trend}}
+                </span>
+                {{/trend}}
+            </div>
+
+            <p class="mt-1 text-sm font-medium text-gray-500 stat-label">
+                {{label}}
+            </p>
+        </div>
+    </div>
+</div>
+{{/adminstats}}
+
+</div>
+</div>
+
+{{/userdashboard_stats-admin}}
+
+
+<script>
+function openCoursesModal() {
+    var modal = document.getElementById('coursesModal');
+    modal.classList.remove('hidden');
+}
+
+function closeCoursesModal() {
+    var modal = document.getElementById('coursesModal');
+    modal.classList.add('hidden');
+}
+</script>

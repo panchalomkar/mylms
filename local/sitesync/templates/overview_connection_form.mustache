@@ -1,0 +1,31 @@
+<div class="row">
+    <div class="col-md-6 col-sm-12">
+        <form id="Connection-form">
+            <div class="form-group">
+                <label for="site-url">{{#str}}site_url, local_sitesync{{/str}}</label>
+                <input type="url" class="form-control" id="site-url" {{#moodleurl}}value={{moodleurl}}{{/moodleurl}} required>
+            </div>
+            <div class="form-group">
+                <label for="access-token">{{#str}}access_token, local_sitesync{{/str}}</label>
+                <input type="text" class="form-control" id="access-token"  {{#accesstoken}}value={{accesstoken}}{{/accesstoken}} required>
+            </div>
+            <div class="d-flex flex-column justify-content-start align-items-start gap-3  form-action-wrapper">
+                {{^connection}}
+                    <button type="submit"  class="btn btn-primary formaction" data-action="connect">{{#str}}check_connection, local_sitesync{{/str}}</button>
+                {{/connection}}
+
+                {{#connection}}
+                    <p class="text-success m-0 mb-2">{{#str}}connectedstatus, local_sitesync{{/str}}</p>
+                    <button type="submit"  class="btn btn-outline-danger  formaction" data-action="disconnect">{{#str}}reset, local_sitesync{{/str}}</button>
+                {{/connection}}
+            </div>
+        </form>
+    </div>
+    <div class="col-md-6 col-sm-12">
+        <div class="connection-steps">
+            <ul class="list-unstyled">
+
+            </ul>
+        </div>
+    </div>
+</div>

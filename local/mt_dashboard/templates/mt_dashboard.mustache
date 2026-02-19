@@ -1,0 +1,93 @@
+
+<div class="flex flex-col gap-4 mb-8">
+
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="text-3xl font-bold text-slate-800">
+       Multitenancy Management
+      </h1>
+      <p class="text-slate-500 text-sm">
+        Manage your organizations and teams
+      </p>
+    </div>
+
+    {{#is_admin}}
+    <div class="flex gap-3">
+      {{#report_companies}}
+      <a href="{{{report_companies_url}}}"
+         class="flex items-center gap-2 px-4 py-2 border rounded-lg text-slate-700 hover:bg-slate-50">
+        <span class="material-icons text-sm">bar_chart</span>
+        {{#str}}companies_overview,local_mt_dashboard{{/str}}
+      </a>
+      {{/report_companies}}
+
+      <a href="{{{edit_companies_url}}}"
+         class="flex items-center gap-2 px-4 py-2 border rounded-lg text-slate-700 hover:bg-slate-50">
+        <span class="material-icons text-sm">settings</span>
+        {{#str}}managecompanies,block_iomad_company_admin{{/str}}
+      </a>
+
+      <a href="{{{company_edit_form}}}"
+         class="flex items-center gap-2 px-5 py-2 bg-slate-800 text-white rounded-lg shadow hover:bg-slate-700">
+        <span class="material-icons text-sm">add</span>
+        {{#str}}addcompany,local_mt_dashboard{{/str}}
+      </a>
+    </div>
+    {{/is_admin}}
+  </div>
+
+<div class="flex flex-col gap-6 mb-8">
+ 
+
+  <form method="get" action="{{{action}}}" class="flex flex-row gap-4 mt-4">
+ 
+
+    <div class="flex items-center gap-3 col-md-5">
+      <button type="submit" name="showsuspendedcompanies" value="2" class="px-4 py-2 rounded-full text-sm {{#is_all}}bg-slate-800 text-white{{/is_all}} {{^is_all}}bg-slate-100 text-slate-700{{/is_all}}">All Companies</button>
+      <button type="submit" name="showsuspendedcompanies" value="0" class="px-4 py-2 rounded-full text-sm {{#is_active}}bg-slate-800 text-white{{/is_active}} {{^is_active}}bg-slate-100 text-slate-700{{/is_active}}">Active</button>
+      <button type="submit" name="showsuspendedcompanies" value="1" class="px-4 py-2 rounded-full text-sm {{#is_suspended}}bg-slate-800 text-white{{/is_suspended}} {{^is_suspended}}bg-slate-100 text-slate-700{{/is_suspended}}">Suspended</button>
+    </div>   <div class="relative col-md-4">
+      <span class="material-icons absolute left-4 top-2 text-slate-400">search</span>
+     <input type="text" name="search-mt" value="{{search}}" placeholder="Search companies by name or description..." class="w-full pl-12 pr-4 py-2 border rounded-xl focus:ring focus:ring-slate-200">
+
+    </div>
+  </form>
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+  {{#companylisting}}
+  <a href="{{{company_url}}}" class="bg-[#f4f8fc] rounded-2xl shadow hover:shadow-lg transition p-4 flex flex-col gap-4">
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold text-lg">{{shortname}}</div>
+      <div>
+        <h3 class="font-semibold mb-2 text-slate-800">{{cname}}</h3>
+        <span class="text-xs px-2 py-1 rounded-full {{#active}}bg-green-100 text-green-700{{/active}} {{#suspended}}bg-red-100 text-red-700{{/suspended}}">{{status}}</span>
+      </div>
+    </div>
+    <p style="color:rgb(76 98 112 / 75%) !important">{{description}}International education and training organization with presence in 30+ countries</p>
+    <div class="grid grid-cols-3 gap-2 mt-2">
+      <div class="bg-[#dbeafa] rounded-xl p-3 text-center">
+        <span class="material-icons bg-[#003152] p-2 rounded-lg text-white mb-1" style="font-size:15px;">group</span>
+        <p class="text-xs text-slate-500">Users</p>
+        <p class="font-semibold">{{users}}</p>
+      </div>
+      <div class="bg-[#dee9fa] rounded-xl p-3 text-center">
+        <span class="material-icons bg-[#003152] p-2 rounded-lg text-white mb-1" style="font-size:15px;">menu_book</span>
+        <p class="text-xs text-slate-500">Courses</p>
+        <p class="font-semibold">{{courses}}</p>
+      </div>
+      <div class="bg-[#e8e4f9] rounded-xl p-3 text-center">
+        <span class="material-icons bg-[#003152] p-2 rounded-lg text-white mb-1" style="font-size:15px;">trending_up</span>
+        <p class="text-xs text-slate-500">Completions</p>
+        <p class="font-semibold">{{completion}}%</p>
+      </div>
+    </div>
+  </a>
+  {{/companylisting}}
+</div>
+<div class="col-sm-12 col-md-12 col-lg-12 pagidiv">
+<div class="pagination_mtn">
+	{{{pagination_data}}}
+</div>	
+</div>
+<div class="clearfix"></div>

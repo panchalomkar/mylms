@@ -1,0 +1,894 @@
+#page-local-people-index section#region-main div.card.card-block{
+	box-shadow: none;
+	background: none;
+}
+
+#page-local-people-index div.content-apply{
+	padding-left: 0px;
+}
+
+#page-local-people-index div.aply-filtter a.clear-button{
+    float: right;
+    color: #465b65;
+}
+
+#page-local-people-index div.aply-filtter a.clear-button i {
+    font-size: 16px;
+    color: #607d8b;
+    padding-right: 7px;
+}
+
+#page-local-people-index div.content-filtter{
+	padding-left: 0px !important;
+    padding-right: 0px !important;
+    padding-top: 12px;
+}
+
+#page-local-people-index #accordion > div {
+    margin-bottom: 5px;
+}
+
+#page-local-people-index form#form-bulk-actions div.bulk-actions.row{
+	padding-bottom: 15px;
+}
+
+#page-local-people-index div.content-table{
+	padding: 0px 15px 0 0;
+}
+
+.mt-table th{
+	border: none;
+}
+
+.mt-table thead, .mt-table tr.header {
+    border-bottom: solid 2px #D9D9D9;
+}
+
+.mt-table tr {
+    border-bottom: solid 2px #E8E8E8;
+}
+
+.mt-table thead> tr > th, .mt-table tr.header th {
+    padding: 12px 8px;
+}
+
+#page-local-people-index .form-check {
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+
+.form-check .form-check-label{
+	position: initial;
+}
+
+.form-check .form-check-sign .check{
+	width: 18px;
+    height: 18px;
+}
+
+#page-local-people-index #accordion div.panel-body {
+    padding-top: 0px ;
+    padding-bottom: 0px;
+}
+
+div.select-option{
+    padding-right: 0px;
+    padding-left: 0px;
+}
+
+div.select-some{
+    padding-left: 0px;
+}
+
+#page-local-people-index div.searchbox.select-option{
+	width: 100%;
+    padding-left: 18px;
+    padding-right: 18px;
+    padding-bottom: 12px;
+    padding-top: 12px;
+}
+
+#page-local-people-index .content-actions .reset{
+	cursor: pointer !important;
+    text-align: right;
+    z-index: 75;
+    float: left;
+    padding: 7px 15px 7px 15px;
+    margin-top: 10px;
+    margin-bottom: 30px;
+}
+
+#page-local-people-index .remove-filter {
+    margin-left: 10px;
+}
+
+#page-local-people-index .alert-tittle{
+    font-size: 1.3rem;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#page-local-people-index .content-table span {
+    margin-right: 0px;
+}
+
+#page-local-people-index .text-center.alert-mtlms {
+    background-color: #eeeeee;
+    padding: 5px 0px 5px 0px;
+    margin-bottom: 10px;
+}
+
+#page-local-people-index .mar-btm.col-sm-12.mar-no.pad-no.mar-btm {
+    margin-bottom: 10px;
+}
+
+#page-local-people-index form#form-confirmed div.form-check,
+#page-local-people-index form#form-suspended div.form-check {
+	display: inline-block;
+}
+
+@media (max-width: 1350px){ 
+    #page-local-people-index .table-responsive-sm { 
+        display: block; 
+        width: 100%; 
+        overflow-x: auto; 
+        -webkit-overflow-scrolling: touch; 
+        -ms-overflow-style: -ms-autohiding-scrollbar; 
+    } 
+}
+
+#page-local-people-index .form-check .form-check-label,
+#page-local-people-index .form-radio label{ 
+    margin-right: 0px !important;  
+    padding-left: 22px;
+} 
+
+table.table-people th.header.c0{
+    width: 3%;
+}
+#page-local-people-index span.select2-container.select2-container--open{
+    z-index: 10001;
+}
+
+div.bootstrap-datetimepicker-widget{
+    z-index: 1053;
+    display: block;
+}
+
+.modal-header .close{
+    margin: -1rem 0rem -1rem auto;
+}
+
+#page-local-people-index .form-check{
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+#page-local-people-index div.content-actions{
+    display: inline-block;
+    padding-left: 0px;
+    float: right;
+}
+#page-local-people-index .mar-no.pad-no.pad.table-filters{
+    padding: 0 !important;
+}
+#page-local-people-index form#form-bulk-actions div.bulk-actions.row {
+    padding-bottom: 3px;
+}
+
+#page-local-people-index a.loadiframe{
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+#page-local-people-index div.content-actions a i,
+button#send i{
+    padding-right: 7px;
+}
+
+div.datepicker-days table.table-condensed tbody td.day.today{
+    color: #000!important;
+}
+
+#page-local-people-index button#searchbutton{
+    box-shadow: none;
+}
+
+.pl-3, .px-3 {
+    padding-left: 1rem!important;
+}
+
+#page-local-people-index nav[aria-label=Page]{
+    text-align: center;
+    display: inline-block;
+}
+
+form div.checkbox label:before{
+    left: 15px !important;
+}
+
+form div.checkbox{
+    padding-left: 0px !important;
+}
+
+input#startdate,
+input#enddate{
+    width:79% !important;
+    display: inline-block !important;
+	font-size: 13px;
+}
+
+div.input-group-prepend{
+    display: inline-block !important;
+    vertical-align: bottom;
+    padding-left: 5px;
+}
+
+form#form-courserole div.select-selected{
+    width: 100% !important;
+}
+
+form#form-courserole div.form-group{
+    padding-left: 0px;
+}
+
+.bootstrap-datetimepicker-widget.dropdown-menu.usetwentyfour {
+	 width: 251px;
+	 height: 278px;
+	 border-radius: 4px;
+	 border: solid 1px rgba(27, 162, 221, 0.56);
+	 background-color: #fff;
+	 -webkit-box-shadow: 0px 0px 4px 0px rgba(25, 162, 221, 1);
+	 -moz-box-shadow: 0px 0px 4px 0px rgba(25, 162, 221, 1);
+	 box-shadow: 0px 0px 4px 0px rgba(25, 162, 221, 1);
+	 padding-top: 1px;
+}
+.bootstrap-datetimepicker-widget.dropdown-menu.usetwentyfour .table-condensed {
+	 width: 240px;
+	 height: 265px;
+	 padding-left: 15px;
+	 margin-left: 15px;
+	 float: right;
+}
+ .bootstrap-datetimepicker-widget.dropdown-menu.usetwentyfour table thead tr {
+	 text-align: center !important;
+}
+ .bootstrap-datetimepicker-widget.dropdown-menu.usetwentyfour table thead tr:nth-child(2) {
+	 padding: 5px;
+}
+ .bootstrap-datetimepicker-widget.dropdown-menu.usetwentyfour table thead tr:nth-child(2) th {
+	 padding: 10px 10px 10px 9px;
+	 text-align: center;
+	 font-weight: 300;
+}
+ .bootstrap-datetimepicker-widget.dropdown-menu.usetwentyfour table tbody tr div {
+	 padding: 0px;
+	 text-align: center;
+	 font-size: 15px;
+	 font-weight: 300;
+	 color: #212529;
+	 cursor: pointer;
+}
+ .bootstrap-datetimepicker-widget.dropdown-menu.usetwentyfour table thead tr:nth-child(1) th {
+	 text-align: center;
+	 padding: 8px;
+	 font-size: 16px;
+	 color: #465b65;
+	 background: #f5f7fe;
+	 font-weight: 500;
+}
+ .bootstrap-datetimepicker-widget.dropdown-menu.usetwentyfour table thead tr:nth-child(1) .prev, .bootstrap-datetimepicker-widget.dropdown-menu.usetwentyfour .next {
+	 color: #1ba2dd !important;
+}
+ .bootstrap-datetimepicker-widget.dropdown-menu.usetwentyfour ul.list-unstyled {
+	 padding-right: 3px;
+}
+ .bootstrap-datetimepicker-widget.dropdown-menu.usetwentyfour .day.old.weekend div, .bootstrap-datetimepicker-widget.dropdown-menu.usetwentyfour .day.new div {
+	 color: #99abb4 !important;
+}
+ 
+.bootstrap-datetimepicker-widget table td span {
+	 display: inline-block;
+	 width: 54px;
+	 height: 54px;
+	 line-height: 54px;
+	 margin: 2px 1.5px;
+	 cursor: pointer;
+	 border-radius: 4px;
+	 padding-left: 17px;
+}
+ .bootstrap-datetimepicker-widget table td span:hover {
+	 padding-left: 17px;
+}
+
+#page-local-people-index :target {
+	 padding-top: 0px !important;
+	 margin-top: 0px !important;
+}
+ #page-local-people-index div.card-block.content-shadow {
+	 padding-right: 0px;
+	 padding-left: 0px;
+}
+ #page-local-people-index h2.title-coursecoursewizard {
+	 margin-bottom: 5px;
+}
+ #page-local-people-index p.description_newcourse {
+	 margin-bottom: 23px;
+}
+ #page-local-people-index div.search-filter-buttons div.header-search {
+	 padding-bottom: 22px;
+}
+ #page-local-people-index div.search-filter-buttons div.header-search div.custom-search-form i.men-search-phx {
+    position: absolute;
+    z-index: 4;
+    top: 4px;
+    right: 15px;
+    margin: auto;
+    padding: 7.5px;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 13px;
+}
+ #page-local-people-index div.search-filter-buttons div.header-search div.custom-search-form input#txt {
+	 border-radius: 20.5px;
+	 padding-left: 20px;
+	 height: 36px;
+	 width: 100%;
+    margin-right: 13px;
+}
+ #page-local-people-index div.search-filter-buttons div.header-search div.custom-search-form span.input-group-btn {
+	 margin-left: 10px; margin-top: -35px;
+}
+ #page-local-people-index div.search-filter-buttons div.header-search div.searchbox {
+	 padding-bottom: 7px;
+}
+#page-local-people-index div.search-filter-buttons div.header-search div.content-companies {
+	 padding-bottom: 7px;
+}
+ #page-local-people-index div.search-filter-buttons div.header-search div.content-companies select#menucompany {
+	 width: 100%;
+	     height: 36px;
+    padding: 0 0 0 5px;
+    border-radius: 5px;
+}
+ #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.filterpeople {
+	 padding: 18px 15px;
+}
+ #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.filterpeople div.aply-filtter {
+	 display: flex;
+	 align-items: center;
+	 cursor: pointer;
+}
+ #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.filterpeople div.content-filtter div.filterslist {
+	 margin-bottom: 6px;
+	 border-radius: 3px;
+	 box-shadow: 0 2px 6px 0 rgba(58, 110, 205, 0.16);
+	 background-color: #fff;
+}
+ #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.filterpeople div.content-filtter div.filterslist select {
+	 width: 100%;
+}
+ #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.filterpeople div.content-filtter div.filterslist div.panel-heading:hover h5.panel-title a.plms-reports-dropdown {
+	 color: #607d8b;
+}
+ #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.filterpeople div.content-filtter div.filterslist div.panel-heading:hover h5.panel-title a.plms-reports-dropdown i.reports-dropdown {
+	 color: #607d8b;
+}
+ #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.filterpeople div.content-filtter div.panel-heading h5.panel-title {
+	 margin-bottom: 0px;
+}
+ #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.filterpeople div.content-filtter div.panel-heading h5.panel-title a {
+    height: 49px;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 18px;
+    padding-left: 18px;
+    color: #607d8b;
+    text-decoration: none;
+    font-weight: 500;
+}
+ #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.filterpeople div.content-filtter div.panel-heading h5.panel-title a i.reports-dropdown {
+	 position: absolute;
+	 right: 18px;
+	 font-size: 18px;
+	 color: #94b7c3;
+}
+ #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.filterpeople div.content-filtter div.date-filters div.filterslist div.date-time div.input-group input {
+	 width: 75%; height: 35px;
+}
+ #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.filterpeople div.content-filtter div.date-filters div.filterslist div.date-time div.input-group div.input-group-prepend span.input-group-text {
+	 width: 36px;
+	 height: 36px;
+	 border-radius: 3px;
+	 border: solid 1px rgba(27, 162, 221, 0.56);
+	 display: inline-flex;
+	 align-items: center;
+	 justify-content: center;
+	 vertical-align: bottom;
+}
+ #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.filterpeople div.content-filtter div.date-filters div.filterslist form#form-lastmodified div.date-time label {
+	 margin-bottom: 0px;
+	 padding-bottom: 0px;
+}
+ #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.filterpeople div.content-filtter div.date-filters #form-firstaccessd div.checkbox {
+	 margin-left: 0px !important;
+}
+ #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.filterpeople div.content-filtter div.date-filters div.checkbox {
+	 margin-left: 16px;
+}
+ #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.radio-filters div.filterslist div.panel-collapse div.searchbox form div.pad-ver {
+	 padding-bottom: 12px;
+	 display: inline-block;
+	 padding-top: 12px;
+}
+ #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.radio-filters div.filterslist div.panel-collapse div.searchbox form label.form-check-label {
+	 padding-bottom: 0px;
+}
+ #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.option-filters div.filterslist div.select-some {
+	 margin-top: 0px;
+	 margin-bottom: 8px !important;
+}
+ #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.option-filters form#form-courserole div.form-group {
+	 margin-bottom: 0px;
+	 margin-top: 0px;
+}
+ #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.option-filters form#form-country div.form-group, #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.option-filters form#form-city div.form-group {
+	 margin: 0px;
+}
+ #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.filterslist form#form-userfullname div.form-group, #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.filterslist form#form-email div.form-group, #page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.filterslist form#form-username div.form-group {
+	 margin: 0px;
+}
+ #page-local-people-index div.table-filters div.content-form {
+	 padding-bottom: 30px;
+}
+ #page-local-people-index div.table-filters div.content-form form#form-bulk-actions div.content-actions {
+	 margin-bottom: 33px;
+}
+ #page-local-people-index div.table-filters div.content-form form#form-bulk-actions div.content-actions a {
+	 padding-right: 5px !important;
+	 padding-left: 5px !important;
+	 width: 121px;
+	 margin-right: 3px;
+	 margin-bottom: 12px;
+}
+ #page-local-people-index div.table-filters div.content-form form#form-bulk-actions table.table-people thead tr th {
+	 border-top: 0;
+	 padding: 5px 9px;
+     /* padding-top: 13px;
+     padding-bottom: 13px; */
+     font-weight: 600;
+     border-bottom: 1px solid #D5D5D5;
+     vertical-align: middle;
+	 font-size: 13px;
+}
+ #page-local-people-index div.table-filters div.content-form form#form-bulk-actions table.table-people thead tr th a {
+	 text-decoration: none;
+	 display: flex;
+	 align-items: center;
+	 font-size: 13px;
+}
+ #page-local-people-index div.table-filters div.content-form form#form-bulk-actions table.table-people thead tr th a i {
+	 padding-left: 3px;
+}
+ #page-local-people-index div.table-filters div.content-form form#form-bulk-actions table.table-people thead tr th a i.men-icon-phsortingup, #page-local-people-index div.table-filters div.content-form form#form-bulk-actions table.table-people thead tr th a i.men-icon-phsortingdown {
+	 font-size: 4px;
+	 font-weight: 700;
+}
+ #page-local-people-index div.table-filters div.content-form form#form-bulk-actions table.table-people thead tr th a i.men-icon-phsorting {
+	 font-weight: 400;
+	 font-size: 10px;
+}
+ #page-local-people-index div.table-filters div.content-form form#form-bulk-actions table.table-people thead tr th a:focus {
+	 box-shadow: none !important;
+}
+ #page-local-people-index div.table-filters div.content-form form#form-bulk-actions table.table-people thead tr th.lastcol {
+	 text-align: left;
+}
+ #page-local-people-index div.table-filters div.content-form form#form-bulk-actions table.table-people tbody tr {
+     border-bottom: 0;
+}
+ #page-local-people-index div.table-filters div.content-form form#form-bulk-actions table.table-people tbody tr td {
+	 padding: 5px 9px !important;
+	 color: #465b65;
+	 font-weight: 500 !important;
+	 vertical-align: inherit;
+     max-width: 270px;
+	 font-size: 13px;
+}
+ #page-local-people-index div.table-filters div.content-form form#form-bulk-actions table.table-people tbody tr td a {
+	 color: #484b5a;
+}
+ #page-local-people-index div.table-filters div.content-form form#form-bulk-actions table.table-people tbody tr td.lastcol {
+	 text-align: right;
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+         padding-bottom: 9px !important;
+}
+
+ #page-local-people-index div.table-filters div.options-table i {
+	 color: #484b5a;
+}
+ #page-local-people-index div.table-filters div.options-table a:after {
+	 display: none;
+}
+ #page-local-people-index div.table-filters div.options-table div.dropdown-menu {
+	min-width: 160px;
+	 transform: none !important;
+	 height: auto;
+	 border-radius: 3px;
+	 box-shadow: 0 11px 11px 0 rgba(0, 0, 0, 0.11);
+	 background-color: #fff;
+	 left: inherit !important;
+	 right: 0px !important;
+	 transform: none !important;
+	 top: inherit !important;
+	 padding: 8px 7px;
+	 margin-top: 0px !important;
+}
+ #page-local-people-index div.table-filters div.options-table div.dropdown-menu a {
+	 height: 35px;
+	 border-radius: 2px;
+	 display: flex;
+	 align-items: center;
+	 color: #465b65;
+	 padding-bottom: 0px;
+	 padding-top: 0px;
+	 padding-left: 12px;
+}
+ #page-local-people-index div.table-filters div.options-table div.dropdown-menu a:hover {
+	 background-color: #f5f7fe;
+}
+ #page-local-people-index div.table-filters div.filters-list {
+	 padding-left: 15px;
+	 padding-right: 15px;
+	 margin-bottom: 5px;
+	 position: relative;
+	 top: -17px;
+}
+ #page-local-people-index div.table-filters div.filters-list div.reset {
+	 display: inline-flex;
+	 align-items: center;
+	 margin-right: 5px;
+}
+ #page-local-people-index div.pagination-content {
+	 display: flex;
+	 justify-content: center;
+
+}
+ #page-local-people-index div.pagination-content form.recordsperpage {
+	 padding-right: 32px;
+}
+ #page-local-people-index div.pagination-content nav ul.pagination {
+	 margin: 0px !important;
+	 padding-right: 0px !important;
+}
+ #page-local-people-index div.total-records {
+	 position: relative;
+	 top: -9px;
+	 font-size: 14px !important;
+     font-weight: 600;
+     margin-bottom: 10px;
+}
+ #page-local-people-index div.record-page {
+	 padding-right: 8px;
+}
+ #page-local-people-index div.record-page span {
+	 font-weight: 500;
+}
+ #page-local-people-index div.startdate a.visibleifjs, #page-local-people-index div.enddate a.visibleifjs {
+	 cursor: pointer;
+	 width: 16px;
+	 height: 42px;
+	 border-radius: 3px;
+	 border: solid 1px #fff;
+	 display: inline-flex;
+	 align-items: center;
+	 justify-content: center;
+	 vertical-align: bottom;
+}
+ #page-local-people-index form#EnrolForm span.select2-selection {
+	 height: 100% !important;
+}
+ #page-local-people-index form#EnrolForm span.select2-selection ul.select2-selection__rendered li input.select2-search__field:focus {
+	 box-shadow: none !important;
+}
+ #page-local-people-index form#EnrolForm input#startdate + div.bootstrap-datetimepicker-widget {
+	 top: 0 !important;
+}
+ #page-local-people-index form#EnrolForm input#enddate + div.bootstrap-datetimepicker-widget {
+	 top: 0 !important;
+}
+ #page-local-people-index #SearchParameters a.reset {
+	cursor: pointer;
+	top: 6px;
+	position: relative;
+	color: #808080;
+	font-size: 12px;
+	left:17px;
+}
+ #page-local-people-index .plms-reports-dropdown.active {
+	 color: #607d8b !importantff !important;
+}
+ #page-local-people-index .plms-reports-dropdown.active .reports-dropdown {
+	 color: #607d8b !importantf !important;
+}
+table.table-people .table-active > th, table.table-people .table-active, table.table-people .table-active > td {
+	 background: none !important;
+}
+ form#mform1 div.bootstrap-datetimepicker-widget .day.disabled div {
+	 color: grey;
+}
+ #page-local-people-index button#send {
+	 min-width: 125px !important;
+}
+
+#page-local-people-index .report-left-block-acordeon.pap #send i
+{
+    padding-right:5px;
+}
+
+#page-local-people-index .modal-content div.modal-body {
+    padding: 1rem !important;
+}
+#page-local-people-index .modal-header button.bootbox-close-button.close 
+{
+    top: 0px !important;
+}
+
+#page-local-people-index .date-filters .input-group {
+	 flex-wrap: initial !important;
+}
+#page-local-people-index .date-filters .form-control {
+	 padding: 0.2rem 0.2rem !important;
+}
+#page-local-people-index .date-filters div.searchbox.select-option {
+	 padding-left: 0px !important;
+	 padding-right: 0px !important;
+}
+#page-local-people-index .date-filters div.searchbox.select-option .label-control {
+	 padding-left: 1rem;
+}
+
+#page-local-people-index div.pagination-content form.recordsperpage {
+    padding-top: 0px;
+}
+#page-local-people-index div.pagination-content form.recordsperpage .d-inline-block select {
+    width: 100%!important;
+}
+#page-local-people-index .modal.show.moodle-has-zindex form#EnrolForm span.select2-container {
+    width: 100% !important;
+}
+body#page-local-people-index .select2-container--default .select2-selection--single {
+    border-radius: 22px;
+	font-size: 13px;
+}
+#page-local-people-index label {
+    font-size: 13px;
+}
+#page-local-people-index .modal div#course_select_help {
+    margin-top: 2px;
+    margin-bottom: 15px;
+    margin-left: 14px;
+	font-size: 13px;
+}
+
+#page-local-people-index .startdate .input-group-prepend, #page-local-people-index div.input-group-prepend {
+    padding-left: 0;
+}
+#page-local-people-index .modal-dialog-scrollable .modal-body {
+    overflow-y: inherit;
+}
+#page-local-people-index .modal-dialog-scrollable .modal-content {
+    max-height: none;
+}
+#page-local-people-index .modal-dialog-scrollable .modal-content {
+    overflow: auto;
+}
+#page-local-people-index .select2-container--default.select2-container--open.select2-container--below .select2-selection--multiple{
+	border-radius: 4px !important;
+}
+#page-local-people-index .bootstrap-datetimepicker-widget{
+	font-size: 13px !important;
+}
+#page-local-people-index .report-left-block-acordeon .aply-filtter .content-apply button#send {
+    min-width: auto!important;
+    font-size: 13px;
+    height: 30px;
+	padding:4px 7px!important;	
+}
+
+@media (min-width: 992px){
+    #page-local-people-index .modal .modal-dialog{
+        max-width:772px !important;
+    }
+}
+@media screen and (max-width: 1460px){
+
+	#page-local-people-index .report-left-block-acordeon .aply-filtter .content-apply button.btn#send, #page-local-people-index .report-left-block-acordeon .aply-filtter .icon-filter a.clear-button {
+    font-size: 10px!important;
+    padding: 4px 10px!important;
+}
+}
+
+ @media (max-width: 1440px) {
+	 #page-local-people-index button#send {
+		 min-width: 115px !important;
+	}
+#page-local-people-index div.table-filters div.content-form form#form-bulk-actions table.table-people tbody tr td,
+#page-local-people-index div.table-filters div.content-form form#form-bulk-actions table.table-people thead tr th,
+#page-local-people-index div.table-filters div.content-form form#form-bulk-actions table.table-people thead tr th a,
+#page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.filterpeople div.content-filtter div.panel-heading h5.panel-title a
+{
+	font-size: 10px;
+}
+}
+@media screen and (max-width: 1366px){
+
+	#page-local-people-index .report-left-block-acordeon .aply-filtter .content-apply button.btn#send {
+    font-size: 10px!important;
+    padding: 4px 10px!important;
+}
+}
+
+
+ @media (max-width: 1199px) {
+	 #page-local-people-index button#send {
+		 min-width: 125px !important;
+	}
+     #page-local-people-index .mar-no.pad-no.pad.table-filters {
+    padding: 15px !important;
+ }
+     #page-local-people-index div.content-table {
+    padding: 0 !important;
+}
+}
+@media screen and (max-width: 991px) {
+   #page-local-people-index div.total-records {
+    top: -2px;
+    font-size: 13px !important;
+}
+    body#page-local-people-index .show_tenat_company_records {
+    top: 0px;
+}
+    body#page-local-people-index .show_tenat_company_records label {
+    font-size: 13px;
+}
+} 
+@media screen and (min-width: 768px) {
+    #page-local-people-index div.settings-menu {
+        height: 0px !important;
+    }
+    #page-local-people-index h2.title-coursecoursewizard {
+        margin-top: 0;
+    }
+    #page-local-people-index .breadcrumb-nav {
+       padding-left: 15px;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    #page-local-people-index div.settings-menu {
+        height: 14px;
+        margin-top: 0;
+    }
+    #page-local-people-index .report-left-block-acordeon {
+        padding-left: 0;
+    }
+    #page-local-people-index div.search-filter-buttons div.header-search div.custom-search-form span.input-group-btn {
+    margin-left: 0px;
+  }
+    body#page-local-people-index .show_tenat_company_records {
+    position: relative;
+    top: unset;
+    right: 0;
+    text-align: left;
+    padding: 0;
+   }
+}
+ 
+
+@media (max-width: 1367px){
+    #page-local-people-index .date-filters .date-time .row .col-lg-6 {
+             flex: 0 0 100% !important;
+             max-width: 100% !important;
+    }
+     #page-local-people-index .date-filters div.checkbox {
+             margin-left: 16px;
+    }
+}
+#page-local-people-index #send{
+	text-align: left;
+    font-size: 12px;
+	/* background-color: #1ba2dd; */
+    color: white !important;
+	border-radius: 4px!important;
+	height: 26px;
+}
+#page-local-people-index .close_icon_search {
+margin: auto;
+left: unset !important;
+padding: 7px 8px;
+color: #000;
+border-radius: 14px;
+top: 4px;
+right: 16px;
+position: absolute;
+z-index:999;
+}
+
+.show{
+	display: block !important;
+}
+
+#page-local-people-index .filterslist .panel-heading {
+    border-bottom: solid 1px #E4E7EC;
+    padding: 0;
+}
+
+body#page-local-people-index .table {
+    border: 1px solid #f1e9e9;
+}
+#page-local-people-index .pad-btm.pad-hor {
+    border: 0;
+}
+body#page-local-people-index .report-left-block-acordeon {
+    border: 1px solid #f1e9e9;
+    border-radius: 4px;
+}
+#page-local-people-index div.search-filter-buttons div.report-left-block-acordeon div.filterpeople.card{
+	border:0 !important;
+}
+body#page-local-people-index .show_tenat_company_records {
+    position: relative;
+    top: -7px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+}	
+.show_tenat_company_records label {
+    font-size: 14px;
+}
+input[type="checkbox"]:not(.custom-control-input):after {
+    font-size: 16px;
+
+}
+input#show_tenat_company {
+    margin-top: 5px;
+}
+input[type="checkbox"]:not(.custom-control-input){
+	margin-right: 8px !important;
+}
+select.chosen-people {
+    display: none;
+}
+#page-local-people-index span.select2-container.select2-container--open {
+    z-index: 999999;
+}
+.select2-container--open .select2-dropdown--below {
+    -webkit-box-shadow: -6px 15px 31px rgba(166,166,166,.37);
+    box-shadow: -6px 15px 31px rgba(166,166,166,.37);
+    border: 1px solid #f6f6f6!important;
+    padding: 10px;
+}
+
+#page-local-people-index thead {
+    background: #f4f4f4;
+}
+#page-local-people-index .select2-container .select2-selection--single{
+	height: 36px;
+}
+#page-local-people-index .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 32px;
+}
+#page-local-people-index .select2-container--default .select2-selection--single .select2-selection__arrow {
+
+    top: 6px;
+}
+#page-local-people-index #mdb-navbar .simplesearchform button.btn.btn-submit {
+    padding: 12px 7px 0;
+}

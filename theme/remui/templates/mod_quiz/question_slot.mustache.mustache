@@ -1,0 +1,52 @@
+<div id="mod-indent-outer-slot-{{slotid}}" class="bg-white rounded-xl shadow-lg p-4 mb-4 hover:shadow-2xl transition relative">
+    
+    <!-- Top Row: Question # + Checkbox -->
+    <div class="flex justify-between items-center mb-2">
+        <div class="flex items-center gap-2">
+            {{{checkbox}}}
+            <span class="font-bold text-lg">{{{questionnumber}}}</span>
+        </div>
+        <!-- Version selection if available -->
+        {{#versionselection}}
+        <select id="version-{{slotid}}" name="version"
+            class="form-select text-sm border-gray-300 rounded"
+            data-action="mod_quiz-select_slot" data-slot-id="{{slotid}}">
+            {{#versionoption}}
+            <option value="{{version}}" {{#selected}}selected{{/selected}}>{{versionvalue}}</option>
+            {{/versionoption}}
+        </select>
+        {{/versionselection}}
+    </div>
+
+    <!-- Question Name / Activity -->
+    <div class="mb-2">
+        <div class="text-[#003152] font-semibold text-md mb-1">{{{questionname}}}</div>
+
+        {{#issharedbank}}
+        <div class="inline-block bg-[#ec9707] text-white text-xs font-bold px-2 py-0.5 rounded">
+            {{#bankurl}}<a href="{{bankurl}}" class="text-white hover:underline">{{/bankurl}}
+                {{{bankname}}}
+            {{#bankurl}}</a>{{/bankurl}}
+        </div>
+        {{/issharedbank}}
+    </div>
+
+    <!-- Question Icons -->
+    <div class="flex justify-end gap-2 mt-2">
+        {{{questionicons}}}
+    </div>
+
+    <!-- Dependency Icon if editable -->
+    {{#canbeedited}}
+    <div class="absolute top-2 right-2">
+        {{{questiondependencyicon}}}
+    </div>
+    {{/canbeedited}}
+</div>
+
+<!-- Draft version warning -->
+{{#draftversion}}
+<div class="bg-red-100 border-l-4 border-red-600 text-red-700 p-2 rounded mt-2 text-sm">
+    {{#str}}questiondraftwillnotwork, mod_quiz{{/str}}
+</div>
+{{/draftversion}}

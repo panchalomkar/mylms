@@ -1,0 +1,60 @@
+<script language="JavaScript" src="https://code.jquery.com/jquery-3.7.0.js" type="text/javascript"></script>
+<div id="smeleardermodal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h4 class="modal-title">Message</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                      <label for="exampleFormControlTextarea1">Type Message</label>
+                      <textarea class="form-control" id="exampleFormControlTextarea2" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="submitdatasmel">Send <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{#js}}
+require(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, ajax, notification, str) {
+
+  $(document).ready(function(){
+    var show_btn=$('.smeleadersendmsg');
+    var show_btn=$('.smeleadersendmsg');
+    //$("#testmodal").modal('show');
+    
+      show_btn.click(function(){
+        $("#smeleardermodal").modal('show');
+    })
+  });
+  
+  $(function() {
+          $('.smeleadersendmsg').on('click', function( e ) {
+              var userid = $(this).attr("value");
+              $('#submitdatasmel').on('click', function( e ) {
+                 $(this).prop("disabled", true);
+      // add spinner to button
+      $(this).html(
+        `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
+      );
+          var textareavalue = $('#exampleFormControlTextarea2').val();
+         // var userid = $('.smeleadersendmsg').attr('value');
+           $.ajax({
+                       url: M.cfg.wwwroot + "/local/mydashboard/smeleadersendmsg.php",
+                       type: 'post',
+                       data: {userid: userid, textareavalue: textareavalue},
+                       success: function (response) {
+                              window.location.reload();
+                       }
+                   });
+      });
+             
+              e.preventDefault();
+          });
+      });
+ })
+{{/js}}

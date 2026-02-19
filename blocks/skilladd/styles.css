@@ -1,0 +1,64 @@
+.block-skilladd-item > hr {
+    margin-top: 0.4rem;
+    margin-bottom: 0.4rem;
+}
+
+.block-skilladd-item > label {
+    margin-bottom: 0;
+}
+
+.block-skilladd-additem {
+    display: flex;
+}
+
+.block-skilladd-list {
+    list-style: none;
+    padding-left: 0;
+    cursor: move;
+}
+
+.block-skilladd-item > label {
+    cursor: move;
+}
+
+.block-skilladd-input-container {
+    display: flex;
+    position: relative;
+    flex-grow: 1;
+    align-items: stretch;
+}
+
+.block-skilladd-additem-input-container > input.block-skilladd-input {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    width: 100%;
+    display: block;
+}
+
+.block-skilladd-additem > button.block-skilladd-input-button {
+    align-items: center;
+    display: inline-flex;
+    margin-left: -1px;
+    position: relative;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.block-skilladd-item-complete > label {
+    text-decoration: line-through;
+}
+
+.block-skilladd-item-icons {
+    float: right;
+}
+
+.block-skilladd-item-delete,
+.block-skilladd-item-edit,
+.block-skilladd-item-complete {
+    background: none;
+    border: none;
+}
+
+li.block-skilladd-item > input.block-skilladd-item-edit-input {
+    width: 65%;
+}

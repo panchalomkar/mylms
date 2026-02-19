@@ -1,0 +1,5 @@
+[03-Jan-2024 11:22:36 Asia/Kolkata] Debugging: This page should be using theme paradiso which cannot be initialised. Falling back to the site theme classic in 
+* line 721 of /lib/outputlib.php: call to debugging()
+* line 712 of /local/social_wall/lib.php: call to theme_config::load()
+* line 132 of /local/social_wall/ajax/message_ajax.php: call to load_company_post()
+

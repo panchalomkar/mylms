@@ -1,0 +1,225 @@
+div#page-content.page-content-custom .region-content {
+	padding: 0px !important
+}
+div#page-content.page-content-custom #region-main {
+	padding: 0px !important
+}
+
+.custom_page {
+}
+.custom_page_header {
+	height: 62px;
+	background-color: #dddddd;
+	color: #211915
+}
+.custom_page_header h2 {
+	margin-top: 0px;
+	height: 62px;
+	line-height: 62px;
+	margin-left: 75px;
+	float: left
+}
+.custom_page_content {
+	display: block;
+	clear: both;
+	padding: 10px
+}
+
+.course_list {
+	padding: 0px 90px;
+	margin-top: 40px;
+	clear: both;
+	display: block;
+}
+.course_item {
+	background-color: #dddddd;
+	margin-bottom: 25px;
+	display: block;
+	clear: both;
+}
+.course_number {
+	width: 35px;
+	height: 31px;
+	background-color: #292728;
+	color: #fff;
+	font-weight: bold;
+	font-size: 16px;
+	line-height: 31px;
+	text-align: center;
+	margin-top: 27px;
+	float: left;
+    display: none;
+}
+.course_image {
+	float: left;
+	margin-right: 16px
+}
+.course_image img {
+	width: 71px;
+	height: 61px;
+	border: 0px;
+}
+.course_detail {
+	background-color: #fff;
+	width: 468px;
+	height: 62px;
+	float: left;
+	margin-top: 14px;
+}
+.course_name {
+	font-size: 14px;
+	font-weight: bold;
+	color: #000;
+	margin-top: 10px
+}
+.course_description {
+	font-size: 12px;
+}
+.course_action1 {
+	width: 135px;
+	height: 76px;
+	float: right;
+}
+.course_action2 {
+	width: 135px;
+	height: 76px;
+	background-color: #292728;
+	float: right;
+}
+.course_action_icon {
+	display: none;
+	float: left;
+	margin-top: 20px;
+	margin-left: 20px
+}
+.course_action_icon img {
+}
+.course_action_text {
+	float: left;
+	color: #fff;
+	margin-top: 20px;
+	margin-left: 15px
+}
+
+.custom_page_header form {
+	line-height: 62px;
+	text-align: right;
+	margin-right: 90px
+}
+
+input.rounded {
+	border: 1px solid #c0bfc2 !important;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	-moz-box-shadow: 2px 2px 3px #666;
+	-webkit-box-shadow: 2px 2px 3px #666;
+	box-shadow: 1px 1px 1px #666;
+	font-size: 12px;
+	padding: 4px 7px;
+	outline: 0;
+	-webkit-appearance: none;
+}
+input.rounded:focus {
+	border-color: #c0bfc2;
+}
+
+/*=============================================================================================================*/
+.course_list {
+    padding: 0 0px;
+}
+
+.custom_page h2 {
+    margin: 0px;
+    padding-left: 10px;
+}
+
+.course_item  {
+    background: #fafafa;
+    background: -moz-linear-gradient(top, #fafafa 0%, #f4f4f4 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fafafa), color-stop(100%,#f4f4f4));
+    background: -webkit-linear-gradient(top, #fafafa 0%,#f4f4f4 100%);
+    background: -o-linear-gradient(top, #fafafa 0%,#f4f4f4 100%);
+    background: -ms-linear-gradient(top, #fafafa 0%,#f4f4f4 100%);
+    background: linear-gradient(to bottom, #fafafa 0%,#f4f4f4 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fafafa', endColorstr='#f4f4f4',GradientType=0 );
+    display: inline-block;
+    overflow: hidden;
+    position: relative;
+    margin: 0.5%;
+    margin-bottom: 20px;
+    vertical-align: top;
+    width: 23%;
+}
+
+.course_detail {
+	border: 1px solid #ccc;
+	height: 191px !important;
+}
+
+.course_name {
+	clear: both;
+    color: #000;
+    display: block;
+    font-size: 18px;
+    padding-top: 10px;
+    margin-top: 0px;
+    text-align: center;
+    width: 100%;
+}
+
+.course_description {
+    color: #fff;
+}
+
+.course_detail {
+    margin-top: 0px;
+    width: 100%;
+}
+
+.course_detail .content {
+    height: 191px;
+    padding: 20px 30px;
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+    z-index: 99;
+}
+
+.course_action1, .course_action2 {
+    background: transparent !important;
+    top: 15px;
+    right: 15px;
+    position: absolute;
+
+}
+
+.course_action_icon {
+    background: url("../../course/pix/go.png");
+    background-size: 100% 100%;
+    float: right;
+    height: 30px;
+    margin-left: 0px;
+    margin-top: 0px;
+    width: 30px;
+}
+
+.course_image {
+    height: 98% !important;
+    margin-top: 1%;
+    width: 98% !important;
+}
+
+.courseimage {
+    height: 100%;
+    width: 100%;
+}
+
+.course_image img {
+    height: 100%;
+    width: 100%;
+}
+
+.breadcrumb {
+    margin-left: 15px;
+}

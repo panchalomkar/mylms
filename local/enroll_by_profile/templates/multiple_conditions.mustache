@@ -1,0 +1,9 @@
+{{!
+    @template local_enroll_by_profile/multiple_conditions
+
+    This template renders the content of the value filed in automation hub add rules form
+    This template is used for conditional cases : ischecked/isnotchecked/isempty 
+}}
+{{#multiple_conditions}}
+<input type="hidden" name="{{negatedconditional}}" id="id_negatedrule{{id}}" value="{{negatedconditionalstring}}" class="form-control">
+{{/multiple_conditions}}

@@ -1,0 +1,122 @@
+{{#rowdata}}
+						
+	{{#OR}}
+		<div class="row boolop" data-id="{{data-id}}">
+			<span class="label boolopstch">
+				{{#str}} or,local_enroll_by_profile {{/str}}
+			</span>
+		</div>
+	{{/OR}}
+
+	{{#AND}}
+		<div class="row boolop" data-id="{{data-id}}">
+			<span class="label boolopstch">
+				{{#str}} and,local_enroll_by_profile {{/str}}
+			</span>
+		</div>
+	{{/AND}}
+	<div class="row condition-item" data-id="{{data-id}}" data-boolop="{{data-boolop}}" data-field="profile_field" data-value="{{data-value}}" data-rule="isempty" data-statement="Is empty" data-negatedrule="notisempty" data-negatedstatement="Is not empty" data-negated="false" data-text="">
+		<div class="col-md-12 contant-contains" data-id="{{data-id}}">
+			<label class="col-md-12 " ><span class="mar-rgt">Name</span>
+				<input id="id_name_field{{data-id}}" data-id="{{data-id}}" class="form-control namerule" placeholder="Enter Rule Name">
+			</label>
+			<label class="col-md-12 " ><span class="mar-rgt">Profile Field</span>
+				<select id="id_profile_field{{data-id}}" data-id="{{data-id}}" class="form-control profile-field">
+					<option value="0">-- Select Option --</option>
+					{{#fields}}
+					<option data-type="{{type}}" value="{{value}}">{{name}}</option>
+					{{/fields}}
+				</select>
+			</label>
+		</div>
+		<div class="col-md-12 contant-contains" data-id="{{data-id}}">
+			<div id="content_conditional_element{{data-id}}" data-id="{{data-id}}">
+				<label class="col-md-12 category_type" ><span>{{#str}} conditional,local_enroll_by_profile {{/str}}</span>
+					<select id="id_conditional{{data-id}}" class="form-control select-conditional">
+						<option value="0">-- Select a profile field first --</option>
+					</select>
+				</label>
+			</div>
+		</div>
+		<div class="col-md-12 contant-contains" data-id="{{data-id}}" >
+			<div id="content_input_element{{data-id}}" data-id="{{data-id}}">
+				<label class="col-md-12 category_type"><span id="id_input_title1" class="mar-rgt">Value</span>
+					<input type="text" id="id_content{{data-id}}" class="form-control" disabled="disabled" placeholder="select a Conditional first" />
+				</label>
+				<input type="hidden" id="id_negatedrule{{data-id}}" class="form-control" name="not" value="[[not]]" />
+			</div>
+		</div>
+		<div class="col-md-12 contant-contains" data-id="{{data-id}}">
+			<div id="conditional_actions{{data-id}}" data-id="{{data-id}}">
+				<a href="#" class="btn btn-lg btn-white btn-delete pull-right" alt="Delete condition" title="Delete condition" data-target="#enroll_by_profile_modal">
+					<i class="fa wid wid-icon-delete"></i> <small class="title"></small>
+				</a>
+				<input type="checkbox" name="negated" value="true" id="id_negated{{data-id}}" />
+				<span class="mar_left_display ml-2">NOT</span>
+				<label class="form-checkbox form-normal form-icon-text form-plms col-md-6 pull-right pl-0 "></label>
+			</div>
+		</div>
+	</div>
+
+{{/rowdata}}
+
+{{#editrowdata}}
+
+{{#OR}}
+	<div class="row boolop" data-id="{{data-id}}">
+		<span class="label boolopstch">
+			{{#str}} or,local_enroll_by_profile {{/str}}
+		</span>
+	</div>
+{{/OR}}
+
+{{#AND}}
+	<div class="row boolop" data-id="{{data-id}}">
+		<span class="label boolopstch">
+			{{#str}} and,local_enroll_by_profile {{/str}}
+		</span>
+	</div>
+{{/AND}}
+<div class="row condition-item" data-id="{{data-id}}" data-boolop="" data-field="{{data-field}}" data-value="{{data-value}}" data-rule="{{data-rule}}" data-statement="{{data-statement}}" data-negatedrule="{{data-negatedrule}}" data-negatedstatement="{{data-negatedstatement}}" data-negated="{{data-negated}}" data-text="{{data-text}}">
+	<div class="col-md-12 contant-contains" data-id="{{data-id}}">
+		<label class="col-md-12 "><span class="mar-rgt">Name</span>
+			<input id="id_name_field{{data-id}}" data-id="{{data-id}}" class="form-control namerule" placeholder="Enter Rule Name">
+		</label>
+		<label class="col-md-12 "><span class="mar-rgt">Profile Field</span>
+			<select id="id_profile_field{{data-id}}" data-id="{{data-id}}" class="form-control profile-field">
+				<option value="0">-- Select Option --</option>
+				{{#fields}}
+				<option data-type="{{type}}" value="{{value}}">{{name}}</option>
+				{{/fields}}
+			</select>
+		</label>
+	</div>
+	<div class="col-md-12 contant-contains" data-id="{{data-id}}" >
+		<div id="content_conditional_element{{data-id}}" data-id="{{data-id}}">
+			<label class="col-md-12 category_type" >
+				<span >Conditional</span>
+				<select id="id_conditional{{data-id}}" class="form-control select-conditional">
+					<option value="0">--Select a profile field first--</option>
+				</select>
+			</label>
+		</div>
+	</div>
+	<div class="col-md-12 contant-contains" data-id="{{data-id}}" >
+		<div id="content_input_element{{data-id}}" data-id="{{data-id}}">
+			<label class="col-md-12 category_type">
+				<span id="id_input_title{{data-id}}" class="mar-rgt">Value</span>
+				<input type="text" id="id_content{{data-id}}" class="form-control" disabled="disabled" placeholder="select a Conditional first" />
+			</label>
+			<input type="hidden" id="id_negatedrule{{data-id}}" class="form-control" name="not" value="[[not]]" />
+		</div>
+	</div>
+	<div class="col-md-12 contant-contains" data-id="{{data-id}}">
+		<div id="conditional_actions{{data-id}}" data-id="{{data-id}}"><a href="#" class="btn btn-lg btn-white btn-delete pull-right" alt="Delete condition" title="Delete condition" data-target="#enroll_by_profile_modal"><i class="fa wid wid-icon-delete"></i> <small class="title"></small></a>
+			<input type="checkbox" name="negated" value="true" id="id_negated{{data-id}}" />
+			</span>
+			</label><span class="mar_left_display ml-2">NOT</span>
+			<label class="form-checkbox form-normal form-icon-text form-plms col-md-6 pull-right pl-0 "></label>
+		</div>
+	</div>
+</div>
+{{/editrowdata}}

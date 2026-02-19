@@ -1,0 +1,13 @@
+{{!
+    @template local_enroll_by_profile/condition_isafter
+
+    This template renders the content of the value filed in automation hub add rules form
+    This template is used for conditional cases : isafter
+}}
+
+
+	{{#fields}}
+		{{> local_enroll_by_profile/fieldDataPicker }}
+	{{/fields}}
+
+<input type="hidden" name="{{negatedconditional}}" id="id_negatedrule{{id}}" value="{{negatedconditionalstring}}" class="form-control">

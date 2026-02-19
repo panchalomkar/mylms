@@ -1,0 +1,55 @@
+	ul li{
+		text-decoration: none;
+		list-style-type:none;
+	}
+	.competencytable table {
+		padding: 20px
+	}
+	.competencytable td{
+		
+		padding: 10px !important;
+	}
+	.competencytable th{
+		text-align: center;
+		padding: 10px !important;
+	}
+	.usersrow{
+		text-align: center;
+	}
+	.competency_title{
+		color: red;
+		background-color: #ccc;
+	}
+	.userlist{
+		color: red;
+		background-color: #ccc;
+	}
+	.circle_green { 
+        height: 15px;
+		width: 15px;
+		line-height: 20px;
+		border-radius: 50%;
+		background-color: green;
+    }
+	.circle_red { 
+        height: 15px;
+		width: 15px;
+		line-height: 20px;
+		border-radius: 50%;
+		background-color: red;
+   }
+	.circle_yellow { 
+        height: 15px;
+		width: 15px;
+		line-height: 20px;
+		border-radius: 50%;
+		background-color: yellow;
+    }
+
+.table{
+margin-bottom: 0px;
+}
+
+.th-lg{
+	color: red !important;
+}

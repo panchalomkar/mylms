@@ -1,0 +1,84 @@
+{{> theme_remui/head }}
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<style>
+body.loginright .login-custom-container{height: 100vh !important;
+    max-width: 100% !important;
+    border-radius: 0px !important;}
+        body.loginleft .login-custom-container{height: 100vh !important;
+    max-width: 100% !important;
+    border-radius: 0px !important;
+        flex-direction: row-reverse !important;}
+        body.loginright,body.loginleft{ .width70{width:65% !important;} 
+         .width30{width:35% !important;}}
+         #fgroup_id_buttonar .col-form-label ,#fgroup_id_buttonar .btn-cancel {display:none;}
+.felement {
+    width: 100%;
+    .fitem{ width: 100%;}
+    fieldset div{ width: 100%;}
+}
+#signup-form .fdescription{ display:none;}
+#signup-form  #id_submitbutton:hover{background:#ec9707 !important;}
+</style>
+<body {{{ bodyattributes }}} class="bg-[#0052cc] min-h-screen flex items-center justify-center font-[Poppins]">
+
+{{> core/local/toast/wrapper}}
+
+<div id="page-wrapper" class="w-full">
+{{{ output.standard_top_of_body_html }}}
+
+<div class=" font-display flex items-center justify-center min-h-screen" style="background: linear-gradient(216.41deg, #003152 .65%, hsla(0, 0%, 100%, 0) 104.13%);">
+    <div class="login-custom-container flex flex-wrap lg:flex-nowrap w-full max-w-5xl mx-auto shadow-2xl rounded-[20px] overflow-hidden bg-white">
+
+        <!-- Left Panel -->
+        <div id="login-custom"  class="hidden width70 lg:flex lg:w-1/2 bg-cover bg-center relative" style="background-size: cover !important;background-position: center !important;">
+             
+            <div class="absolute inset-0  p-8 flex flex-col justify-center text-white" style="justify-content: flex-start;">
+               
+
+             
+
+            
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <section id="region-main" class="w-full width30 lg:w-1/2 bg-white py-10 px-8" style="overflow:auto; height:600px;">
+         <!-- Logo (optional) -->
+            <div class="text-center mb-3 mt-2 ">
+                {{#logocontext}}
+                {{#logourl}}
+                    <img src="{{logourl}}" class="mx-auto h-16 mb-2"/>
+                {{/logourl}}
+                {{#iconwithsitename}}
+                <div class="text-xl font-bold text-[#0052cc] flex justify-center items-center gap-2">
+                    <i class="fa fa-{{siteicon}}"></i> {{{sitename}}}
+                </div>
+                {{/iconwithsitename}}
+                {{/logocontext}}
+            </div>
+          {{#brandlogotext}}
+                        <div class="login-description">
+                            <div class="login-description-content" style="color: {{signuptextcolor}};">
+                                {{{brandlogotext}}}
+                            </div>
+                        <a id="readmorebtn" class="d-none  readbtn text-link-semibold" style="color: {{signuptextcolor}}">{{#str}} showmore, theme_remui{{/str}}</a>
+                        <a id="readlessbtn" class="d-none  readbtn text-link-semibold" style="color: {{signuptextcolor}}">{{#str}} showless, theme_remui{{/str}}</a>
+                        </div>
+                        {{/brandlogotext}}
+
+            <!-- Moodle Login Form -->
+            <div class="space-y-4">
+                {{{ output.main_content }}}
+            </div>
+
+  
+
+        </section>
+    </div>
+</div>
+
+{{> theme_remui/footer }}
+</div>
+</body>

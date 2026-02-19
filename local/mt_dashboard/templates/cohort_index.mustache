@@ -1,0 +1,54 @@
+{{#showform}}	
+<form id="searchcohortquery" method="get" class="form-inline search-cohort">
+	<div class="m-b-1">
+		<label class="m-r-1" for="cohort_search_q">{{#str}}searchcohort,cohort{{/str}}</label>
+		<input id="cohort_search_q" type="text" name="search" value="" class="form-control m-r-1">
+		<input type="submit" value="Search" class="btn btn-secondary">
+		<input type="hidden" name="contextid" value="0">
+	</div>
+</form>
+{{/showform}}
+
+{{#showtable}}
+<table class="admintable generaltable" id="cohorts">
+<thead>
+	<tr>
+		<th class="header c0 leftalign name" style="" scope="col">{{#str}}name,cohort{{/str}}</th>
+		<th class="header c1 leftalign id" style="" scope="col">{{#str}}idnumber,cohort{{/str}}</th>
+		<th class="header c2 leftalign description" style="" scope="col">{{#str}}description,cohort{{/str}}</th>
+		<th class="header c3 leftalign size" style="" scope="col">{{#str}}memberscount,cohort{{/str}}</th>
+		<th class="header c4 centeralign source" style="" scope="col">{{#str}}component,cohort{{/str}}</th>
+		<th class="header c5 lastcol centeralign action" style="" scope="col">Edit</th>
+	</tr>
+</thead>
+<tbody id="">
+
+{{#cohort_listing}}
+	<tr class="" >
+		<td class="leftalign name cell" style="">{{{cohort_name}}}</td>
+		<td class="leftalign id cell" style="">{{{cohort_idnumber}}}</td>
+		<td class="leftalign description cell" style=""><p dir="ltr" style="text-align:left;">{{{cohort_desc}}}</p></td>
+		<td class="leftalign size cell">{{{cohort_members}}}</td>
+		<td class="centeralign source cell" >{{{cohort_component}}}</td>
+		<td class="centeralign action cell c5 lastcol" style="">
+			{{#cohortmanager}}
+				{{#visible}}
+					<a title="Hide" href="{{{showhideurl1}}}"><i class="icon fa fa-eye fa-fw " title="" aria-label=""></i></a> 
+				{{/visible}}
+				{{^visible}}
+					<a title="Show" href="{{{showhideurl2}}}"><i class="icon fa fa-eye-slash fa-fw  " title="" aria-label=""></i></a> 
+				{{/visible}}
+				<a title="" href="{{{deleteurl}}}"><i class="icon fa fa-trash fa-fw " title="" aria-label=""></i></a> 
+				<a title="" href="{{{editeurl}}}"><i class="icon fa fa-cog fa-fw " title="" aria-label=""></i></a> 
+			{{/cohortmanager}}
+			{{#cohortcanassign}}
+				<a title="Assign" href="{{{assign_url}}}"><i class="icon fa fa-users fa-fw " title="Assign" aria-label="Assign"></i></a>
+			{{/cohortcanassign}}
+		</td>
+	</tr>
+{{/cohort_listing}}
+
+</tbody>
+</table>
+{{/showtable}}
+

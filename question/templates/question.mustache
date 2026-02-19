@@ -1,0 +1,98 @@
+<style>
+#page-mod-quiz-attempt #responseform{
+background: white !important;
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 1px 0px grey;
+}
+.custom-flag-d{
+        align-items: flex-start;
+        background: transparent !important;
+          border: none !important;
+        .state{display:none;}
+        h3{font-size: 20px !important;}
+        span.qno{font-size: 20px;}
+.questionflag a[aria-label="Flagged"] {display: flex;
+    justify-content: end;
+    width: fit-content;
+    border: solid 1px grey;
+    border-radius: 5px;
+    padding: 5px;
+     position: relative;
+    top: -50px;
+    }
+
+.questionflag {width: 100%;
+    text-align: -webkit-right;}
+}
+.question-custom-d{
+    .formulation{background: transparent !important;
+    border: none !important;}
+    .answer{padding: 10px !important;}
+    .answer .r0,
+.answer .r1,
+.answer .r2,
+.answer .r3,
+.answer .r4 {
+    border-radius: 10px;
+    padding: 10px !important;
+    transition: background 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+    box-shadow: 0px 0px 0px 1px #bdbdbd;margin-bottom: 20px !important;
+    display:flex;
+     label{width:100%; cursor: pointer;}
+     [data-region="answer-label"]{width: 100% !important;cursor: pointer;}
+}
+.answer .r0:hover,
+.answer .r1:hover,
+.answer .r2:hover,
+.answer .r3:hover,
+.answer .r4:hover {
+    background: #ec9707 !important;   /* Highlight color */
+    transform: scale(1.02);           /* Slight zoom */
+}
+.answer .r0:hover label,
+.answer .r1:hover label,
+.answer .r2:hover label,
+.answer .r3:hover label,
+.answer .r4:hover label {
+}
+    }
+   
+</style>
+<div id="{{id}}" class="{{classlist}} d-flex flex-column">
+    <!-- Question Info -->
+    <div class="info custom-flag-d w-100 m-0 p-3 bg-gray-100 rounded-md d-flex flex-column items-center" >
+        {{{info}}}
+    </div>
+
+    <!-- Question Content -->
+    <div class="content mt-2  bg-white rounded-md question-custom-d"style="margin:0px !important;">
+        <!-- Formulation (question text) -->
+        <div class="formulation clearfix mb-3 text-base">
+            {{{formulation}}}
+        </div>
+
+        <!-- Answer Options -->
+        <fieldset class="answers border-t pt-2">
+            <legend class="sr-only">Answer choices</legend>
+            {{{answers}}}
+        </fieldset>
+
+        <!-- Feedback / Outcome -->
+        <div class=" clearfix mt-2 text-sm ">
+            {{{feedback}}}
+        </div>
+
+        <!-- Teacher Comment -->
+        <div class="clearfix mt-2 text-sm ">
+            {{{comment}}}
+        </div>
+
+        <!-- Answer History -->
+        <div class="history clearfix border-t mt-2 pt-2 text-sm text-gray-500">
+            {{{history}}}
+        </div>
+    </div>
+</div>
