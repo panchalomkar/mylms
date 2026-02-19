@@ -25,7 +25,7 @@ echo $OUTPUT->header();
 
     if ($prompt) {
         // 🔐 Store this securely in production
-        $api_key = $CFG->openaiapikey; // 🔒 Regenerate it now!
+        $api_key = $CFG->openaiapikeyimage; // 🔒 Regenerate it now!
     
         $data = [
             "model" => "gpt-3.5-turbo",

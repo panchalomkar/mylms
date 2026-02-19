@@ -72,8 +72,8 @@ if (session_status() === PHP_SESSION_NONE) {
 $prompt1 = $_SESSION['uploadprompt'] ?? '';
 unset($_SESSION['uploadprompt']);
 
-$api_key = $CFG->openaiapikey;
-
+ $api_key = $CFG->openaiapikeyimage;
+ 
 $coursename = $course->fullname;
 
 /* ============================================================

@@ -322,7 +322,7 @@ function regenerate_specific_section($courseid, $sectionid, $title)
     global $DB,$CFG;
     require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 
-    $api_key = $CFG->openaiapikey; // 🔒 Regenerate it now!
+    $api_key = $CFG->openaiapikeysection; // 🔒 Regenerate it now!
     $youtube_key = 'AIzaSyDbNZjjZHw285wITRZr1sEfQTOCtEY-zis';
 
     // 1. Regenerate Summary
@@ -1029,7 +1029,6 @@ function add_questions_to_quiz($courseid, $cmid, $structuredQuestions)
 //     require_once($CFG->libdir . '/filelib.php');
 //     require_once($CFG->dirroot . '/course/lib.php'); // for reset_course_image
 
-//     $api_key = 'AIzaSyDu-cy1aU8hzqybz_kyaeV1HhwKZF2RRss'; // Replace with your actual key
 // $cse_id = 'e68a232bd35cc4659'; // Your Google Custom Search Engine ID
 
 //     $query = urlencode($coursename . " course image");
