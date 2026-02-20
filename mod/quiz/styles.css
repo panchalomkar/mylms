@@ -1195,6 +1195,11 @@ table.quizreviewsummary td.cell {
         page-break-inside: avoid;
     }
 }
+#page-mod-quiz-summary .modal.show .modal-dialog {
+    display: flex;
+    align-items: center;
+    min-height: 100vh;
+}
 /* Center the card and make it smaller */
 #page-mod-quiz-review .quiz-attempt-summary-card {
     background: #fff;

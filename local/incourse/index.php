@@ -181,7 +181,7 @@ $emptystars = 5 - $fullstars;
         <span class="font-semibold">(<?= $ratingdata['ratingcount']; ?> Reviews)</span>
     </div>
 <button id="openReviewModal"
-    class="ml-4 bg-[#003152] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#00253d] transition d-none">
+    class="ml-4 bg-[#003152] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#00253d] transition ">
     Write a Review
 </button>
 </div>
@@ -269,7 +269,7 @@ $emptystars = 5 - $fullstars;
 </div>
 <!-- Success Popup -->
 <div id="successPopup"
-     class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+     class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center  z-50">
 
     <div class="bg-white w-full max-w-md rounded-2xl shadow-xl p-6 text-center relative">
 
