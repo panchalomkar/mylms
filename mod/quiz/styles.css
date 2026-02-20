@@ -1195,3 +1195,34 @@ table.quizreviewsummary td.cell {
         page-break-inside: avoid;
     }
 }
+/* Center the card and make it smaller */
+#page-mod-quiz-review .quiz-attempt-summary-card {
+    background: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+    max-width: 500px;       /* small width */
+    margin: 0 auto;          /* center horizontally */
+}
+
+/* Optional: responsive width */
+@media (max-width: 576px) {
+    .quiz-attempt-summary-card {
+        max-width: 100%;    /* full width on small screens */
+    }
+}
+
+/* Keep existing styling */
+.quiz-attempt-summary-card .summary-caption {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #003152;
+}
+
+.quiz-attempt-summary-card .summary-items .summary-title {
+    color: #555;
+}
+
+.quiz-attempt-summary-card .summary-items .summary-content {
+    color: #ec9707;
+    font-weight: 500;
+}

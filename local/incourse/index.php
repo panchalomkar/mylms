@@ -162,7 +162,7 @@ $fullstars = floor($avg);
 $emptystars = 5 - $fullstars;
 ?>
 
-<div class="flex items-center text-sm space-x-2 d-none">
+<div class="flex items-center text-sm space-x-2">
 
     <!-- Stars -->
     <div class="flex">
@@ -181,7 +181,7 @@ $emptystars = 5 - $fullstars;
         <span class="font-semibold">(<?= $ratingdata['ratingcount']; ?> Reviews)</span>
     </div>
 <button id="openReviewModal"
-    class="ml-4 bg-[#003152] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#00253d] transition ">
+    class="ml-4 bg-[#003152] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#00253d] transition d-none">
     Write a Review
 </button>
 </div>
@@ -1758,10 +1758,7 @@ if (modname === 'goone') {
 }
 
 
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/main
 // 🧑‍🏫 Handle ILT (Instructor-Led Training) inline view
 if (modname === 'ilt') {
     const params = new URLSearchParams(link.href.split('?')[1]);
