@@ -135,13 +135,13 @@ $getusers = $DB->get_records_sql($sql, $params);
             $percentage = floor($progressdata);
 
             // Progress color logic
-            if ($percentage == 100) {
-                $barcolor = '#16a34a';
-            } else if ($percentage > 0) {
-                $barcolor = '#ec9707';
-            } else {
-                $barcolor = 'red';
-            }
+           if ($percentage > 75) {
+    $barcolor = '#16a34a';   // 76–100
+} elseif ($percentage > 50) {
+    $barcolor = '#ec9707';   // 51–75
+} else {
+    $barcolor = 'red';       // 0–50
+}
 // -----------------------------------------------------
 // ✅ Determine Course URL (Admin sees normal course view)
 // -----------------------------------------------------

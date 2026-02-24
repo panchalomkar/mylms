@@ -132,9 +132,9 @@ Highcharts.chart('course-donut-{{id}}', {
       <span class="due-date text-left"><a href="{{href}}">{{name}}</a></span>
       <div class="progress-container">
         <div class="progress-bar">
-          <div class="progress-fill {{progresscolor}}" style="width: {{progress}}%"></div>
+          <div class="progress-fill " style="width: {{progress}}%; background-color: {{progresscolor}};"></div>
         </div>
-        <span class="progress-label {{progresscolor}}">{{progress}}%</span>
+        <span class="progress-label " style="background-color: {{progresscolor}};">{{progress}}%</span>
       </div>
       <span class="due-date">{{duedate}}</span>
     </div>
@@ -163,9 +163,9 @@ Highcharts.chart('course-donut-{{id}}', {
         <span class="due-date" style="text-align:left;"><a style="font-size: 14px;color: #003152;text-transform: capitalize; font-weight: 400;" href="{{href}}">{{name}}</a></span>
         <div class="progress-container">
           <div class="progress-bar">
-            <div class="progress-fill {{progresscolor}}" style="width: {{progress}}%"></div>
+            <div class="progress-fill {{progresscolor}}" style="width: {{progress}}%; background-color: {{progresscolor}};"></div>
           </div>
-          <span class="progress-label {{progresscolor}}">{{progress}}%</span>
+          <span class="progress-label {{progresscolor}}" style="background-color: {{progresscolor}};">{{progress}}%</span>
         </div>
         <span class="due-date">{{duedate}}</span>
       </div>
