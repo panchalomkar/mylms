@@ -958,18 +958,27 @@ class utility {
             $coursedata['isenrolled'] = !empty($course['isenrolled']) ? 1 : 0;
 
 // ✅ Safely handle both object and array course data
+// Default progress
 $progress = 0;
-$progresscolor = '#ec9707';
 
+// Get progress safely (array or object)
 if (is_array($course)) {
-    $progress = $course['progress'] ?? 0;
-    $progresscolor = $course['progresscolor'] ?? '#ec9707';
+    $progress = isset($course['progress']) ? (int)$course['progress'] : 0;
 } else {
-    $progress = $course->progress ?? 0;
-    $progresscolor = $course->progresscolor ?? '#ec9707';
+    $progress = isset($course->progress) ? (int)$course->progress : 0;
 }
 
-$coursedata['progress'] = (int)$progress;
+// --- Progress color logic ---
+if ($progress >= 75) {
+    $progresscolor = '#16a34a';        // Green
+} elseif ($progress >= 50) {
+    $progresscolor = '#ec9707';        // Orange
+} else {
+    $progresscolor = '#dc2626';        // Red (better red than plain 'red')
+}
+
+// Assign final values
+$coursedata['progress'] = $progress;
 $coursedata['progresscolor'] = $progresscolor;
 
 
