@@ -210,7 +210,13 @@ if ($DB->get_manager()->table_exists('iomadcertificate')) {
 
 
         // --- Progress color ---
-        $progresscolor = ($progress >= 70) ? 'green' : (($progress >= 50) ? 'yellow' : 'red');
+        if ($progress > 75) {
+    $progresscolor = '#16a34a';
+} elseif ($progress > 50) {
+    $progresscolor = '#ec9707';
+} else {
+    $progresscolor = 'red';
+}
 
         // --- Course image ---
         $courseimage = '';
@@ -775,8 +781,81 @@ private function get_admin_icon_svg(string $icon): string {
      * This function will help us generate branding logos.
      * @return Branding Context array()
      */
-    public function get_branding_context() {
-        global $SITE;
+    // public function get_branding_context() {
+    //     global $SITE;
+    //     $context = [];
+
+    //     if ($this->page->pagelayout == 'login') {
+
+    //         if (\theme_remui\toolbox::get_setting('brandlogopos') == 0) {
+    //             // Brand logo disabled.
+    //             return false;
+    //         }
+
+    //         $context['incontainer'] = true;
+    //         if (\theme_remui\toolbox::get_setting('brandlogopos') == 2 && \theme_remui\toolbox::get_setting('loginpagelayout') != 'logincenter') {
+    //             $context['incontainer'] = false;
+    //         }
+
+    //         $loginpanellogo = \theme_remui\toolbox::setting_file_url('loginpanellogo', 'loginpanellogo');
+
+    //         if ($loginpanellogo) {
+    //             $context['logourl'] = $loginpanellogo;
+    //             return $context;
+    //         }
+    //     }
+
+    //     $logoorsitename = \theme_remui\toolbox::get_setting('logoorsitename');
+
+    //     switch ($logoorsitename) {
+    //         case 'logo':
+    //             $logo = \theme_remui\toolbox::setting_file_url('logo', 'logo');
+    //             $darklogo = \theme_remui\toolbox::setting_file_url('darkmodelogo', 'darkmodelogo');
+    //             if (empty($logo)) {
+    //                 $logo = \theme_remui\toolbox::image_url('logo', 'theme');
+    //             }
+    //             $context['logourl'] = $logo;
+    //             if (empty($darklogo)) {
+    //                 $darklogo = $logo;
+    //             }
+    //             $context['darklogourl'] = $darklogo;
+    //             break;
+    //         case 'logomini':
+    //             $logomini = \theme_remui\toolbox::setting_file_url('logomini', 'logomini');
+    //             $darklogomini = \theme_remui\toolbox::setting_file_url('darkmodelogomini', 'darkmodelogomini');
+    //             if (empty($logomini)) {
+    //                 $logomini = \theme_remui\toolbox::image_url('logomini', 'theme');
+    //             }
+    //             $context['logominiurl'] = $logomini;
+    //             if (empty($darklogomini)) {
+    //                 $darklogomini = $logomini;
+    //             }
+    //             $context['darklogominiurl'] = $darklogomini;
+    //             break;
+    //         case 'icononly':
+    //             $context['icononly'] = true;
+    //             $context['color'] = \theme_remui\toolbox::get_theme_setting('sitenamecolor');
+    //             $context['siteicon'] = trim(\theme_remui\toolbox::get_setting('siteicon'));
+    //             break;
+    //         case 'iconsitename':
+    //             $context['iconwithsitename'] = true;
+    //             $context['color'] = \theme_remui\toolbox::get_theme_setting('sitenamecolor');
+    //             $context['siteicon'] = trim(\theme_remui\toolbox::get_setting('siteicon'));
+    //             $context['sitename'] = format_string($SITE->shortname);
+    //             break;
+    //         default:
+    //             $context['iconwithsitename'] = true;
+    //             $context['sitename'] = format_string($SITE->shortname);
+    //             break;
+    //     }
+
+    //     return $context;
+    // }
+
+
+    // added by omkar
+      public function get_branding_context() {
+        global $SITE,$CFG, $SESSION;
         $context = [];
 
         if ($this->page->pagelayout == 'login') {
@@ -790,9 +869,18 @@ private function get_admin_icon_svg(string $icon): string {
             if (\theme_remui\toolbox::get_setting('brandlogopos') == 2 && \theme_remui\toolbox::get_setting('loginpagelayout') != 'logincenter') {
                 $context['incontainer'] = false;
             }
-
+            $has_logo = $this->get_tenant_logo_url();
+        
+            $hostcompanyid= get_company_by_host();
+    
+            if(!empty($hostcompanyid) && false != $has_logo ){ 
+                $context['logourl'] =  $has_logo;
+            }
+            if( rap_is_company_user() && false != $has_logo ){  
+                $context['logourl']  = $has_logo;
+            }
             $loginpanellogo = \theme_remui\toolbox::setting_file_url('loginpanellogo', 'loginpanellogo');
-
+            
             if ($loginpanellogo) {
                 $context['logourl'] = $loginpanellogo;
                 return $context;
@@ -803,28 +891,33 @@ private function get_admin_icon_svg(string $icon): string {
 
         switch ($logoorsitename) {
             case 'logo':
+        
                 $logo = \theme_remui\toolbox::setting_file_url('logo', 'logo');
-                $darklogo = \theme_remui\toolbox::setting_file_url('darkmodelogo', 'darkmodelogo');
                 if (empty($logo)) {
                     $logo = \theme_remui\toolbox::image_url('logo', 'theme');
                 }
-                $context['logourl'] = $logo;
-                if (empty($darklogo)) {
-                    $darklogo = $logo;
+                global $CFG, $SESSION;
+                // Get the tenant logo if set 
+                $has_logo = $this->get_tenant_logo_url();
+        
+                $hostcompanyid = get_company_by_host();
+        
+                if (!empty($hostcompanyid) && false != $has_logo) {
+                    $logo = $has_logo;
                 }
-                $context['darklogourl'] = $darklogo;
+                if (rap_is_company_user() && false != $has_logo) {
+                    $logo = $has_logo;
+                }
+
+                 $context['logourl'] = $logo;
+            
                 break;
             case 'logomini':
                 $logomini = \theme_remui\toolbox::setting_file_url('logomini', 'logomini');
-                $darklogomini = \theme_remui\toolbox::setting_file_url('darkmodelogomini', 'darkmodelogomini');
                 if (empty($logomini)) {
                     $logomini = \theme_remui\toolbox::image_url('logomini', 'theme');
                 }
                 $context['logominiurl'] = $logomini;
-                if (empty($darklogomini)) {
-                    $darklogomini = $logomini;
-                }
-                $context['darklogominiurl'] = $darklogomini;
                 break;
             case 'icononly':
                 $context['icononly'] = true;
@@ -845,7 +938,35 @@ private function get_admin_icon_svg(string $icon): string {
 
         return $context;
     }
+    public function get_tenant_logo_url() {
+    $company_id = rap_is_company_user();
 
+    if (empty($company_id)) {
+        $company_id = get_company_by_host();
+    }
+
+    if (empty($company_id)) {
+        return false;
+    }
+
+    $settingname = 'tenant_logo_' . $company_id;
+
+    // Confirm setting exists
+    if (empty(get_config('theme_remui', $settingname))) {
+        return false;
+    }
+
+    $context = \context_system::instance();
+
+    return \moodle_url::make_pluginfile_url(
+        $context->id,
+        'theme_remui',
+        $settingname,
+        0,              // MUST be 0 for theme settings
+        '/',
+        get_config('theme_remui', $settingname)
+    )->out(false);
+}
     /**
      * Returns the HTML for the site support email link
      *
@@ -1146,19 +1267,26 @@ private function get_admin_icon_svg(string $icon): string {
      *
      * @return string HTML fragment.
      */
-    public function standard_head_html() {
-        global $CFG, $SESSION, $SITE;
-
-        // Before we output any content, we need to ensure that certain
-        // page components are set up.
-
+     public function standard_head_html() {
+        global $SITE, $PAGE,$SESSION,$CFG,$DB;
+        require_once($CFG->dirroot. '/local/iomad/lib/iomad.php');
+        $output = parent::standard_head_html();
+        $output = '';
+        $companyid= 0;
+        $hostname = $_SERVER['HTTP_HOST'];
+        $hostcompanyid= $DB->get_record_sql("SELECT id FROM {company} WHERE hostname = 'https://$hostname' OR hostname = 'http://$hostname' LIMIT 1");
+        if(!empty($hostcompanyid->id)){
+            $companyid = $hostcompanyid->id;
+        }
+        if( \iomad::is_company_user() ||  \iomad::is_company_admin() || $companyid > 0){
+            $output .= "<link type=\"text/css\" rel=\"stylesheet\" href=\"$CFG->wwwroot/theme/remui/style/company-css.php\" />\n";
+        }
+         
         // Blocks must be set up early as they may require javascript which
         // has to be included in the page header before output is created.
         foreach ($this->page->blocks->get_regions() as $region) {
             $this->page->blocks->ensure_content_created($region, $this);
         }
-
-        $output = '';
 
         // Give plugins an opportunity to add any head elements. The callback
         // must always return a string containing valid html head content.
@@ -1211,39 +1339,6 @@ private function get_admin_icon_svg(string $icon): string {
             $output .= '<meta http-equiv="refresh" content="';
             $output .= $this->page->periodicrefreshdelay.';url='.$this->page->url->out().'" />';
         }
-
-        if(get_moodle_release_version_branch() > '403'){
-            // Give plugins an opportunity to add any head elements. The callback
-            // must always return a string containing valid html head content.
-            $hook = new \core\hook\output\before_standard_head_html_generation($this);
-            $hook->process_legacy_callbacks();
-            \core\di::get(\core\hook\manager::class)->dispatch($hook);
-
-            // Allow a url_rewrite plugin to setup any dynamic head content.
-            if (isset($CFG->urlrewriteclass) && !isset($CFG->upgraderunning)) {
-                $class = $CFG->urlrewriteclass;
-                $hook->add_html($class::html_head_setup());
-            }
-
-            $hook->add_html('<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />' . "\n");
-            $hook->add_html('<meta name="keywords" content="moodle, ' . $this->page->title . '" />' . "\n");
-            // This is only set by the {@link redirect()} method
-            $hook->add_html($this->metarefreshtag);
-
-            // Check if a periodic refresh delay has been set and make sure we arn't
-            // already meta refreshing
-            if ($this->metarefreshtag=='' && $this->page->periodicrefreshdelay!==null) {
-                $hook->add_html(
-                    html_writer::empty_tag('meta', [
-                        'http-equiv' => 'refresh',
-                        'content' => $this->page->periodicrefreshdelay . ';url='.$this->page->url->out(),
-                    ]),
-                );
-            }
-
-            $output = $hook->get_output();
-        }
-
 
         // Set up help link popups for all links with the helptooltip class.
         $this->page->requires->js_init_call('M.util.help_popups.setup');
