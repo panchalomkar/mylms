@@ -23,14 +23,15 @@ function local_incourse_parse_availability_condition($cond, $modinfo) {
     switch ($type) {
 
         /* ================= ACTIVITY COMPLETION ================= */
-case 'completion':
+    case 'completion':
     if (!empty($cond->cm)) {
         if (isset($modinfo->cms[$cond->cm])) {
             $cm = $modinfo->cms[$cond->cm];
             $name = format_string($cm->get_formatted_name());
 
             // Check if previous activity is completed
-            $completion = new completion_info($cm->course);
+            $course = $modinfo->get_course();
+$completion = new completion_info($course);
             $completed = $completion->is_enabled($cm) &&
                          $completion->get_data($cm)->completionstate > 0;
             $status = $completed ? 'Completed' : 'Incomplete';
