@@ -49,7 +49,7 @@
     }
 }}
 <div{{!
-    }} data-type="event"{{!
+    }} data-type="event"data-activity-url="{{url}}"  data-allow-redirect="{{allowredirect}}"{{!
     }} data-course-id="{{course.id}}"{{!
     }} data-event-id="{{id}}"{{!
     }} class="event mt-3"{{!
@@ -106,3 +106,86 @@
         {{/action.actionable}}
     </div>
 </div>
+{{#js}}
+require(['jquery'], function($) {
+
+    /* -----------------------------
+       1️⃣ Force all links to same tab
+    ------------------------------*/
+    $(document).on('mouseenter', '.event a', function() {
+        $(this).removeAttr('target');
+        $(this).attr('target', '_self');
+    });
+
+
+    /* -----------------------------
+       2️⃣ Disable right click menu
+    ------------------------------*/
+    $(document).on('contextmenu', '.event', function(e) {
+        e.preventDefault();
+    });
+
+
+    /* -----------------------------
+       3️⃣ Block middle click
+    ------------------------------*/
+    $(document).on('mousedown', '.event a', function(e) {
+        if (e.which === 2) { // middle mouse
+            e.preventDefault();
+        }
+    });
+
+
+    /* -----------------------------
+       4️⃣ Block Ctrl + Click
+    ------------------------------*/
+    $(document).on('click', '.event a', function(e) {
+        if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+        }
+    });
+
+
+    /* -----------------------------
+       5️⃣ Main redirect logic
+    ------------------------------*/
+    $(document).on('click', '.event', function(e) {
+
+        // Allow edit/delete buttons
+        if ($(e.target).closest('[data-action]').length) {
+            return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const activityUrl = $(this).data('activity-url');
+        const courseid = $(this).data('course-id');
+
+        if (!activityUrl) return;
+
+        try {
+            const cmid = new URL(activityUrl, window.location.origin)
+                            .searchParams.get('id');
+
+            if (!cmid || !courseid) {
+                window.location.href = activityUrl;
+                return;
+            }
+
+            // Redirect to your NEW UI
+            window.location.href =
+                M.cfg.wwwroot +
+                '/local/incourse/index.php?id=' +
+                courseid +
+                '&cmid=' +
+                cmid;
+
+        } catch (err) {
+            window.location.href = activityUrl;
+        }
+
+    });
+
+});
+{{/js}}

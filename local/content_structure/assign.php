@@ -104,7 +104,7 @@ function multilevel_categories($parent_id = 0)
     }
 }
 
-function display_option($nested_categories, $temp = array(), $cids)
+function display_option($nested_categories, $cids, $temp = array())
 {
     global $DB, $CFG;
 
@@ -160,7 +160,7 @@ function display_option($nested_categories, $temp = array(), $cids)
 
         if (!empty($nested['nested_categories'])) {
             $option .= '<ul class="nested list-group">';
-            $option .= display_option($nested['nested_categories'], $temp, $cids);
+            $option .= display_option($nested['nested_categories'], $cids, $temp);
             $option .= '</ul>';
         }
 
@@ -362,7 +362,7 @@ function display_option($nested_categories, $temp = array(), $cids)
 
     echo '<form action="" method="POST" class="mform">';
     echo ' <div id="fitem_id_parent" class="form-group row  fitem   ">';
-    echo ' <div class="col-md-6 form-inline align-items-start felement pln" data-fieldtype="select">
+    echo ' <div class="col-md-6 form-inline align-items-start felement pln col-md-5" data-fieldtype="select">
             <select class="custom-select" name="company" id="company" style="width: 100%;" required >
                 <option value="0">' . get_string('selectcompany', 'local_content_structure') . '</option>';
     foreach ($companies as $company) {
@@ -373,8 +373,8 @@ function display_option($nested_categories, $temp = array(), $cids)
         }
     }
     echo '</select></div>';
-    echo '<div class="input-search d-flex  ">
-            <i class="input-search-icon fa fa-search" aria-hidden="true"></i>
+    echo '<div class="input-search d-flex col-md-5 ">
+            <i class="input-search-icon fa fa-search" style="left: 20px;" aria-hidden="true"></i>
 
             <input id="coursesearchbox" name="search" type="text" placeholder="' . get_string('searchprogram', 'local_content_structure') . '" value="" class="form-control h-40 search-query" style="width:100% !important;">
 
@@ -406,7 +406,7 @@ function display_option($nested_categories, $temp = array(), $cids)
             . '&nbsp;&nbsp;&nbsp;&nbsp;';
         if (!empty($cat['nested_categories'])) {
             echo '<ul class="nested list-group">';
-            echo display_option($cat['nested_categories'], array(), $cids);
+           echo display_option($cat['nested_categories'], $cids);
             echo '</ul>';
         }
         echo '</li>';
