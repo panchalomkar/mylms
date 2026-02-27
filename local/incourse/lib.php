@@ -383,6 +383,7 @@ $completionhtml = $completionhtml ? '<div class="mt-2">' . $completionhtml . '</
         'h5p' => 'extension',
         'scorm'=> 'inventory_2',
         'zoom' => 'video_call',
+        'goone' => 'article',
         default => 'article',
     };
 
