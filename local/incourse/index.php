@@ -1701,62 +1701,82 @@ startBtn.addEventListener("click", () => {
 }
 
 
-
-// 🎯 GOONE Activity (same UI as H5P)
-// 🎯 GOONE – behave EXACTLY like SCORM
+// 🎯 Handle GOONE like SCORM (Same Design + New Tab)
 if (modname === 'goone') {
+
     const params = new URLSearchParams(link.href.split('?')[1]);
     const cmid = params.get('id');
 
     area.innerHTML = `
         <div class="flex flex-col items-center justify-center min-h-[60vh] text-center">
+            
             <div class="bg-gray-200 rounded-full p-4 mb-4">
-                <span class="material-icons text-gray-700 text-4xl">school</span>
+                <span class="material-icons text-gray-700 text-4xl">
+                    article
+                </span>
             </div>
+
             <div class="px-4 py-1 rounded-full bg-blue-100 text-sm font-medium mb-4">
                 Go1 Activity
             </div>
-            <h2 class="text-gray-900 mb-2 text-xl font-semibold">
-                ${link.textContent}
-            </h2>
-            <p class="text-gray-500 mb-6">
-                Click start to launch the activity inline. Progress will be tracked automatically.
+
+           <h2 class="text-gray-900 mb-2"
+    style="font-size: 1.5rem !important; line-height: 2rem; font-weight: 600 !important;">
+    ${link.querySelector('.text-sm.font-medium')?.textContent.trim() || 'Interactive Learning Module'}
+</h2>
+
+            <p class="text-gray-500 mb-1">
+                This activity contains interactive course content.
             </p>
-            <button id="startGoOne" class="inline-flex items-center gap-2 bg-[#003152] hover:bg-[#ec9707] text-white px-5 py-2 rounded-md font-medium transition">
-                <span class="material-icons">play_arrow</span>
+            <p class="text-gray-500 mb-6">
+                Your progress will be tracked automatically.
+            </p>
+
+            <button id="startGoOne"
+                class="inline-flex items-center gap-2 bg-[#003152] hover:bg-[#ec9707] text-white px-5 py-2 rounded-md font-medium transition">
+                <span class="material-icons text-white text-base">play_arrow</span>
                 Start Go1 Activity
             </button>
         </div>
     `;
 
-    const btn = document.getElementById('startGoOne');
-    btn.addEventListener('click', async () => {
-        area.innerHTML = `<div class="text-center py-20">Loading Go1 activity...</div>`;
-        try {
-            const response = await fetch(`${M.cfg.wwwroot}/local/incourse/get_token.php?cmid=${cmid}`);
-            const data = await response.json();
+    document.getElementById('startGoOne').addEventListener('click', () => {
 
-            if (!data.success) throw new Error(data.message || 'Failed to get Go1 token');
+        const launchURL = `${M.cfg.wwwroot}/mod/goone/view.php?id=${cmid}&win=1`;
 
+        // 🪟 ALWAYS open in new tab like SCORM
+        const newTab = window.open(launchURL, '_blank', 'noopener,noreferrer');
+
+        // If popup blocked
+        if (!newTab) {
             area.innerHTML = `
-                <div role="main">
-                    <div class="container" style="height: 680px;">
-                        <iframe
-                            src="${data.url}"
-                            allowfullscreen
-                            loading="eager"
-                            allow="autoplay *; camera *; display-capture *; fullscreen *; microphone *"
-                            style="width: 100%; height: 100%; border: 0;">
-                        </iframe>
-                    </div>
-                </div>
+               <div class="text-center text-gray-500 p-8">
+                <h2 class="text-lg font-semibold mb-2">
+                    Go1 Activity Opened in New Tab
+                </h2>
+                <p>
+                    Please check your browser tabs to continue the activity.
+                </p>
+            </div>
             `;
-        } catch (err) {
-            area.innerHTML = `<div class="text-center text-red-600 py-20">Error loading Go1 activity: ${err.message}</div>`;
+            return;
         }
-    });
-}
 
+        // Show confirmation screen (same style as SCORM)
+        area.innerHTML = `
+            <div class="text-center text-gray-500 p-8">
+                <h2 class="text-lg font-semibold mb-2">
+                    Go1 Activity Opened in New Tab
+                </h2>
+                <p>
+                    Please check your browser tabs to continue the activity.
+                </p>
+            </div>
+        `;
+    });
+
+    return;
+}
 
 
 // 🧑‍🏫 Handle ILT (Instructor-Led Training) inline view
