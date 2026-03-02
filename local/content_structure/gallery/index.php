@@ -627,6 +627,10 @@ $allfiles = $DB->get_records_sql($file_sql, $fileparams);
 
             $modalBody.html('');
         });
+        $('#moduleModal').on('hidden.bs.modal', function () {
+    forceStopMedia();
+    $(this).find('.modal-body').html('');
+});
     });
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -956,8 +960,58 @@ $allfiles = $DB->get_records_sql($file_sql, $fileparams);
             });
         });
     });
+// document.addEventListener('DOMContentLoaded', function () {
 
+//     const toggleBtn = document.getElementById('user-menu-toggle');
+//     const menu = document.getElementById('user-action-menu');
+//     const dropdownWrapper = toggleBtn.closest('.dropdown');
 
+//     // 🔓 OPEN
+//     function openMenu() {
+//         menu.classList.add('show');
+//         toggleBtn.setAttribute('aria-expanded', 'true');
+//     }
+
+//     // 🔒 CLOSE
+//     function closeMenu() {
+//         menu.classList.remove('show');
+//         toggleBtn.setAttribute('aria-expanded', 'false');
+//     }
+
+//     // Toggle on button click
+//     toggleBtn.addEventListener('click', function (e) {
+//         e.preventDefault();
+//         e.stopPropagation();
+
+//         if (menu.classList.contains('show')) {
+//             closeMenu();
+//         } else {
+//             openMenu();
+//         }
+//     });
+
+//     // ✅ Close when clicking outside
+//     document.addEventListener('click', function (e) {
+//         if (!dropdownWrapper.contains(e.target)) {
+//             closeMenu();
+//         }
+//     });
+
+// });
+function forceStopMedia() {
+
+    // Pause HTML5 videos
+    document.querySelectorAll('video').forEach(function (video) {
+        video.pause();
+        video.currentTime = 0;
+    });
+
+    // Reload iframes (YouTube / Drive / embedded content)
+    document.querySelectorAll('iframe').forEach(function (iframe) {
+        iframe.src = iframe.src;
+    });
+
+}
 </script>
 
 <?php echo $OUTPUT->footer(); ?>
