@@ -283,9 +283,64 @@ public static function get_custom_report_block(int $reportid): array {
 
     $rows = [];
     if (!empty($data->reportsdata)) {
-        foreach ($data->reportsdata as $row) {
-            $rows[] = array_values((array)$row);
+        if (!empty($data->reportsdata)) {
+
+    foreach ($data->reportsdata as $row) {
+
+        $rowarray = array_values((array)$row);
+
+        /* ================= STATUS COLOR ================= */
+        $status = strtolower(trim($rowarray[8] ?? ''));
+
+        if ($status === 'completed') {
+            $rowarray['badgeclass'] = 'bg-success-subtle text-success';
+        } elseif ($status === 'not started') {
+            $rowarray['badgeclass'] = 'bg-danger-subtle text-danger';
+        } elseif ($status === 'in progress' || $status === 'inprogress') {
+            $rowarray['badgeclass'] = 'bg-warning-subtle text-warning';
+        } else {
+            $rowarray['badgeclass'] = 'bg-secondary-subtle text-secondary';
         }
+
+        /* ================= PROGRESS COLOR ================= */
+        $progressraw = $rowarray[7] ?? '0';
+        $progress = (float)str_replace('%', '', $progressraw);
+
+        $rowarray['progressclass'] = '';
+        $rowarray['customprogressstyle'] = '';
+
+        if ($progress <= 50) {
+            $rowarray['progressclass'] = 'bg-danger';
+        } elseif ($progress <= 75) {
+            $rowarray['customprogressstyle'] = 'background:#ec9707;';
+        } else {
+            $rowarray['customprogressstyle'] = 'background:#16a34a;';
+        }
+
+        $rows[] = $rowarray;
+    }
+}
+//          foreach ($data->reportsdata as $row) {
+
+//     $rowarray = array_values((array)$row);
+
+//     // Status is index 8
+//     $status = strtolower(trim($rowarray[8] ?? ''));
+
+//     if ($status === 'completed') {
+//         $badgeclass = 'bg-success-subtle text-success';
+//     } elseif ($status === 'not started') {
+//         $badgeclass = 'bg-danger-subtle text-danger';
+//     } elseif ($status === 'in progress' || $status === 'inprogress') {
+//         $badgeclass = 'bg-warning-subtle text-warning';
+//     } else {
+//         $badgeclass = 'bg-secondary-subtle text-secondary';
+//     }
+
+//     $rowarray['badgeclass'] = $badgeclass;
+
+//     $rows[] = $rowarray;
+// }
     }
 
     return [

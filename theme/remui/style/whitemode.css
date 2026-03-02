@@ -6927,7 +6927,9 @@ label #sidebar_btn:hover {
 .sidebar a:not([class]):focus{
     color: #fff !important;
 }
-
+.sidebar ul li {
+        padding-left: 0px !important;
+}
 .sidebar ul li ul a {
  color: #85888a!important;
     line-height: 15px;
@@ -11817,6 +11819,9 @@ a:hover{
     }
 
 }
+#page-local-edwiserreports-customreportedit {.reports-list-content .table-responsive{width: 100%;}
+
+.customreports-block-section {padding: 20px;}}
 /*
 .selectedmenu {
     background-color: aliceblue !important; 

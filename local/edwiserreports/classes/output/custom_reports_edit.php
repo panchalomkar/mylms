@@ -329,22 +329,33 @@ class custom_reports_edit implements renderable, templatable {
                 'text' => get_string('courseprogress', 'local_edwiserreports'),
                 'dbkey' => 'ec.progress',
                 'selected' => in_array('courseprogress', $selectedfield),
-                'resultfunc' => function($value) {
-                    return $value . '%';
-                }
+             'resultfunc' => function($value) {
+    return round((float)$value) . '%';
+}
             ),
             array(
                 'id' => 'completionstatus',
                 'text' => get_string('coursecompletionstatus', 'local_edwiserreports'),
                 'dbkey' => 'ec.progress',
                 'selected' => in_array('completionstatus', $selectedfield),
-                'resultfunc' => function($value) {
-                    $ret = get_string('inprogress', 'local_edwiserreports');
-                    if ($value == 100) {
-                        $ret = get_string('completed', 'local_edwiserreports');
-                    }
-                    return $ret;
-                }
+               'resultfunc' => function($value) {
+
+    $value = (float)$value;
+
+    if ($value == 0) {
+        return '<span class="badge bg-danger">In Progress</span>';
+    }
+
+    if ($value > 0 && $value <= 50) {
+        return '<span class="badge bg-danger">In Progress</span>';
+    }
+
+    if ($value > 50 && $value <= 75) {
+        return '<span class="badge" style="background:#ec9707;color:#fff;">In Progress</span>';
+    }
+
+    return '<span class="badge" style="background:#16a34a;color:#fff;">Completed</span>';
+}
             ),
             array(
                 'id' => 'activitiescompleted',
