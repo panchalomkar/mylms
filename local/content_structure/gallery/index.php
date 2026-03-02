@@ -608,13 +608,12 @@ $allfiles = $DB->get_records_sql($file_sql, $fileparams);
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
-        $('#moduleModal').on('hidden.bs.modal', function () {
-    forceStopMedia();
-    $(this).find('.modal-body').html('');
-});
-    $(document).ready(function () {
+    $('#moduleModal').on('hidden.bs.modal', function () {
+     forceStopMedia();
+     $(this).find('.modal-body').html('');
+ });
+        $(document).ready(function () {
         $('#moduleModal').on('hidden.bs.modal', function () {
             const $modalBody = $(this).find('.modal-body');
 
@@ -630,7 +629,7 @@ $allfiles = $DB->get_records_sql($file_sql, $fileparams);
 
             $modalBody.html('');
         });
-
+   
     });
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -960,44 +959,44 @@ $allfiles = $DB->get_records_sql($file_sql, $fileparams);
             });
         });
     });
-// document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
 
-//     const toggleBtn = document.getElementById('user-menu-toggle');
-//     const menu = document.getElementById('user-action-menu');
-//     const dropdownWrapper = toggleBtn.closest('.dropdown');
+    const toggleBtn = document.getElementById('user-menu-toggle');
+    const menu = document.getElementById('user-action-menu');
+    const dropdownWrapper = toggleBtn.closest('.dropdown');
 
-//     // 🔓 OPEN
-//     function openMenu() {
-//         menu.classList.add('show');
-//         toggleBtn.setAttribute('aria-expanded', 'true');
-//     }
+    // 🔓 OPEN
+    function openMenu() {
+        menu.classList.add('show');
+        toggleBtn.setAttribute('aria-expanded', 'true');
+    }
 
-//     // 🔒 CLOSE
-//     function closeMenu() {
-//         menu.classList.remove('show');
-//         toggleBtn.setAttribute('aria-expanded', 'false');
-//     }
+    // 🔒 CLOSE
+    function closeMenu() {
+        menu.classList.remove('show');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+    }
 
-//     // Toggle on button click
-//     toggleBtn.addEventListener('click', function (e) {
-//         e.preventDefault();
-//         e.stopPropagation();
+    // Toggle on button click
+    toggleBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
 
-//         if (menu.classList.contains('show')) {
-//             closeMenu();
-//         } else {
-//             openMenu();
-//         }
-//     });
+        if (menu.classList.contains('show')) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
+    });
 
-//     // ✅ Close when clicking outside
-//     document.addEventListener('click', function (e) {
-//         if (!dropdownWrapper.contains(e.target)) {
-//             closeMenu();
-//         }
-//     });
+    // ✅ Close when clicking outside
+    document.addEventListener('click', function (e) {
+        if (!dropdownWrapper.contains(e.target)) {
+            closeMenu();
+        }
+    });
 
-// });
+});
 function forceStopMedia() {
 
     // Pause HTML5 videos
