@@ -609,10 +609,7 @@ $allfiles = $DB->get_records_sql($file_sql, $fileparams);
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    $('#moduleModal').on('hidden.bs.modal', function () {
-     forceStopMedia();
-     $(this).find('.modal-body').html('');
- });
+
         $(document).ready(function () {
         $('#moduleModal').on('hidden.bs.modal', function () {
             const $modalBody = $(this).find('.modal-body');
@@ -631,7 +628,10 @@ $allfiles = $DB->get_records_sql($file_sql, $fileparams);
         });
    
     });
-
+    $('#moduleModal').on('hidden.bs.modal', function () {
+     forceStopMedia();
+     $(this).find('.modal-body').html('');
+ });
     document.addEventListener('DOMContentLoaded', function () {
         const buttons = document.querySelectorAll('#file-type-buttons button');
 
