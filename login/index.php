@@ -269,7 +269,7 @@ if ($frm and isset($frm->username)) {                             // Login WITH 
 
         // Check if the company in the session is still correct.
    // Always use main tenant by default (company ID = 1)
-$maintenantid = 1;
+$maintenantid = 0;
 
 if ($DB->get_manager()->table_exists('company') &&
     !has_capability('block/iomad_company_admin:company_view_all', context_system::instance())) {
@@ -288,7 +288,7 @@ if ($DB->get_manager()->table_exists('company') &&
             $SESSION->currenteditingcompany = $maintenantid;
             $SESSION->company = $maincompany;
 
-            // 🔥 IMPORTANT: do NOT use company theme
+            //  company theme
             $SESSION->theme = 'remui';   // or unset($SESSION->theme);
 
             $canredirect = (strpos($currenturl, $blockadminpage) === false);
