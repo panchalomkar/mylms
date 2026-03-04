@@ -958,27 +958,18 @@ class utility {
             $coursedata['isenrolled'] = !empty($course['isenrolled']) ? 1 : 0;
 
 // ✅ Safely handle both object and array course data
-// Default progress
 $progress = 0;
+$progresscolor = '#ec9707';
 
-// Get progress safely (array or object)
 if (is_array($course)) {
-    $progress = isset($course['progress']) ? (int)$course['progress'] : 0;
+    $progress = $course['progress'] ?? 0;
+    $progresscolor = $course['progresscolor'] ?? '#ec9707';
 } else {
-    $progress = isset($course->progress) ? (int)$course->progress : 0;
+    $progress = $course->progress ?? 0;
+    $progresscolor = $course->progresscolor ?? '#ec9707';
 }
 
-// --- Progress color logic ---
-if ($progress >= 75) {
-    $progresscolor = '#16a34a';        // Green
-} elseif ($progress >= 50) {
-    $progresscolor = '#ec9707';        // Orange
-} else {
-    $progresscolor = '#dc2626';        // Red (better red than plain 'red')
-}
-
-// Assign final values
-$coursedata['progress'] = $progress;
+$coursedata['progress'] = (int)$progress;
 $coursedata['progresscolor'] = $progresscolor;
 
 
@@ -1289,7 +1280,7 @@ if (isset($course['durationweeks'])) {
         // Users List.
         if (is_siteadmin($USER)) {
             $menudata['userlist'] = [
-                'url' => "{$CFG->wwwroot}/{$CFG->admin}/user.php",
+                'url' => "{$CFG->wwwroot}/local/people/",
                 'iconclass' => 'edw-icon edw-icon-Group-user',
                 'title' => get_string('userlist')
             ];

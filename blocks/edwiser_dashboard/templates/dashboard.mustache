@@ -253,23 +253,17 @@
     <!-- Progress -->
     <td>
       <div class="progress" style="height:6px;">
-        <div class="progress-bar bg-warning"
-             style="width:{{7}}"></div>
+        <div class="progress-bar {{progressclass}}"
+     style="width:{{{7}}}; {{customprogressstyle}}">
+</div>
       </div>
-      <small class="fw-medium">{{7}}</small>
+      <small class="fw-medium">{{{7}}}</small>
     </td>
     <!-- Status -->
     <td>
-      {{#9}}
-        <span class="badge bg-success-subtle text-success">
-          {{9}}
+      <span class="badge {{badgeclass}}">
+          {{8}}
         </span>
-      {{/9}}
-      {{^9}}
-        <span class="badge bg-warning-subtle text-warning">
-          In Progress
-        </span>
-      {{/9}}
     </td>
   </tr>
 {{/customreport.rows}}

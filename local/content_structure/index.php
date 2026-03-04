@@ -388,5 +388,42 @@ echo $OUTPUT->footer();
         });
     });
 
+document.addEventListener('DOMContentLoaded', function () {
 
+    const toggleBtn = document.getElementById('user-menu-toggle');
+    const menu = document.getElementById('user-action-menu');
+    const dropdownWrapper = toggleBtn.closest('.dropdown');
+
+    // 🔓 OPEN
+    function openMenu() {
+        menu.classList.add('show');
+        toggleBtn.setAttribute('aria-expanded', 'true');
+    }
+
+    // 🔒 CLOSE
+    function closeMenu() {
+        menu.classList.remove('show');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+    }
+
+    // Toggle on button click
+    toggleBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (menu.classList.contains('show')) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
+    });
+
+    // ✅ Close when clicking outside
+    document.addEventListener('click', function (e) {
+        if (!dropdownWrapper.contains(e.target)) {
+            closeMenu();
+        }
+    });
+
+});
 </script>

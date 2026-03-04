@@ -4,7 +4,7 @@
 <!-- form.php -->
 <div class="modal fade" id="programModal" tabindex="-1" role="dialog" aria-labelledby="programModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
 
             <div class="modal-header" style="background: #003152;">

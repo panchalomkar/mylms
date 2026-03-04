@@ -97,7 +97,7 @@ $table->out(10, true);
 <!--MODAL-->
 <div class="modal fade" id="moduleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog" role="document" style="max-width: 650px;">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 650px;">
         <div class="modal-content">
             <div class="modal-header btn-primary-t">
                 <h2 class="modal-title text-light d-flex justify-content-start align-items-center"
@@ -331,4 +331,42 @@ echo $OUTPUT->footer();
 });
 
     });
+    document.addEventListener('DOMContentLoaded', function () {
+
+    const toggleBtn = document.getElementById('user-menu-toggle');
+    const menu = document.getElementById('user-action-menu');
+    const dropdownWrapper = toggleBtn.closest('.dropdown');
+
+    // 🔓 OPEN
+    function openMenu() {
+        menu.classList.add('show');
+        toggleBtn.setAttribute('aria-expanded', 'true');
+    }
+
+    // 🔒 CLOSE
+    function closeMenu() {
+        menu.classList.remove('show');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+    }
+
+    // Toggle on button click
+    toggleBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (menu.classList.contains('show')) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
+    });
+
+    // ✅ Close when clicking outside
+    document.addEventListener('click', function (e) {
+        if (!dropdownWrapper.contains(e.target)) {
+            closeMenu();
+        }
+    });
+
+});
 </script>
