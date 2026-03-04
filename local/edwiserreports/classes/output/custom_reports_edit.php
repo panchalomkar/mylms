@@ -343,7 +343,7 @@ class custom_reports_edit implements renderable, templatable {
     $value = (float)$value;
 
     if ($value == 0) {
-        return '<span class="badge bg-danger">In Progress</span>';
+        return '<span class="badge bg-danger">Not Started</span>';
     }
 
     if ($value > 0 && $value <= 50) {

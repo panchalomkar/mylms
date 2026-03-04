@@ -2,7 +2,12 @@
 	box-shadow: none;
 	background: none;
 }
-
+#page-local-people-index #page-wrapper #page {
+    padding-right: 0em !important;
+}
+#page-local-people-index.main-area-bg:not(.pagelayout-login) div[role="main"] {
+    padding: 20px !important;
+}
 #page-local-people-index div.content-apply{
 	padding-left: 0px;
 }
