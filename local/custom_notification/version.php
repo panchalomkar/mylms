@@ -14,9 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+* @package local_custom_notification
+* @category local
+* @copyright  GreenLMS <admin@greenlms.com>
+* @author GreenLMS
+*/
 
 defined('MOODLE_INTERNAL') || die();
-$plugin->version   = 2023102405;  
+$plugin->version   = 2023102407;  
 $plugin->release = 'greenlms.v1.0.r1';      // The current plugin version (Date: YYYYMMDDXX)
 $plugin->requires  = 2016031900;        // Requires this Moodle version
 $plugin->component = 'local_custom_notification'; // Full name of the plugin (used for diagnostics)

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * Local Course Progress Manager Plugin Events Onserver.
+ * Local Course Progress Manager Plugin Events Observer.
  *
  * @package     local_custom_notification
  * @category    admin
@@ -22,199 +22,216 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/**
- * Local Course Progress Manager Namespace
- */
 namespace local_custom_notification\observers;
 
 defined('MOODLE_INTERNAL') || die();
 
 use stdClass;
 use core_user;
+
 trait course_observer {
+
     /**
-     * Get event data
-     * @param  object $event Event object
-     * @return object        Course event data
+     * Course completion notification.
+     * Sends notification immediately when event fires, no frequency/lastsent check.
      */
     public static function course_completion_notification(\core\event\course_completed $event) {
-        global $DB,$CFG,$PAGE,$USER;
+        global $DB;
         $eventdata = $event->get_data();
         $currentuserid = $eventdata['relateduserid'];
         $currentcourseid = $eventdata['courseid'];
-        $getsetting = $DB->get_record('custom_notification', array('id' => 1));
-        if ($getsetting->course_completion_noti == 1) {
-            $data = explode(",",$getsetting->courseid);
-            foreach ($data as $value) {
-               if ($currentcourseid == $value) {
-               $coursedata = $DB->get_record('course', array('id' => $currentcourseid));
-               $user = $DB->get_record("user", ["id" => $currentuserid]);
-    
-               $email_user = $DB->get_record("user", ["id" => 2]);
-    
-               $subject = "Course Completion Notification";
-               $body = self::replace_tags($getsetting->course_completion_tem, ['user' => (array) $user,'course' => (array) $coursedata]);
-               $messagetext = $messageHtml = $body; 
-              // $messagetext = $messageHtml = $getsetting->course_completion_tem; 
-    
-               email_to_user($user, $email_user, $subject, $messagetext, $messageHtml, "", "", false);
-               }
-    
-                   }
-                              
+$completiondate = time();
+        $notifications = $DB->get_records('custom_notification');
+        foreach ($notifications as $setting) {
+            if ($setting->course_completion_noti != 1) {
+                continue;
+            }
+            if ($currentcourseid != $setting->courseid) {
+                continue;
+            }
+            $coursedata = $DB->get_record('course', ['id' => $currentcourseid]);
+            $user = $DB->get_record("user", ["id" => $currentuserid]);
+            $email_user = $DB->get_record("user", ["id" => 2]);
+            $subject = "Course Completion Notification";
+            // $body = self::replace_tags($setting->course_completion_tem, ['user' => (array) $user, 'course' => (array) $coursedata]);
+            $body = self::replace_tags(
+    $setting->course_completion_tem,
+    [
+        'user' => (array) $user,
+        'course' => (array) $coursedata,
+        'course' => array_merge((array)$coursedata, [
+            'completion_date' => $completiondate
+        ])
+    ]
+);
+            $messagetext = $messageHtml = $body;
+            email_to_user($user, $email_user, $subject, $messagetext, $messageHtml, "", "", false);
         }
-
-        return true;  
+        return true;
     }
 
     /**
-     * Course updated event
-     * @param \core\event\course_updated $event Event Data
+     * Course module completion notification.
+     * Sends notification immediately when event fires, no frequency/lastsent check.
      */
-    public static function course_module_completion_notification(\core\event\course_module_completion_updated $event) {
-        global $DB,$CFG,$PAGE,$USER;
+  public static function course_module_completion_notification(\core\event\course_module_completion_updated $event) {
+    global $DB;
+
+    $eventdata = $event->get_data();
+    $currentuserid = $eventdata['relateduserid'];
+    $currentcourseid = $eventdata['courseid'];
+    $cmid = $eventdata['contextinstanceid']; // course_modules.id
+
+    // Get course module
+    $cm = get_coursemodule_from_id(null, $cmid, $currentcourseid, false, MUST_EXIST);
+    $activityname = $DB->get_field($cm->modname, 'name', ['id' => $cm->instance]);
+
+    // Dates
+    $activitystartdate = $cm->availability ? '' : ''; // Put your real start date logic here
+    $activityenddate = $cm->completionexpected ? $cm->completionexpected : '';
+    $completiondate = time(); // Or from completion API if needed
+
+    $notifications = $DB->get_records('custom_notification');
+    foreach ($notifications as $setting) {
+        if ($setting->course_module_completion_noti != 1) {
+            continue;
+        }
+        if ($currentcourseid != $setting->courseid) {
+            continue;
+        }
+
+        $coursedata = $DB->get_record('course', ['id' => $currentcourseid]);
+        $user = $DB->get_record("user", ["id" => $currentuserid]);
+        $email_user = $DB->get_record("user", ["id" => 2]);
+
+        $subject = "Course Module Completion Notification";
+
+        // Pass activity data too
+        $body = self::replace_tags(
+            $setting->course_module_completion_tem,
+            [
+                'user' => (array) $user,
+                'course' => (array) $coursedata,
+                'activity' => [
+                    'name' => $activityname,
+                    'startdate' => $activitystartdate,
+                    'enddate' => $activityenddate,
+                    'completion_date' => $completiondate
+                ]
+            ]
+        );
+
+        $messagetext = $messageHtml = $body;
+        email_to_user($user, $email_user, $subject, $messagetext, $messageHtml, "", "", false);
+    }
+
+    return true;
+}
+
+
+    /**
+     * User enrolled notification.
+     * Sends notification immediately when event fires, no frequency/lastsent check.
+     */
+    public static function user_enrolled_notification(\core\event\user_enrolment_created $event) {
+        global $DB;
         $eventdata = $event->get_data();
         $currentuserid = $eventdata['relateduserid'];
         $currentcourseid = $eventdata['courseid'];
-        $getsetting = $DB->get_record('custom_notification', array('id' => 1));
-        if ($getsetting->course_module_completion_noti == 1) {
-            $data = explode(",",$getsetting->courseid);
-            foreach ($data as $value) {
-    
-               if ($currentcourseid == $value) {
-                $coursedata = $DB->get_record('course', array('id' => $currentcourseid));
-               $user = $DB->get_record("user", ["id" => $currentuserid]);
-    
-               $email_user = $DB->get_record("user", ["id" => 2]);
-    
-               $subject = "Course Module Completion Notification";
 
-               $body = self::replace_tags($getsetting->course_module_completion_tem, ['user' => (array) $user,'course' => (array) $coursedata]);
-               $messagetext = $messageHtml = $body; 
-              // $messagetext = $messageHtml = $getsetting->course_module_completion_tem; 
-    
-               email_to_user($user, $email_user, $subject, $messagetext, $messageHtml, "", "", false);
-               }
-    
-                   }
-                              
+        $notifications = $DB->get_records('custom_notification');
+        foreach ($notifications as $setting) {
+            if ($setting->user_enrolled_noti != 1) {
+                continue;
+            }
+            if ($currentcourseid != $setting->courseid) {
+                continue;
+            }
+            $coursedata = $DB->get_record('course', ['id' => $currentcourseid]);
+            $user = $DB->get_record("user", ["id" => $currentuserid]);
+            $email_user = $DB->get_record("user", ["id" => 2]);
+            $subject = "User Enrolled Notification";
+            $body = self::replace_tags($setting->user_enrolled_tem, ['user' => (array) $user, 'course' => (array) $coursedata]);
+            $messagetext = $messageHtml = $body;
+            email_to_user($user, $email_user, $subject, $messagetext, $messageHtml, "", "", false);
         }
-
         return true;
     }
 
-    public static function user_enrolled_notification(\core\event\user_enrolment_created $event) {
-        global $DB,$CFG,$PAGE,$USER;
-        $eventdata = $event->get_data();
-        //$currentuserid = $eventdata['userid'];
-        $currentuserid = $eventdata['relateduserid'];
-        $currentcourseid = $eventdata['courseid'];
-        $getsetting = $DB->get_record('custom_notification', array('id' => 1));
-        if ($getsetting->user_enrolled_noti == 1) {
-
-        $data = explode(",",$getsetting->courseid);
-        foreach ($data as $value) {
-
-           if ($currentcourseid == $value) {
-           $coursedata = $DB->get_record('course', array('id' => $currentcourseid));
-           $user = $DB->get_record("user", ["id" => $currentuserid]);
-
-           $email_user = $DB->get_record("user", ["id" => 2]);
-
-           $subject = "User Enrolled Notification";
-           $enrolid = $DB->get_record('enrol', array('courseid' => $currentcourseid,'enrol' => 'manual'));
-           $get_enroldata = $DB->get_record('user_enrolments', array('enrolid' => $enrolid->id,'userid' => $currentuserid));
-        //    $getsql = "SELECT ue.* FROM {enrol} e INNER JOIN {user_enrolments} ue ON e.id = ue.enrolid  WHERE e.courseid = $currentcourseid";
-        //    $get_enroldata = $DB->get_records_sql($getsql);
-           $body = self::replace_tags($getsetting->user_enrolled_tem, ['user' => (array) $user,'course' => (array) $coursedata]);
-           $messagetext = $messageHtml = $body; 
-
-           email_to_user($user, $email_user, $subject, $messagetext, $messageHtml, "", "", false);
-           }
-
-               }
-                          
-        }   
-       return true;
-    }
-
+    /**
+     * User unenrolled notification.
+     * Sends notification immediately when event fires, no frequency/lastsent check.
+     */
     public static function user_unenrolled_notification(\core\event\user_enrolment_deleted $event) {
-        global $DB,$CFG,$PAGE,$USER;
+        global $DB;
         $eventdata = $event->get_data();
         $userenrolment = $eventdata['other']['userenrolment'];
-        $getsetting = $DB->get_record('custom_notification', array('id' => 1));
-        if ($getsetting->user_unenrolled_noti == 1) {
-        $data = explode(",",$getsetting->courseid);
-        foreach ($data as $value) {
 
-            if ($userenrolment['courseid'] == $value) {
-
-            $coursedata = $DB->get_record('course', array('id' => $userenrolment['courseid']));
-            
+        $notifications = $DB->get_records('custom_notification');
+        foreach ($notifications as $setting) {
+            if ($setting->user_unenrolled_noti != 1) {
+                continue;
+            }
+            if ($userenrolment['courseid'] != $setting->courseid) {
+                continue;
+            }
+            $coursedata = $DB->get_record('course', ['id' => $userenrolment['courseid']]);
             $user = $DB->get_record("user", ["id" => $userenrolment['userid']]);
-
             $email_user = $DB->get_record("user", ["id" => 2]);
-
             $subject = "User Unenrolled Notification";
-
-          // $senddata = str_replace("{user_fullname}","Peter",$getsetting->user_unenrolled_tem);
-
-           $body = self::replace_tags($getsetting->user_unenrolled_tem, ['user' => (array) $user,'course' => (array) $coursedata]);
-
-            $messagetext = $messageHtml = $body; 
-
+            $body = self::replace_tags($setting->user_unenrolled_tem, ['user' => (array) $user, 'course' => (array) $coursedata]);
+            $messagetext = $messageHtml = $body;
             email_to_user($user, $email_user, $subject, $messagetext, $messageHtml, "", "", false);
-            }
-
-                }
-
-            }
+        }
         return true;
     }
 
-    
-    
-    public function replace_tags($string, $settings = []) {
-        global $DB;
-        if (!empty($settings)) {
-            /* we get all the tags string */
-            $data_tags = self::get_string_between($string, '{', '}');
-            foreach ($data_tags as $tag) {
-                $pos = strpos($tag, '_');
-                $model = '';
-                $property = '';
-                if ($pos !== false) {
-                    $property = strip_tags(substr($tag, $pos + 1, strlen($tag)));
-                    $model = strip_tags(substr($tag, 0, $pos));
-                    if ($model == 'user' && $property == 'fullname') {
-                        $settings[$model][$property] = $settings[$model]['firstname'] . ' ' . $settings[$model]['lastname'];
-                    } elseif ($model == 'course' && $property == 'name') {
-                        $settings[$model][$property] = $settings[$model]['fullname'];
-                    } elseif ($model == 'userenroled' && $property == 'startdate') {
-                        $settings[$model][$property] =  date("m-d-Y", $settings[$model]['timestart']);
-                    }elseif ($model == 'userenroled' && $property == 'enddate') {
-                        $settings[$model][$property] =  date("m-d-Y", $settings[$model]['timeend']);
-                    }
-                }
-                if (!empty($model) && !empty($property) && array_key_exists($model, $settings)) {
-                    $string = str_replace('{' . $tag . '}', $settings[$model][$property], $string);
+    // --- Helper functions below ---
+
+   public function replace_tags($string, $settings = []) {
+    if (!empty($settings)) {
+        $data_tags = self::get_string_between($string, '{', '}');
+
+        foreach ($data_tags as $tag) {
+            $pos = strpos($tag, '_');
+            $model = '';
+            $property = '';
+
+            if ($pos !== false) {
+                $property = strip_tags(substr($tag, $pos + 1));
+                $model = strip_tags(substr($tag, 0, $pos));
+
+                // User fullname.
+                if ($model == 'user' && $property == 'fullname') {
+                    $settings[$model][$property] = $settings[$model]['firstname'] . ' ' . $settings[$model]['lastname'];
+
+                // Course name.
+                } elseif ($model == 'course' && $property == 'name') {
+                    $settings[$model][$property] = $settings[$model]['fullname'];
+
+                // Any property name containing 'date' or 'time' is treated as a timestamp.
+                } elseif (isset($settings[$model][$property]) && is_numeric($settings[$model][$property]) &&
+                          (stripos($property, 'date') !== false || stripos($property, 'time') !== false)) {
+                    $settings[$model][$property] = date("m-d-Y", $settings[$model][$property]);
                 }
             }
+
+            if (!empty($model) && !empty($property) && array_key_exists($model, $settings)) {
+                $string = str_replace('{' . $tag . '}', $settings[$model][$property], $string);
+            }
         }
-    
-        return $string;
     }
-    
+    return $string;
+}
+
     public function get_string_between($string, $start, $end) {
         $string = ' ' . $string;
         $ini = strpos($string, $start);
-    
         $array_tags = [];
         if ($ini == 0)
             return $array_tags;
-    
         $exist_data = $ini;
-        while ($exist_data != '') {
+        while ($exist_data !== false) {
             $ini += strlen($start);
             $len = strpos($string, $end, $ini) - $ini;
             $str_tmp = substr($string, $ini, $len);
@@ -222,8 +239,6 @@ trait course_observer {
             $string = str_replace($start . $str_tmp . $end, '', $string);
             $exist_data = strpos($string, $start);
         }
-    
         return $array_tags;
     }
-
 }

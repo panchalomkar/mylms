@@ -14,22 +14,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+* @package local_batch
+* @category local
+* @copyright  ELS <admin@elearningstack.com>
+* @author eLearningstack
+*/
 
 class Insert_formdata{
 
   public function updatedatafunc($paramdatat) {
     global $DB,$CFG,$PAGE,$USER;
-    $getdata = $DB->get_records_sql("SELECT * FROM {custom_notification}");
+
+    $getdata = $DB->get_record_sql("SELECT * FROM {custom_notification} WHERE courseid = $paramdatat->courseid");
 
     $currentdevicedata = new \stdClass();
-    $currentdevicedata->id = 1;
-    $currentdevicedata->courseid = implode(",", $paramdatat->courseid);
+    $currentdevicedata->id = $getdata->id;
+    $currentdevicedata->courseid = $paramdatat->courseid;
     $currentdevicedata->course_completion_noti = $paramdatat->course_completion_noti;
     $currentdevicedata->course_completion_tem = $paramdatat->course_completion_tem['text'];
     $currentdevicedata->course_module_completion_noti = $paramdatat->course_module_completion_noti;
     $currentdevicedata->course_module_completion_tem = $paramdatat->course_module_completion_tem['text'];
     $currentdevicedata->course_in_progress_noti = $paramdatat->course_in_progress_noti;
-    $currentdevicedata->course_in_progress_['text'] = $paramdatat->course_in_progress_tem['text'];
+    $currentdevicedata->course_in_progress_tem = $paramdatat->course_in_progress_tem['text'];
 
     $currentdevicedata->course_expiration_noti = $paramdatat->course_expiration_noti;
     $currentdevicedata->course_expiration_when = $paramdatat->course_expiration_when;
@@ -45,13 +52,18 @@ class Insert_formdata{
     $currentdevicedata->user_enrolled_tem = $paramdatat->user_enrolled_tem['text'];
     $currentdevicedata->user_unenrolled_noti = $paramdatat->user_unenrolled_noti;
     $currentdevicedata->user_unenrolled_tem = $paramdatat->user_unenrolled_tem['text'];
+    $currentdevicedata->course_in_progress_frequency = $paramdatat->course_in_progress_frequency;
+    $currentdevicedata->course_expiration_frequency = $paramdatat->course_expiration_frequency;
+    $currentdevicedata->course_not_completed_frequency = $paramdatat->course_not_completed_frequency;
+    $currentdevicedata->not_loggedin_frequency = $paramdatat->not_loggedin_frequency;
     $nowDate = time();
     $currentdevicedata->timecreated = $nowDate;
-
-    if (empty($getdata)) {
-        $DB->insert_record('custom_notification', $currentdevicedata, true);
+    // print_r($currentdevicedata);
+    // exit();
+    if ($getdata->id) { 
+        $DB->update_record('custom_notification', $currentdevicedata, true);
     }else{
-      $DB->update_record('custom_notification', $currentdevicedata, true);
+        $DB->insert_record('custom_notification', $currentdevicedata, true);
     }
      return true;
 }

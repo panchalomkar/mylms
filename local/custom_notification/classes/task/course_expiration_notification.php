@@ -14,6 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+* @package local_custom_notification
+* @category local
+* @copyright  GreenLMS <admin@greenlms.com>
+* @author GreenLMS
+*/
 
 namespace local_custom_notification\task;
 use core\task\scheduled_task;

@@ -17,18 +17,26 @@
 
         <FIELD NAME="course_in_progress_noti" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="course_in_progress_tem" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="course_in_progress_frequency" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="course_in_progress_last_sent" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
 
         <FIELD NAME="course_expiration_noti" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="course_expiration_when" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="course_expiration_tem" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="course_expiration_frequency" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="course_expiration_last_sent" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
 
         <FIELD NAME="course_not_completed_noti" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="course_not_completed_when" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="course_not_completed_tem" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="course_not_completed_frequency" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="course_not_completed_last_sent" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
 
         <FIELD NAME="not_loggedin_noti" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="not_loggedin_when" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="not_loggedin_tem" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="not_loggedin_frequency" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="not_loggedin_last_sent" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
 
         <FIELD NAME="user_enrolled_noti" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="user_enrolled_tem" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
@@ -44,6 +52,21 @@
       </KEYS>
       <INDEXES>
         <INDEX NAME="courseid" UNIQUE="false" FIELDS="courseid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="custom_notification_sent" COMMENT="Tracks last sent time for each notification/user/type">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="notificationid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="notificationtype" TYPE="char" LENGTH="50" NOTNULL="true"/>
+        <FIELD NAME="lastsent" TYPE="int" LENGTH="10" NOTNULL="true"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="notificationid_userid_type" UNIQUE="true" FIELDS="notificationid,userid,notificationtype"/>
       </INDEXES>
     </TABLE>
   </TABLES>

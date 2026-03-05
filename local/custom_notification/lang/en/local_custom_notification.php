@@ -14,10 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+* @package local_custom_notification
+* @category local
+* @copyright  GreenLMS <admin@greenlms.com>
+* @author GreenLMS
+*/
 
 $string['pluginname'] = 'Custom Notification';
 $string['courses'] = 'Select Course';
-$string['allcourses'] = 'All course';
+$string['coursestitle'] = 'Course';
+$string['allcourses'] = 'Select a Course';
 $string['headername'] = 'Notification';
 $string['course_completion_notification'] = 'Course Completion Notification';
 $string['course_in_progress_notification'] = 'Course in Progress Notification';
@@ -35,7 +42,7 @@ $string['beforelogintime'] = 'Days before Not login';
 $string['emailtemplate'] = 'Email Template';
 $string['submitbutton'] = 'Save Changes';
 $string['savechangesucess'] = 'Changes saved';
-$string['course_completion_tags_desciption'] = "Tags to be used: <strong>{user_fullname}, {course_name}, {completion_date}, {course_startdate}, {course_enddate}</strong>";
+$string['course_completion_tags_desciption'] = "Tags to be used: <strong>{user_fullname}, {course_name}, {course_completion_date}, {course_startdate}, {course_enddate}</strong>";
 $string['course_module_completion_tags_desciption'] = "Tags to be used: <strong>{user_fullname}, {course_name}, {activity_name}, {activity_startdate}, {activity_enddate}, {activitycompletion_date}</strong>";
 $string['course_in_progress_tags_desciption'] = "Tags to be used: <strong>{user_fullname}, {course_name}, {course_startdate}, {course_enddate}</strong>";
 $string['course_expiration_tags_desciption'] = "Tags to be used: <strong>{user_fullname}, {course_name}, {course_startdate}, {course_enddate}</strong>";

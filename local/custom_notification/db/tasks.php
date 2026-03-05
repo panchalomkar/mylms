@@ -14,43 +14,50 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+* @package local_custom_notification
+* @category local
+* @copyright  GreenLMS <admin@greenlms.com>
+* @author GreenLMS
+*/
 
 defined('MOODLE_INTERNAL') || die();
 $tasks = [
     [
         'classname' => 'local_custom_notification\task\course_not_completed_notification',
-        'blocking' => 0,
-        'minute' => '30',
-        'hour' => '0',
-        'day' => '1',
-        'month' => '0',
-        'dayofweek' => '0',
+     'blocking' => 0,
+        'minute' => '*',       // every minute
+        'hour' => '*',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*'
     ],
     [
         'classname' => 'local_custom_notification\task\course_in_progress_notification',
         'blocking' => 0,
-        'minute' => '30',
-        'hour' => '0',
-        'day' => '1',
-        'month' => '0',
-        'dayofweek' => '0',
+        'minute' => '*',       // every minute
+        'hour' => '*',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*'
     ],
     [
         'classname' => 'local_custom_notification\task\course_expiration_notification',
-        'blocking' => 0,
-        'minute' => '30',
-        'hour' => '0',
-        'day' => '1',
-        'month' => '0',
-        'dayofweek' => '0',
+       'blocking' => 0,
+        'minute' => '*',       // every minute
+        'hour' => '*',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*'
+
     ],
     [
         'classname' => 'local_custom_notification\task\not_loggedin_notification',
         'blocking' => 0,
-        'minute' => '30',
-        'hour' => '0',
-        'day' => '1',
-        'month' => '0',
-        'dayofweek' => '0',
+        'minute' => '*',       // every minute
+        'hour' => '*',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*'
     ],
 ];

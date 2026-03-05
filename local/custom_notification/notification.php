@@ -14,6 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+* @package local_custom_notification
+* @category local
+* @copyright  GreenLMS <admin@greenlms.com>
+* @author GreenLMS
+*/
 
 require_once('../../config.php');
 require_login();
@@ -30,15 +36,21 @@ $PAGE->set_title(get_string('headername', 'local_custom_notification'));
 $PAGE->navbar->add(get_string('pluginname', 'local_custom_notification'));
 // $PAGE->requires->js('/local/custom_notification/js/selectvalues.js');
 echo $OUTPUT->header();
-
+$roles = $DB->get_record_sql("SELECT * FROM mdl_role_assignments WHERE userid = $USER->id");
+$getmanager = $DB->get_record('company_users', array('userid' => $USER->id));
+if(is_siteadmin() || $roles->roleid == 3 || $getmanager->managertype == 1){
     $mform = new notification_form();
-if ($mform->is_cancelled()) {
-  
-} else if ($fromform = $mform->get_data()) {
-        $formdatainsert = new \Insert_formdata();
-        $formdatainsert->updatedatafunc($fromform);
-        \core\notification::add(get_string('savechangesucess', 'local_custom_notification'), \core\output\notification::NOTIFY_INFO);
+    if ($mform->is_cancelled()) {
+      
+    } else if ($fromform = $mform->get_data()) {
+            $formdatainsert = new \Insert_formdata();
+            $formdatainsert->updatedatafunc($fromform);
+            \core\notification::add(get_string('savechangesucess', 'local_custom_notification'), \core\output\notification::NOTIFY_INFO);
+    }
+    $mform->display();
+}else{
+    echo "Not Access";
 }
-$mform->display();
+
 echo $OUTPUT->footer();
 ?>
