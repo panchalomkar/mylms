@@ -269,7 +269,7 @@ if ($frm and isset($frm->username)) {                             // Login WITH 
 
         // Check if the company in the session is still correct.
    // Always use main tenant by default (company ID = 1)
-$maintenantid = 0;
+$maintenantid = 1;
 
 if ($DB->get_manager()->table_exists('company') &&
     !has_capability('block/iomad_company_admin:company_view_all', context_system::instance())) {
