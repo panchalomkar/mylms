@@ -327,8 +327,7 @@ class EnrollByProfileUser {
      * @desc sent null to AddUser() 
      */ 
     //DEPRECATED THIS FUNCTION  
-    public function AddUser($datauser, $uid, $blk = null)
-{ 
+    public function AddUser($datauser,$uid,$blk=null){ 
         /** 
         * 1 = 'CourseAssignment'  
         * 2 = 'TenantAssignment'  

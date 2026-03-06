@@ -7,6 +7,7 @@ require_once($CFG->dirroot .'/local/enroll_by_profile/lib.php');
 global $PAGE,$USER,$OUTPUT,$CFG;
 
 require_login();
+$context = context_system::instance();
 $PAGE->requires->jquery();
 $PAGE->requires->jquery_plugin('ui');
 $PAGE->requires->jquery_plugin('ui-css');
@@ -38,7 +39,7 @@ $reporturl = 'Home';
 $PAGE->navbar->add($reporturl, new moodle_url('/my'));
 $PAGE->navbar->add(get_string('page_title','local_enroll_by_profile'));
 
-$context = context_system::instance();
+
 
 require_capability('local/enroll_by_profile:view', $context);
 

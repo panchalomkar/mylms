@@ -502,7 +502,10 @@ class EnrollByProfileRule {
         $rulescount = $rulescount->count; 
         if($rules && $ruleid){  
           $fieldtype = $DB->get_record('user_info_field',array('shortname'=>$rules[$ruleid]->profile_field)); 
-          if(!$fieldtype) $fieldtype->datatype = 'text';  
+                   $fielddatatype = 'text';
+if ($fieldtype) {
+    $fielddatatype = $fieldtype->datatype;
+} 
           return array('msg' => 'ruleexist','table' => $rules ,'html'=> $inputoutput ,'fieldtype'=>$fieldtype->datatype ); 
         }else{  
                 return $rules;  
@@ -517,7 +520,10 @@ class EnrollByProfileRule {
         $rules = $DB->get_records('local_enroll_by_profile' , $data, $sort='', $fields='*', $limit, $perpage);  
         if($rules && $ruleid){  
           $fieldtype = $DB->get_record('user_info_field',array('shortname'=>$rules[$ruleid]->profile_field)); 
-          if(!$fieldtype) $fieldtype->datatype = 'text';  
+          $fielddatatype = 'text';
+if ($fieldtype) {
+    $fielddatatype = $fieldtype->datatype;
+}
           return array('msg' => 'ruleexist','table' => $rules ,'html'=> $inputoutput ,'fieldtype'=>$fieldtype->datatype ); 
         }else{  
           return $rules;  

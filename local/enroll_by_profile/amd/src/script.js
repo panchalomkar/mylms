@@ -1804,39 +1804,48 @@
            return conditions;
           }
 
-          function condition_create_text(condition){
-            /*
-            * @author VaibhavG
-            * @since 11th Feb 2021
-            * @desc 509 Rules Engine issues fixes.
-            */
-            if(condition.rule === "ischecked")
-              condition.value[0] = "";
-            if(condition.rule === "isnotchecked")
-              condition.value[0] = "";
+function condition_create_text(condition){
+  // Get the actual current value from the form element instead of stored value
+  var currentValue = condition.value;
+  
+  // For dropdown selections, get the actual selected text
+  if(condition.rule === "isselected" || condition.rule === "hasanyselected" || condition.rule === "hasselected"){
+    var selectElement = $("#id_content" + condition.id);
+    if(selectElement.length > 0 && selectElement.is('select')){
+      var selectedOption = selectElement.find('option:selected');
+      if(selectedOption.length > 0){
+        currentValue = [selectedOption.text()]; // Use the display text, not the value
+      }
+    }
+  }
+  
+  if(condition.rule === "ischecked")
+    currentValue[0] = "";
+  if(condition.rule === "isnotchecked")
+    currentValue[0] = "";
 
-            text = "<strong>"+condition.boolop+"</strong>";
-            text += "<em> "+condition.field+"</em><strong> ";
-            if(condition.negated == true || condition.negated == "true"){
+  var text = "<strong>"+condition.boolop+"</strong>";
+  text += "<em> "+condition.field+"</em><strong> ";
+  
+  if(condition.negated == true || condition.negated == "true"){
+    text += condition.negatedstatement+"</strong> <em>";
+  }else{
+    text += condition.statement+"</strong> <em>";
+  }
 
-              text += condition.negatedstatement+"</strong> <em>";
-            }else{
-              text += condition.statement+"</strong> <em>";
-
-            }
-
-            if(condition.rule === "isempty"){
-              text += "</em>";
-            }else{
-              if(condition.value.length > 1){
-                text += condition.value[0]+" and "+condition.value[1]+"</em>";
-              }else {
-                text += condition.value[0]+"</em>";
-              }
-            }
-            return text;
-          }
-
+  if(condition.rule === "isempty"){
+    text += "</em>";
+  }else{
+    if(currentValue && currentValue.length > 1){
+      text += currentValue[0]+" and "+currentValue[1]+"</em>";
+    }else if(currentValue && currentValue.length > 0) {
+      text += currentValue[0]+"</em>";
+    }else{
+      text += "</em>";
+    }
+  }
+  return text;
+}
           /*   
           * @desc function to add new conditions to list in rules form
           */

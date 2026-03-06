@@ -39,19 +39,33 @@ class enrollbyprofile implements renderable, templatable {
      * @param \renderer_base $output
      * @return stdClass
      */
-    public function export_for_template(renderer_base $output) {
-        global $CFG,$DB,$USER;
-		
-        $rules = get_rule_renderable(null, null, null);
-        $templatedata['rules'] = $rules->rules;
-        $templatedata['is_tag'] = $rules->is_tags;
-        $templatedata['rules_form'] = RowConditionContent(1);
-        $templatedata['notsearch'] = 1;
-        $templatedata['is_index'] = 1;
-        if($rules->totalpages > 1){
-            $templatedata['pagination'] = ['pages'=>$rules->pages,'previous'=>$rules->previous,'next'=>$rules->next];
+ public function export_for_template(renderer_base $output) {
+    global $CFG,$DB,$USER;
+
+    $rules = get_rule_renderable(null, null, null);
+
+    $templatedata = [];
+
+    if (is_object($rules)) {
+        $templatedata['rules'] = $rules->rules ?? [];
+        $templatedata['is_tag'] = $rules->is_tags ?? 0;
+
+        if (!empty($rules->totalpages) && $rules->totalpages > 1) {
+            $templatedata['pagination'] = [
+                'pages' => $rules->pages ?? [],
+                'previous' => $rules->previous ?? null,
+                'next' => $rules->next ?? null
+            ];
         }
-        
-        return $templatedata;
+    } else {
+        $templatedata['rules'] = [];
+        $templatedata['is_tag'] = 0;
     }
+
+    $templatedata['rules_form'] = RowConditionContent(1);
+    $templatedata['notsearch'] = 1;
+    $templatedata['is_index'] = 1;
+
+    return $templatedata;
+}
 }

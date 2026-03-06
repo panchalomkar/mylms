@@ -1,3 +1,16 @@
+#enroll_by_profile_modal .modal-header{padding: 10px;
+    background: #003152;
+h4{color: #fff;}
+}
+
+#enroll_by_profile_modal .modal-header [data-dismiss="modal"]{
+color: #fff;
+font-size: 20px;
+}
+.bootbox-confirm  .bootbox-close-button {display:none;}
+.bootbox-confirm .modal-content {box-shadow: 2px 4px 20px 0px #003152;}
+#enroll_by_profile_modal .modal-header [data-dismiss="modal"]:hover{color: #fff !important;
+font-size: 20px;}
 
 #id_elements_content {
   padding: 15px;
@@ -282,10 +295,12 @@
     width: 100% !important;
 }
 #page-local-enroll_by_profile-index input#search_cat {
-    position: absolute;
+    position: relative !important;
     margin-left: 103px;
     max-width: 179px !important;
     z-index: 9;
+    margin-right: 0px !important;
+    top: 35px !important;
 }
 
 #page-local-enroll_by_profile-index div.modal-body div#conditional_actions1{
@@ -432,7 +447,12 @@ div#rules_table div.alert-mtlms{
   margin: 0;
 }
 #page-local-enroll_by_profile-index #enroll_by_profile_modal .add_condition_button{
+  width: 50%;
   margin: 5px 0;
+}
+#page-local-enroll_by_profile-index #enroll_by_profile_modal .modal-content {padding: 0px !important;}
+#enroll_by_profile_modal .modal-header {
+    border-radius: 7px !important;
 }
 #page-local-enroll_by_profile-index #enroll_by_profile_modal .add_condition_button .btn-add-cond{
   margin-left: 81px; 
