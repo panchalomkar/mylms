@@ -290,7 +290,7 @@ font-size: 20px;}
 #page-local-enroll_by_profile-index  a.delete_rule_all span,a.disable_rule_all span{
       color : #000 !important;
      }
-
+#page-local-enroll_by_profile-index #page{display:  block !important;}
  #page-local-enroll_by_profile-index label.form-checkbox span.mar_left_display {
     width: 100% !important;
 }
