@@ -188,7 +188,7 @@ $completiondate = time();
 
     // --- Helper functions below ---
 
-   public function replace_tags($string, $settings = []) {
+   public static function replace_tags($string, $settings = []) {
     if (!empty($settings)) {
         $data_tags = self::get_string_between($string, '{', '}');
 
@@ -224,7 +224,7 @@ $completiondate = time();
     return $string;
 }
 
-    public function get_string_between($string, $start, $end) {
+    public static function get_string_between($string, $start, $end) {
         $string = ' ' . $string;
         $ini = strpos($string, $start);
         $array_tags = [];
