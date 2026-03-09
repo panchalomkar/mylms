@@ -340,21 +340,16 @@ class custom_reports_edit implements renderable, templatable {
                 'selected' => in_array('completionstatus', $selectedfield),
                'resultfunc' => function($value) {
 
-    $value = (float)$value;
+    $value = (float) $value;
 
     if ($value == 0) {
         return '<span class="badge bg-danger">Not Started</span>';
-    }
-
-    if ($value > 0 && $value <= 50) {
-        return '<span class="badge bg-danger">In Progress</span>';
-    }
-
-    if ($value > 50 && $value <= 75) {
+    } elseif ($value == 100) {
+        return '<span class="badge" style="background:#16a34a;color:#fff;">Completed</span>';
+    } else {
         return '<span class="badge" style="background:#ec9707;color:#fff;">In Progress</span>';
     }
 
-    return '<span class="badge" style="background:#16a34a;color:#fff;">Completed</span>';
 }
             ),
             array(
