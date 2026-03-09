@@ -58,10 +58,9 @@ $completiondate = time();
     $setting->course_completion_tem,
     [
         'user' => (array) $user,
-        'course' => (array) $coursedata,
         'course' => array_merge((array)$coursedata, [
-            'completion_date' => $completiondate
-        ])
+    'completion_date' => $completiondate
+])
     ]
 );
             $messagetext = $messageHtml = $body;
@@ -87,8 +86,8 @@ $completiondate = time();
     $activityname = $DB->get_field($cm->modname, 'name', ['id' => $cm->instance]);
 
     // Dates
-    $activitystartdate = $cm->availability ? '' : ''; // Put your real start date logic here
-    $activityenddate = $cm->completionexpected ? $cm->completionexpected : '';
+  $activitystartdate = !empty($cm->added) ? $cm->added : 0;
+$activityenddate   = !empty($cm->completionexpected) ? $cm->completionexpected : 0;
     $completiondate = time(); // Or from completion API if needed
 
     $notifications = $DB->get_records('custom_notification');
@@ -107,19 +106,19 @@ $completiondate = time();
         $subject = "Course Module Completion Notification";
 
         // Pass activity data too
-        $body = self::replace_tags(
-            $setting->course_module_completion_tem,
-            [
-                'user' => (array) $user,
-                'course' => (array) $coursedata,
-                'activity' => [
-                    'name' => $activityname,
-                    'startdate' => $activitystartdate,
-                    'enddate' => $activityenddate,
-                    'completion_date' => $completiondate
-                ]
-            ]
-        );
+       $body = self::replace_tags(
+    $setting->course_module_completion_tem,
+    [
+        'user' => (array)$user,
+        'course' => (array)$coursedata,
+       'activity' => [
+    'name' => $activityname,
+    'startdate' => $activitystartdate,
+    'enddate' => $activityenddate,
+    'completion_date' => $completiondate
+]
+    ]
+);
 
         $messagetext = $messageHtml = $body;
         email_to_user($user, $email_user, $subject, $messagetext, $messageHtml, "", "", false);
@@ -151,7 +150,21 @@ $completiondate = time();
             $user = $DB->get_record("user", ["id" => $currentuserid]);
             $email_user = $DB->get_record("user", ["id" => 2]);
             $subject = "User Enrolled Notification";
-            $body = self::replace_tags($setting->user_enrolled_tem, ['user' => (array) $user, 'course' => (array) $coursedata]);
+            $enrol = $DB->get_record_sql("
+    SELECT ue.*
+    FROM {user_enrolments} ue
+    JOIN {enrol} e ON e.id = ue.enrolid
+    WHERE ue.userid = ? AND e.courseid = ?
+", [$currentuserid, $currentcourseid]);
+
+$body = self::replace_tags(
+    $setting->user_enrolled_tem,
+    [
+        'user' => (array)$user,
+        'course' => (array)$coursedata,
+        'userenroled' => (array)$enrol
+    ]
+);
             $messagetext = $messageHtml = $body;
             email_to_user($user, $email_user, $subject, $messagetext, $messageHtml, "", "", false);
         }
@@ -188,39 +201,96 @@ $completiondate = time();
 
     // --- Helper functions below ---
 
-   public static function replace_tags($string, $settings = []) {
+public static function replace_tags($string, $settings = []) {
+
     if (!empty($settings)) {
+
         $data_tags = self::get_string_between($string, '{', '}');
 
         foreach ($data_tags as $tag) {
+
             $pos = strpos($tag, '_');
             $model = '';
             $property = '';
 
             if ($pos !== false) {
+
                 $property = strip_tags(substr($tag, $pos + 1));
                 $model = strip_tags(substr($tag, 0, $pos));
 
-                // User fullname.
+                /* USER FULLNAME */
                 if ($model == 'user' && $property == 'fullname') {
-                    $settings[$model][$property] = $settings[$model]['firstname'] . ' ' . $settings[$model]['lastname'];
+                    $settings[$model][$property] =
+                        $settings[$model]['firstname'].' '.$settings[$model]['lastname'];
+                }
 
-                // Course name.
-                } elseif ($model == 'course' && $property == 'name') {
+                /* COURSE NAME */
+                elseif ($model == 'course' && $property == 'name') {
                     $settings[$model][$property] = $settings[$model]['fullname'];
+                }
 
-                // Any property name containing 'date' or 'time' is treated as a timestamp.
-                } elseif (isset($settings[$model][$property]) && is_numeric($settings[$model][$property]) &&
-                          (stripos($property, 'date') !== false || stripos($property, 'time') !== false)) {
-                    $settings[$model][$property] = date("m-d-Y", $settings[$model][$property]);
+                /* COURSE COMPLETION DATE */
+                elseif ($model == 'course' && $property == 'completion_date') {
+                    if (!empty($settings['course']['completion_date'])) {
+                        $settings['course']['completion_date'] =
+                            date("m-d-Y", $settings['course']['completion_date']);
+                    }
+                }
+
+                /* ACTIVITY COMPLETION DATE */
+                elseif ($model == 'activitycompletion' && $property == 'date') {
+                    if (!empty($settings['activity']['completion_date'])) {
+                        $settings['activitycompletion']['date'] =
+                            date("m-d-Y", $settings['activity']['completion_date']);
+                    }
+                }
+
+               /* ENROL START DATE */
+/* ENROL START DATE */
+elseif ($model == 'enrol' && $property == 'startdate') {
+
+    if (!empty($settings['userenroled']['timestart'])) {
+        $settings['enrol']['startdate'] =
+            date("m-d-Y", $settings['userenroled']['timestart']);
+    } else {
+        $settings['enrol']['startdate'] = '';
+    }
+}
+
+/* ENROL END DATE */
+elseif ($model == 'enrol' && $property == 'enddate') {
+
+    if (!empty($settings['userenroled']['timeend'])) {
+        $settings['enrol']['enddate'] =
+            date("m-d-Y", $settings['userenroled']['timeend']);
+    } else {
+        $settings['enrol']['enddate'] = 'No expiry';
+    }
+}
+
+                /* AUTO DATE FORMAT */
+                elseif (isset($settings[$model][$property]) && is_numeric($settings[$model][$property])) {
+
+                    if ($settings[$model][$property] > 0 &&
+                        (stripos($property,'date') !== false || stripos($property,'time') !== false)) {
+
+                        $settings[$model][$property] =
+                            date("m-d-Y", $settings[$model][$property]);
+
+                    } elseif ($settings[$model][$property] == 0) {
+
+                        $settings[$model][$property] = '';
+
+                    }
                 }
             }
 
-            if (!empty($model) && !empty($property) && array_key_exists($model, $settings)) {
-                $string = str_replace('{' . $tag . '}', $settings[$model][$property], $string);
+            if (!empty($model) && !empty($property) && isset($settings[$model][$property])) {
+                $string = str_replace('{'.$tag.'}', $settings[$model][$property], $string);
             }
         }
     }
+
     return $string;
 }
 
