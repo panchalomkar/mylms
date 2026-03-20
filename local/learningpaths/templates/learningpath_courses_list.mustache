@@ -1,0 +1,77 @@
+{{#learningpath_course_list}}
+  {{#course}}
+    <ul class="header lpd-courses">
+      <li class="header course-description ui-sortable-handle row">
+        <div class="col-8 col-sm-8 col-md-4 course_name">
+          <span>{{#str}}course_name, local_learningpaths{{/str}}</span>
+        </div>
+          <div class="col-sm-3 credits">
+            <span>{{#str}}credits, local_learningpaths{{/str}}</span>
+          </div>
+            <div class="col-4 col-sm-4 col-md-3 required">
+              <span>{{#str}}required, local_learningpaths{{/str}}</span>
+            </div>
+              <div class="col-sm-2 actions">
+                <span>{{#str}}actions, local_learningpaths{{/str}}</span>
+              </div>
+        </li>
+    </ul>
+    <ul class="card-box list-courses {{showsortable}}" id="list-course">
+      {{#course_list}}
+      <li class="course-description ui-sortable-handle" data-id="{{dataid}}">
+        <div class="col-8 col-sm-8 col-md-4 course_name">
+          {{{icon}}}
+            {{coursename}}
+        </div>
+          <div class="col-sm-3 credits">
+            {{credits}}
+          </div>
+            <div class="col-4 col-sm-4 col-md-3 required">
+              <div class="togglebutton">
+                {{#has_add_course_lp}}
+                <label class="switch">
+                  <input class="course-switch" type="checkbox" data-courseid="{{dataid}}" {{checked}}>
+                    <span class="slider round">
+                    </span>
+                </label>
+                {{/has_add_course_lp}}
+              </div>
+            </div>
+            <div class="col-sm-2 actions">
+            {{{dataaction}}}
+            </div>
+      </li>
+      {{/course_list}}
+          {{#paging}}
+          <div class="mar-btm col-sm-12 mar-no pad-no mar-btm pagination_lp">
+            <ul class="count_select">
+              <li>
+              <form method="GET">
+                <div class="" style="float:left;padding-top: 7px;margin-right: 10px;">
+                  <span>
+                  </span>
+                </div>
+                <div class="" style="float:left;">
+                {{{select}}}
+                </div>
+              </form>
+              </li>
+              <div style="float:right;margin-right: 10px;">
+              </div>
+              <li>
+              {{{pagination}}}
+              </li>
+            </ul>
+          </div>
+          {{/paging}}
+      </ul>
+      {{#course_list}}
+      {{{addpre_popup}}}
+      {{/course_list}}
+  {{/course}}
+  {{^course}}
+    <div class="col-12 col-sm-12" id="loction_no_record_courses">
+      {{#str}}no_records, local_learningpaths{{/str}}
+    </div>
+  {{/course}}
+{{/learningpath_course_list}}

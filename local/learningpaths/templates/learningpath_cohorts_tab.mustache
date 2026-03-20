@@ -1,0 +1,45 @@
+{{#learningpath_cohorts_tab}}
+<div class="content-search">
+  <div class="row searchbox-add">
+    <div class="col-sm-6">
+    </div>
+  </div>
+</div>
+<div class="content-addcohorts">
+  <div class="row select-add">
+    <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
+      <div class="searchbox" role="search" id="searchbox">
+        <div class="mt-search input-group custom-search-form">
+          <span class="input-group-btn search-lp">
+            <button id="btn-search-cohorts" type="button" aria-label="">
+              <i class="men men men-search-phx fa fa-search header-txt i-search"></i>
+            </button>
+          </span>
+          <div class="">
+            <input class="form-control " type="text" placeholder="{{#str}}search_cohorts, local_learningpaths{{/str}}" aria-label="" onkeyup="" value="{{cohort}}" id="search-cohorts" name="search-cohorts" for="search-cohorts">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-12 col-sm-4 col-md-6 col-lg-6 new-cohort">
+    {{#has_add_course_lp}}
+      <span class="category">
+        <a href="#" id="learningpath-remove-cohorts" class="btn btn-primary new-button">
+          <i class="fa fa-trash fa-fw" title="{{#str}}delete_users, local_learningpaths{{/str}}"></i>
+            <span>{{#str}}delete, local_learningpaths{{/str}}</span>
+        </a>
+      </span>
+      {{/has_add_course_lp}}
+      {{#has_add_course_lp_other}}
+      <span class="course">
+        <a href="#" id="add-cohorts-lp" class="btn btn-primary new-button" data-toggle="modal" data-target="#cohorts-popup">
+          <i class="fa fa-plus-circle" title="{{#str}}add_users, local_learningpaths{{/str}}"></i>
+            <span>{{#str}}add_cohorts, local_learningpaths{{/str}}</span>
+        </a>
+      </span>
+      {{/has_add_course_lp_other}}
+    </div>
+  </div>
+</div>
+{{{cohorts_list}}}
+{{/learningpath_cohorts_tab}}

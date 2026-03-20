@@ -1,0 +1,26 @@
+{{#label}}
+  <label class="form-checkbox form-normal form-icon-text form-plms {{labelactive}}">
+    <span>
+    {{{label}}}
+    </span>
+  {{/label}}
+  {{^label}}
+  <label class="form-check-label {{labelactive}}">
+  {{/label}}
+  {{^attr}}
+    <input type="checkbox" class="form-check-input" id="id_{{name}}" name="{{name}}" value="1" {{#checked}}checked="{{checked}}"{{/checked}}>
+      <span class="form-check-sign">
+        <span class="check">
+      </span>
+  {{/attr}}
+  {{#attr}}
+      <input {{{attr}}}>
+  {{/attr}}
+      {{#help}}
+      <span class="helptooltip">
+        <a target="_blank" aria-haspopup="true" href="{{site_url}}//help.php?component='{{help_component}}'&identifier='{{helpidentifier}}'&lang='{{current_language}}'">
+          <img src="{{img_src}}" class="iconhelp" alt = "help">
+        </a>
+      </span>
+      {{/help}}
+</label>

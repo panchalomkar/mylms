@@ -1,0 +1,69 @@
+{{#has_data}}
+  <div class="lpd-lp-content">
+      <div class="lpd-lp-detail-head col-12 col-sm-12 pl-0 pr-0">
+        <div class="lpd-lp-detail-head-column"></div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 pl-0 d-flex">
+            {{#inoverview}}
+              <div class="lpd-lp-detail-head-column course-name line-lp col-8 col-sm-6 col-md-6 col-lg-6 col-xl-2 col-xl-3 col-md-3 arrows">{{#str}}coursename, block_lpd{{/str}} <span class="group"><i class="fa fa-angle-up" aria-hidden="true"></i> <i class="fa fa-angle-down active" aria-hidden="true"></i></span></div>
+            {{/inoverview}}
+            {{^inoverview}}
+              <div class="lpd-lp-detail-head-column course-name col-8 col-sm-6 col-md-6 col-lg-6 col-xl-3 line-lp arrows">{{#str}}coursename, block_lpd{{/str}} <span class="group"><i class="fa fa-angle-up" aria-hidden="true"></i> <i class="fa fa-angle-down active" aria-hidden="true"></i></span></div>
+            {{/inoverview}}
+
+            <div class="lpd-lp-detail-head-column start-date col-xl-2 hidden-lg line-lp arrows">{{#str}}startdate, block_lpd{{/str}} <span class="group"><i class="fa fa-angle-up" aria-hidden="true"></i> <i class="fa fa-angle-down active" aria-hidden="true"></i></span></div>
+            <div class="lpd-lp-detail-head-column end-date col-xl-2 hidden-lg line-lp arrows">{{#str}}enddate, block_lpd{{/str}} <span class="group"><i class="fa fa-angle-up" aria-hidden="true"></i> <i class="fa fa-angle-down active" aria-hidden="true"></i></span></div>
+
+            {{^inoverview}}
+              <div class="lpd-lp-detail-head-column progress-column col-5 col-sm-4 col-md-5 col-lg-5 col-xl-3 line-lp line-lp arrows">{{#str}}progress, block_lpd{{/str}} <span class="group"><i class="fa fa-angle-up" aria-hidden="true"></i> <i class="fa fa-angle-down active" aria-hidden="true"></i></span></div>
+            {{/inoverview}}
+            <div class="lpd-lp-detail-head-column credits hidden-lg  col-xl-1 line-lp">{{#str}}credits, block_lpd{{/str}}</div>
+            <div class="lpd-lp-detail-head-column certificate hidden-xs col-xl-1 line-lp">{{#str}}certificate, block_lpd{{/str}}</div>
+        </div>
+      </div>
+  </div>
+{{/has_data}}
+{{#lpdata}}
+  <div class="lpd-lp-detail-body col-12 col-sm-12 col-md-12 col-lg-12 pl-0 pr-0">
+    <div class="lp-course-row row pl-0 pr-0">
+      <div class="lp-icons">
+        <canvas class="canvas" data-element="{{element}}" id="{{courseid}}" style="width:30;height:30"></canvas>
+      </div>
+      <div class="lp_dashboard col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 pl-0 d-flex">
+        {{^inoverview}}
+          <div class="lp-file course-name col-8 col-sm-6 col-md-6 col-lg-6 col-xl-3">
+            <a href="{{site_url}}/course/view.php?id={{courseid}}">{{coursename}}</a>
+          </div>
+        {{/inoverview}}
+        {{#inoverview}}
+          <div class="lp-file course-name col-sm-10 col-md-4 col-lg-4 col-xl-3">
+            <a href="{{site_url}}/course/view.php?id={{courseid}}">{{coursename}}</a>
+          </div>
+        {{/inoverview}}
+        <div class="lp-file start-date col-xl-2  hidden-lg p-0">
+          {{startdate}}
+        </div>
+        <div class="lp-file end-date col-xl-2 hidden-lg p-0">
+          {{userenddate}}
+        </div>
+        {{^inoverview}}
+          <div class="lp-file progress-column col-5 col-sm-5 col-md-5 col-lg-5 col-xl-3 p-0">
+            <span>{{sprogress}}%</span>
+            <div class="progress">
+                <div style ="width:{{progress}}%" class = "progress-bar"
+                  role = "progressbar" aria-valuenow = "{{progress}}" aria-valuemin = "0" aria-valuemax = "100">
+                </div>
+            </div>
+          </div>
+        {{/inoverview}}
+        <div class="lp-file credits  hidden-lg col-xl-1 p-0"><span>{{coursecredits}}</span></div>
+        <div class="lp-file certificate hidden-xs col-xl-1 p-0">{{{iconcerti}}}</div>
+      </div>
+    </div>
+  </div>
+{{/lpdata}}
+{{{pagination}}}
+{{^lpdata}}
+  <div class="text-bold lpd-lp-detail col-sm-12 col-md-12 col-lg-12 alert alert-mtlms text-left">
+    {{#str}}nocourseslp, block_lpd{{/str}}
+  </div>
+{{/lpdata}}

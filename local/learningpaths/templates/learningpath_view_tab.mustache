@@ -1,0 +1,104 @@
+{{#lp_view_tab}}
+  <div class="overview">
+    <div class="row description">
+      <div class="col-sm-4 img-course">
+        <div class="conten-img-lp">
+          {{#dataimage}}
+            <img src="{{site_url}}//local/learningpaths/pluginfile.php?learningpathid={{dataid}}&t={{dataimg}}" class="img-responsive lp_img_description">
+          {{/dataimage}}
+        </div>
+      </div>
+        <div class="col-sm-8 conent-descriptionlp">
+          <div class="propierty-lp">
+            <div class="row propierty-first">
+                <div class="col-sm-3">
+                  <span>
+                    <i class="wid wid-datelp edw-icon fa fa-clock-o header-txtmen i-search"></i>
+                    <p>{{#str}}startdate, local_learningpaths{{/str}}</p>
+                  </span>
+                  <span>{{startdate}}</span>
+                </div>
+                <div class="col-sm-3">
+                  <span>
+                    <i class="wid wid-datelp edw-icon fa fa-clock-o header-txtmen i-search"></i>
+                    <p>{{#str}}enddate, local_learningpaths{{/str}}</p>
+                  </span>
+                  <span>{{endate}}</span>
+                </div>
+                <div class="col-sm-3">
+                  <span>
+                    <i class="wid wid-courselp edw-icon fa fa-users header-txtmen i-search"></i>
+                    <p>{{#str}}total_users_, local_learningpaths{{/str}}</p>
+                  </span>
+                  <span>{{data_total_users}}</span>
+                </div>
+                <div class="col-sm-3">
+                  <span>
+                    <i class="wid wid-courselp edw-icon fa fa-trophy  header-txtmen i-search"></i>
+                    <p>{{#str}}total_credits_, local_learningpaths{{/str}}</p>
+                  </span>
+                <span>{{datacredits}}</span>
+                </div>
+            </div>
+            <div class="row propierty-second">
+                <div class="col-sm-3">
+                  <span>
+                    <i class="wid wid-startlp edw-icon fa fa-star header-txtmen i-search"></i>
+                    <p>{{#str}}total_courses_, local_learningpaths{{/str}}</p>
+                  </span>
+                  <span>{{data_total_courses}}</span>
+                </div>
+                <div class="col-sm-3">
+                  <span>
+                    <i class="wid wid-icon-phbook edw-icon fa fa-book header-txtmen i-search"></i>
+                    <p>{{#str}}total_cohorts, local_learningpaths{{/str}}</p>
+                  </span>
+                  <span>{{data_total_cohorts}}</span>
+                </div>
+                <div class="col-sm-3">
+                  <span>
+                    <i class="wid wid-exclamation-circle edw-icon fa fa-info-circle header-txtmen i-search"></i>
+                    <p>{{#str}}required_, local_learningpaths{{/str}}</p>
+                  </span>
+                  <span>{{data_total_courses_required}}</span>
+                </div>
+                <div class="col-sm-3">
+                  <span>
+                    <i class="wid wid-icon-phbook edw-icon fa fa-book header-txtmen i-search"></i>
+                    <p>{{#str}}total_users, local_learningpaths{{/str}}</p>
+                  </span>
+                  <span>{{total_users}}</span>
+                </div>
+                <span clas="col-sm-3">
+                  {{{publish_btn}}}
+                </span>
+            </div>
+        </div>
+    </div>
+  </div>
+
+    <div class="col-sm-12 conent-descriptionlp">
+      <h4>{{#str}}description, local_learningpaths{{/str}}</h4>
+        <div class="description">{{{desc}}}
+        </div>
+    </div>
+    <div class="row propierty-lp">
+      {{{lp_custom_properties_html}}}
+    </div>
+
+    <div class="row">
+      <div class="col-sm-12 title-block">
+        <h4>{{#str}}dashboard, local_learningpaths{{/str}}</h4>
+        <span class="edit">
+          <a id="courses-tab-button" data-toggle="tab" href="#learningpath-courses-tab"><i class="fa fa-edit"></i></a>
+        </span>
+      </div>
+
+      <div class="block-lpd col-sm-12">
+        <div class="block_lpd_content" id="block_lpd_content">
+          {{{lpd_text_html}}}
+        </div>
+      </div>
+    </div>
+  </div>
+{{/lp_view_tab}}

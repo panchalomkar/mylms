@@ -1,0 +1,39 @@
+{{#learningpaths_list}}
+  <div class="row plms-learningpath mar-btm">
+    <div class="lpt-name col-xs-4 col-sm-4">
+      <a href="{{site_url}}/local/learningpaths/view.php?id={{learningpathid}}">{{learningpathname}}</a>
+    </div>
+    <div class="start-date col-xs-4 col-sm-3">
+      <span>{{startdate}}</span>
+    </div>
+    <div class="end-date col-xs-3 col-sm-3">
+      <span>{{endate}}</span>
+    </div>
+    {{#has_delete_learning_path}}
+    <div class="col-xs-3 col-sm-2 learningpaths-actions">
+      <a class="settings-learning-path edit-learning-path" href="{{site_url}}/local/learningpaths/edit.php?id={{learningpathid}}">
+        <i class="fa fa-pencil" data-placement="button" title="Edit"></i>
+      </a>
+      <a class="delete-learning-path deletelp" data-placement="bottom" title="Delete" data-item="{{learningpathid}}" data-session="{{session}}" href="#">
+      <i class="fa fa-trash fa-fw" aria-hidden="true"></i>
+      </a>
+    </div>
+    {{/has_delete_learning_path}}
+    <div class="clearfix">
+    </div>
+  </div>
+{{/learningpaths_list}}
+
+{{#js}}
+require(['jquery','local_learningpaths/bootbox'],function($,bootbox){
+  $(document).on('click', '.deletelp',function(e) {
+    var learningpathid= $(this).data('item');
+    var session= $(this).data('session');
+    bootbox.confirm(M.util.get_string('delete_msg', 'local_learningpaths'), function(result){
+      if(result){
+          window.location = "{{site_url}}/local/learningpaths/actions.php?item="+ learningpathid +"&action=delete_learningpath&sesskey=" + session;
+      }
+    });
+  });
+});
+{{/js}}

@@ -1,0 +1,72 @@
+{{#data}}
+ <hr style="border-top: 3px solid #1ba2dd;">
+ <div class="content-search">
+    <div class="row searchbox-add">
+      <div class="col-sm-6">
+        <div class="searchbox" id="searchbox" role="search">
+          <div class="mt-search input-group custom-search-form">
+            <span class="input-group-btn search-lp">
+              <button type="button" onclick aria-label="" id="btn-search-cohort-users">
+                <i class="men men men-search-phx fa fa-search header-txt i-search"></i>
+              </button>
+            </span>
+              <div class="">
+                  <input class="form-control " type="text" placeholder="Search Cohort users" aria-label="" onkeyup="" value="{{cohort-user}}" id="search-cohortusers" name="search-cohortusers" for="search-cohortusers">
+              </div>
+          </div>
+        </div>
+      </div>
+
+<div class="col-md-11">
+  <h2 class="title-learning" style="  margin-top: 15px;">{{#str}}cohort_user_list, local_learningpaths{{/str}}</h2>
+</div>
+<div class="col-12 hidden" id="lpstatus">
+  <div class="alert">
+  </div>
+</div>
+<div class="content-table table-responsive">
+{{#has_cohort_user_list}}
+  <table class="table table_users card-box dataTable" id="table_users">
+    <thead>
+      <tr class="users head">
+        <td class="firstname table_head">{{#str}}users, local_learningpaths{{/str}}</td>
+        <td class="progresso table_head">{{#str}}name_cohort, local_learningpaths{{/str}}</td>
+      </tr>
+    </thead>
+      {{#user_array}}
+      <tr class="users cohort-user-{{userid}}" id="cohort-user-{{userid}}">
+        <td class="firstname">{{userfullname}}</td>
+        <td class="lastname">{{username}}</td>
+      </tr>
+      {{/user_array}}
+  </table>
+  {{/has_cohort_user_list}}
+  {{^has_cohort_user_list}}
+  <div class="col-12 col-sm-12" id="loction_no_record_user">
+    {{#str}}no_records, local_learningpaths{{/str}}
+  </div>
+  {{/has_cohort_user_list}}
+  <div class="mar-btm col-sm-12 mar-no pad-no mar-btm pagination_lp">
+    <ul class="count_select">
+    <li>
+      <form method="GET">
+        <div class="" style="float:left;padding-top: 7px;margin-right: 10px;">
+          <span>
+          </span>
+        </div>
+        <div class="" style="float:left;">
+        {{{select}}}
+        </div>
+      </form>
+    </li>
+      <li>
+      {{{page_html}}}
+      </li>
+    </ul>
+  </div>
+ </div>
+</div>
+</div>
+{{/data}}
+  
+        

@@ -1,0 +1,71 @@
+{{#user_list}}
+<div class="col-12 hidden" id="lpstatus">
+  <div class="alert">
+  </div>
+</div>
+<div class="content-table table-responsive">
+{{#has_users}}
+  <table class="table table_users card-box" id="table_users">
+    <thead>
+      <tr class="users head">
+        <td class="allcheck">{{{checkbox_head_html}}}</td>
+        <td class="firstname table_head">{{#str}}first_name, local_learningpaths{{/str}}</td>
+        <td class="lastname table_head">{{#str}}lastname, local_learningpaths{{/str}}</td>
+        <td class="date table_head">{{#str}}enrollmentdate, local_learningpaths{{/str}}</td>
+        <td class="progresso table_head">{{#str}}progress, local_learningpaths{{/str}}</td>
+      </tr>
+    </thead>
+    {{#user_array}}
+    <tr class="users user-{{userdataid}}" id="user-{{userdataid}}">      
+      <td class="td-checkbox center">
+        <div class="form-check">
+          <label class="form-check-label">
+            <input class="learningpath-user form-check-input" type="checkbox" data-userid="{{userdataid}}">
+              <span class="form-check-sign">
+                <span class="check"></span>
+              </span>
+          </label>
+        </div>
+      </td>
+      <td class="firstname">{{userfirstname}}</td>
+      <td class="lastname">{{userlastname}}</td>
+      <td class="date">{{enrolldate}}</td>
+      <td class="progresso">
+        <div class="progress">
+          <div class="progress-bar bg-success" role="progressbar" style="width:{{courses_completed_percentage}}%;">
+          </div>
+        </div>
+        <p class="porc_line">{{courses_completed_percentage}}%</p>
+      </td>
+    </tr>
+    {{/user_array}}
+  </table>
+{{/has_users}}
+{{^has_users}}
+  <div class="col-12 col-sm-12" id="loction_no_record_user">
+    {{#str}}no_records, local_learningpaths{{/str}}
+  </div>
+{{/has_users}}
+{{#total_users_has}}
+  <div class="mar-btm col-sm-12 mar-no pad-no mar-btm pagination_lp user">
+    <ul class="count_select">
+      <li>
+        <form method="GET">
+          <div class="" style="float:left;padding-top: 7px;margin-right: 10px;">
+            <span>
+            </span>
+          </div>
+          <div class="" style="float:left;">
+          {{{select}}}
+          </div>
+        </form>
+      </li>
+      <li>
+      {{{paging_html}}}
+      <li>
+    </ul>
+  </div>
+{{/total_users_has}} 
+</div>
+{{{show_cohort_user_list_user_tab}}}
+{{/user_list}}

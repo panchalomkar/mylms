@@ -1,0 +1,61 @@
+  <div class="blocks-search-drop">
+  </div>
+  <div class="learningpaths-content scroll-lp">
+    <div class="headinglpd">
+      <div class="lpd-heading row">
+        <div class="col-8 col-sm-6 col-md-6 col-lg-3 col-xl-3 arrows">
+          <span class="lp-name hd-lp">{{#str}}learning_name, block_lpd{{/str}}</span>
+          <span class="group"><i class="fa fa-angle-up" aria-hidden="true"></i> <i class="fa fa-angle-down active" aria-hidden="true"></i></span>
+        </div>
+        <div class="start-date hidden-md col-lg-2 col-xl-2 arrows">
+          <span class="lp-startdate hd-lp">{{#str}}startdate, block_lpd{{/str}}</span>
+          <span class="group"><i class="fa fa-angle-up" aria-hidden="true"></i> <i class="fa fa-angle-down active" aria-hidden="true"></i></span>
+        </div>
+        <div class="lpd-lp-head-column end-date hidden-md col-lg-2 col-xl-2 arrows">
+          <span class="lp-enddate hd-lp">{{#str}}enddate, block_lpd{{/str}}</span>
+          <span class="group"><i class="fa fa-angle-up" aria-hidden="true"></i> <i class="fa fa-angle-down active" aria-hidden="true"></i></span>
+        </div>
+        <div class="lpd-lp-head-column status col-4 col-sm-4 col-md-4 col-lg-3 col-xl-3 arrows">
+          <span class="lp-status hd-lp">{{#str}}status, block_lpd{{/str}}</span>
+          <span class="group"><i class="fa fa-angle-up" aria-hidden="true"></i> <i class="fa fa-angle-down active" aria-hidden="true"></i></span>
+        </div>
+        <div class="lpd-lp-head-column credits hidden-xs col-sm-2 col-md-2 col-lg-2">
+          <span class="lp-credits hd-lp">{{#str}}credits, block_lpd{{/str}}</span>
+        </div>
+      </div>
+    </div>
+
+    {{#lpdata}}
+      <div class="lpd-lp-content itemlpd row">
+        <div data-lpid="{{valueid}}" class="lpd-lp-content-header collapsed collapsedlpd col-12 col-sm-12 col-md-12 col-lg-12" data-toggle="collapse" data-parent ="#block_lpd_content" href="#{{idConcat}}" aria-expanded = "true" aria-controls = "{{idConcat}}">
+          <div class="lpd-lp-body-column course-name col-7 col-sm-6 col-md-6 col-lg-3 col-xl-3">
+            <span>{{valuelpname}}</span>
+          </div>
+
+          <div class="lpd-lp-body-column start-date hidden-md col-md-2 col-lg-2 col-xl-2">{{startDate}}</div>
+          <div class="lpd-lp-body-column end-date hidden-md col-md-2 col-lg-2 col-xl-2">{{completeDate}}</div>
+
+          <div class="lpd-lp-body-column status col-4 col-sm-4 col-md-4 col-lg-3 col-xl-3">
+            <span>{{lpprogress}}%</span>
+            <div class="progress">
+              <div style ="width:{{lpprogress}}%" class = "progress-bar" role = "progressbar" aria-valuenow = "{{lpprogress}}" aria-valuemin = "0" aria-valuemax = "100")>
+              </div>
+            </div>   
+          </div>
+
+          <div class="lpd-lp-body-column credits hidden-xs col-sm-2 col-md-2 col-lg-2">
+            <span>{{valuecredits}}</span>
+          </div>
+        </div>
+        <span data-lpid="{{valueid}}" class="lpd-back lpd-lp-content-header collapsed col-12 col-sm-12 col-md-12 col-lg-12" data-toggle="collapse" data-parent ="#block_lpd_content" href="#{{idConcat}}" aria-expanded = "true" aria-controls = "{{idConcat}}"><i class="fa fa-arrow-circle-o-left mr-2" style="font-size: 23px;" aria-hidden="true"></i> Back to Learning Paths</span>
+        <div class="lpd-lp-detail container-fluid pl-0 pr-0" id="lp-detail-{{valueid}}">
+        </div>
+      </div>
+    {{/lpdata}}
+
+    {{^lpdata}}
+      <div class="text-bold lpd-lp-detail col-sm-12 col-md-12 col-lg-12 alert alert-mtlms text-left">
+        {{#str}}noresultslp, block_lpd{{/str}}
+      </div>
+    {{/lpdata}}
+  </div>

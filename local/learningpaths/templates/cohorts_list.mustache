@@ -1,0 +1,57 @@
+{{#data}}
+<div class="col-12 hidden" id="cohortst">
+  <div class="alert">
+  </div>
+</div>
+{{#has_cohorts}}
+<div class="content-table table-responsive">
+  <table id="table_cohorts" class="table mt-table card-box">
+    <tr class="header">
+      <th></th>
+      <th id="cohort-" class="form-check check_all">{{{checkbox_html}}}<span>{{#str}}name_cohort, local_learningpaths{{/str}}</span></th>
+      <th>{{#str}}enrollmentdate, local_learningpaths{{/str}}</th>
+      <th class="center">{{#str}}number_users, local_learningpaths{{/str}}</th>
+    </tr>
+    {{#user_array}}
+    <tr class="cohort" id="cohort-{{cohortdataid}}">
+
+      <td class="td-checkbox pl-0">
+        <label class="form-checkbox form-normal form-icon-text form-plms">
+          <input class="learningpath-cohort" type="checkbox" data-cohortid="{{cohortdataid}}">
+        </label>
+      </td>
+      <td>{{cohortdataname}}</td>
+      <td>{{enrolldate}}</td>
+      <td class="center">{{totalusers}}</td>
+    </tr>
+    {{/user_array}}
+  </table>
+</div>
+{{#total_cohort_has}}
+<div class="mar-btm col-sm-12 mar-no pad-no mar-btm pagination_lp">
+    <ul class="count_select">
+      <li>
+        <form method="GET">
+          <div class="" style="float:left;padding-top: 7px;margin-right: 10px;">
+            <span>
+            </span>
+          </div>
+          <div class="" style="float:left;">
+          {{{select}}}
+          </div>
+        </form>
+      </li>
+      <li>
+      {{{paging_html}}}
+      <li>
+    </ul>
+  </div>
+  {{/total_cohort_has}} 
+{{/has_cohorts}}
+
+{{^has_cohorts}}
+<div class="col-12 col-sm-12" id="loction_no_record_cohort">
+  {{#str}}no_records, local_learningpaths{{/str}}
+</div>
+{{/has_cohorts}}
+{{/data}}

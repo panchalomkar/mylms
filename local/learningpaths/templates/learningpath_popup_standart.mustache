@@ -1,0 +1,23 @@
+{{#lp_popup_standart}}
+  <div class="modal fade {{class}}" id="{{name}}" role="dialog" aria-hidden="false">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">{{title}}</h4>
+            <a class="close" data-dismiss="modal">
+              <i class="wid wid-icon-close-x fa fa-close"></i>
+            </a>
+          </div>
+
+          <div class="" id="parent_scrollable">
+            <div class="modal-body">
+            {{{user_popup_search}}}
+              <div id="{{name}}-content">
+              {{{content}}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{{/lp_popup_standart}}

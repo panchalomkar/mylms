@@ -1,0 +1,2982 @@
+.img-responsive-plms{
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.tab-content {
+   /* padding: 15px 15px;*/
+}
+
+#sortable {
+    cursor: pointer;
+}
+
+.panel-heading {
+    height: auto !important;
+}
+
+.panel-body {
+    padding: 0px !important;
+}
+
+#lp-save-courses {
+    color: #7DB836;
+}
+
+span.elis {
+    font-size: 17px;
+    position: relative;
+    top: -4px;
+    margin-right: 18px;
+}
+
+.plms-learningpath.pad-all {
+    padding: 7px !important;
+}
+
+.plms-learningpath div a {
+    color: #000 !important;
+}
+
+#page-local-learningpaths-index h1.page-header{
+    margin-bottom: 12px;
+}
+
+#page-local-learningpaths-view div.tabs-panel{
+    margin-bottom: 12px;
+}
+
+#page-local-learningpaths-view div#searchbox div.custom-search-form{
+    margin-left: 4px;
+}
+
+#page-local-learningpaths-index div.content-title{
+/*    margin-top: 15px;*/
+}
+
+#page-local-learningpaths-view div#region-main-wrap{
+    padding-right: 17px !important;
+}
+
+#page-local-learningpaths-index #container #region-main-wrap div.region-content,
+#page-local-learningpaths-view #container #region-main-wrap div.region-content {
+    background: none !important;
+    box-shadow: none !important;
+}
+
+#page-local-learningpaths-index div.add-learning{
+    margin-bottom: 26px;
+    margin-top: 15px;
+}
+
+#page-local-learningpaths-index div#searchbox div.custom-search-form span button{
+    margin-bottom: 3px !important;
+}
+
+#page-local-learningpaths-index div.modal-dialog{
+    max-width: 60% !important;
+    top: 0px;
+}
+
+#page-local-learningpaths-index div.modal-dialog form div#fitem_id_name,
+#page-local-learningpaths-view div#fitem_id_name,
+#page-local-learningpaths-edit form div#fitem_id_name{
+    width: 100% !important;
+}
+
+#page-local-learningpaths-index div.modal-dialog form .felement>div{
+    margin-left: 0px !important;
+}
+
+#page-local-learningpaths-index div.modal-dialog form div#fitem_id_learningpath_image input.fp-btn-choose,
+#page-local-learningpaths-edit form div#fitem_id_learningpath_image input.fp-btn-choose{
+    float: right;
+}
+
+#page-local-learningpaths-edit form div#fitem_id_learningpath_image div.mdl-left.filepicker-filelist{
+    height: 272px; width: 100%;
+}
+
+#page-local-learningpaths-index div.modal-dialog form div#fitem_id_learningpath_image div.filepicker-filelist{
+    border: 1px solid #ebebeb;
+}
+
+#page-local-learningpaths-index div.modal-dialog form div#fitem_id_startdate select,
+#page-local-learningpaths-index div.modal-dialog form div#fitem_id_enddate select,
+#page-local-learningpaths-view div#fitem_id_startdate select,
+#page-local-learningpaths-view div#fitem_id_enddate select,
+#page-local-learningpaths-edit div#fitem_id_startdate select,
+#page-local-learningpaths-edit div#fitem_id_enddate select{
+    display: inline-block;
+}
+
+#page-local-learningpaths-index div#searchbox div.custom-search-form span button:hover,
+#page-local-learningpaths-index div#searchbox div.custom-search-form span button:focus{
+    background: none !important;
+    border: none !important;
+    outline: none !important;
+}
+
+#page-local-learningpaths-index div.plms-learningpath{
+    padding: 12px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.16), 0 3px 8px rgba(0,0,0,0.10) !important;
+    margin-bottom: 9px !important;
+}
+
+#page-local-learningpaths-index div.plms-learningpaths div.plms-learningpath i{
+    font-size: 14px;
+    color: #848688;
+}
+
+#page-local-learningpaths-index div#fitem_id_enable_startdate div.fitemtitle,
+#page-local-learningpaths-index div#fitem_id_enable_enddate div.fitemtitle,
+#page-local-learningpaths-edit div#fitem_id_enable_startdate div.fitemtitle,
+#page-local-learningpaths-edit div#fitem_id_enable_enddate div.fitemtitle{
+    width: 22% !important;
+}
+
+div#largeModal form div#fitem_id_enable_startdate div.fitemtitle,
+#page-local-learningpaths-edit form div#fitem_id_enable_startdate div.fitemtitle{
+    width: 22% !important;
+}
+
+#page-local-learningpaths-index div#fitem_id_name label,
+#page-local-learningpaths-index div#fitem_id_description label,
+#page-local-learningpaths-index div#fitem_id_learningpath_image label,
+#page-local-learningpaths-view div#fitem_id_name label,
+#page-local-learningpaths-view div#fitem_id_description label,
+#page-local-learningpaths-view div#fitem_id_learningpath_image label,
+#page-local-learningpaths-edit div#fitem_id_name label,
+#page-local-learningpaths-edit div#fitem_id_description label,
+#page-local-learningpaths-edit div#fitem_id_learningpath_image label{
+    color: #515151;
+}
+
+#page-local-learningpaths-index div.plms-learningpaths div.learningpaths-actions a.delete-learning-path{
+    margin-left: 8px;
+}
+
+i.wid-icon-close-x{
+    color :#000;
+}
+
+#page-local-learningpaths-index div.modal-dialog div.modal-header span.close i,
+a.close i{
+    font-size: 14px !important;
+    padding-right: 10px; cursor: pointer;
+}
+
+#page-local-learningpaths-view div.overview div.title-block h4{
+    padding-left: 3px;
+}
+
+#page-local-learningpaths-view div.mt-search input{
+    padding-top: 4px;
+    padding-left: 12px;
+    border-radius: 20.5px;
+    background-color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    color: #465b65;
+    padding-left: 33px;
+    max-width: 393px;
+    border: 1px solid #c9dce2 !important;
+    background-color: #fff !important;
+}
+
+@media screen and (max-width: 542px) {
+    #page-local-learningpaths-view div.mt-search input{
+        position: relative;
+        float: none;
+        /* top: -15px; */
+    }
+    #page-local-learningpaths-view .tab-content .input-group-btn{
+        top: -13px;
+    }
+    #page-local-learningpaths-view div.mt-search input {
+        /* width: 218px; */
+    }
+}
+
+#page-local-learningpaths-view div.mt-search button{
+    margin-bottom: 0px !important;
+           left: 7px;
+    top: 6px;
+}
+
+#page-local-learningpaths-view div.content-title{
+    position: relative;
+    padding-top: 12px;
+}
+
+div.select-add{
+    padding-left: 7px;
+}
+
+#page-local-learningpaths-view div.content-title h1 span{
+    margin-left: 3px !important;
+}
+
+#page-local-learningpaths-index div.card{
+    margin-top: 0px !important; box-shadow: none;
+}
+
+#page-local-learningpaths-view div.content-title h1 span i{
+    padding-right: 10px;
+}
+
+#page-local-learningpaths-view div.content-title a i.wid-icon-back-large{
+    font-size: 15px;
+    font-weight: bold;
+}
+
+#page-local-learningpaths-view div.tab-base ul.tbs li{
+    margin-right: 0px !important;
+    opacity: 0px !important;
+}
+
+#page-local-learningpaths-view ul.lpd-courses li.course-description div span{
+    vertical-align: sub;
+    font-weight: 300;
+}
+
+#page-local-learningpaths-view div#users-popup div.select-cohorts ul.dropdown-menu{
+    min-width: 41% !important;
+}
+
+#page-local-learningpaths-view div#users-popup div.select-cohorts ul.dropdown-menu li{
+    padding: 0px !important;
+    text-align: center;
+}
+
+#page-local-learningpaths-view div#users-popup div#users-popup-content div#fgroup_id_buttonar div.felement,
+#page-local-learningpaths-view div#cohorts-popup div#cohorts-popup-content div#fgroup_id_buttonar div.felement{
+    margin-right: 0px !important;
+}
+
+#page-local-learningpaths-view div#learningpath-view-tab div.overview img{
+    padding-left: 4px;
+}
+
+#page-local-learningpaths-view div.title-block h4{
+    display: inline-block;
+    margin-right: 12px;
+}
+
+#page-local-learningpaths-view ul#list-course li div.required span.switchery{
+    margin: 0px !important;
+}
+
+#page-local-learningpaths-view div.title-block span i.men-icon-edit{
+    box-shadow: none !important;
+}
+
+#page-local-learningpaths-view div.modal-dialog form.mform div.course-lp a.add-course i.men-icon-add{
+    font-size: 20px !important;
+}
+
+#page-local-learningpaths-view div.modal-dialog form.mform div.header-courses,
+#page-local-learningpaths-view div.modal-dialog form.mform  div.header-users,
+#page-local-learningpaths-view div.header-courses,
+#page-local-learningpaths-view div.header-cohorts{
+    /*background-color: #F3F3F3;*/
+    padding-top: 10px;
+    padding-bottom: 10px;
+    /*border-radius: 2px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);
+    transition: box-shadow 200ms cubic-bezier(0.4, 0.0, 0.2, 1);*/
+}
+
+#page-local-learningpaths-view div.modal-dialog form.mform div.header-courses div span,
+#page-local-learningpaths-view div.modal-dialog form.mform  div.header-users div span,
+#page-local-learningpaths-view div.modal-dialog form.mform div.header-cohorts div span{
+    font-weight: 600;
+}
+
+#page-local-learningpaths-view div.modal-dialog form.mform div.header-add-course div.row,
+#page-local-learningpaths-view div.modal-dialog form.mform  div.header-add-users div.row,
+#page-local-learningpaths-view div.modal-dialog form.mform div.content-select div.row.select-add{
+    padding-bottom: 0px !important;
+}
+
+#page-local-learningpaths-view div.modal-dialog div.content-search{
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+}
+
+#page-local-learningpaths-view div.modal-dialog div.row.search_course{
+    padding-bottom: 9px !important;
+}
+
+#page-local-learningpaths-view div.modal-dialog div.title_aviable{
+    padding-bottom: 8px;
+}
+
+#page-local-learningpaths-view div.modal-dialog div.content-search div.row.searchbox-add,
+#page-local-learningpaths-view div.modal-dialog div.row.title{
+    padding-bottom: 0px !important;
+}
+
+#page-local-learningpaths-view div.modal-dialog button.remove-prerequisites{
+    margin-left: 0px !important;
+}
+
+#page-local-learningpaths-view div.modal-dialog input.submit-prerequisites {
+    bottom: 37px;
+    left: 390px;
+}
+
+#page-local-learningpaths-view div.modal-dialog button.btn-cancel{
+    position: relative;
+    left: 91%;
+    bottom: -22px;
+}
+
+#page-local-learningpaths-view div.modal-dialog div.content-search div#searchbox{
+    display: block;
+    width: 100%;
+}
+
+#page-local-learningpaths-view div.modal-dialog div.modal-body{
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    padding-bottom: 30px !important;
+    border-radius: 6px;
+    /* background-color: #fbfcff; */
+}
+
+#page-local-learningpaths-view div.modal-dialog form.mform div.header-courses span.add-clp{
+    float: right;
+}
+
+#page-local-learningpaths-view div.modal-dialog form.mform div.content-addcourse a.add-course{
+    float: right;
+}
+
+#page-local-learningpaths-view div.modal-dialog form.mform div.content-addcourse div.course-lp,
+#page-local-learningpaths-view div.modal-dialog form.mform div.content-addusers div.users-lp,
+#page-local-learningpaths-view div.modal-dialog form.mform div.content-addcohorts div.cohorts-lp{
+    border-bottom: solid 1px #f3f1f1;;
+    padding-top: 10px;
+    padding-bottom: 11px !important;
+}
+
+#page-local-learningpaths-view div.modal-dialog form.mform div.content-addcourse,
+#page-local-learningpaths-view div.modal-dialog form.mform div.content-addcohorts {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    max-height: 287px;
+}
+
+#page-local-learningpaths-view div#expiration-reminder div.check,
+#page-local-learningpaths-view div#enrollment-reminder div.check{
+    margin-bottom: 12px;
+}
+
+#page-local-learningpaths-view div.modal-dialog form.mform div.content-addusers div.users-lp div.lp-user,
+#page-local-learningpaths-view div.modal-dialog form.mform div.content-addcohorts div.cohorts-lp div.lp-cohort{
+    padding-bottom: 0px;
+}
+
+#page-local-learningpaths-view div#learningpath-view-tab div.description{
+    margin-bottom: 16px;
+}
+
+#page-local-learningpaths-view div#learningpath-courses-tab div.content-courses div.searchbox-add{
+    margin-top: 22px;
+}
+
+#page-local-learningpaths-view div.content-users{
+    margin-bottom: 16px;
+    margin-top: 22px;
+}
+
+#page-local-learningpaths-view ul.lpd-courses,
+#page-local-learningpaths-view ul#list-course{
+    list-style-type: none;
+    margin-left: 16px;
+    margin-right: 16px;
+    margin-bottom: 0px;
+    padding-top: 0px;
+    padding-left: 0px;
+}
+
+#page-local-learningpaths-view ul.lpd-courses li,
+#page-local-learningpaths-view ul#list-course li{
+    height: 45px;
+}
+
+#page-local-learningpaths-view ul#list-course li.course-description div i.wid-icon-pre-co-requisites{
+    cursor: pointer;
+}
+
+#page-local-learningpaths-view ul#list-course li.course-description{
+    cursor: move;
+}
+
+div#prerequisites-popup-1-content,
+div#prerequisites-popup-2,
+div#prerequisites-popup-1 div.modal-header,
+div#prerequisites-popup-1 div.modal-body,
+li.course-description div#prerequisites-popup-1{
+    cursor: default !important;
+}
+
+div#prerequisites-popup-1 ul#available-prerequisites li:focus{
+    background-color: #c9c9c9;
+}
+
+#page-local-learningpaths-view ul.lpd-courses li{
+    background: none !important;
+    margin-top: 16px;
+}
+
+#page-local-learningpaths-view ul#list-course{
+    margin-bottom: 30px;
+    background: none;
+    box-shadow: none !important;
+}
+
+#page-local-learningpaths-view ul#list-course:hover{
+    box-shadow: 0 2px 4px 0 rgba(35, 77, 103, 0.21);
+}
+
+#page-local-learningpaths-view ul#list-course > li{
+    background-color: #ffffff;
+}
+
+div#prerequisites-popup-1 div.modal-dialog{
+    width: 52%;
+}
+
+.mform .form_element .fcheckbox label.form-plms{
+    display: inline-block !important;
+}
+
+#page-local-learningpaths-view ul.lpd-courses li div.course_name span{
+    padding-left: 52px;
+}
+
+#page-local-learningpaths-view ul#list-course li div.course_name i{
+    padding-right: 30px;
+}
+
+#page-local-learningpaths-view ul#list-course li div.course_name i.wid-icon-pre-co-requisites {
+    color: #D80027;
+}
+
+#page-local-learningpaths-view ul#list-course li div.course_name i.wid-icon-course-inprogress {
+    color: #CCC;
+}
+
+#page-local-learningpaths-view div.content-addusers div.content-select,
+#page-local-learningpaths-view div.content-addusers div.button-delete,
+#page-local-learningpaths-view div#users-popup div.select-users,
+#page-local-learningpaths-view div#users-popup div.select-cohorts,
+#page-local-learningpaths-view div#learningpath-cohorts-tab div.content-addcohorts div.content-select,
+#page-local-learningpaths-view div#learningpath-cohorts-tab div.content-addcohorts div.button-delete{
+    display: inline-block;
+}
+
+#page-local-learningpaths-view div#users-popup div.select-cohorts button{
+    margin-bottom: 0px !important;
+}
+
+#page-local-learningpaths-view div.header-add-users,
+#page-local-learningpaths-view div.header-add-course,
+#page-local-learningpaths-view div.header-add-cohorts{
+    width: 100%;
+    padding: 0px;
+    border-bottom: 1px solid #f3f1f1;
+}
+
+#page-local-learningpaths-view div#learningpath-courses-tab a.course-add span,
+#page-local-learningpaths-view div#learningpath-users-tab a.add-users span,
+#page-local-learningpaths-view div#learningpath-cohorts-tab a.add-cohorts-lp span{
+    vertical-align: super;
+    padding-right: 10px;
+    font-size: 16px;
+}
+
+#page-local-learningpaths-view div#courses-popup-content div.row.course-lp{
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+    background: none;
+}
+
+#page-local-learningpaths-view div.content-select{
+    padding-bottom: 2px !important;
+}
+
+#page-local-learningpaths-view div#users-popup div.content-select{
+    padding-bottom: 5px !important;
+}
+
+#page-local-learningpaths-view div.select-add div.button-delete,
+#page-local-learningpaths-view div#learningpath-cohorts-tab div.content-addcohorts div.button-delete{
+    padding: 9px;
+}
+
+#page-local-learningpaths-view div.select-add div.button-delete a.delete-btn{
+    cursor: pointer;
+    padding: 8px 15px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 
+    0 3px 1px -2px rgba(0,0,0,0.12), 
+    0 1px 5px 0 rgba(0,0,0,0.2);
+}
+
+#page-local-learningpaths-view div#learningpath-users-tab div.content-addusers,
+#page-local-learningpaths-view div#learningpath-users-tab div.content-search,
+#page-local-learningpaths-view div#learningpath-cohorts-tab div.content-addcohorts,
+#page-local-learningpaths-view div#learningpath-cohorts-tab div.content-search{
+    margin-bottom: 12px;
+}
+
+#page-local-learningpaths-view div#learningpath-users-tab div.content-search{
+    margin-top: 5px;
+    padding-left: 14px;
+}
+
+.drag-and-drop-connected {
+    height: 287px;
+    overflow: auto;
+    padding-top: 5px;
+}
+
+div#users-popup-content form fieldset > div{
+    display: inline-block;
+    float: right;
+    margin: 0px;
+}
+
+#page-local-learningpaths-view div.check-all{
+    margin-top: 3px;
+    display: inline-block;
+    padding: 6px 9px !important;
+    height: 28px;
+    border-radius: 2px;
+}
+
+.form-check{
+    margin-bottom: 0px;
+}
+
+#page-local-learningpaths-index div#region-main-wrap{
+    padding-right: 17px !important;
+}
+
+div.header-add-users div.form-check.col-sm-12,
+div.header-add-cohorts div.form-check.col-sm-12{
+    width: 8%;
+}
+
+div.header-title div.checkbox label[for="user-all"]:before{
+    left: 1px !important;
+}
+
+#page-local-learningpaths-view div.modal-dialog form.mform div.select-users{
+    position: relative;
+    top: 7px;
+    padding-right: 0px;
+}
+
+#page-local-learningpaths-view table#table_users th{
+    border: none !important;
+}
+
+#page-local-learningpaths-view div.new-cohort{
+    padding-top: 8px;
+}
+
+#page-local-learningpaths-view table#table_cohorts tr.header:hover{
+    background-color: none !important;
+    box-shadow:none !important;
+}
+
+#page-local-learningpaths-view table#table_users tr.users,
+#page-local-learningpaths-view table#table_cohorts tr.cohort,
+#page-local-learningpaths-view  ul#list-course li.course-description{
+    border-bottom: solid 1px #f3f1f1;
+}
+
+#page-local-learningpaths-view  ul#list-course li.course-description{
+    margin-bottom: 5px !important;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    background: #fbfcff;
+    font-size: 13px;
+    font-weight:500;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.38;
+    letter-spacing: normal;
+    color: var(--slate);
+    display: flex;
+    align-items: center;
+}
+
+#page-local-learningpaths-view ul#list-course li.course-description:hover{
+    box-shadow: 0 2px 4px 0 rgba(35, 77, 103, 0.21); 
+}
+
+#page-local-learningpaths-view table#table_users div.progress{
+    width: 50%;
+}
+
+#page-local-learningpaths-view table#table_cohorts tr.cohort td{
+    padding-bottom: 14px !important;
+    padding-top: 14px !important; vertical-align: top; padding-left: 10px !important;
+}
+
+#page-local-learningpaths-view table#table_users div.progress{
+    margin-bottom: 0px !important;
+}
+
+#page-local-learningpaths-view table#table_cohorts th{
+    border-top: none !important;
+}
+
+#page-local-learningpaths-view div.content-table,
+#page-local-learningpaths-view div.content-search,
+#page-local-learningpaths-view div#learningpath-cohorts-tab div.content-addcohorts{
+    padding-right: 19px;
+    padding-left: 12px;
+}
+
+#page-local-learningpaths-view div[class*="collapse_"] {
+    box-shadow: 0 2px 4px 1px rgba(0, 0, 0, 0.11)!important;
+    margin-bottom: 18px !important;
+    border-radius: 3px;
+}
+
+#page-local-learningpaths-view #page-content .row #region-main .region-content .mform .searchbox{
+    display: block !important;
+}
+
+#page-local-learningpaths-index div.add-learning div#searchbox,
+#page-local-learningpaths-index div.add-learning div.custom-search-form,
+#page-local-learningpaths-view div#searchbox{
+    width: 100%;
+}
+
+#page-local-learningpaths-index div.add-learning div#searchbox,
+#page-local-learningpaths-view div#searchbox{
+    display: inline-block !important;
+}
+
+#page-local-learningpaths-view div#searchbox div.custom-search-form{
+    margin-left: 0px !important;
+}
+
+#page-local-learningpaths-index div.modal-dialog form.mform div#fitem_id_submitbutton input,
+#page-local-learningpaths-view div#fitem_id_submitbutton input,
+#page-local-learningpaths-edit form div#fitem_id_submitbutton input{
+    float: right;
+}
+
+#page-local-learningpaths-view div.check form div.fitemtitle{
+    width: 60% !important;
+}
+
+#page-local-learningpaths-view div.check form div.felement{
+    float: none !important;
+    display: flex;
+}
+
+#page-local-learningpaths-view div.fitem_feditor{
+    margin-bottom: 0px !important;
+}
+
+#page-local-learningpaths-view div#learningpath-notifications-tab div.collapse-color{
+    background-color: #fff;
+    padding-top: 16px;
+}
+
+#page-local-learningpaths-view table.mceLayout{
+    box-shadow: 0 1px 3px rgba(0,0,0,0.16), 0 3px 8px rgba(0,0,0,0.10) !important;
+}
+
+#learningpath-notifications-tab div.panel-heading{
+    height: 49px !important;
+}
+
+#page-local-learningpaths-view div[class*='collapse_'] div.panel-heading a{
+    width: 100%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.16), 0 3px 8px rgba(0,0,0,0.10) !important;
+    background:none !important;
+    border:none !important;
+    box-shadow: none !important;
+    margin: 0px;
+    padding: 12px 0px;
+    padding-left: 24px;
+}
+
+#page-local-learningpaths-view div[class*='collapse_'] div.panel-heading a h3.panel-title{
+    display: inline-block;
+    float: left;
+    font-size: 16px;
+    line-height: 27px;
+    padding-left: 13px;
+}
+
+#page-local-learningpaths-view div[class*='collapse_'] div.panel-heading a i.wid{
+    float: right;
+    padding-right: 30px;
+    font-size: 6px !important;
+    line-height: 27px;
+    color: #67747b;
+}
+
+#page-local-learningpaths-view div.check label{
+    font-size: 13px;
+}
+
+#page-local-learningpaths-view div.check label[for$='_editor']{
+    padding-left: 6px !important;
+}
+
+#page-local-learningpaths-view div.fitem_feditor div.felement.feditor{
+    width: 100% !important;
+}
+
+#page-local-learningpaths-view div#fitem_id_enrollment_editor div.felement.feditor>div{
+    margin-left: 0px !important;
+}
+
+#page-local-learningpaths-view div.check div.fitem_ftext div.felement{
+    width: 10% !important;
+    float: left !important;
+    margin-right: 18px;
+}
+
+#page-local-learningpaths-view div.check div.fitem_ftext div.fitemtitle{
+    width: 11% !important;
+    display: inline-block;
+    padding-top: 5px;
+}
+
+div#learningpath-notifications-tab form div#fgroup_id_buttonar{
+    float: none;
+}
+
+div#largeModal form div#fitem_id_description table#id_description_tbl table td a{
+    margin-right: 4px;
+}
+
+table#table_cohorts td.td-checkbox,
+table#table_users td.td-checkbox{
+    width: 33px;
+}
+
+ul#list-course li.course-description div.actions i{
+    color: #94b7c3;
+}
+
+ul#list-course li.course-description div.actions a.delete-course-learning-path{
+    margin-left: 12px;
+}
+
+#page-local-learningpaths-index div#largeModal form div#fitem_id_learningpath_image{
+    margin-bottom: 0px !important;
+}
+
+#page-local-learningpaths-view .modal-content .pad-all.card-box{
+    width: 262px;
+    height: 300px;
+    border-radius: 2px;
+    box-shadow: 0 2px 4px 0 rgba(141, 162, 171, 0.37);
+    background-color: #fbfcff;
+}
+#page-local-learningpaths-index .input-group .input-group-append {
+    margin-left: -1px;
+    position: absolute;
+    right: 0;
+    top: 0; display: none;
+}
+#page-local-learningpaths-index .input-group .input-group-append .input-group-text {
+    display: unset  !important;; 
+    align-items: unset;
+    line-height: 1.7  !important;
+}
+button.remove-prerequisites.btn.btn-primary{
+    padding: 7px 13px !important;
+    margin-left: -1px !important;
+}
+
+#page-local-learningpaths-index .input-group-btn .text-muted.btn.btn-default,
+#page-local-learningpaths-view .input-group-btn .text-muted.btn.btn-default {
+    padding: 0px 10px !important;
+    margin: 1px;
+    z-index: 2;
+    background-color: #fff;
+    box-shadow:none;
+}
+
+#page-local-learningpaths-index input#global_search {
+    margin-left: 8px;
+}
+
+#page-local-learningpaths-view .modal-dialog .lp-course-prerequisites{
+    padding: 10px 12px;
+    margin: 1px;
+    left: -13px;
+    margin-right: -9px;
+    z-index: 2;
+}
+#page-local-learningpaths-view .modal-dialog .lp-course-prerequisites .input-group{
+    display: block !important;
+}
+
+i.men.men-icon-search.header-txtmen.men-icon-search.i-search {
+    color: #373a3c;
+    font-size: 14px;
+}
+#page-local-learningpaths-view #users-popup #available-users-list .form-check-label{
+        display: inline-flex;
+    min-width: 300px;
+    font-size: 14px;
+    font-weight: 400 !important;
+}
+
+.prerequisites-popup fieldset {
+    clear: both;
+}
+@media(max-width: 1680px){
+    #page-local-learningpaths-view div.check form div.fitemtitle{
+        width: 72% !important;
+    }
+}
+
+@media(max-width: 1535px){
+    #page-local-learningpaths-view div.check form div.fitemtitle{
+        width: 80% !important;
+    }
+}
+
+@media(max-width: 1500px){
+    #page-local-learningpaths-view div.check form div.fitemtitle{
+        width: 89% !important;
+    }
+}
+
+@media(max-width: 1349px){
+    #page-local-learningpaths-view div.check form div.fitemtitle{
+        width: 97% !important;
+    }
+}
+
+
+
+@media(max-width: 790px){
+    #page-local-learningpaths-view div#learningpath-users-tab div.content-table,
+    #page-local-learningpaths-view div#learningpath-cohorts-tab div.content-table{
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+}
+
+@media(max-width: 767px){
+    #page-local-learningpaths-index div.plms-learningpaths div.end-date{
+        display: none;
+    }
+    #page-local-learningpaths-index div.plms-learningpaths div.learningpaths-actions{
+        float: right;
+    }
+    #page-local-learningpaths-view div.content-courses div.new-course{
+        margin-top: 55px;
+    }
+    #page-local-learningpaths-view .new-course{
+        margin-top: 55px;
+    }
+    #page-local-learningpaths-view div.new-cohort{
+        margin-top: 55px;
+    }
+    #page-local-learningpaths-view div#users-popup div.modal-dialog,
+    #page-local-learningpaths-view div#courses-popup div.modal-dialog,
+    #page-local-learningpaths-view div#cohorts-popup div.modal-dialog{
+        margin-left: 20px;
+    }
+    #page-local-learningpaths-view li.course-description div.credits,
+    #page-local-learningpaths-view li.course-description div.actions{
+        display: none;
+    }
+    #page-local-learningpaths-view #users-popup .modal-dialog {
+        width: 95% !important;
+        margin: 0 !important;
+    }
+}
+
+
+
+@media(max-width: 543px){
+    #page-local-learningpaths-index div.plms-learningpaths div.lpt-name{
+        /*
+        * @author:- VaibhavG
+        * @since :- 28 Dec 2020
+        * @desc :- #402 Learning path page/ UI / Add block / NAvigation.
+        */
+        width: 100% !important;/*previous value 50%*/
+        padding-bottom: 12px;
+    }
+    #page-local-learningpaths-index div.plms-learningpaths div.learningpaths-actions,
+    #page-local-learningpaths-index div.plms-learningpaths div.start-date{
+        /*
+        * @author:- VaibhavG
+        * @since :- 28 Dec 2020
+        * @desc :- #402 Learning path page/ UI / Add block / NAvigation.
+        */
+        width: 100% !important;/*previous value 50%*/
+    }
+        #page-local-learningpaths-view div.content-courses div.new-course{
+        margin-top: 10px;
+    }
+    #page-local-learningpaths-view .new-course{
+        margin-top: 10px;
+    }
+    #page-local-learningpaths-view div.new-cohort{
+        margin-top: 10px;
+    }
+}
+
+@media(max-width: 466px){
+    #page-local-learningpaths-view ul.nav-tabs li a{
+        border:none;
+    }
+    #page-local-learningpaths-view ul.nav-tabs li{
+        margin-top: 10px;
+    }
+}
+
+@media(max-width: 390px){
+    #page-local-learningpaths-index div.plms-learningpaths div.start-date{
+        padding-bottom: 12px;
+    }
+    #page-local-learningpaths-index div.plms-learningpaths div.learningpaths-actions{
+        width: 100% !important;
+        padding-bottom: 12px;
+        text-align: left;
+        margin-left: 0px;
+        display: none;
+    }
+    #page-local-learningpaths-index .plms-learningpath .lpt-name {
+        padding-left: 0px!important; 
+        padding-right: 0px!important; 
+    }
+    #page-local-learningpaths-index .title_lp_index{
+        display: none;
+    }
+    #page-local-learningpaths-index .plms-learningpaths .cbtn_lp{
+        float: none;
+        padding-left: 0px;
+        margin-left: 0px;
+    }
+}
+
+div.conent-descriptionlp h5{
+    padding-left: 12px;
+}
+
+div#learningpath-view-tab div.overview{
+    padding: 0px 20px;
+}
+
+#page-local-learningpaths-view div.propierty-lp div.propierty-first,
+div.row.propierty-lp,
+div.col-sm-12.title-block,
+#page-local-learningpaths-view div.propierty-second{
+    margin-bottom: 12px;
+}
+
+div.propierty-lp div.propierty-first,
+div.propierty-second,
+div.propierty-third {
+    padding-left: 4px !important;
+}
+.propierty-lp .item p strong {
+    font-weight: 400;
+}
+.row.propierty-lp > div {
+    padding-left: 0 !important;
+}
+
+div.row.description div.description,
+div.content-title.back a{
+    padding-left: 0px;
+}
+
+div.block-lpd{
+    padding-top: 15px;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+button.add-prerequisites{
+    padding: 7px 23px !important
+    margin-left: 0px !important;
+    margin-bottom: 10px;
+    margin-top: 80px;
+}
+
+a div.tooltip.bottom div.tooltip-arrow{
+    top: 7px !important;
+}
+
+a.add-learning-path div.tooltip.fade{
+    padding-bottom: 0px !important;
+}
+
+div.prerequisites-popup div.modal-dialog{
+    width: 50% !important;
+}
+
+div.prerequisites-drag-and-drop div.row.search_course{
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+div.prerequisites-drag-and-drop div.row.title{
+    padding-left: 14px;
+    padding-right: 14px;
+}
+
+div#fgroup_id_buttonar{
+    float: none;
+    text-align: center;
+}
+
+div#fgroup_id_buttonar fieldset.felement{
+    margin: 0px;
+    position: relative;
+    bottom: 27px;
+    left: 27%;
+}
+
+div.items-per-page{
+    display: inline-block;
+}
+
+div.pagination-users ul.pagination{
+    margin-top: 0PX !important;
+}
+
+div.pagination-users ul.pagination li.page-number a{
+    color: #999;
+}
+
+div.pagination-users ul.pagination li.page-number a:hover,
+div.pagination-users ul.pagination li.page-number a:focus{
+    box-shadow: none;
+    border: none;
+}
+
+div.pagination-users ul.pagination li.page-number.previous a,
+div.pagination-users ul.pagination li.page-number.next a{
+    padding-bottom: 0px;
+    padding-top: 0px;
+}
+
+div.pagination-users ul.pagination li.page-number a i.wid{
+    font-size: 14px;
+}
+
+ul#available-prerequisites li.name,
+ul#added-prerequisites li.name{
+    cursor: default !important;
+}
+
+ul#available-prerequisites li.name.active,
+ul#added-prerequisites li.name.active{
+    background-color: #ecebeb;    margin-right: 3px;
+    padding-bottom: 8px;
+}
+
+ul#available-prerequisites li.name span.name-course,
+ul#added-prerequisites li.name span.name-course{
+    display: block;
+    padding: 8px 12px;
+}
+
+#page-local-learningpaths-index div.plms-learningpath div.lpt-name{
+    font-size: 14px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+div.modal-header a i.wid-icon-close-x{
+    padding-right: 5px;
+}
+
+div.conten-img-lp{
+    overflow: hidden;
+   /* text-align: center;*/
+    height: 280px;
+}
+
+@media(max-width: 1200px){
+    div.conten-img-lp{
+        height: 172px;
+    }
+}
+
+@media(max-width: 992px){
+    div.conten-img-lp{
+        height: 190px;
+    }
+}
+
+@media(max-width: 768px){
+    div.conten-img-lp{
+        height: 280px;
+    }
+    #block_lpd_content div.lpd-heading {
+    display: flex !important;
+}
+    #page-local-learningpaths-index div.modal-dialog {
+    width: 85% !important;
+    top: 0px;
+    max-width: 100%;
+}
+    #page-local-learningpaths-index .add-learningspath .modal-content .form-group .contentlabel{
+        display: flex;
+        justify-content: space-between;
+    }
+}
+
+@media(max-width: 550px){
+    div.conten-img-lp{
+        height: 220px;
+    }
+}
+
+@media(max-width: 450px){
+    div.conten-img-lp{
+        height: 270px;
+    }
+}
+
+
+@media(max-width: 420px){
+    div.conten-img-lp{
+        height: 150px;
+    }
+}
+
+@media(max-width: 370px){
+    div.conten-img-lp{
+        height: 110px;
+    }
+}
+
+.js-course-switch {
+    position: relative !important;
+    display: inline-block !important;
+    cursor: pointer;
+    font-weight: 500;
+    text-align: left;
+    margin: 16px;
+    background-color: #9E9E9E !important;
+    border-radius: 8px;
+    height:14px;
+    vertical-align:middle;
+    width:34px;
+    -moz-user-select:none;
+    -khtml-user-select:none;
+    -webkit-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+    box-sizing:content-box;
+    background-clip:content-box;
+}
+
+.js-course-switch > small {
+    background: #fff;
+    background-color: rgb(255, 255, 255);
+    border-radius: 100%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    height: 18px;
+    position: absolute;
+    top: -2px;
+    width: 18px;
+}
+
+#page-local-learningpaths-edit form.plms-display-all input#id_cancel{
+    margin-left: 12px;
+}
+
+#page-local-learningpaths-edit #fitem_id_credits .fitemtitle{
+    width: 20% !important;
+    float: left !important;
+}
+
+#page-local-learningpaths-edit #fitem_id_credits .felement{
+    width: 35% !important;
+    float: left !important;
+}
+
+#page-local-learningpaths-index #fitem_id_credits .fitemtitle{
+    width: 20% !important;
+    float: left !important;
+}
+
+#page-local-learningpaths-index #fitem_id_credits .felement{
+    width: 35% !important;
+    float: left !important;
+}
+
+div#learningcontent div.card.card-block{
+    background: none;
+    box-shadow: none;
+}
+#page-local-learningpaths-index .add-learningspath .modal-content input.form-control,#page-local-learningpaths-index .add-learningspath .modal-content .input-group,#page-local-learningpaths-index .add-learningspath .modal-content div[data-fieldtype=editor] > div,#page-local-learningpaths-index .add-learningspath .modal-content #id_learningpath_image_fieldset .filepicker-filelist{
+    width: 100% !important;
+}
+#page-local-learningpaths-index .add-learningspath .modal-content .mform > .form-group {
+    margin-left: 0rem;
+}
+#page-local-learningpaths-index .add-learningspath .modal-content .options.d-inline.float-right {
+    display: flex !important;
+    justify-content: space-between;
+    width: 37px;
+    padding-top: calc(-0.625rem + 1px);
+    padding-bottom: calc(.375rem + 1px);
+    padding-right: 0;
+}
+.card{
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,.11)!important;
+}
+
+#page-local-learningpaths-edit div#learningcontent div.card.card-block{
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.2), 0 1px 5px 0 rgba(0,0,0,.12);
+    background-color: #fff;
+    padding: 15px;
+}
+
+.plms-learningpath {
+    background-color: #F7F7F6;
+    padding: 0px 10px 0px 30px !important;
+}
+
+span.icon-learning{
+    padding-right: 14px;
+}
+
+div.plms-learningpaths div.new-learning{
+    padding-right: 0px;
+}
+
+div.plms-learningpath span,
+div.plms-learningpath span b{
+    font-size: 13px;
+}
+
+.card-box{
+    box-shadow: 0 1px 6px rgba(0,0,0,0.16), 0 2px 6px rgba(0,0,0,0.23) !important;
+    background-color: #fff;
+}
+
+ul.header.lpd-courses,
+ul#list-course{
+    padding-right: 0px;
+}
+
+ul#list-course div.actions{
+    font-size: 14px;
+}
+
+.mt-table thead, .mt-table tr.header{
+    background-color: #F3F3F3 !important;
+    border-bottom: solid 2px #D9D9D9 !important;
+}
+
+select{
+    height: 34px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+
+div.select-add div.col-xs-10.col-sm-6,
+div.content-search,
+div.select-add div.col-xs-12.col-sm-8.col-md-6.col-lg-6{
+    padding-left: 0px !important;
+}
+
+.moodle-dialogue-hd .close{
+    margin: 0px !important;
+}
+
+.collapsible-actions,
+legend.ftoggler{
+    text-align: left;
+}
+
+div.add-learningspath fieldset#id_general_info div.fcontainer.clearfix div.form-group:first-child{
+    max-width: 100%;
+    text-align: left;
+}
+
+div.add-learningspath div.checkbox label.form-check-label{
+    padding-left: 0px;
+}
+
+div.add-learningspath div.checkbox input[type=checkbox]{
+    vertical-align: middle;
+}
+
+div.add-learningspath fieldset#id_general_info div.fcontainer.clearfix div.form-group:nth-child(4) span.fdate_selector,
+div.add-learningspath fieldset#id_general_info div.fcontainer.clearfix div.form-group:nth-child(5) span.fdate_selector{
+    width: 100%;
+}
+
+@media (max-width: 544px){
+    .modal-dialog {
+        max-width: 100%; 
+        margin: 30px auto;
+    }
+}
+
+.togglebutton label .toggle{
+    content: "";
+    display: inline-block;
+    width: 28px;
+    height: 13px;
+    background-color: rgba(80,80,80,.7);
+    border-radius: 15px;
+    margin-right: 15px;
+    -webkit-transition: background .3s ease;
+    -o-transition: background .3s ease;
+    transition: background .3s ease;
+    vertical-align: middle;
+}
+
+.togglebutton label .toggle:after{
+    content: "";
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background-color: #fff;
+    border-radius: 20px;
+    position: relative;
+    -webkit-box-shadow: 0 1px 3px 1px rgba(0,0,0,.4);
+    box-shadow: 0 1px 3px 1px rgba(0,0,0,.4);
+    left: -5px;
+    top: -2.5px;
+    border: 1px solid rgba(0,0,0,.54);
+    -webkit-transition: left .3s ease,background .3s ease,box-shadow .1s ease;
+    -o-transition: left .3s ease,background .3s ease,box-shadow .1s ease;
+    transition: left .3s ease,background .3s ease,box-shadow .1s ease;
+}
+
+div#courses-popup div.modal-content,
+div#users-popup div.modal-content,
+div#cohorts-popup div.modal-content{
+    margin: auto;
+}
+
+div.header-add-users div.header-title div.form-check.col-sm-12,
+div.header-add-cohorts div.header-title div.form-check.col-sm-12{
+    padding-top: 19px;
+}
+
+td.td-checkbox div.form-check.col-sm-12{
+    padding-bottom: 19px;
+}
+
+div.searchbox-add div.col-sm-12{
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+div.header-title span{
+    color: #000;
+    opacity: 0.84;
+}
+
+div.prerequisites-popup ul#available-prerequisites{
+    list-style: none;
+}
+
+.center{
+    text-align: center;
+}
+
+input#global_search,
+input#search-courses,
+input#search-users,
+input#search-cohorts,
+input.add-cohorts-search,
+input.add-users-search,
+input#add-courses-search,
+input.search_courses{
+    background: none !important;
+}
+
+div.search-course-learning{
+    padding-left: 0px;
+}
+
+div.editor_atto_toolbar{
+    padding-left: 15px;
+    padding-right: 15px;
+    text-align: left;
+}
+
+.form-check .form-check-input{
+    position: relative;
+}
+
+table#table_users tr.users div.form-check,
+div#available-users-list div.form-check{
+    margin-top: 0px;
+}
+
+div.content-select div.select-users{
+    padding-left: 8px !important;
+}
+
+.btn{
+    text-transform: capitalize!important;
+}
+
+#page-local-learningpaths-index section#region-main div.card.card-block{
+    box-shadow: 0px 2px 10px #CBCDD05E !important;
+    padding: 15px;
+}
+
+#page-local-learningpaths-view .ui-tooltip-content {
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    width: 20%;
+    text-align: center;
+}
+
+.p-4 {
+    padding: 1.5rem!important;
+}
+
+.searchbox button {
+    border: 0;
+    background: none;
+    padding: 2px 5px;
+    margin-top: 2px;
+    position: relative;
+    left: 0px;
+    font-size: 14px;
+    z-index: 2;
+}
+
+#global_search,
+input#add-courses-search,
+input.add-users-search,
+input.add-cohorts-search{
+    border: none !important;
+    padding-top: 10px;
+}
+
+div[data-groupname=buttonar] div.form-inline{
+    text-align: left;
+    padding-top: 12px;
+    padding-right: 0px;
+}
+
+div#available-users-list{
+    padding-right: 0px;
+    padding-left: 0px;
+}
+
+#page-local-learningpaths-index div.new-learning a {
+    margin-right: 12px;
+}
+
+i.men-icon-add {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.12), 0 2px 3px rgba(0,0,0,0.24);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    border-radius: 50%;
+}
+
+i.men-icon-add {
+    font-size: 26px;
+}
+
+div.new-learning a.add-learning-path,
+div.new-course a,
+div.new-cohort a{
+    float: right;
+}
+
+.close {
+/*    top: 15px;*/
+    right: 10px;
+    left: auto;
+    position: absolute;
+    background-color: transparent !important;
+   
+}
+
+div.add-learningspath h4#yModalLabel{
+    text-align: center;
+    padding-top:0;
+}
+
+#page-local-learningpaths-view section#region-main div.card.card-block{
+    box-shadow: none !important;
+}
+
+.course-description {
+    background: #F7F7F8;
+    cursor: pointer;
+    padding: 10px 5px;
+}
+
+.progress{
+    margin: 0px;
+}
+
+.pagination>li {
+    display: inline;
+}
+
+ul.pagination-paradiso li span.current-page {
+    background-color: #8BB445 !important;
+    color: #ffffff !important;
+}
+
+.pagination>li>a, .pagination>li>span {
+    position: relative;
+    float: left;
+    padding: 5px 6px;
+    margin-left: -1px;
+    line-height: 1.42857143;
+    color: #428bca;
+    text-decoration: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+/* Written by Dnyaneshwar*/
+#page-local-learningpaths-view .pagination_lp ul li .paginatio{
+padding: 0px 0px 0px 0px !important;    
+}
+#page-local-learningpaths-view .pagination_lp ul{
+    float: none;
+}
+
+label[for="id_enable_startdate"]:before,
+label[for="id_enable_enddate"]:before{
+    top: 31% !important;
+}
+
+div.content-select div.form-check{
+    margin-bottom: 0px;
+}
+
+.table td{
+    vertical-align: bottom ;
+}
+
+div.header-add-cohorts div.header-cohorts{
+    padding-left: 0px;
+}
+
+body#page-local-learningpaths-view .switch input {
+    display: none;
+}
+body#page-local-learningpaths-view .switch {
+    position: relative;
+    display: inline-block;
+    height: 4px !important;
+}
+body#page-local-learningpaths-view .slider {
+    position: absolute;
+    cursor: pointer;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+body#page-local-learningpaths-view .slider:before {
+    position: absolute;
+    content: "";
+    height: 12px;
+    width: 12px;
+    left: 2px;
+    top: 0.5px;
+    bottom: 2.5px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+body#page-local-learningpaths-view input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+body#page-local-learningpaths-view input:checked + .slider:before {
+    -webkit-transform: translateX(16px);
+    -ms-transform: translateX(16px);
+    transform: translateX(16px);
+}
+
+/* Rounded sliders */
+
+body#page-local-learningpaths-view .slider.round {
+    border-radius: 34px;
+}
+
+body#page-local-learningpaths-view .slider.round:before {
+    border-radius: 50%;
+}
+
+/*JaimeT*/
+/*  #page-local-learningpaths-view div.mt-search input {
+   border: none !important;
+} */
+ #page-local-learningpaths-view i.men.men-icon-search.header-txtmen.men-icon-search.i-search {
+	 padding: 9px 0px 9px 13px;
+}
+ #page-local-learningpaths-view .men-icon-add i {
+	 padding-top: 10px;
+}
+ #page-local-learningpaths-view .learningpath-courses-tab:target {
+	 margin-top: -77px;
+}
+ #page-local-learningpaths-view div.new-course a {
+	 padding-top: 10px;
+}
+ /*#page-local-learningpaths-view div.modal-dialog .modal-footer button.btn.btn-primary {
+	 height: 36px;
+	 border-radius: 18px;
+	 -webkit-box-shadow: 0 1px 4px 0 rgba(27, 162, 221, .31);
+	 box-shadow: 0 1px 4px 0 rgba(27, 162, 221, .31);
+	 margin-left: 10px;
+}*/
+ #page-local-learningpaths-view div.modal-dialog form.mform .form-check-label {
+	 padding-left: 2.25rem;
+	 margin-bottom: 0;
+}
+ #page-local-learningpaths-view div.modal-dialog form.mform .form-check-input {
+	 margin-top: 0px;
+	 margin-left: 1rem;
+	 position: inherit !important;
+}
+ #page-local-learningpaths-view div.modal-dialog form.mform .checkbox {
+	 width: auto;
+	 position: relative;
+	 float: left;
+	 padding-left: 0px;
+}
+ #page-local-learningpaths-view div.modal-dialog form.mform div.header-users {
+	 padding-bottom: 0px;
+	 padding-left: 0px;
+}
+ #page-local-learningpaths-view div.modal-dialog form.mform div.header-users .text-muted.btn.btn-default {
+	 padding: 3px 10px;
+}
+ #page-local-learningpaths-view i.men.men-icon-search.header-txtmen.men-icon-search.i-search {
+	 padding: 12px 0 7px 13px;
+}
+ #page-local-learningpaths-view .input-group-btn .btn-default:hover {
+	 background-color: transparent !important;
+}
+ #page-local-learningpaths-view a#learningpath-remove-users {
+	 color: #fff;
+	 visibility: initial !important;
+}
+ #page-local-learningpaths-view #learningpath-courses-tab .wid-bloki:before {
+	 border: 1px solid #9cb0b6;
+	 height: 11px;
+	 width: 11px;
+	 padding: 6px;
+	 border-radius: 50%;
+	 font-size: 12px;
+	 color: #9cb0b6;
+	 background: #fff;
+}
+ #page-local-learningpaths-view .slider.round {
+	 width: 31px;
+	 height: 14px;
+	 border-radius: 7.5px;
+	 box-shadow: -3px 2px 2px 0 rgba(0, 0, 0, 0.15);
+	/*background-color: $brand-primary !important;
+	*/
+}
+ /* #page-local-learningpaths-view .new-button {
+	 border-radius: 3px;
+	 border: solid 1px #c9dce2;
+	 background-color: #fff;
+	 font-weight: 300;
+	 margin-right: 0;
+	 line-height: 18px;
+} */
+ #page-local-learningpaths-view .new-button i {
+	 padding-right: 6px;
+}
+ #page-local-learningpaths-view div.new-course a {
+	     padding-top: 11px !important;
+    padding-bottom: 11px;
+}
+ #page-local-learningpaths-view i.wid-icon-course-inprogress:before {
+	 border: 1px solid #9cb0b6;
+	 height: 8px;
+	 width: 8px;
+	 padding: 3px;
+	 border-radius: 50%;
+	 font-size: 12px;
+	 background: #fff;
+}
+ #page-local-learningpaths-view .wid-icon-course-inprogress:before {
+	 background: #fff !important;
+	 color: #fff;
+}
+ #page-local-learningpaths-view #courses-popup-content, #page-local-learningpaths-view #users-popup-content, #page-local-learningpaths-view #cohorts-popup-content {
+	 padding: 0px 50px 0px 60px;
+}
+ #page-local-learningpaths-view .container_popup {
+	 width: 441px;
+	 border-radius: 3px;
+	 box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.11);
+	 background-color: #fff;
+	 padding: 15px 15px 15px 15px;
+}
+ #page-local-learningpaths-view .content-addcourse {
+	 box-shadow: none !important;
+	 background: none !important;
+}
+ #page-local-learningpaths-view #users-popup .content-addusers {
+	 border-radius: 3px;
+	 box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.11) !important;
+	 background: none !important;
+	 padding: 15px;
+	 margin-top: 19px;
+	 background: #fff !important;
+}
+ #page-local-learningpaths-view #cohorts-popup-content #available-cohorts-list {
+	 margin-top: 19px;
+}
+ #page-local-learningpaths-view .content-addcourse:hover {
+	 box-shadow: 0 2px 4px 0 rgba(35, 77, 103, 0.21);
+	 background-color: #fbfcff;
+}
+ #page-local-learningpaths-view .header-users label {
+	 padding-left: 1.6rem !important;
+}
+ #page-local-learningpaths-view .row.users-lp:hover {
+	 box-shadow: 0 2px 4px 0 rgba(35, 77, 103, 0.21);
+	 background-color: #fbfcff;
+}
+ #page-local-learningpaths-view .header-title span {
+	 font-weight: 600 !important;
+	 padding-left: 0px;
+	 margin-left: 0px;
+}
+ #page-local-learningpaths-view .header-title {
+	 padding-left: 0px;
+	 margin-left: 0px;
+}
+ #page-local-learningpaths-view #courses-popup-content .mt-search input {
+	 width: 442px !important;
+}
+ #page-local-learningpaths-view .tab-content span.search-lp {
+	 position: absolute;
+	 z-index: 99;
+	 top: 0px;
+	 background: none;
+	 left: 0px;
+}
+ #page-local-learningpaths-view .tab-content span.search-lp button {
+	 color: #607d8b; 
+}
+ #page-local-learningpaths-view #cohorts-popup .input-group-btn {
+	 position: absolute;
+	 z-index: 99;
+	 top: -1px !important;
+	 background: none;
+	 left: 0px !important;
+}
+ #page-local-learningpaths-view #cohorts-popup .input-group-btn button {
+	 color: #607d8b;
+}
+ #page-local-learningpaths-view #cohorts-popup .card-box {
+	 background-color: #fff;
+	 width: 441px;
+	 border-radius: 3px;
+	 box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.11);
+	 padding: 15px;
+}
+ #page-local-learningpaths-view #cohorts-popup .cohorts-lp:hover {
+	 box-shadow: 0 2px 4px 0 rgba(35, 77, 103, 0.21);
+	 background-color: #fbfcff;
+}
+ #page-local-learningpaths-view #table_cohorts .check_all {
+	 position: relative;
+	 left: -46px !important;
+}
+ #page-local-learningpaths-view #users-popup-content div.mt-search input {
+	 width: 442px;
+}
+ #page-local-learningpaths-view #cohorts-popup-content div.mt-search input {
+	 width: 442px;
+}
+ #page-local-learningpaths-view #users-popup .count_tittle {
+	 padding-left: 13px;
+}
+ #page-local-learningpaths-view #users-popup #users-popup-content {
+	 font-weight: 300;
+}
+ #page-local-learningpaths-view #cohorts-popup .count_tittle {
+	 padding-left: 13px;
+}
+ #page-local-learningpaths-view #cohorts-popup #available-cohorts-list {
+	 font-weight: 300;
+	 width: auto;
+}
+ #page-local-learningpaths-view .header-cohorts .form-check-label {
+	 padding-left: 1.5rem !important;
+}
+ #page-local-learningpaths-view .text-muted.btn.btn-default {
+	 background: none !important;
+}
+ #page-local-learningpaths-view .prerequisites-popup .mt-search input {
+	 width: 262px !important;
+}
+ #page-local-learningpaths-view .prerequisites-popup .input-group-btn {
+	 position: absolute;
+	 z-index: 99;
+	 top: 3px;
+	 background: none;
+	 left: -6px;
+}
+ #page-local-learningpaths-view .prerequisites-popup .text-muted.btn.btn-default {
+	 background: none !important;
+}
+ #page-local-learningpaths-view .prerequisites-popup .modal-dialog {
+	 width: 803px !important;
+}
+ #page-local-learningpaths-view .prerequisites-popup .head_prerequisites {
+	 text-align: center;
+	 font-weight: 500;
+	 padding: 20px;
+}
+ #page-local-learningpaths-view ul#list-course .prerequisites-popup li {
+	 width: 200px;
+	 height: 35px;
+	 box-shadow: 0 2px 6px 0 rgba(58, 110, 205, 0.16);
+	 background-color: #fff;
+	 margin: 5px 15px;
+	 padding: 0px;
+}
+ #page-local-learningpaths-view ul#list-course .prerequisites-popup li:hover {
+	 color: #fff;
+}
+ #page-local-learningpaths-view ul#list-course .prerequisites-popup li span {
+	 padding: 9px 9px 0 16px;
+}
+ #page-local-learningpaths-view #added-prerequisites li {
+	 box-shadow: 0 2px 6px 0 rgba(58, 110, 205, 0.16);
+	 list-style: none;
+}
+ #page-local-learningpaths-view .prerequisites-popup .modal-body #id_submitbutton {
+	 margin-left: 17px !important;
+}
+ #page-local-learningpaths-view .prerequisites-popup .modal-body span input {
+	 width: 166px !important;
+}
+ #page-local-learningpaths-view .category .new-button {
+	 margin-left: 10px;
+	 border-radius: 3px;
+	 border: solid 1px #c9dce2;
+	 background: #fff !important;
+	 font-size: 13px;
+	 font-weight: 500;
+	 color: #465b65 !important;
+	 line-height:12px;
+}
+ #page-local-learningpaths-view table.card-box {
+	 background: none;
+	 box-shadow: none !important;    border: solid 1px #e2edec;
+}
+ #page-local-learningpaths-view .mt-table tr {
+	 background-color: #fbfcff;
+	 height: 39px;
+	 padding: 1.4rem 0;
+	 position: relative;
+	 border-bottom-left-radius: 3px;
+	 border-top-left-radius: 3px;
+	 margin-bottom: 5px !important;
+	 -webkit-box-shadow: none !important;
+	 color: #465b65 !important;
+	 font-weight: 300;
+	 font-size: 13px;
+}
+ #page-local-learningpaths-view .mt-table tr td {
+	 padding-bottom: 11px !important; font-weight: 500;
+}
+ #page-local-learningpaths-view .mt-table tr td label {
+	 position: relative;
+	 top: 14px;
+}
+ #page-local-learningpaths-view .mt-table tr:hover {
+	 -webkit-box-shadow: 0 2px 9px 0 rgba(58, 110, 205, .16) !important;
+	 box-shadow: 0 2px 9px 0 rgba(58, 110, 205, .16) !important;
+}
+ #page-local-learningpaths-view tr.users .progress {
+	 width: 120px;
+	 height: 7px;
+	 border-radius: 3.5px;
+	 background-color: #eff5fb;
+}
+ #page-local-learningpaths-view .mt-table tr.header {
+	 background: none !important;
+	 border-bottom: none !important;
+	 box-shadow: none !important;
+}
+ #page-local-learningpaths-view .mt-table tr.header th {
+	 font-weight: 300;
+}
+ #page-local-learningpaths-view #courses-popup .modal-dialog .modal-body .input-group-btn {
+	 position: absolute;
+	 z-index: 99;
+	 top: 9px;
+	 background: none;
+	 left: 0px;
+}
+ #page-local-learningpaths-view #courses-popup .modal-dialog div.content-search div#searchbox {
+	 margin-bottom: 20px;
+}
+ #page-local-learningpaths-view #courses-popup .count_tittle {
+	 padding-left: 25px;
+}
+ #page-local-learningpaths-view #courses-popup .container_popup {
+	 font-weight: 300;
+	 z-index: 99999;
+	 width: auto;
+}
+ #page-local-learningpaths-view #courses-popup .header-add-course .checkbox label {
+	 padding-left: 1.3rem !important;
+}
+ #page-local-learningpaths-view #courses-popup .contentlabel {
+	 display: none;
+}
+ #page-local-learningpaths-view #courses-popup .form-inline {
+	 float: none;
+	 position: relative;
+	 margin: auto;
+	 text-align: center;
+}
+ #page-local-learningpaths-view .icons_bullets {
+	 position: relative;
+	 float: left;
+	 padding-right: 10px;
+	 color: #465b65;
+}
+ #page-local-learningpaths-view .name-course p {
+	 overflow: hidden;
+	 white-space: nowrap;
+	 text-overflow: ellipsis;
+	 height: 20px;
+}
+ #page-local-learningpaths-view .name-course p:hover {
+	 color: #fff;
+}
+ #page-local-learningpaths-view .name-course i:hover {
+	 color: #fff;
+}
+ #page-local-learningpaths-view #learningpath-courses-tab {
+	 padding-top: 0px !important;
+	 margin-top: 0px !important;
+}
+ #page-local-learningpaths-view :target {
+	 padding-top: 0px !important;
+	 margin-top: 0px !important;
+}
+ #page-local-learningpaths-view #learningpath-cohorts-tab .content-addcohorts {
+	 position: relative;
+	 float: none;
+	 left: -4px;
+	 top: -13px;
+}
+ #page-local-learningpaths-view .progress {
+	 position: relative;
+	 float: none;
+	 top: 20px;
+	 left: 12px;
+}
+ #page-local-learningpaths-view .porc_line {
+	 width: 53%;
+	 float: right;
+	 position: relative;
+	 top: 7px;
+	 left: 20px;
+}
+ #page-local-learningpaths-view #learningpath-users-tab {
+	 padding-top: 0px !important;
+	 margin-top: 0px !important;
+}
+ #page-local-learningpaths-view .ui-helper-hidden-accessible {
+	 display: none;
+}
+ #page-local-learningpaths-view .ui-tooltip {
+	 width: 90%;
+	 position: relative;
+}
+ #page-local-learningpaths-view .ui-tooltip-content {
+	 background: #000 !important;
+	 color: #fff;
+	 font-weight: 300;
+}
+ #page-local-learningpaths-view div.tooltip.fade {
+	 padding-bottom: 5px !important;
+}
+ #page-local-learningpaths-view #learningpath-courses-list .course_name {
+	 display: flex;
+	 align-items: center;
+}
+ #page-local-learningpaths-view #learningpath-courses-list .course_name i {
+	 font-size: 23px;
+	 color: #94b7c3;
+}
+ #page-local-learningpaths-view #region-main > .card {
+	 overflow-x: visible !important;
+}
+ .prerequisites-popup.in .modal-content .search_course button.btn-default:hover {
+	 background: none !important;
+}
+ .prerequisites-popup.in .modal-content .search_course i::before {
+	 padding-top: -10px;
+	 position: relative;
+	 float: none;
+	 top: -5px;
+}
+ .prerequisites-popup.in .modal-content .center {
+	 display: grid;
+	 align-items: center;
+}
+ div.prerequisites-popup div.modal-dialog {
+	 max-width: none;
+}
+ #prerequisites-popup-14-content #page-local-learningpaths-view ul#list-course li {
+	 height: 30px;
+}
+ #page-local-learningpaths-view ul#list-course li {
+	 height: 30px;
+	 outline: none !important;
+}
+ #page-local-learningpaths-view .breadcrumb-button {
+	 display: none;
+}
+ #page-local-learningpaths-view #learningcontent .content-title {
+	 padding-bottom: 20px;
+}
+ #page-local-learningpaths-view section#region-main div.card.card-block {
+/*	 padding: 0rem;*/
+}
+ #page-local-learningpaths-view .mt-table thead > tr > th, #page-local-learningpaths-view .mt-table tr.header th {
+	 padding: 0px 0px 0px 11px;
+}
+ #page-local-learningpaths-view .mt-table tr td {
+	 padding-top: 0px !important;
+	 margin-top: 0px !important;
+	 position: relative;
+}
+ #page-local-learningpaths-view .td-checkbox center {
+	 padding: 0px !important;
+	 margin: 0px !important;
+}
+ #page-local-learningpaths-view #learningpath-users-tab .mt-table tr td label {
+	 top: 2px;
+}
+ #page-local-learningpaths-view .mt-table tr td td {
+	 padding-top: 0px !important;
+}
+ #page-local-learningpaths-view table#table_users th:nth-child(5) {
+	 width: 180px;
+}
+ #page-local-learningpaths-view table#table_users td:nth-child(5) {
+	 width: 250px;
+}
+ #page-local-learningpaths-view #learningpath-users-tab tr.header .form-check-input {
+	 position: relative;
+	 left: 15px;
+}
+ @media (min-width: 544px) {
+	 #page-local-learningpaths-view .modal-dialog {
+		 max-width: 60% !important;
+		 margin: 30px auto !important;
+
+
+	}
+	 #page-local-learningpaths-view .prerequisites-popup .modal-dialog {
+		 max-width: 766px !important;
+	}
+}
+ #page-local-learningpaths-view .modal-dialog {
+	 position: relative;
+	 width: auto !important;
+	 margin: 10px;
+}
+ #page-local-learningpaths-index .plms-learningpaths .search-course-learning input.form-control, #page-local-learningpaths-view .plms-learningpaths .search-course-learning input.form-control {
+    border-radius: 20.5px;
+    background-color: #f3f7f9;
+    font-size: 13px;
+    font-weight:600;
+    color: #465b65;
+    padding-left: 35px;
+    width: 240px;
+
+}
+ #page-local-learningpaths-index .plms-learningpaths #searchbox i.men-search-phx, #page-local-learningpaths-view .plms-learningpaths #searchbox i.men-search-phx {
+	 position: absolute;
+	 top: 0;
+	 bottom: 0;
+	 margin: auto;
+	 font-size: 16px;
+	 left: 19px;
+	 height: 16px;
+	 width: 16px;
+	 color: #595959;
+	 z-index: 9;
+}
+ #page-local-learningpaths-index .plms-learningpaths .searchbox button, #page-local-learningpaths-view .plms-learningpaths .searchbox button {
+	 border: 0;
+	 background: none;
+	 padding: 2px 5px;
+    /*
+    * @author:- VaibhavG
+    * @since :- 28 Dec 2020
+    * @desc :- #402 Learning path page/ UI / Add block / NAvigation.
+    */
+	 margin-top: 20px;/*previous value 2px*/
+	 position: static;
+	 left: 0px;
+	 font-size: 14px;
+}
+ #page-local-learningpaths-index .plms-learningpaths div.plms-learningpath, #page-local-learningpaths-view .plms-learningpaths div.plms-learningpath {
+	 background-color: #fbfcff;
+    /*
+    * @author:- VaibhavG
+    * @since :- 28 Dec 2020
+    * @desc :- #402 Learning path page/ UI / Add block / NAvigation.
+    */
+	 height: auto;/*previous value 49px*/
+	 padding: 1.4rem 0;
+	 position: relative;
+	 border-bottom-left-radius: 3px;
+	 border-top-left-radius: 3px;
+	 margin-bottom: 5px !important;
+	 box-shadow: none !important;
+	 border-left: 4px solid #dbecf5;
+	 color: #465b65 !important;
+	 font-weight:600;
+	 font-size: 13px;
+}
+ #page-local-learningpaths-index .plms-learningpaths div.plms-learningpath a, #page-local-learningpaths-view .plms-learningpaths div.plms-learningpath a {
+	 color: #465b65 !important;
+	 font-size: 13px;
+}
+ #page-local-learningpaths-index .plms-learningpaths div.plms-learningpath i, #page-local-learningpaths-view .plms-learningpaths div.plms-learningpath i {
+	 color: #94b7c3 !important;
+}
+ #page-local-learningpaths-index .plms-learningpaths div.search-course-learning, #page-local-learningpaths-view .plms-learningpaths div.search-course-learning {
+/*	 margin-left: -9px !important;*/
+	 margin-bottom: 10px;
+	 margin-top: 10px;
+}
+ #page-local-learningpaths-index .plms-learningpaths div.plms-learningpath:hover, #page-local-learningpaths-view .plms-learningpaths div.plms-learningpath:hover {
+	 background-color: #fff;
+	 box-shadow: 0 2px 9px 0 rgba(58, 110, 205, 0.16) !important;
+}
+ #page-local-learningpaths-index .plms-learningpaths .txt-learning, #page-local-learningpaths-view .plms-learningpaths .txt-learning {
+	 width: 390px;
+	 height: 17px;
+	 font-size: 13px;
+	 font-weight: 300;
+	 font-style: normal;
+	 font-stretch: normal;
+	 line-height: 1.38;
+	 letter-spacing: normal;
+}
+ #page-local-learningpaths-index .plms-learningpaths .modal-content, #page-local-learningpaths-view .plms-learningpaths .modal-content {
+	 position: relative;
+	 background-color: #fff;
+	 -webkit-background-clip: padding-box;
+	 background-clip: padding-box;
+	 border: 1px solid rgba(0, 0, 0, .2);
+	 border-radius: 0.3rem;
+	 outline: 0;
+}
+ #page-local-learningpaths-index .plms-learningpaths .cbtn_lp, #page-local-learningpaths-view .plms-learningpaths .cbtn_lp {
+	 float: right;
+}
+ /* #page-local-learningpaths-index .plms-learningpaths .new-button, #page-local-learningpaths-view .plms-learningpaths .new-button {
+	 border-radius: 3px;
+	 border: solid 1px #c9dce2;
+	 background-color: #fff;
+	 font-weight: 300;
+	 margin-right: 0px;
+	 line-height: 18px;
+} */
+ #page-local-learningpaths-index .plms-learningpaths .new-button:hover, #page-local-learningpaths-view .plms-learningpaths .new-button:hover {
+	 color: #fff;
+}
+ #page-local-learningpaths-index .plms-learningpaths i.men.men-icon-phadd.tooltipelement_left, #page-local-learningpaths-view .plms-learningpaths i.men.men-icon-phadd.tooltipelement_left {
+	 padding-right: 6px;
+}
+ @media (min-width: 992px) {
+	 #page-local-learningpaths-index .plms-learningpaths .plms-learningpaths .modal-lg, #page-local-learningpaths-view .plms-learningpaths .plms-learningpaths .modal-lg {
+		 max-width: 799px;
+	}
+	 #page-local-learningpaths-index .plms-learningpaths .modal-body, #page-local-learningpaths-view .plms-learningpaths .modal-body {
+/*		 padding-left: 60px;*/
+		 background: #fbfcff;
+		 border-radius:0;
+		 box-shadow: none;
+	}
+}
+ #page-local-learningpaths-index .plms-learningpaths.p-4, #page-local-learningpaths-view .plms-learningpaths.p-4 {
+	 padding: 0rem !important;
+}
+ #page-local-learningpaths-index .pagination, #page-local-learningpaths-view .pagination {
+	 float: right;
+}
+ #page-local-learningpaths-index .pagination_lp, #page-local-learningpaths-view .pagination_lp {
+	 padding: 0px;
+	 margin: 0px;
+}
+ #page-local-learningpaths-index .pagination_lp ul {
+	 float: right;
+}
+ #page-local-learningpaths-index .pagination_lp ul li, #page-local-learningpaths-view .pagination_lp ul li {
+	 list-style: none;
+	 display: inline-block;
+}
+ #page-local-learningpaths-index .pagination_lp ul li .pagination, #page-local-learningpaths-view .pagination_lp ul li .pagination {
+	 padding: 0px 0px 0px 20px;
+	 margin-bottom: 0rem !important;
+	 margin-left: 0px !important;
+	 float: none;
+	 position: relative;
+	 top: -2px;
+}
+ #page-local-learningpaths-index .pagination_lp li:nth-child(2), #page-local-learningpaths-view .pagination_lp li:nth-child(2) {
+	 float: right;
+}
+ #page-local-learningpaths-index .hidden_count, #page-local-learningpaths-view .hidden_count {
+	 display: none;
+}
+ #page-local-learningpaths-view .content-title {
+	 padding-bottom: 25px;
+}
+ #page-local-learningpaths-view .content-title .col-md-1 {
+	 width: 1.4%;
+	 padding-left: 0px;
+}
+ #page-local-learningpaths-view .content-title .txt-learning {
+	 color: #000;
+	 font-weight: 600;
+}
+ #page-local-learningpaths-view .content-title.back.col-md-12 {
+	 padding-left: 0px;
+}
+ #page-local-learningpaths-view .content-title.back a.back_page i {
+	 font-size: 27px;
+	 padding-top: 0;
+}
+ #page-local-learningpaths-view .tbs-content ul li {
+	 color: #000;
+	 font-weight: 500;
+	 font-size: 14px;
+	 font-style: normal;
+	 font-stretch: normal;
+	 line-height: 1.14;
+	 letter-spacing: 0.2px;
+}
+ #page-local-learningpaths-view #learningpath-view-tab .conent-descriptionlp {
+	 margin-top: 0;
+	 padding-left: 0px;
+}
+ #page-local-learningpaths-view #learningpath-view-tab .conent-descriptionlp .col-sm-3 p {
+	 margin-bottom: 0px;
+}
+ #page-local-learningpaths-view #learningpath-view-tab .conent-descriptionlp .col-sm-3 span i {
+	 position: absolute;
+	 float: left;
+	 left: -3px;
+	 top:7px;
+	 font-size: 11px;
+}
+ #page-local-learningpaths-view #learningpath-view-tab .conent-descriptionlp .col-sm-3 span p {
+	 font-weight: 500;
+	 color: #67747b;
+}
+ #page-local-learningpaths-view #learningpath-view-tab .conent-descriptionlp .col-sm-3 span span {
+	 color: #67747b;
+	 font-weight: 500;
+}
+ #page-local-learningpaths-view #learningpath-view-tab .lp_img_description {
+	 width: 314px;
+	 height: 139px;
+}
+ #page-local-learningpaths-view #learningpath-view-tab div.conten-img-lp {
+	 overflow: hidden;
+	/*text-align: center;
+	*/
+	 height: auto;
+}
+ #page-local-learningpaths-view #learningpath-view-tab .description {
+	 padding-left: 0px;
+}
+ #page-local-learningpaths-view #learningpath-view-tab div.overview {
+	 padding: 0;
+}
+ #page-local-learningpaths-view #learningpath-view-tab .tab-content {
+	 padding: 0px !important;
+}
+ #page-local-learningpaths-view #learningpath-view-tab .img-course {
+	 padding-left: 0px;
+}
+ #page-local-learningpaths-view #learningpath-view-tab .title-block {
+	 padding-left: 0px;
+}
+ #page-local-learningpaths-view section#region-main div.card.card-block .tab-content {
+	 padding: 0px;
+}
+ #page-local-learningpaths-view #block_lpd_content .lpd-lp-detail-head-column {
+	 font-weight: 600;
+}
+ #page-local-learningpaths-view #block_lpd_content .lp-course-row {
+	 height: 39px !important;
+}
+ #page-local-learningpaths-view #block_lpd_content .lp-file {
+	/* border-top: 1px solid #f3f1f1;
+	*/
+	 padding-top: 5px;
+}
+ #page-local-learningpaths-view #block_lpd_content .course-name {
+	 width: 30%;
+	 overflow: hidden;
+	 white-space: nowrap;
+	 text-overflow: ellipsis;
+}
+ #page-local-learningpaths-view #block_lpd_content .start-date {
+	 width: 20%;
+	 overflow: hidden;
+	 white-space: nowrap;
+	 text-overflow: ellipsis;
+}
+ #page-local-learningpaths-view #block_lpd_content .end-date {
+	 width: 20%;
+	 overflow: hidden;
+	 white-space: nowrap;
+	 text-overflow: ellipsis;
+}
+ #page-local-learningpaths-view #block_lpd_content .credits {
+	 width: 10%;
+	 overflow: hidden;
+	 white-space: nowrap;
+	 text-overflow: ellipsis; text-align: center;
+}
+ #page-local-learningpaths-view #block_lpd_content .certificate {
+	 width: 10%;
+	 overflow: hidden;
+	 white-space: nowrap;
+	 text-overflow: ellipsis; text-align: center;
+}
+ #page-local-learningpaths-view #block_lpd_content .data-element {
+	 height: 0px !important;
+}
+ #page-local-learningpaths-view #block_lpd_content .lp-icons {
+	 position: relative;
+	 float: left;
+	 display: flex;
+	 padding-top: 0px;
+}
+ #page-local-learningpaths-view #block_lpd_content .canvas {
+	 float: none;
+	 top: 20px;
+}
+ @media (max-width: 543px) {
+	 #page-local-learningpaths-view #block_lpd_content .course-name {
+		 width: auto;
+		 float: left;
+	}
+	 #page-local-learningpaths-view #block_lpd_content .start-date {
+		 width: auto;
+		 float: left;
+	}
+	 #page-local-learningpaths-view #block_lpd_content .end-date {
+		 width: auto;
+		 float: left;
+	}
+	 #page-local-learningpaths-view #block_lpd_content .credits {
+		 width: auto;
+		 float: left;
+	}
+	 #page-local-learningpaths-view #block_lpd_content .certificate {
+		 width: auto;
+		 float: left;
+	}
+}
+ #page-local-learningpaths-view .modal-content .content-addusers input[type="checkbox"].vsl_2 {
+	 display: none !important;
+}
+ #page-local-learningpaths-view .modal-content .content-addusers .users-lp label {
+	 width: 135px;
+}
+ #learningpath-notifications-tab {
+	 font-weight: 500;
+}
+ #learningpath-notifications-tab .txt_area_notifications .contentlabel {
+	 display: none;
+}
+ #learningpath-notifications-tab .txt_area_notifications .felement {
+	 width: 100%;
+}
+ #learningpath-notifications-tab .txt_area_txt2 label {
+	 width: 180px;
+	 font-weight: 500;
+}
+ #learningpath-notifications-tab .txt_area_notifications div[data-fieldtype=editor] > div {
+	 width: 100% !important;
+	 height: 20% !important;
+}
+ #learningpath-notifications-tab .txt_area_notifications #id_enrollment_editoreditable, #learningpath-notifications-tab .txt_area_notifications #id_expiration_editoreditable, #learningpath-notifications-tab .txt_area_notifications #id_enreminder_editoreditable, #learningpath-notifications-tab .txt_area_notifications #id_exreminder_editoreditable, #learningpath-notifications-tab .txt_area_notifications #id_notifications_editoreditable {
+	 height: 160px !important;
+	 min-height: 160px !important;
+}
+ #learningpath-notifications-tab .txt_area_notifications .editor_atto_toolbar {
+	padding: 0px;
+    margin: 0px;
+    border: 1px solid #ced4da;
+    background: transparent;
+}
+ #learningpath-notifications-tab .txt_area_notifications div.editor_atto_toolbar div.atto_group {
+	 margin: 0 !important;
+	 border: none;
+	 border-bottom: none;
+}
+ #learningpath-notifications-tab .txt_area_notifications div.editor_atto_toolbar button {
+	 padding: none;
+	 border-left: none;
+	 color: #607d8b;
+}
+ #learningpath-notifications-tab .txt_area_notifications .atto_group.collapse_group {
+	 background-color: #fff !important;
+	 box-shadow: none !important;
+}
+ #learningpath-notifications-tab .txt_area_notifications div.form-group.row.fitem.femptylabel {
+	 margin-bottom: -20px;
+}
+ #learningpath-notifications-tab .txt_area_notifications p.tag_desc {
+	     margin-bottom: 40px;
+    margin-top: 31px;
+    font-weight: 500;
+    font-size: .75rem;
+}
+ #learningpath-notifications-tab div.enrollment-reminder div.form-group.row + div.form-group.row input.form-control {
+	 width: 20% !important;
+}
+ #learningpath-notifications-tab div.check form {
+	 display: inline-block;
+}
+ @media (min-width: 768px) {
+	 #learningpath-notifications-tab div.check {
+		 padding-left: 0px;
+		 padding-right: 0px;
+	}
+}
+ #learningpath-notifications-tab div.editor_atto_notification {
+	 display: none;
+}
+ @media (max-width: 1162px) {
+	 #learningpath-notifications-tab .txt_area_txt2 label {
+		 width: auto !important;
+	}
+}
+ @media (max-width: 952px) {
+	 #learningpath-notifications-tab .txt_area_txt2 label {
+		 position: relative;
+		 float: left;
+		 left: -17px;
+	}
+}
+ #page-local-learningpaths-index .title_lp_index {
+	 font-weight: 300;
+}
+ #page-local-learningpaths-index .title_lp_index .lpt-name {
+    /*
+    * @author:- VaibhavG
+    * @since :- 28 Dec 2020
+    * @desc :- #402 Learning path page/ UI / Add block / NAvigation.
+    */
+	 padding-left: 15px !important;/*previous value 50px*/
+}
+ #page-local-learningpaths-index .plms-learningpath .lpt-name {
+    /*
+    * @author:- VaibhavG
+    * @since :- 28 Dec 2020
+    * @desc :- #402 Learning path page/ UI / Add block / NAvigation.
+    */
+	 padding-left: 15px !important;/*previous value 50px */
+	 padding-right: 15px !important;/*previous value 50px */
+}
+ #page-local-learningpaths-index .txt-learning {
+	 font-weight: 600;
+
+}
+ #page-local-learningpaths-index .plms-learningpaths .new-button i {
+	 padding-right: 5px;
+}
+ @media (min-width: 324px) and (max-width: 1240px) {
+	 #page-local-learningpaths-index #list-course .course_name:not(i) {
+		 overflow: hidden;
+		 white-space: nowrap;
+		 height: 34px;
+		 padding-top: 2.5px;
+	}
+	 #page-local-learningpaths-index #list-course .course_name i {
+		 padding-right: 22px !important;
+	}
+}
+ @media screen and (max-width: 991px) {
+	 #page-local-learningpaths-index div.lpd-lp-detail-head-column.credits.col-sm-1.col-md-1.col-lg-1 {
+		 margin-left: -10px !important;
+		 padding-left: 20px !important;
+	}
+	 #page-local-learningpaths-index div.lpd-lp-detail-head-column.end-date.col-sm-2.col-md-2.col-lg-2 {
+		 margin-left: 2px !important;
+		 padding-left: 6px !important;
+	}
+	 #page-local-learningpaths-index div.lpd-lp-detail-head-column.start-date.col-sm-2.col-md-2.col-lg-2 {
+		 padding-left: 7px !important;
+		 margin-left: 6px !important;
+	}
+	 #page-local-learningpaths-index div.lp-file.credits.col-sm-1.col-md-1.col-lg-1 {
+		 margin-left: -10px;
+	}
+	 #page-local-learningpaths-index #block_lpd_content .certificate {
+		 width: 11% !important;
+	}
+	 #page-local-learningpaths-index #block_lpd_content .lp-file.end-date {
+		 left: 39px !important;
+	}
+}
+ @media screen and (min-width: 1220px) and (max-width: 1500px) {
+	 #page-local-learningpaths-index .lpd-lp-detail-head-column {
+		 margin-left: -1px;
+	}
+	 #page-local-learningpaths-index .lpd-lp-detail-head-column.end-date {
+		 margin-left: -7px;
+	}
+	 #page-local-learningpaths-index .lpd-lp-detail-head-column.credits {
+		 left: -26px !important;
+	}
+	 #page-local-learningpaths-index .certificate {
+		 width: 12%;
+	}
+	 #page-local-learningpaths-index .lpd-lp-detail-head-column.certificate {
+		 margin-left: 28px !important;
+	}
+}
+ @media screen and (min-width: 1501px) and (max-width: 1600px) {
+	 #page-local-learningpaths-index .lpd-lp-detail-head-column {
+		 margin-left: -3px;
+	}
+	 #page-local-learningpaths-index .lpd-lp-detail-head-column.end-date {
+		 margin-left: -5px;
+	}
+	 #page-local-learningpaths-index .lpd-lp-detail-head-column.credits {
+		 left: -27px !important;
+	}
+	 #page-local-learningpaths-index .certificate {
+		 width: 12%;
+	}
+	 #page-local-learningpaths-index .lpd-lp-detail-head-column.certificate {
+		 margin-left: 28px !important;
+	}
+	 #page-local-learningpaths-index .lpd-lp-detail-head-column.course-name {
+		 margin-left: 6px;
+	}
+	 #page-local-learningpaths-index .lpd-lp-detail-head-column.start-date {
+		 margin-left: -9px;
+	}
+}
+ @media screen and (min-width: 1601px) and (max-width: 1730px) {
+	 #page-local-learningpaths-index .lpd-lp-detail-head-column.start-date {
+		 margin-left: -10px !important;
+	}
+	 #page-local-learningpaths-index .lpd-lp-detail-head-column.end-date {
+		 margin-left: -9px !important;
+	}
+	 #page-local-learningpaths-index .lpd-lp-detail-head-column.credits {
+		 left: -33px !important;
+	}
+	 #page-local-learningpaths-index .lpd-lp-detail-head-column.certificate {
+		 margin-left: 35px !important;
+	}
+}
+ @media screen and (min-width: 1731px) and (max-width: 1870px) {
+	 #page-local-learningpaths-index .lpd-lp-detail-head-column.start-date {
+		 margin-left: -12px !important;
+	}
+	 #page-local-learningpaths-index .lpd-lp-detail-head-column.end-date {
+		 margin-left: -11px !important;
+	}
+	 #page-local-learningpaths-index .lpd-lp-detail-head-column.credits {
+		 left: -49px !important;
+		 margin-left: 12px;
+	}
+	 #page-local-learningpaths-index .lpd-lp-detail-head-column.certificate {
+		 margin-left: 35px !important;
+	}
+}
+ @media screen and (min-width: 1871px) {
+	 #page-local-learningpaths-index .lpd-lp-detail-head-column.start-date {
+		 margin-left: -15px !important;
+	}
+	 #page-local-learningpaths-index .lpd-lp-detail-head-column.end-date {
+		 margin-left: -11px !important;
+	}
+	 #page-local-learningpaths-index .lpd-lp-detail-head-column.credits {
+		 left: -49px !important;
+		 margin-left: 12px;
+	}
+	 #page-local-learningpaths-index .lpd-lp-detail-head-column.certificate {
+		 margin-left: 35px !important;
+	}
+}
+ .row.course-lp:hover {
+	 -webkit-box-shadow: 0px 0px 10px 0px rgba(35, 77, 103, .21);
+	 box-shadow: 0px 0px 10px 0px rgba(35, 77, 103, .21);
+	 background-color: #fbfcff !important;
+}
+ .row.course-lp {
+	 background-color: #fff !important;
+}
+ tr.users .progress {
+	 margin-left: -10px;
+}
+ #page-local-learningpaths-view div.modal-dialog button.remove-prerequisites {
+	 background-color: #fff !important;
+	 color: #768c94 !important;
+	 border-color: #768c94 !important;
+}
+ .course-lp.checkbbg label.form-check-label {
+	 color: #000;
+}
+ .email_template_position {
+	 position: relative;
+	 float: none;
+	 top: 0;
+}
+ .email_template_position2 {
+	 position: relative;
+	 float: none;
+	 top: 0;
+}
+ #page-local-learningpaths-view table#table_users div.progress {
+	 position: relative;
+	 float: none;
+	 top: 20px;
+	 left: 0 !important;
+	 margin-left: 0px;
+}
+ #page-local-learningpaths-view select.lp_pagination {
+	 margin-top: -2px;
+}
+ #page-local-learningpaths-view .name.ui-sortable-handle.active p, #page-local-learningpaths-view .name.ui-sortable-handle.active .name-course {
+	 color: #fff;    padding-bottom: 1px;
+    height: auto; 
+    margin-bottom: 0;
+}
+ #users-popup-content .content-search .input-group-btn {
+	 position: absolute;
+	 z-index: 4;
+	 left: 8px;
+	 top: 2px;
+}
+ #page-local-learningpaths-view table#table_users tr.users {
+	 background: #fbfcff;
+	 line-height: 1.38;
+	 letter-spacing: normal;
+	 display: flex;
+	 align-items: center;
+	 width: 100% !important;
+}
+ #page-local-learningpaths-view table#table_users tr.users td.allcheck label.form-check-label input.form-check-input {
+	 position: static !important;
+	 margin-left: 0px !important;
+}
+ #page-local-learningpaths-view table#table_users tbody tr.users td.td-checkbox div.form-check {
+	 padding-left: 0px !important;
+}
+ #page-local-learningpaths-view table#table_users tbody tr.users td.td-checkbox div.form-check label.form-check-label input {
+	 position: static !important;
+	 margin-left: 0px !important;
+}
+ #page-local-learningpaths-view table#table_users td.firstname {
+	 width: 33% !important;
+}
+ #page-local-learningpaths-view table#table_users td.lastname {
+	 width: 20% !important;
+}
+ #page-local-learningpaths-view table#table_users td.date {
+	 width: 14% !important;
+}
+ #page-local-learningpaths-view table#table_users td:nth-child(5) {
+	 width: 35% !important;
+}
+ #page-local-learningpaths-view table#table_users tr.users.head {
+	 background-color: transparent;
+}
+ #page-local-learningpaths-view table#table_users tr.users {
+	 height: 45px;
+}
+ #page-local-learningpaths-view div#learningpath-users-tab div.content-addusers .right-row {
+	 float: right;
+}
+ .tab-pane div.input-group-btn, .tab-pane div.input-group div {
+	 width: 100%;
+}
+ #page-local-learningpaths-view .modal-header {
+	 margin: 15px; padding: 6px;
+}
+ #page-local-learningpaths-view .header-add-course .header-courses .header-title span {
+	 margin-left: 2.5rem;
+}
+ #page-local-learningpaths-view #courses-popup .modal-dialog {
+	 width: 40%;
+}
+ #page-local-learningpaths-view #courses-popup div[data-fieldtype="submit"] {
+	 text-align: center;
+	 margin-left:0;
+}
+ #page-local-learningpaths-view #users-popup .modal-dialog {
+    width: 55% !important;
+    max-width: 55% !important;
+    top: unset;
+    margin-top: 10px !important;
+}
+ #page-local-learningpaths-view #cohorts-popup .modal-dialog {
+	 width: 40% !important;
+}
+ #page-local-learningpaths-view #cohorts-popup div[data-fieldtype="submit"] {
+	 text-align: center;
+}
+ #page-local-learningpaths-view #cohorts-popup .header-add-cohorts .header-cohorts .header-title span {
+	 margin-left: 2.5rem;
+}
+ #page-local-learningpaths-view #cohorts-popup div[data-groupname="buttonar"] {
+	 margin-top: 10px;
+}
+ /* #page-local-learningpaths-view #users-popup .modal-dialog {
+	 width: 33%;
+} */
+ #page-local-learningpaths-view #users-popup .modal-dialog div.contentlabel {
+	 width: 25%;
+}
+ #page-local-learningpaths-view #users-popup div[data-fieldtype="submit"] {
+	 text-align: center;
+}
+ #page-local-learningpaths-view .pagination_lp .clase1 ul {
+	 padding-right: 0rem !important;
+}
+#page-local-learningpaths-view div#users-popup-content .pagination_lp .clase1 ul {
+    padding: 0 !important;
+    width: 100%;
+}
+ #page-local-learningpaths-view .pagination_lp ul li .pagination {
+	 padding: 0px;
+}
+ #page-local-learningpaths-view .form-check-input {
+	 margin-left: 0px !important;
+}
+ @media (min-width: 1400px) {
+	 body#page-local-learningpaths-index div.adddates div.input-group, body#page-local-learningpaths-edit div.adddates div.input-group {
+		 width: 80%;
+		 vertical-align: middle;
+	}
+}
+ .block_paradiso_team .pagination {
+	 margin-top: 10px;
+	 padding-right: 0rem !important;
+}
+ .plms-learningpaths .new-learning .form-group.fitem.adddates {
+	 margin-bottom: 0px !important;
+}
+ div.pagination_lp {
+	 margin-top: 22px !important;
+}
+ div.pagination_lp select#id_userpopupperpage {
+	 width: 100% !important;
+      height: 28px !important;
+      padding: 0 !important;
+}
+ div.contentenrollusers {
+	 overflow-x: hidden;
+	 overflow-y: scroll;
+	 max-height: 40vh;
+}
+
+ #available-cohorts-list .header-cohorts .header-title, #available-cohorts-list .cohorts-lp .checkbox {
+	 margin-left: 5px !important;
+}
+
+#page-local-learningpaths-view #users-popup #users-popup-content .form-group.fitem {
+    clear: both;
+}
+/*#users-popup .pagination_lp li:nth-child(1) {
+    margin-right: 10px;
+}*/
+#page-local-learningpaths-view #users-popup div#users-popup-content {
+    padding: 0px;
+}
+#page-local-learningpaths-view div.modal-dialog div.modal-body {
+    padding-bottom: 0px !important; padding-top: 0;
+}
+#page-local-learningpaths-edit .bootstrap-datetimepicker-widget.dropdown-menu.usetwentyfour.top.open .datepicker .table-condensed th.dow, td{
+    /*padding:5px !important;*/
+    padding: 5px 5px 0px 5px !important;
+}
+#page-local-learningpaths-edit .bootstrap-datetimepicker-widget.dropdown-menu.usetwentyfour.top.open .datepicker ,
+#page-local-learningpaths-index .bootstrap-datetimepicker-widget.dropdown-menu.usetwentyfour.top.open .datepicker {
+    width: auto;
+    border: 1px solid;
+    margin-right: 0;
+    padding: 0px;
+}
+#page-local-learningpaths-edit  .bootstrap-datetimepicker-widget .datepicker table.table-condensed  thead tr:nth-child(2) ,
+#page-local-learningpaths-index  .bootstrap-datetimepicker-widget .datepicker table.table-condensed  thead tr:nth-child(2) {
+    background: rgba(222,235,247,.75);
+}
+#page-local-learningpaths-edit  .bootstrap-datetimepicker-widget .datepicker table.table-condensed  thead tr:nth-child(2) th.dow,
+#page-local-learningpaths-index  .bootstrap-datetimepicker-widget .datepicker table.table-condensed  thead tr:nth-child(2) th.dow {
+    color: #1ba2dd;
+    padding: 12px 10px;
+}
+#page-local-learningpaths-edit  .bootstrap-datetimepicker-widget .datepicker table.table-condensed tr:nth-child(1) th ,
+#page-local-learningpaths-index  .bootstrap-datetimepicker-widget .datepicker table.table-condensed tr:nth-child(1) th {
+    padding-top: 10px !important;
+    padding-bottom: 10px;
+    text-align: center;
+    color: #1ba2dd;
+}
+#page-local-learningpaths-edit .bootstrap-datetimepicker-widget .datepicker table.table-condensed tbody tr td div,
+#page-local-learningpaths-index .bootstrap-datetimepicker-widget .datepicker table.table-condensed tbody tr td div {
+    color: #212529!important;
+    font-size: 13px !important;
+    padding: 5px 3px;
+    cursor: pointer;
+    text-align: center;
+}
+#page-local-learningpaths-edit  .bootstrap-datetimepicker-widget .datepicker ,
+#page-local-learningpaths-index  .bootstrap-datetimepicker-widget .datepicker {
+    border: solid 1px rgba(27,162,221,.56);
+    box-shadow: 0 1px 5px 0 rgba(27,162,221,.9);
+    -webkit-box-shadow: 0 1px 5px 0 rgba(27,162,221,.9);
+    -ms-box-shadow: 0 1px 5px 0 rgba(27,162,221,.9);
+    -o-box-shadow: 0 1px 5px 0 rgba(27,162,221,.9);
+    -moz-box-shadow: 0 1px 5px 0 rgba(27,162,221,.9);
+}
+
+#page-local-learningpaths-edit .bootstrap-datetimepicker-widget .datepicker-months span.month , 
+#page-local-learningpaths-edit .bootstrap-datetimepicker-widget .datepicker-years span.year ,
+#page-local-learningpaths-index .bootstrap-datetimepicker-widget .datepicker-months span.month , 
+#page-local-learningpaths-index .bootstrap-datetimepicker-widget .datepicker-years span.year {
+    border: 1px solid;
+    width: 32.33% !important;
+    display: inline-block;
+    text-align: center;
+    margin: 1px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#page-local-learningpaths-view .modal.show{
+    overflow: auto !important;
+}
+
+.plms-learningpaths .modal-header {
+    padding: 13px;
+}
+.adddates .col-xl-4 {
+    font-weight:500;
+    font-size: .875rem;
+    line-height: 22px;
+    padding-left: 0;    color: #4c5a73;
+}
+.edw-form-label {
+    font-weight: 500;
+    font-size: .875rem !important;
+}
+.modal-body .edw-form-label {
+    color: #4c5a73 !important;
+}
+#block_lpd_content .alert {
+    padding: 0;
+}
+.pagination_lp .clase1 li div {
+    padding-top: 0 !important;
+    font-weight: 400;
+}
+#page-local-learningpaths-view #parent_scrollable div.mt-search button {
+    margin-bottom: 0px !important;
+    left: 1px;
+    top: 0px;
+}
+#page-local-learningpaths-view #table_users.table td {
+    vertical-align: middle;
+    border-top: 0;
+}
+#page-local-learningpaths-view tbody {
+    border-left: 0;
+    border-right: 0;
+}
+#page-local-learningpaths-view #parent_scrollable #cohorts-popup-content div.mt-search button {
+    margin-bottom: 0px !important;
+    left: -13px;
+    top: 4px;
+}
+#page-local-learningpaths-view #users-popup #parent_scrollable div.mt-search button {
+    margin-bottom: 0px !important;
+    left: 29px;
+    top: 9px;
+}
+#page-local-learningpaths-view #table_cohorts th {
+    padding: 14px;
+}
+#table_cohorts .form-check .form-check-label {
+    margin-right: 13px;
+}
+.lp-course-prerequisites i.men.men-search-phx.fa.fa-search.header-txtmen.men-icon-search.i-search {
+    padding-left: 7px !important;
+}
+.plms-learningpaths .new-learning .form-group.fitem.adddates .buttonhelp i {
+    font-size: 19px;
+}
+a#learningpath-remove-cohorts i.fa{
+  color:  #465b65 !important
+}
+button.add-prerequisites.btn.btn-primary.btn-round {
+    /* height: 30px; */
+    padding: 7px 24px !important;
+    border-radius: 5px;
+}
+#page-local-learningpaths-index .row.course-lp.checkbbg, #page-local-learningpaths-view .row.course-lp.checkbbg{
+    background-color:#efefef !important; color: #000;
+}
+#available-prerequisites li.name.ui-sortable-handle p {
+    height: auto;
+    margin-bottom: 0;
+}

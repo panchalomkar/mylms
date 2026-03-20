@@ -1,0 +1,27 @@
+{{#add_learningpath_popup}}
+<div class="col-xs-4 col-sm-8 new-learning">
+  <div class="create-buttons cbtn_lp">
+    <span class="course">
+      <a href="#" class="btn btn-primary new-button" data-toggle="modal" data-target="#largeModal">
+        <i class="fa fa-plus-circle tooltipelement_left"></i>
+          <span>{{#str}}add_learning, local_learningpaths{{/str}}</span>
+      </a>
+    </span>
+  </div>
+  <div class="modal fade add-learningspath" id="largeModal" aria-labelledby="largeModal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="yModalLabel">{{#str}}create, local_learningpaths{{/str}}</h4>
+            <span class="close" data-dismiss="modal" aria-hidden="true">
+              <i class="wid wid-icon-close-x fa fa-close"></i>
+            </span>
+        </div>
+          <div class="modal-body">
+          {{{render_form}}}
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{/add_learningpath_popup}}

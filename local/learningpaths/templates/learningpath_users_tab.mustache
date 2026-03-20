@@ -1,0 +1,42 @@
+{{#learningpath_users_tab}}
+  <div class="content-search">
+    <div class="row searchbox-add">
+      <div class="col-sm-6">
+        <div class="searchbox" id="searchbox" role="search">
+          <div class="mt-search input-group custom-search-form">
+            <span class="input-group-btn search-lp">
+              <button type="button" onclick aria-label="" id="btn-search-users">
+                <i class="men men men-search-phx fa fa-search header-txt i-search"></i>
+              </button>
+            </span>
+              <div class="">
+                  <input class="form-control " type="text" placeholder="{{#str}}search_users, local_learningpaths{{/str}}" aria-label="" onkeyup="" value="{{user}}" id="search-users" name="search-users" for="search-users">
+              </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-addusers col-sm-6">
+        <div class="row select-add right-row">
+          <div class="new-course">
+          {{#has_delete_lp}}
+            <span class="category">
+              <a href="#" id="learningpath-remove-users" class="btn btn-primary new-button">
+                <i class="wid wid-icon-close" title="{{#str}}delete_users, local_learningpaths{{/str}}"></i>
+                <span>{{#str}}delete_users, local_learningpaths{{/str}}</span>
+              </a>
+            </span>
+          {{/has_delete_lp}}
+              <span class="course">
+                <a href="#" id="add-users-lp" class="btn btn-primary new-button" data-toggle="modal" data-target="#users-popup">
+                  <i class="fa fa-plus-circle" title=""></i>
+                    <span>{{#str}}enroll_users, local_learningpaths{{/str}}</span>
+                </a>
+              </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {{{userlist}}}
+{{/learningpath_users_tab}}

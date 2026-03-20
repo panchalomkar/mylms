@@ -130,67 +130,73 @@ echo $OUTPUT->header();
     <!-- MAIN AREA -->
     <main id="half-content" class="flex-1 flex flex-col">
         <!-- Course Header -->
-        <div class="p-8 bg-light rounded-b-lg shadow-sm">
-      
-            <h1 class="text-3xl font-bold text-text-light dark:text-text-dark d-flex gap-3" style="align-items: center;">
-                     <a href="<?php echo $CFG->wwwroot; ?>/my" 
-       class="flex items-center justify-center w-5 h-5 p-3 rounded-full bg-[#003152] text-white hover:bg-[#00253d] transition"
-       title="Back to Dashboard">
-        <span class="material-icons">undo</span>
-    </a>   <?php echo format_string($course->fullname); ?>
-            </h1>
+        <div class="p-8 bg-light rounded-b-lg shadow-sm mb-2 pb-3">
 
-            <?php if (!empty(trim(strip_tags($course->summary)))): ?>
-                <p class="mt-2 text-subtext-light dark:text-subtext-dark">
-                    <?php echo format_text($course->summary, FORMAT_HTML); ?>
-                </p>
-            <?php else: ?>
-                <p class="mt-2 text-subtext-light dark:text-subtext-dark">No course summary available.</p>
-            <?php endif; ?>
+<div class="flex justify-between items-start">
 
-            <div class="flex items-center mt-4  text-sm text-subtext-light dark:text-subtext-dark space-x-4">
-                <div class="flex items-center">
-                   <?php
-require_once($CFG->dirroot.'/blocks/edwiserratingreview/classes/dbhandler.php');
-$dbh = new \block_edwiserratingreview\dbhandler();
-$ratingdata = $dbh->get_avg_rating_stat_data($courseid);
-?>
+    <!-- LEFT SIDE : Course Title + Summary -->
+    <div class="flex flex-col">
 
-<?php
-$avg = round($ratingdata['averagerating'], 1);
-$fullstars = floor($avg);
-$emptystars = 5 - $fullstars;
-?>
+        <!-- Course Name -->
+        <h1 class="text-3xl font-bold text-text-light dark:text-text-dark flex gap-3 items-center">
+            <a href="<?php echo $CFG->wwwroot; ?>/my" 
+               class="flex items-center justify-center w-5 h-5 p-3 rounded-full bg-[#003152] text-white hover:bg-[#00253d] transition"
+               title="Back to Dashboard">
+                <span class="material-icons">undo</span>
+            </a>
+            <?php echo format_string($course->fullname); ?>
+        </h1>
 
-<div class="flex items-center text-sm space-x-2">
+        <!-- Course Summary -->
+        <?php if (!empty(trim(strip_tags($course->summary)))): ?>
+            <p class="mt-2 text-sm text-subtext-light dark:text-subtext-dark max-w-3xl">
+                <?php echo format_text($course->summary, FORMAT_HTML); ?>
+            </p>
+        <?php endif; ?>
 
-    <!-- Stars -->
-    <div class="flex">
-        <?php for ($i = 0; $i < $fullstars; $i++): ?>
-            <span class="material-icons text-yellow-500 text-base">star</span>
-        <?php endfor; ?>
-
-        <?php for ($i = 0; $i < $emptystars; $i++): ?>
-            <span class="material-icons text-gray-300 text-base">star</span>
-        <?php endfor; ?>
     </div>
 
-    <!-- Rating Text -->
-    <div class="flex items-center space-x-1">
-        <span class="font-semibold"><?= $avg ?></span>
-        <span class="font-semibold">(<?= $ratingdata['ratingcount']; ?> Reviews)</span>
+
+    <!-- RIGHT SIDE : Rating -->
+    <?php
+    require_once($CFG->dirroot.'/blocks/edwiserratingreview/classes/dbhandler.php');
+    $dbh = new \block_edwiserratingreview\dbhandler();
+    $ratingdata = $dbh->get_avg_rating_stat_data($courseid);
+
+    $avg = round($ratingdata['averagerating'], 1);
+    $fullstars = floor($avg);
+    $emptystars = 5 - $fullstars;
+    ?>
+
+    <div class="flex items-center text-sm space-x-2">
+
+        <!-- Stars -->
+        <div class="flex">
+            <?php for ($i = 0; $i < $fullstars; $i++): ?>
+                <span class="material-icons text-yellow-500 text-base">star</span>
+            <?php endfor; ?>
+
+            <?php for ($i = 0; $i < $emptystars; $i++): ?>
+                <span class="material-icons text-gray-300 text-base">star</span>
+            <?php endfor; ?>
+        </div>
+
+        <!-- Rating -->
+        <div class="flex items-center space-x-1">
+            <span class="font-semibold"><?= $avg ?></span>
+            <span class="font-semibold">(<?= $ratingdata['ratingcount']; ?> Reviews)</span>
+        </div>
+
+        <!-- Add Review Icon -->
+        <span id="openReviewModal"
+            class="material-icons cursor-pointer text-[#003152] hover:text-[#ec9707] text-xl ml-2"
+            title="Add Review">
+            rate_review
+        </span>
+
     </div>
-<button id="openReviewModal"
-    class="ml-4 bg-[#003152] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#00253d] transition ">
-    Write a Review
-</button>
+
 </div>
-
-                </div>
-                <span class="d-none"><?php echo rand(5,20) . "h total"; ?></span>
-                <span class="d-none">Updated <?php echo rand(1,7); ?>d ago</span>
-                <span class="d-none"><?php echo rand(3,10); ?>+ languages</span>
-            </div>
 
             <div class="mt-4 flex items-center space-x-2">
                 <button id="announcementBtn" class="flex items-center bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 text-sm" style="border-color:#ec9707;">
@@ -220,15 +226,16 @@ $emptystars = 5 - $fullstars;
         </div>
 
         <!-- Dynamic Content Area -->
-           <div id="content-area1" >
-            
-        </div>
-        <div id="content-area" class="flex-grow flex flex-col items-center justify-center text-center p-8">
+    
+        <div id="content-area" class="flex-grow flex flex-col items-center justify-center text-center p-8 pt-0">
             <span class="material-icons text-6xl text-gray-400 mb-4">play_circle</span>
             <h2 class="text-2xl font-semibold text-text-light dark:text-text-dark">Select a lesson to begin</h2>
             <p class="mt-2 max-w-md text-subtext-light dark:text-subtext-dark">
                 Choose a lesson from the sidebar to view its content here.
             </p>
+        </div>
+               <div id="content-area1" >
+            
         </div>
     </main>
 </div>
@@ -524,6 +531,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             area.innerHTML = ` <div class="text-gray-400 p-8">Loading Content...</div> `;
              area1.innerHTML = ` ${getNavigationHTML(cmid)} `;
+             
             try {
 
                 if (modname === 'customcert' || modname === 'iomadcertificate') {
@@ -547,7 +555,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const imgUrl = canvas.toDataURL('image/png');
 
                     area.innerHTML = `
-                        <div class="relative w-full rounded-lg overflow-hidden flex flex-col items-center justify-center"   style="padding:60px 0;background:#fff;">
+                        <div class="mt-2 relative w-full rounded-lg overflow-hidden flex flex-col items-center justify-center"   style="padding:60px 0;background:#fff;">
                             <div class="absolute top-3 right-3 z-10">
                                 <a href="${pdfUrl}" class="flex items-center gap-1 px-4 py-2 bg-[#ec9707] text-white rounded-md hover:bg-[#d38305]" target="_blank" download>
                                     <span class="material-icons text-sm">download</span>Download PDF

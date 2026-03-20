@@ -11832,5 +11832,254 @@ a:hover{
 
 }*/
 
+.moodle-dialogue.filepicker {
+    position: fixed !important;
+    top: 60% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
+}
+body .moodle-dialogue.yui3-panel.filepicker {
+    position: fixed !important;
+    top: 60% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+}
+.moodle-dialogue.filepicker {
+height: 100% !important;
+    max-height: 90vh;
+    overflow: auto;
+}
+.moodle-dialogue.yui3-panel {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
+}
+
+.moodle-dialogue.yui3-panel {
+    max-height: 100vh;
+    overflow-y: auto;
+}
+ .moodle-dialogue.yui3-panel.yui3-widget-positioned {
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+}
+
+/* responsive admin dashboard */
+
+/* ================= GLOBAL FIXES ================= */
+#page-my-index{
+.block-icon1{
+    width:40px;
+    height:40px;
+}
+
+.card-header h6{
+    font-size:16px;
+}
+
+.card-header small{
+    font-size:12px;
+}
+
+.card{
+    overflow:hidden;
+}
 
 
+.table-responsive{
+    overflow-x:auto;
+}
+
+}
+/* ================= COURSE PROGRESS ================= */
+
+#progressDonut{
+    max-width:160px;
+    margin:auto;
+}
+
+#cpLegend{
+    width:auto !important;
+}
+
+
+#cpAverage,
+#cpTotal{
+    font-size:18px;
+}
+
+
+/* ================= ANNOUNCEMENT ================= */
+#page-my-index{
+.announcement-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.announcement-row .ellipsis{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+}
+#page-my-index{
+#courseProgressModal .bg-white{
+    width:700px;
+    max-width:95%;
+}
+}
+
+
+
+#page-my-index #edwiser-search{
+    max-width:280px;
+}
+
+
+/* ================= MOBILE ( <768px ) ================= */
+
+@media (max-width: 768px){
+
+    .row.g-4{
+        gap:16px !important;
+    }
+
+    .card-header{
+        padding:12px;
+    }
+
+    .card-header .d-flex{
+        flex-direction:column;
+        align-items:flex-start !important;
+        gap:10px;
+    }
+
+    .card-header .btn{
+        margin-top:6px;
+    }
+
+    /* dropdown filters stack */
+    .card-header select{
+        width:100%;
+    }
+
+    /* course progress layout stack */
+    .card-body.d-flex{
+        flex-direction:column !important;
+        gap:16px !important;
+    }
+
+    #progressDonut{
+        max-width:140px;
+    }
+
+    /* legend full width */
+    #cpLegend{
+        width:100% !important;
+    }
+
+    /* search full width */
+    #edwiser-search{
+        width:100% !important;
+        max-width:100%;
+    }
+
+    /* announcement layout */
+    .announcement-row{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .announcement-row > div:first-child{
+        border-right:none !important;
+        border-bottom:1px solid #eee;
+        padding-bottom:6px;
+    }
+
+    /* modal width */
+    #courseProgressModal .bg-white{
+        width:95%;
+    }
+
+}
+
+
+/* ================= TABLET (768px - 1024px) ================= */
+
+@media (max-width: 1024px){
+
+    .card-body.d-flex{
+        flex-wrap:wrap;
+        justify-content:center;
+    }
+
+    #progressDonut{
+        max-width:150px;
+    }
+
+    #cpLegend{
+        width:160px !important;
+    }
+
+}
+
+
+/* ================= SMALL LAPTOP (1024px - 1400px) ================= */
+
+@media (max-width: 1400px){
+
+    #edwiser-search{
+        max-width:220px;
+    }
+
+    #progressDonut{
+        max-width:160px;
+    }
+
+}
+
+
+/* ================= PAGINATION ================= */
+
+#page-my-index .pagination{
+    flex-wrap:wrap;
+}
+
+
+/* ================= TABLE PROGRESS BAR ================= */
+
+#page-my-index .progress{
+    height:6px;
+}
+
+
+/* ================= BADGE RESPONSIVE ================= */
+
+#page-my-index .badge{
+    font-size:11px;
+    padding:6px 10px;
+}
+
+
+/* ================= SELECT DROPDOWN ================= */
+
+#page-my-index .form-select-sm{
+    min-width:120px;
+}
+@media screen and (max-width: 780px) {
+   #page-my-index{ #page-wrapper #page {
+        padding-left: 5px !important;
+    }}
+}
+@media screen and (max-width: 780px) {
+   #page-my-index{ .container, .container-fluid, .container-sm, .container-md, .container-lg, .container-xl, .container-xxl {
+        padding-right: 0px !important;
+        padding-left: 0px !important;
+    }}
+}
+/* end admin dashboard responsive */

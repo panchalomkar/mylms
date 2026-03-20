@@ -1,0 +1,36 @@
+{{#lp_course_tab}}
+  <div class="content-courses">
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="searchbox" id="searchbox"  role="search">
+          <div class="input-group mb-3 mt-search input-group custom-search-form">
+            <div class="input-group-btn">
+              <div class="">
+                <input class="form-control " type="text" placeholder="{{#str}}search_courses, local_learningpaths{{/str}}" aria-label="" onkeyup="" value="{{coursename}}" id="search-courses" 
+                name="search-courses" for="search-courses">
+              </div>
+                <span class="input-group-btn search-lp">
+                  <button class="" type="button" onclick="" aria-label="" id="btn-search-courses">
+                    <i class="men men-search-phx fa fa-search header-txt i-search" aria-hidden="true"></i>
+                  </button>
+                </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {{#has_add_course_lp}}
+        <div class="col-sm-6 text-right new-course">
+          <span class="course">
+            <a href="#" id="add-courses-lp" class="btn btn-primary new-button" data-toggle="modal" data-target="#courses-popup">
+              <i class="fa fa-plus-circle" title="{{#str}}add_courses, local_learningpaths{{/str}}"></i>
+              <span>{{#str}}add_courses, local_learningpaths{{/str}}</span>
+            </a>
+          </span>
+        </div>
+      {{/has_add_course_lp}}
+    </div>
+    <div class="" id="learningpath-courses-list">
+      {{{courselist}}}
+    </div>
+  </div>
+{{/lp_course_tab}}

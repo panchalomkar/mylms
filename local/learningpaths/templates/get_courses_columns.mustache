@@ -1,0 +1,74 @@
+<div class="row search_course">
+  <div class="col-sm-5 first">
+    <div class="searchbox" id="searchbox" role = "search">
+      <div class="mt-search input-group custom-search-form">
+        <span class="input-group-btn">
+          <button class ="text-muted btn btn-default" type ="button">
+            <i class="men men-search-phx fa fa-search header-txtmen men-icon-search i-search"></i>
+          </button>
+        </span>
+        <input class="form-control search_courses available-courses-search" 
+        type="text" placeholder="Search course" data-target="available-prerequisites-{{lpcourse}}" 
+        data-ttype="class" data-parent="no">
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-2">
+  </div>
+  <div class="col-sm-5 two-search">
+    <div id="searchbox" class = "searchbox">
+      <div class="mt-search input-group custom-search-form">
+        <span class="input-group-btn">
+          <button class="text-muted btn btn-default" type="button" onclick="" aria-label="">
+            <i class="men men-search-phx fa fa-search header-txtmen men-icon-search i-search" aria-hidden="true"></i>
+          </button>
+        </span>
+        <input class="form-control search_courses assigned-courses-search" type="text" 
+        placeholder="Search course" data-target="added-prerequisites-{{lpcourse}}" data-ttype="class" data-parent="no">
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row title">
+  <div class="col-sm-2">
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-5">
+    <div class="pad-all card-box">
+      <div class="">
+        <div class="">
+          <ul id="available-prerequisites" class="drag-and-drop-connected available-prerequisites-{{lpcourse}}">
+            <div class="head_prerequisites">
+              <span>
+              </span>
+            </div>
+            {{{leftcourses}}}
+          </ul>
+        </div>
+      </div>
+      <div class="clearfix">
+      </div>
+    </div>
+  </div>
+  <div class="pad-all col-sm-2 center">
+    <button class="add-prerequisites btn btn-primary btn-round" data-courseid="{{courseid}}">{{#str}}add, local_learningpaths{{/str}}</button>
+    <button class="remove-prerequisites btn btn-primary btn-round" data-courseid="{{courseid}}">{{#str}}remove, local_learningpaths{{/str}}</button>
+  </div>
+  <div class="col-sm-5">
+    <div class="pad-all card-box">
+      <div class="">
+        <div class="">
+          <ul id="added-prerequisites" class="added-prerequisites-{{lpcourse}}">
+            <div class="head_prerequisites">
+              <span></span>
+            </div>
+            {{{rightcourses}}}
+          </ul>
+        </div>
+      </div>
+      <div class="clearfix">
+      </div>
+    </div>
+  </div>
+</div>

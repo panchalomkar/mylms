@@ -1,0 +1,69 @@
+{{#dashboard}}
+<div class="plms-learningpaths learningpath_bg_table">
+  <div class="row add-learning">
+    <div class="col-sm-4 search-course-learning">
+      <form method="GET" id="search_lp_form" action="{{self_server}}">
+        <div class="searchbox" id="searchbox" role="search">
+          <div class="input-group mb-3">
+            <div class="input-group-btn">
+              <button class="" type="" onclick="document.getElementById('search_lp_form').submit();" aria-label="">
+                <i class="men men men-search-phx fa fa-search header-txt i-search" aria-hidden="true"></i>
+              </button>
+            </div>
+            <input class="form-control " type="text" placeholder="{{#str}}search_find, local_learningpaths{{/str}}" aria-label="" id="id_search" name="search_lp" for="id_search">
+          </div>
+        </div>
+      </form>
+    </div>
+    {{{add_learningpath_popup}}}
+{{#return_not_records}} 
+  {{{return_not_records}}}
+{{/return_not_records}} 
+{{^return_not_records}} 
+    <div class="row col-xs-12 col-sm-12 title_lp_index">
+      <div class="lpt-name col-xs-4 col-sm-4">
+        <span class="">
+        {{#str}}learning_pathname, local_learningpaths{{/str}}
+        </span>
+      </div>
+      <div class="start-date col-xs-4 col-sm-3">
+        <span class="">
+        {{#str}}startdate_, local_learningpaths{{/str}}
+        </span>
+      </div>
+      <div class="end-date col-xs-3 col-sm-3">
+        <span class="">
+        {{#str}}enddate_, local_learningpaths{{/str}}
+        </span>
+      </div>
+      <div class="col-xs-3 col-sm-2 learningpaths-actions">
+        <span class="">
+        {{#str}}actions, local_learningpaths{{/str}}
+        </span>
+      </div>
+    </div>
+  </div>
+  {{{learningpaths_list}}}
+  <div class="mar-btm col-sm-12 mar-no pad-no mar-btm pagination_lp">
+    <ul class="count_select">
+      <li class="">
+        <form method="GET">
+          <div class="" style="float:left;padding-top: 7px;margin-right: 10px;">
+            <span class="">
+            </span>
+          </div>
+          <div class="page_num">
+            {{{selectoutput}}}
+          </div>
+        </form>
+      </li>
+      <li>
+      {{{pageli}}}
+      </li>
+    </ul>
+  </div>
+  <div class="clearfix">
+  </div>
+</div>
+{{/return_not_records}} 
+{{/dashboard}}
