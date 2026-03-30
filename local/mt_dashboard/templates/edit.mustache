@@ -15,7 +15,15 @@
     
     <!-- Avatar -->
     <div class="w-20 h-20 rounded-xl text-white text-2xl font-bold flex items-center justify-center {{avatar_class}}">
-      {{avatar_text}}
+  {{#has_logo}}
+    <img src="{{logo_url}}" class="company-logo" alt="Company Logo">
+{{/has_logo}}
+
+{{^has_logo}}
+    <div class="company-avatar text-black">
+        {{avatar_text}}
+    </div>
+{{/has_logo}}
     </div>
 
     <!-- Company Info -->

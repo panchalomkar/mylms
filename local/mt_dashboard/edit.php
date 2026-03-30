@@ -152,7 +152,17 @@ $PAGE->requires->css(new moodle_url('https://fonts.googleapis.com/css2?family=Ma
 </STYLE>
 <?PHP
 //$PAGE->set_pagelayout('mydashboard');
+$resettenant = optional_param('resettenant', 0, PARAM_INT);
 
+if ($resettenant == 1) {
+    unset($SESSION->currenteditingcompany);
+
+    // ALSO clear fallback user company
+    $selectedcompany = 0;
+
+    // Redirect clean (IMPORTANT to avoid re-setting)
+    redirect(new moodle_url('/my/'));
+}
 // Now we can display the page.
 $output = $companyselectform = '';
 $output .= $OUTPUT->header();
@@ -184,15 +194,35 @@ if( is_siteadmin() && isset($SESSION->currenteditingcompany) ){
  * @since 2018122800
  * @paradiso 
  */
-$backlink = new moodle_url("/local/mt_dashboard/index.php?companyss=1&company=1");
+$backlink = new moodle_url("/local/mt_dashboard/edit.php", [
+    'resettenant' => 1
+]);
 $data['compnay_name'] = $compnay_name;
 $data['backlink'] = $backlink;
-$company_name = $DB->get_record('company', array('id' => $SESSION->currenteditingcompany));
-$gradients = ['avatar-blue', 'avatar-purple', 'avatar-indigo'];
-$gradientclass = $gradients[$SESSION->currenteditingcompany % count($gradients)];
+
+$companyid = $SESSION->currenteditingcompany ?? 0;
+
+$logo_url = get_tenant_logo_url($companyid);
+
+// Check if logo is default fallback image
+$defaultlogo = $CFG->wwwroot.'/local/mt_dashboard/pix/company_logo.png';
+
+if (!empty($logo_url) && $logo_url !== $defaultlogo) {
+    $data['has_logo'] = true;
+    $data['logo_url'] = $logo_url;
+} else {
+    $data['has_logo'] = false;
+}
+
+// Avatar fallback
+$companyobj = new company($companyid);
+$companyname = $companyobj->get_name();
+
+$gradients = ['avatar-white '];
+$gradientclass = $gradients[$companyid % count($gradients)];
 
 $data['avatar_class'] = $gradientclass;
-$data['avatar_text']  = strtoupper(substr($compnay_name, 0, 2));
+$data['avatar_text']  = strtoupper(substr($companyname, 0, 2));
 
 // Only display if you have the correct capability.
 // if (!iomad::has_capability('local/iomad_dashboard:view', context_system::instance())) {

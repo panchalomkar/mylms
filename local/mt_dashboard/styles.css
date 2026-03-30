@@ -497,6 +497,7 @@ div#potentialcourses_wrapper select#potentialcourses {
     width: 100%;
 }
 #page-local-iomad-dashboard-index #page-header{display: none;}
+
 .avatar-blue {
     background: linear-gradient(135deg, #3b82f6, #2563eb);
 }
@@ -505,6 +506,9 @@ div#potentialcourses_wrapper select#potentialcourses {
 }
 .avatar-indigo {
     background: linear-gradient(135deg, #4f46e5, #4338ca);
+}
+.avatar-white {
+    background: linear-gradient(135deg, #ffffff, #f3f4f6);
 }
 .edit-ui-t{
     /* ===== Card ===== */

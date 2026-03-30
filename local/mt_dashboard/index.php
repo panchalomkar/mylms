@@ -56,6 +56,7 @@ $PAGE->set_pagetype('local-iomad-dashboard-index');
 $PAGE->navbar->add(get_string('pluginname', 'local_mt_dashboard'), '/local/mt_dashboard/index.php');
 
 $PAGE->requires->css('/local/mt_dashboard/styles.css');
+$PAGE->blocks->add_region('content');
 $PAGE->requires->js_init_call('M.local_iomad_dashboard.init');
 
 /* External CDN (kept as requested) */
@@ -121,16 +122,17 @@ $companylist = get_all_companies(
 
 $companydata = [];
 foreach ($companylist as $id => $name) {
-      if ($id == 1) {
-        continue;
-    }
+    //   if ($id == 1) {
+    //     continue;
+    // }
     $users   = $DB->count_records('company_users', ['companyid' => $id]);
     $courses = $DB->count_records('company_course', ['companyid' => $id]);
     $companyrecord = $DB->get_record('company', ['id' => $id]);
 
   $completionrate = get_company_completion_rate($id);
-
+$logo_url = get_tenant_logo_url($id);
 $companydata[] = [
+    'logo_url'     => $logo_url,
     'cname'        => $name,
     'shortname'    => strtoupper(substr($name, 0, 2)),
     'status'       => $companyrecord->suspended ? 'suspended' : 'active',

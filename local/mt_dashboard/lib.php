@@ -6,22 +6,58 @@
 * @since 26-02-2019
 * @paradiso
 */
-function get_tenant_logo_url( $company_id  ){
-    global $SESSION, $CFG,$DB;
-    if( 0 == $company_id || empty($company_id) )
+// function get_tenant_logo_url( $company_id  ){
+//     global $SESSION, $CFG,$DB;
+//     if( 0 == $company_id || empty($company_id) )
+//         return $CFG->wwwroot.'/local/mt_dashboard/pix/company_logo.png';
+//     $tenant_logo = 'tenant_logo_'.$company_id; 
+//     if( $company_id != false ){
+//         $theme = \theme_config::load('remui');
+//        // $tenant_logo_url = $theme->setting_file_serve( $tenant_logo, $tenant_logo );
+//         $tenant_logo_url = \theme_remui\toolbox::setting_file_url($tenant_logo, $tenant_logo);
+//         if (!empty($tenant_logo_url)) {
+//             return $tenant_logo_url;
+//         }else{
+//             return $CFG->wwwroot.'/local/mt_dashboard/pix/company_logo.png';
+//         }
+//     }
+//     return false;
+// }
+
+// added by omkar 
+function get_tenant_logo_url($company_id) {
+    global $CFG;
+
+    if (empty($company_id)) {
         return $CFG->wwwroot.'/local/mt_dashboard/pix/company_logo.png';
-    $tenant_logo = 'tenant_logo_'.$company_id; 
-    if( $company_id != false ){
-        $theme = \theme_config::load('remui');
-       // $tenant_logo_url = $theme->setting_file_serve( $tenant_logo, $tenant_logo );
-        $tenant_logo_url = \theme_remui\toolbox::setting_file_url($tenant_logo, $tenant_logo);
-        if (!empty($tenant_logo_url)) {
-            return $tenant_logo_url;
-        }else{
-            return $CFG->wwwroot.'/local/mt_dashboard/pix/company_logo.png';
-        }
     }
-    return false;
+
+    $context = context_system::instance();
+    $fs = get_file_storage();
+
+    $files = $fs->get_area_files(
+        $context->id,
+        'theme_remui',
+        'tenant_logo_'.$company_id,
+        0,
+        'itemid, filepath, filename',
+        false
+    );
+
+    if ($files) {
+        $file = reset($files);
+
+        return moodle_url::make_pluginfile_url(
+            $file->get_contextid(),
+            $file->get_component(),
+            $file->get_filearea(),
+            $file->get_itemid(),
+            $file->get_filepath(),
+            $file->get_filename()
+        );
+    }
+
+    return $CFG->wwwroot.'/local/mt_dashboard/pix/company_logo.png';
 }
 /**
 * Return the tenant count 
