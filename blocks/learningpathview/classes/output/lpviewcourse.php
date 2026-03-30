@@ -97,7 +97,7 @@ class lpviewcourse implements renderable, templatable {
             if (!$courserepre->learningpath_courseid && $percentage != 100) {
                 $requred = "lpactive";
                 $localicon = '<i class="fa fa-circle" aria-hidden="true"></i>';
-                $courselink = 'href="'.$CFG->wwwroot.'/course/view.php?id='.$getcour->id.'"';
+                $courselink = 'href="'.$CFG->wwwroot.'/local/incourse/index.php?id='.$getcour->id.'"';
             }else{
                 $requred = "lpdisable";
                 $localicon = '<i class="fa fa-lock" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="'.$getcourse->fullname.'"></i>';
