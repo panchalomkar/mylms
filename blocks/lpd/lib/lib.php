@@ -40,7 +40,7 @@ function getLearningPathsView($option,$userid,$page) {
     
     $content    = "";
     list($result,$lpcount) = getLearningPathInfo($userid,$page,$perpage=4);
-        if(count($result) > 0) {
+       if (!empty($result) && is_array($result) && count($result) > 0) {
             
             foreach ($result as $index => $value) {
                 $startDate = '';
@@ -415,7 +415,7 @@ $template_data = array(
  * @param $userid
  */
 
-function getCoursesInfo($learningPath,$getcoursesonly = false,$userid, $limit = null, $offset = null,$inoverview = null) {
+function getCoursesInfo($learningPath, $getcoursesonly = false, $userid = 0, $limit = null, $offset = null, $inoverview = null){
     
         global $DB,$PAGE;
         $course_active = "";
@@ -424,7 +424,7 @@ function getCoursesInfo($learningPath,$getcoursesonly = false,$userid, $limit = 
         }
         $arrayCD  = $courseObj   = array();
         $sqlLimit = "";
-        $param = array();
+        $param = ['lpid' => (int)$learningPath];
         if(!is_null($limit) && !is_null($offset) && $limit > 0){
             $limit = (int)$limit;
             $offset = (int)$offset;
@@ -433,18 +433,16 @@ function getCoursesInfo($learningPath,$getcoursesonly = false,$userid, $limit = 
         /* get course properties credits and enddate */
 
         $fieldcredits = $DB->get_record('customfield_field',array('shortname'=>'credits'));
-        $sql = "
-            SELECT  c.id,
-                    c.fullname,
-                    c.startdate ,
-                    c.enddate ,
-                    c.timecreated,
-                    lpc.id as learningpath_course
-            FROM 
-                {learningpath_courses} as lpc , {course} as c 
-            WHERE 
-            lpc.courseid = c.id AND
-            lpc.learningpathid = ".$learningPath." $course_active ORDER BY position ASC";
+        $sql = "SELECT  c.id,
+                c.fullname,
+                c.startdate,
+                c.enddate,
+                c.timecreated,
+                lpc.id as learningpath_course
+        FROM {learningpath_courses} lpc
+        JOIN {course} c ON lpc.courseid = c.id
+        WHERE lpc.learningpathid = :lpid $course_active
+        ORDER BY lpc.position ASC";
     
         /* get LP courses */
         if($inoverview) {
@@ -461,7 +459,7 @@ function getCoursesInfo($learningPath,$getcoursesonly = false,$userid, $limit = 
             
             $coursestd = new stdClass();
 
-            $creditsvalue = '';
+            $creditsvalue = null;
             $enddatevalue = '';
           //  $customfielddata = get_course_metadata($course->id);
           //  if (isset($customfielddata['credits'])) {
@@ -480,7 +478,7 @@ function getCoursesInfo($learningPath,$getcoursesonly = false,$userid, $limit = 
             }
             $coursestd->learningpath_course = $course->learningpath_course;
             
-            if($creditsvalue->value == null || empty($creditsvalue->value)) {
+            if (empty($creditsvalue) || empty($creditsvalue->value)) {
                 $coursestd->credits = 0; 
             } else {
                 $coursestd->credits = $creditsvalue->value;
@@ -498,7 +496,7 @@ function getCoursesInfo($learningPath,$getcoursesonly = false,$userid, $limit = 
         }
     }   
 
-    return $courseObj;
+    return is_array($courseObj) ? $courseObj : [];
 }
 
 /**
