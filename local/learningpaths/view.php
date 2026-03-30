@@ -19,7 +19,9 @@ try {
     
     // Required global variables from moodle.
     global $PAGE, $CFG, $OUTPUT;
-    
+    $context = context_system::instance(); // or course context if needed
+$PAGE->set_context($context);
+    $PAGE->set_pagelayout('standard');
     // If form parameter exist, then check the submit.
     $formname = optional_param('form', "", PARAM_TEXT);
     
@@ -36,6 +38,7 @@ try {
 // Adding page title and heading.
 $PAGE->set_title(get_string('pluginname', 'local_learningpaths'));
 $PAGE->set_heading(get_string('pluginname', 'local_learningpaths'));
+
 $PAGE->navbar->add(get_string('pluginname', 'local_learningpaths'), '/local/learningpaths/index.php');
 $PAGE->navbar->add($learningpath->data->name);
 // Including additional css and js files.

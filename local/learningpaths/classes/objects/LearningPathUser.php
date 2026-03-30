@@ -69,14 +69,14 @@ class LearningPathUser extends LearningPathUserBase
         if ($required == 0) {
             return (object) [
                 'complated' => $completed,
-                'total_required' => count($required),
+                'total_required' => $required,
                 'percentage' => 0
             ];
         }
 
         return (object) [
             'complated' => $completed,
-            'total_required' => count($required),
+            'total_required' => is_array($required) ? count($required) : 0,
             'percentage' => round(($completed / $required) * 100)
         ];
     }

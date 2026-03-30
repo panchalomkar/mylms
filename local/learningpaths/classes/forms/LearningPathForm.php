@@ -12,9 +12,8 @@ class LearningPathForm extends moodleform
         global $PAGE;
         $maxbytes='';
         $mform = $this->_form;
-        
        if ($mform->elementExists('general_info')) {
-    $mform->setExpanded('general_info', true);
+    $mform->setExpanded('general_info');
 }
 
         // Following hidden field is important to know which form is being submit.

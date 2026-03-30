@@ -32,6 +32,7 @@ class ManageUsersForm extends moodleform
         $users = $this->_customdata['users'];
         $selectedusers = $this->_customdata['selected'];
         $selectedusers = explode(",",$selectedusers);
+        
         $la_index  = array_keys($users);
         $la_pag_users = array();
 

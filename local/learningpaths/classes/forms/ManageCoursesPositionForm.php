@@ -20,8 +20,8 @@ class ManageCoursesPositionForm extends moodleform
     }
 
     // Add action buttons.
-    public function add_action_buttons($submitlabel = null, $cancel = true) {
-         parent::add_action_buttons($cancel, $submitlabel);
+    public function add_action_buttons ($cancel = true, $submitlabel = null) {
+          parent::add_action_buttons($cancel, $submitlabel);
         $mform = $this->_form;
         $buttonarray = array();
 

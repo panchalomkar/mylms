@@ -45,10 +45,36 @@ class local_learningpaths_renderer extends plugin_renderer_base
         $startdate = ((int)$data->startdate)?date('m/d/Y', $data->startdate):get_string('notset', 'local_learningpaths') ;
         $endate = ((int)$data->enddate)?date('m/d/Y', $data->enddate):get_string('notset', 'local_learningpaths');
                       // get publish button for LP added by ShivkumarY
+                                        
+
         if (has_capability('local/learningpaths:add_courses_learning_path', context_system::instance())) {
-            $total_courses = $DB->count_records_sql("SELECT count(id) FROM {learningpath_courses} WHERE learningpathid=$data->id");
-            $active_courses = $DB->count_records_sql("SELECT count(id)  FROM {learningpath_courses} WHERE learningpathid=$data->id AND course_active = 1");
-                if($total_courses != $active_courses){
+          // $publish_btn = '<input type="submit" class="btn btn-round btn-primary" id="btn-lp_publish" title="'.get_string('publish_title','local_learningpaths').'" value="'.get_string('published','local_learningpaths').'" >';
+$total_courses = $DB->count_records('learningpath_courses', [
+    'learningpathid' => $data->id
+]);
+
+// Direct users assigned
+$total_users = $DB->count_records('learningpath_users', [
+    'learningpathid' => $data->id
+]);
+
+// Cohort users (IMPORTANT in your plugin)
+$cohorts = $DB->get_records('learningpath_cohorts', ['learningpathid' => $data->id]);
+
+$total_cohort_users = 0;
+foreach ($cohorts as $c) {
+    $total_cohort_users += $DB->count_records('cohort_members', [
+        'cohortid' => $c->cohortid
+    ]);
+}
+
+// Final users count
+$total_users = $total_users + $total_cohort_users;
+$active_courses = $DB->count_records_sql(
+    "SELECT COUNT(*) FROM {learningpath_courses} WHERE learningpathid = ? AND course_active = 1",
+    [$data->id]
+);
+                if($total_courses > 0 && $total_users > 0){
                   $publish_btn = '<input type="submit" class="btn btn-round btn-primary" id="btn-lp_publish" title="'.get_string('publish_title','local_learningpaths').'" value="'.get_string('publish','local_learningpaths').'">';
                 }
                 else if($total_courses == 0) {
@@ -131,7 +157,7 @@ class local_learningpaths_renderer extends plugin_renderer_base
         if (has_capability('local/learningpaths:add_courses_learning_path', context_system::instance())) {
             $has_add_course_lp = true;
         }
-        $courselist = $this->courses_list($data->courses, $data->id);
+        $courselist = $this->courses_list($data->courses);
         //print_r($courselist);
         //die;
         $lp_course_tab[] = array('has_add_course_lp'=>$has_add_course_lp,'courselist'=>$courselist,'coursename'=>optional_param('coursename', '', PARAM_TEXT));
@@ -356,7 +382,7 @@ class local_learningpaths_renderer extends plugin_renderer_base
     * Build a html with courses list of a learning path
     * @param (courses) learning paths courses array
     */
-    public function courses_list($learningpath, $courses = []) {   
+    public function courses_list($courses) {   
         global $USER , $OUTPUT, $PAGE;
         $page = optional_param('page_course', 0, PARAM_INT);
         $dashboard_per_page = optional_param('courseperpage', 10, PARAM_INT);
@@ -365,38 +391,28 @@ class local_learningpaths_renderer extends plugin_renderer_base
         $params['tab'] = 'courses';
         
         $url = new moodle_url($PAGE->url, $params);
-       $coursestmp = getCoursesInfo($courses, false, $USER->id, null, null);
-
-// ✅ FIX
-if (!is_array($coursestmp)) {
-    $coursestmp = [];
-}
-
-$courseKey = array_keys($coursestmp);
+        $coursestmp = getCoursesInfo($learningpath,false,$USER->id,null,null);
+        $courseKey = array_keys($coursestmp);
         $html = "";
-if (!is_array($courses)) {
-    $courses = [];
-}
-       if (!empty($courses) && is_array($courses)) {
+
+        if($courses){
 
           $showsortable = '';
           if (has_capability('local/learningpaths:add_courses_learning_path', context_system::instance())) {
               $showsortable = ' showsortable';
           }
             
-         $li_totals = is_countable($courses) ? count($courses) : 0;
-          $la_index  = array_keys($courses);
+          $li_totals = is_array($courses) ? count($courses) : 0;
+          $la_index  = array_keys(is_array($courses) ? $courses : []);
 
           $la_pag_learninpath = array();
 
           if( $dashboard_per_page >10) $page = 0;
 
           for( $record=($page * $dashboard_per_page); $record < (( $page * $dashboard_per_page ) + $dashboard_per_page) ; $record++ ) {
-              if (isset($la_index[$record]) && isset($courses[$la_index[$record]])) {
-    $la_pag_learninpath[$la_index[$record]] = $courses[$la_index[$record]];
-} $la_pag_learninpath[ $la_index[$record] ] = $courses[ $la_index[$record] ];
+              if($courses[ $la_index[$record] ]) $la_pag_learninpath[ $la_index[$record] ] = $courses[ $la_index[$record] ];
           }
-          $pages = count($courses) / $dashboard_per_page;
+          $pages = is_array($courses) ? count($courses) / $dashboard_per_page : 0;
           $active_page = 1;
 
           foreach ($la_pag_learninpath as $course) {
@@ -477,7 +493,7 @@ if (!is_array($courses)) {
               $select .= html_writer::end_tag('select');
         }
         if ($pages > 1) {
-          $pagination.= $OUTPUT->paging_bar(count($courses), $page, $dashboard_per_page, $url.'&id='.$lpid, 'page_course');
+          $pagination.= $OUTPUT->paging_bar(is_array($courses) ? is_array($courses) ? count($courses) : 0 : 0, $page, $dashboard_per_page, $url.'&id='.$lpid, 'page_course');
         }
         
         $learningpath_course_list[] = array('showsortable'=>$showsortable,'course'=>$hascourses,'paging'=>$paging,'pagination'=>$pagination);
@@ -530,16 +546,19 @@ if (!is_array($courses)) {
         foreach ($course->get_prerequisites() as $prerequisite) {
             $prerequisites[] = $prerequisite->prerequisite;
         }
+$doesnot = $course->get_does_not_as_prerequisites();
+$doesnot = is_array($doesnot) ? $doesnot : [];
+$already = $course->learningpath_courses_added_as_prerequisite($learningpath);
+$already = is_array($already) ? $already : [];
 
         $mform = new ManageCoursesForm(null, [
             'learningpath_courses' => $course->get_learningpath_courses(),
             'learningpath' => $learningpath,
             'courseid' => $course->data->id,
             'prerequisites' => $prerequisites,
-            'does_not_prerequisites' => array_keys($course->get_does_not_as_prerequisites()),
+            'does_not_prerequisites' => array_keys($doesnot),
             'required' => $course->data->required,
-            'already_added_prerequisites' => array_keys($course->learningpath_courses_added_as_prerequisite($learningpath))
-        ]);
+'already_added_prerequisites' => array_keys($already),        ]);
         return $mform->render();
     }
 

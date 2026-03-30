@@ -3,8 +3,7 @@ require_once("../../config.php");
 
 // Security Validations.
 require_login();
-$context = context_system::instance();
-$PAGE->set_context($context); 
+
 // Validate capabilities.
 $learningpathsmanager = has_capability('local/learningpaths:managealllearningpaths', context_system::instance());
 $learningpathscompanymanager = has_capability('local/learningpaths:managecompanylearningpaths', context_system::instance());
@@ -12,7 +11,10 @@ if (!$learningpathsmanager && !$learningpathscompanymanager) {
     throw new moodle_exception('access_denied','local_learningpaths');
 }
 global $PAGE, $CFG;
-
+$context = context_system::instance(); // or correct context
+$PAGE->set_context($context);
+$PAGE->set_url('/local/learningpaths/index.php');
+$PAGE->set_pagelayout('standard'); // FIX layout also
 // Require learningpath class.
 require_once("{$CFG->dirroot}/local/learningpaths/classes/objects/LearningPath.php");
 require_once("{$CFG->dirroot}/local/learningpaths/lib.php");

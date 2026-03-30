@@ -330,5 +330,17 @@ function xmldb_local_learningpaths_upgrade($oldversion) {
         // mydashboard savepoint reached.
         upgrade_plugin_savepoint(true, 2019121309, 'local', 'learningpaths');
     }
+ if ($oldversion < 2026032700) {
 
+        $table = new xmldb_table('learningpaths');
+        $field = new xmldb_field('publish', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2026032700, 'local', 'learningpaths');
+    }
+
+    return true;
 }

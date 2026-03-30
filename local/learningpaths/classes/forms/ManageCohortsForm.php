@@ -16,7 +16,7 @@ class ManageCohortsForm extends moodleform
 
         // Form definition.
         $cohorts = $this->_customdata['cohorts'];
-
+$cohorts = is_array($cohorts) ? $cohorts : [];
         $mform->addElement('html', html_writer::start_tag('div', array('class' => 'content-search')));
             $mform->addElement('html', html_writer::start_tag('div', array('class' => 'row searchbox-add')));
                 $mform->addElement('html', html_writer::start_tag('div', array('class' => 'col-sm-12')));

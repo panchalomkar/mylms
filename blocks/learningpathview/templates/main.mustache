@@ -1,0 +1,43 @@
+<!-- learining path starts-->
+
+<div class=" mT20 learningpathsec">
+
+<div class="course-overview">
+<div class="overview-inn">
+{{#isempty}}
+<div style="    height: 100%;
+    justify-content: center;
+    align-items: center;
+    display: flex;">
+    <div class="alert alert-info text-center py-4" style="background:#003152;color:#ec9707;border-radius:8px;">
+    You are not enrolled in any learning path.
+</div>
+</div>
+{{/isempty}}
+{{^isempty}}
+ {{#totallearningpath}}
+
+<div class="pathinner">
+
+<div class="ler-img">
+ <img class="card-img-top" src="{{learningpathimage}}" alt="" style="width:200px;height:150px">
+</div>
+<div class="card-body">
+<h5 class="card-title">{{learningpathname}}</h5>
+<p class="card-text">{{{discriotion}}}</p>
+<ul class="cred-btm">
+<li><span class="icon"><i class="fa fa-clock-o" aria-hidden="true"></i> </span> 
+<span>Duration : {{duration}}</span></li>
+<li><span class="icon"><i class="fa fa-file-text" aria-hidden="true"></i></span> <span>No of courses : {{nocourses}}</span></li>
+<li>{{{progress}}}</li>
+</ul>
+<a href="{{urllink}}" class="btn btn-primary">Continue</a>
+</div>
+</div>
+
+ {{/totallearningpath}}
+{{/isempty}}
+</div>
+</div>
+</div>
+<!-- learning path ends here-->

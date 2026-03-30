@@ -12,10 +12,12 @@ class AddCoursesForm extends moodleform
         $PAGE->requires->js_call_amd('local_learningpaths/learningpaths', 'lpactions');
         $mform = $this->_form;
 
+
         // Important Hidden fields.
         $mform->addElement('hidden', 'learningpathid', $this->_customdata['learningpath']);
+        $mform->setType('learningpathid', PARAM_INT);
         $mform->addElement('hidden', 'form', "AddCoursesForm");
-
+$mform->setType('form', PARAM_RAW);
         // Form definition.
         if (isset($this->_customdata['courses'])) {
             $avcourses = $this->_customdata['courses'];

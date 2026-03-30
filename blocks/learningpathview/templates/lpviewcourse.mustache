@@ -1,0 +1,66 @@
+ {{#totallearningpath}}
+<div id="lpviewcourse">
+<div class="coursemaintopimg"><img class="card-img-top" src="{{learningpathimage}}" alt="" style="height:250px"></div>
+<div class="lpviewdesc">
+
+<div class="lpcourseinner">
+<h4>{{learningpathname}}</h4>
+<p>{{{discriotion}}}</p>
+<hr>
+<div class="lpcourseinnerbottom">
+<div>
+<h6>SMART Goals Details</h6>
+<ul class="cred-btm">
+<li><span class="icon"><i class="fa fa-clock-o" aria-hidden="true"></i> </span> 
+<span>Duration : {{duration}}</span></li>
+<li><span class="icon"><i class="fa fa-file-text" aria-hidden="true"></i></span> <span>No of courses : {{nocourses}}</span></li>
+</ul>
+</div>
+{{{continuebtn}}}
+</div>
+</div>
+
+
+
+
+<div class="lpviewcontentpart">
+<h4>Content</h4>
+
+<div class="lpcontentitop">
+<div>{{nocourses}} courses</div>
+<div><i class="fa fa-circle" aria-hidden="true"></i> Duration {{duration}}</div>
+</div>
+
+<div class="lpmaincourselist">
+{{#totalcourse}}
+<div class="lpviewcourse {{required}} row">
+<div class="col-md-1">
+<div class="processline">
+{{{localicon}}}
+</div>
+</div>
+<div class="col-md-9"><div class="pathinner">
+<div class="ler-img" >
+ <img class="card-img-top" src="{{courseimg}}" alt="" style="width:200px;height:150px" >
+</div>
+<div class="card-body">
+
+<h5 class="card-title"><a {{{courselink}}}>{{coursename}}</a></h5>
+<p class="card-text"></p><p dir="ltr" style="text-align: left;">{{{coursedec}}}</p>
+{{{courseprogressbar}}}
+</div>
+</div></div>
+</div>
+
+{{/totalcourse}}
+
+
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+ {{/totallearningpath}}
