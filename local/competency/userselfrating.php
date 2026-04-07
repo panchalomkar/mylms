@@ -26,7 +26,7 @@ require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/local/competency/pagination.php');
 require_once($CFG->dirroot . '/local/competency/lib.php');
 $activepage = 'usersrating';
-$context = context_user::instance($USER->id);
+$context = context_system::instance();
 require_login();
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('userselfrating', 'local_competency'));
@@ -34,16 +34,58 @@ $PAGE->set_url($CFG->wwwroot . '/local/competency/userselfrating.php');
 $PAGE->set_heading(get_string('userselfrating', 'local_competency'));
 $PAGE->navbar->add(get_string('userselfrating', 'local_competency'));
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/competency/customtablelayout.css?v=1'));
+$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/competency/competency_pro.css?v=2'));
 echo $OUTPUT->header();
 //header added
 require_once($CFG->dirroot . '/local/competency/header.php');
 require_once($CFG->dirroot . '/local/competency/tabs.php');
+
+echo '<script>
+// Dynamic rating color feedback
+document.addEventListener("DOMContentLoaded", function() {
+    function colorRatingInput(input) {
+        var val = parseInt(input.value);
+        input.classList.remove("rating-green","rating-yellow","rating-red");
+        if (val >= 8 && val <= 10) input.classList.add("rating-green");
+        else if (val >= 5 && val <= 7) input.classList.add("rating-yellow");
+        else if (val >= 1 && val <= 4) input.classList.add("rating-red");
+        // Update any adjacent zone label
+        var parent = input.closest("td");
+        if (parent) {
+            var badge = parent.querySelector(".zone-badge");
+            if (!badge) { badge = document.createElement("span"); badge.className="zone-badge"; parent.appendChild(badge); }
+            badge.className = "zone-badge";
+            if (val >= 8) { badge.classList.add("zone-green"); badge.textContent = "Strong"; }
+            else if (val >= 5) { badge.classList.add("zone-yellow"); badge.textContent = "Developing"; }
+            else if (val >= 1) { badge.classList.add("zone-red"); badge.textContent = "Needs Improvement"; }
+            else { badge.textContent = ""; }
+        }
+    }
+    document.querySelectorAll("input[type=number][name*=rating], input[type=text][name*=rating]").forEach(function(inp) {
+        inp.style.width = "64px";
+        inp.style.textAlign = "center";
+        inp.style.fontWeight = "700";
+        inp.style.borderRadius = "6px";
+        inp.style.border = "1.5px solid #E2E8F0";
+        inp.style.padding = "6px 8px";
+        inp.style.transition = "all 0.2s ease";
+        inp.style.fontFamily = "Courier New, monospace";
+        colorRatingInput(inp);
+        inp.addEventListener("input", function() { colorRatingInput(this); });
+        inp.addEventListener("change", function() { colorRatingInput(this); });
+    });
+    // Style all rating inputs with class
+    var styleEl = document.createElement("style");
+    styleEl.textContent = ".rating-green{border-color:#059669!important;background:rgba(5,150,105,0.08)!important;color:#059669!important;box-shadow:0 0 0 3px rgba(5,150,105,0.1)!important;}.rating-yellow{border-color:#D97706!important;background:rgba(217,119,6,0.08)!important;color:#D97706!important;box-shadow:0 0 0 3px rgba(217,119,6,0.1)!important;}.rating-red{border-color:#DC2626!important;background:rgba(220,38,38,0.08)!important;color:#DC2626!important;box-shadow:0 0 0 3px rgba(220,38,38,0.1)!important;}";
+    document.head.appendChild(styleEl);
+});
+</script>';
+
 //submit manager ration
 if (!has_capability('local/competency:userselfrating', $context)) {
     redirect($CFG->wwwroot . '/my/', \core\notification::error('No access...'));
     exit();
 }
-
 global $USER;
 
 if (optional_param('submituserselfrating', '', PARAM_TEXT) === 'addrating') {
@@ -224,7 +266,7 @@ $studentData = getexistingStudentRanking($USER->id, 1);
                                     <option value="2">Second Half</option>';
                 $tearms .= '</select>';
 
-                $viewcontent = '<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px; padding: 0px 10px 0px 10px;">
+                $viewcontent = '<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px;">
                           <div class="col-md-4" >
                              ' . $tearms . '
                           </div>
@@ -385,6 +427,6 @@ $studentData = getexistingStudentRanking($USER->id, 1);
 </script>
 <script type="text/javascript">
     $(document).ready(function () {
-        $(".main-table").clone(true).appendTo('#table-scroll').addClass('clone');
+        // $(".main-table").clone(true).appendTo('#table-scroll').addClass('clone');
     });
 </script>

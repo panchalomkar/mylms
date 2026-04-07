@@ -22,7 +22,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
 
@@ -111,6 +110,15 @@ $capabilities = array(
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
             'manager' => CAP_ALLOW
+        ),
+    ),
+
+    'local/competency:viewspiderdiagram' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'user'    => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
         ),
     ),
 );

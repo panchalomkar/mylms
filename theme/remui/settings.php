@@ -2009,6 +2009,32 @@ if ($ADMIN->fulltree) {
         'hide' => []
     ]];
 }
+// added by omkar 
+
+$section = optional_param('section', '', PARAM_TEXT);
+if ( $ADMIN->fulltree &&  'tenantsettingremui' == $section ) {
+
+    global $SESSION, $DB;
+   // require_once(__DIR__ . '/classes/tenant_settingspage_tabs.php');
+    if(!empty($SESSION->currenteditingcompany)){
+        $id = $SESSION->currenteditingcompany;
+    }else if(\iomad::is_company_user()){
+        $id = \iomad::is_company_user();
+    }
+
+    $strCompany = $DB->get_record('company',array('id' => $id));
+    // Note new tabs layout for admin settings pages.
+   $settings = new theme_boost_admin_settingspage_tabs('tenantsettingremui', $strCompany->name." ".get_string('tenantconfigtitle', 'theme_remui'));
+    
+    require('settings/tenant_colors_settings.php');
+    require('settings/tenant_logo_settings.php');
+
+    require('settings/tenant_image_settings.php');
+    // require('settings/tenant_markettiles_settings.php');
+    require('settings/tenant_login_settings.php');
+    require('settings/tenant_slideshow_settings.php');
+}
+
 global $PAGE;
 if (optional_param('section', '', PARAM_TEXT) == 'themesettingremui') {
     $PAGE->requires->data_for_js('remuisettings', $remuisettings);

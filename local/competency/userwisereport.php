@@ -36,6 +36,7 @@ $PAGE->navbar->add(get_string('userwisereport', 'local_competency'));
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/competency/custom.css?v=1'));
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/competency/customtablelayout.css?v=1'));
 
+$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/competency/competency_pro.css?v=2'));
 echo $OUTPUT->header();
 //header added
 require_once($CFG->dirroot . '/local/competency/header.php');
@@ -51,7 +52,6 @@ if (!has_capability('local/competency:landdreport', $context)) {
 //$start = $pagesArr[1];
 $buselct = '';
 $viewselct = '';
-$deptselect='';
 $subselct = '';
 $tearms = '';
 $ratstatus = '';
@@ -77,6 +77,13 @@ $rateid = optional_param('tearmsid', '', PARAM_INT);
 $terms = optional_param('terms', '', PARAM_INT);
 $yearid = optional_param('yearid', '', PARAM_INT);
 //$searchcompetencyheading = getListCompetencyTitle($start, $limit);
+
+// Spider diagram quick-access
+echo '<div style="display:flex;justify-content:flex-end;margin-bottom:16px;">';
+echo '<a href="spiderdiagram.php?filteruserid='.(int)$userid.'" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px;">';
+echo '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon><line x1="12" y1="2" x2="12" y2="22"></line><line x1="2" y1="8.5" x2="22" y2="8.5"></line><line x1="2" y1="15.5" x2="22" y2="15.5"></line></svg>';
+echo ' View Spider Diagram</a></div>';
+
 echo '<form method="post">';
 // $buselct =''; $viewselct='';$subselct='';$tearms =''; 
 // $viewcontentbody=''; $searchListShow=''; $subsubselct='';
@@ -290,38 +297,25 @@ $start = $pagesArr[1];
 $searchSqlcomp = "select lr.id, concat(u.firstname,' ',u.lastname) AS fullname, u.id as userid, u.username,ct.title, cc.id as ccid, cc.name as subcompetency, c.id as comptencyid, c.comptencyname as subsubcomp,lr.rating,
 					MAX(CASE WHEN r.shortname = 'sbuhead' THEN ud.data END) 'sbuhead', 
 					MAX(CASE WHEN r.shortname ='reportingmanager' THEN ud.data END) 'manager', 
-					MAX(CASE WHEN r.shortname = 'interimmanager' THEN ud.data END) 'finalmanager',
-					MAX(CASE WHEN udf.shortname = 'department' THEN udd.data END) AS 'department',
+					MAX(CASE WHEN r.shortname = 'interimmanager' THEN ud.data END) 'finalmanager', 
 					MAX(CASE WHEN r.shortname ='landmanager' THEN ud.data END) 'ldmanager',lr.tearms,lr.progstatus,lr.rating,cu.year  
-					from {landd_rating} AS lr 
-					inner join {competency_users} AS cu ON lr.master_competencyid=cu.id 
+					from {landd_rating} AS lr inner join {competency_users} AS cu ON lr.master_competencyid=cu.id 
 					inner join {competency_title} AS ct on cu.ctid=ct.id 
 					left join {competency_category} AS cc on lr.competencyid=cc.id 
 					left JOIN {competencies} AS c on lr.subcomptencyid=c.id 
-					inner join {user} AS u on cu.userid=u.id 
-					inner JOIN {user_info_data} as ud on cu.userid=ud.userid 
+					inner join {user} AS u on cu.userid=u.id INNER JOIN {user_info_data} as ud on cu.userid=ud.userid 
 					inner join {user_info_field} uf on ud.fieldid=uf.id
 					inner join {role} r on uf.shortname=r.shortname
-
-					-- Additional join for department (independent of role)
-					left join {user_info_data} AS udd on cu.userid=udd.userid
-					left join {user_info_field} AS udf on udd.fieldid=udf.id
-					
 					" . $query . " limit $start, $limit";
-
 $searchCompResult = $DB->get_records_sql($searchSqlcomp);
-
-
 if (count($searchCompResult) > 0) {
 	//$show = 'show';
 //$i=0; 
 	$searchListShow .= '
-        <div id="table-scroll" class="table-scroll">
-        <div class="table-wrap wrapper">
-		
+       <div id="table-scroll" class="table-scroll">
           <!--Table-->
           <div class="alert alert-success" id="successmessgae" style="display: none"></div>
-          <table class="main-table table">
+          <table class="main-table table table-bordered">
             <!--Table head-->
             <thead>
               <tr>
@@ -329,8 +323,7 @@ if (count($searchCompResult) > 0) {
                 <th class="th-lg sticky-col second-col">Main Competency</th>
                 <th class="th-lg sticky-col third-col">Sub Competency</th>
                 <th class="th-lg sticky-col fourth-col">Sub Sub Competency </th>
-				<th class="th-lg">Department</th>
-				<th class="th-lg">Buhead</th>
+                <th class="th-lg">Buhead</th>
 				<th class="th-lg">Reporting Manager</th>
 				<th class="th-lg">Intem Manager</th>
 				<th class="th-lg">L and D manager</th>
@@ -377,7 +370,6 @@ if (count($searchCompResult) > 0) {
                 <td class="sticky-col second-col">' . $competency_categorys_val->title . '</td>
                 <td class="sticky-col third-col">' . $competency_categorys_val->subcompetency . '</td>
 				 <td class="sticky-col fourth-col">' . $competency_categorys_val->subsubcomp . '</td>
-				 	   <td>' . $competency_categorys_val->department . '</td>
 				 <td>' . $competency_categorys_val->sbuhead . '</td>
 				 <td>' . $competency_categorys_val->manager . '</td>
 				  <td>' . $competency_categorys_val->finalmanager . '</td>
@@ -387,7 +379,6 @@ if (count($searchCompResult) > 0) {
 				  <td>' . $tearms . '</td>
 				   <td>' . $progressstatus . '</td>
 				  <td> <a href="#" class="btn btn-primary" onclick="enrollcourse(' . $competency_categorys_val->userid . ',' . $subsubcomptencyid . ',' . $subcomptencyid . ')" > Enroll Course </a></td>
-			
               </tr>';
 	}
 	$searchListShow .= '</tbody>
@@ -466,29 +457,6 @@ if (empty($ccid) && empty($ctid)) {
 }
 //Get sub sub comptency   
 
-// $department = isset($department) ? trim($department) : '';
-
-// $departments = $DB->get_records_sql("
-//     SELECT DISTINCT TRIM(ud.data) AS department
-//     FROM {user_info_data} ud
-//     JOIN {user_info_field} uf ON ud.fieldid = uf.id
-//     WHERE uf.shortname = 'department' AND TRIM(ud.data) != ''
-//     ORDER BY department ASC
-// ");
-
-// $deptselect = '<select name="department" id="department" class="form-control">';
-// $deptselect .= '<option value="">Select Department</option>';
-
-// foreach ($departments as $dept) {
-//     $value = trim($dept->department);
-//     if ($value === '') continue; // skip empty departments again just in case
-//     $selected = ($department === $value) ? 'selected' : '';
-//     $deptselect .= "<option value=\"$value\" $selected>$value</option>";
-// }
-
-// $deptselect .= '</select>';
-
-
 $getsubsubcomp = $DB->get_records('competencies', array('ccid' => $ccid));
 $subsubselct = '';
 $subsubselct .= '<select name="svsubsubid" id="svsubsubid" class="form-control">
@@ -547,8 +515,7 @@ if ($terms == 1) {
           <option value="2">Second Half</option>';
 }
 $termsselect .= '</select>';
-
-$viewcontentbody = '<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px; padding: 0px 10px 0px 10px;">
+$viewcontentbody = '<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px;">
 	<div class="col-md-3">
 		' . $buselct . '
 	</div>
@@ -558,11 +525,8 @@ $viewcontentbody = '<div class="row" style="text-align:center;margin-bottom:10px
 	<div class="col-md-3" id="subcompshow">
 		' . $subselct . '
 	</div>
-	<div class="col-md-3">
-		' . $deptselect . '
 	</div>
-	</div>
-	<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px; padding: 0px 10px 0px 10px;">
+	<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px;">
 	<div class="col-md-3" id="cometenciesshow">
 		' . $subsubselct . '
 	</div>
@@ -577,10 +541,6 @@ $viewcontentbody = '<div class="row" style="text-align:center;margin-bottom:10px
 	</div>
 	<div class="col-md-1"><button type="submit" class="btn btn-primary" value="usersearch" name="submituserwisereport">Search</button></div>	
 	<div class="col-md-1"><a href="userwisereport.php" class="btn btn-primary">Clear</a></div>
-	<div class="col-md-1 d-flex"><a href="download_csv.php">
-     <img width="48" height="48" style="    width: 30px;height: 30px; border-bottom: solid #003152;" src="https://img.icons8.com/color/48/export-csv.png" alt="export-csv"/>
-</a></div>
-	
 	</div><p id="errormessage" style="color:red;text-align:center;">' . $errormessage . '</p><br>' . $searchListShow;
 echo $viewcontentbody;
 echo "<br/>";
@@ -596,9 +556,9 @@ echo $pagination;
 
 <?php $PAGE->requires->js('/local/competency/js/report.js?v=1'); ?>
 <script type="text/javascript">
-	$(document).ready(function () {
-		$(".main-table").clone(true).appendTo('#table-scroll').addClass('clone');
-	});
+	// $(document).ready(function () {
+	// 	$(".main-table").clone(true).appendTo('#table-scroll').addClass('clone');
+	// });
 	function toggleDropdown() {
 		document.getElementById("customDropdown").classList.toggle("active");
 	}

@@ -1,55 +1,36 @@
-	ul li{
-		text-decoration: none;
-		list-style-type:none;
-	}
-	.competencytable table {
-		padding: 20px
-	}
-	.competencytable td{
-		
-		padding: 10px !important;
-	}
-	.competencytable th{
-		text-align: center;
-		padding: 10px !important;
-	}
-	.usersrow{
-		text-align: center;
-	}
-	.competency_title{
-		color: red;
-		background-color: #ccc;
-	}
-	.userlist{
-		color: red;
-		background-color: #ccc;
-	}
-	.circle_green { 
-        height: 15px;
-		width: 15px;
-		line-height: 20px;
-		border-radius: 50%;
-		background-color: green;
-    }
-	.circle_red { 
-        height: 15px;
-		width: 15px;
-		line-height: 20px;
-		border-radius: 50%;
-		background-color: red;
-   }
-	.circle_yellow { 
-        height: 15px;
-		width: 15px;
-		line-height: 20px;
-		border-radius: 50%;
-		background-color: yellow;
-    }
+/*
+ * local_competency - Professional Corporate UI
+ * This file imports and extends the main competency_pro.css
+ * For Moodle 4.1 and 5.0+ compatibility
+ */
 
-.table{
-margin-bottom: 0px;
+/* Zone indicator circles - kept for backward compatibility */
+.circle_green {
+    height: 12px; width: 12px; line-height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #10B981, #059669);
+    display: inline-block;
+    box-shadow: 0 0 6px rgba(5,150,105,0.4);
+}
+.circle_red {
+    height: 12px; width: 12px; line-height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    display: inline-block;
+    box-shadow: 0 0 6px rgba(220,38,38,0.4);
+}
+.circle_yellow {
+    height: 12px; width: 12px; line-height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FBBF24, #D97706);
+    display: inline-block;
+    box-shadow: 0 0 6px rgba(217,119,6,0.4);
 }
 
-.th-lg{
-	color: red !important;
-}
+.table { margin-bottom: 0px; }
+.th-lg { color: #0096C7 !important; }
+
+.competencytable table { padding: 0 !important; }
+.competencytable td { padding: 12px 16px !important; }
+.competencytable th { text-align: center; padding: 13px 16px !important; }
+.usersrow { text-align: center; }

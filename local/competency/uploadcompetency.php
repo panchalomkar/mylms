@@ -13,6 +13,7 @@ $PAGE->set_title(get_string('competency_title', 'local_competency'));
 $PAGE->set_url($CFG->wwwroot.'/local/competency/uploadcompetency.php');
 $PAGE->set_heading(get_string('competency_title', 'local_competency'));
 $PAGE->navbar->add(get_string('upload_competency', 'local_competency'));
+$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/competency/competency_pro.css?v=2'));
 echo $OUTPUT->header();
 //header added
 require_once($CFG->dirroot.'/local/competency/header.php');

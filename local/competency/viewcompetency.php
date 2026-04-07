@@ -33,6 +33,8 @@ $PAGE->set_title(get_string('viewcompetency', 'local_competency'));
 $PAGE->set_url($CFG->wwwroot.'/local/competency/viewcompetency.php');
 $PAGE->set_heading(get_string('viewcompetency', 'local_competency'));
 $PAGE->navbar->add(get_string('viewcompetency', 'local_competency'));
+$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/competency/competency_pro.css?v=2'));
+
 echo $OUTPUT->header();
 //header added
 require_once($CFG->dirroot.'/local/competency/header.php');
@@ -54,76 +56,96 @@ $searchcompetencyheading = getListCompetencyTitle($start, $limit);
 $show = 'show';
 $i=0; $buselct =''; $viewselct=''; 
 $viewcontentbody=''; $searchListShow='';
-$searchListShow .='<div class="accordion md-accordion accordion-blocks" id="accordionEx78" role="tablist" aria-multiselectable="false"><div class="card">';
+$searchListShow .= '<div class="accordion custom-accordion" id="accordionEx78">';
+
 foreach ($searchcompetencyheading as $key => $seachVal) {
-       if($i > 0){
-          $show = '';
-        }
-     //To show data view competency
-	$searchCompResult = getViewCompetencyData($seachVal->id);
-	$searchListShow.='<div class="card-header" role="tab" id="heading'. $i.'">
-      <!-- Heading -->
-      <a data-toggle="collapse" data-parent="#accordionEx78" href="#collapse'.$i.'" aria-expanded="false" aria-controls="collapse'.$i.'">
-        <h5 class="mt-1 mb-0">
-          <span>'.$seachVal->title.'</span>
-        </h5>
-      </a>
-    </div>
-	<!-- Card body -->
-    <div id="collapse'.$i.'" class="collapse '.$show.'" role="tabpanel" aria-labelledby="heading'.$i.'" data-parent="#accordionEx78">
-      <div class="card-body">
-        <!-- Table responsive wrapper -->
-        <div class="table-responsive mx-3">
-          <!--Table-->
-          <table class="table table-hover mb-0">
-            <!--Table head-->
-            <thead>
-              <tr>
-                <th class="th-lg">Sub Competency Name</th>
-                <th class="th-lg">Sub Sub Competency Name </a></th>
-                <th class="th-lg">Role</th>
-                <th class="th-lg">View course</th>
-              </tr>
-            </thead>
-            <!--Table head-->
-            <!--Table body-->
-            <tbody>';
-              foreach($searchCompResult as $competency_categorys_val){
-                  
-                      if(empty($competency_categorys_val->id)){ 
-						$svid = 0;
-					  }else{
-						$svid = $competency_categorys_val->id;  
-					  }
-					  if(empty($competency_categorys_val->cctid)){ 
-						$svcctid = 0;
-					  }else{
-						$svcctid = $competency_categorys_val->cctid;  
-					  }
-					  if(empty($competency_categorys_val->id) && empty($competency_categorys_val->cctid)){
-						    $searchcomptencyname = '-';
-					  }else{
-						   $searchcomptencyname = $competency_categorys_val->comptencyname; 
-					  } 
-             $searchListShow.= '<tr>
-                <td>'.$competency_categorys_val->name.'</td>
-                <td>'.$searchcomptencyname.'</td>
-                <td>'.$competency_categorys_val->shortname.'</td>
-                <td>
-                  <a href="#" class="btn btn-primary" data-target="#tabView" data-toggle="modal" onclick="getcourses('.$svid.','.$svcctid.')"> View Courses </a>
-                </td>
-              </tr>';
-              }
-            $searchListShow.='</tbody>
-            <!--Table body-->
-          </table>
-          <!--Table-->
+
+    $show = ($i == 0) ? 'show' : '';
+    $expanded = ($i == 0) ? 'true' : 'false';
+
+    // Get data
+    $searchCompResult = getViewCompetencyData($seachVal->id);
+
+    $searchListShow .= '
+    <div class="card custom-card">
+
+        <!-- HEADER -->
+        <div class="card-header" id="heading'.$i.'">
+            <a class="accordion-link"
+               data-toggle="collapse"
+               href="#collapse'.$i.'"
+               aria-expanded="'.$expanded.'"
+               aria-controls="collapse'.$i.'">
+
+                <div class="header-left">
+                    <i class="fa fa-layer-group icon-main"></i>
+                    <span>'.$seachVal->title.'</span>
+                </div>
+
+                <i class="fa fa-chevron-down toggle-icon"></i>
+            </a>
         </div>
-        <!-- Table responsive wrapper -->
-      </div>
+
+        <!-- BODY -->
+        <div id="collapse'.$i.'" class="collapse '.$show.'" data-parent="#accordionEx78">
+            <div class="card-body">
+
+                <div class="table-responsive">
+                    <table class="table modern-table">
+
+                        <thead>
+                            <tr>
+                                <th>Sub Competency</th>
+                                <th>Sub Sub Competency</th>
+                                <th>Role</th>
+                                <th class="text-center">Courses</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>';
+    
+    foreach ($searchCompResult as $competency_categorys_val) {
+
+        $svid = !empty($competency_categorys_val->id) ? $competency_categorys_val->id : 0;
+        $svcctid = !empty($competency_categorys_val->cctid) ? $competency_categorys_val->cctid : 0;
+
+        $searchcomptencyname = (empty($competency_categorys_val->id) && empty($competency_categorys_val->cctid))
+            ? '-' 
+            : $competency_categorys_val->comptencyname;
+
+        $searchListShow .= '
+            <tr>
+                <td class="fw-bold">'.$competency_categorys_val->name.'</td>
+                <td>'.$searchcomptencyname.'</td>
+                <td>
+                    <span class="role-badge">
+                        '.$competency_categorys_val->shortname.'
+                    </span>
+                </td>
+                <td class="text-center">
+                    <button class="btn btn-sm btn-view"
+                        data-toggle="modal"
+                        data-target="#tabView"
+                        onclick="getcourses('.$svid.','.$svcctid.')">
+                        <i class="fa fa-eye"></i> View
+                    </button>
+                </td>
+            </tr>';
+    }
+
+    $searchListShow .= '
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
     </div>';
-	$i++;
+
+    $i++;
 }
+
+$searchListShow .= '</div>';
 	//Sub sub Competency pagination
 	if($pages > 1){
 		$pagination = custompagination3($selectPageNo,$pages,'tabviewcompetency');
@@ -134,7 +156,7 @@ foreach ($searchcompetencyheading as $key => $seachVal) {
 	$buselct = $search[0];
 	$viewselct = $search[1];
 	
-	$viewcontentbody ='<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px;padding: 15px 10px 0px 10px;">
+	$viewcontentbody ='<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px;">
 	<div class="col-md-4">
 		'.$buselct.'
 	</div>

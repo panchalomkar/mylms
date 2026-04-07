@@ -34,10 +34,32 @@ $PAGE->set_url($CFG->wwwroot.'/local/competency/landdrating.php');
 $PAGE->set_heading(get_string('landdrating', 'local_competency'));
 $PAGE->navbar->add(get_string('landdrating', 'local_competency'));
 $PAGE->requires->css( new moodle_url($CFG->wwwroot . '/local/competency/customtablelayout.css'));
+$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/competency/competency_pro.css?v=2'));
 echo $OUTPUT->header();
 //header added
 require_once($CFG->dirroot.'/local/competency/header.php');
 require_once($CFG->dirroot.'/local/competency/tabs.php');
+
+echo '<script>
+document.addEventListener("DOMContentLoaded", function() {
+    function colorRatingInput(input) {
+        var val = parseInt(input.value);
+        input.classList.remove("rating-green","rating-yellow","rating-red");
+        if (val >= 8 && val <= 10) input.classList.add("rating-green");
+        else if (val >= 5 && val <= 7) input.classList.add("rating-yellow");
+        else if (val >= 1 && val <= 4) input.classList.add("rating-red");
+    }
+    document.querySelectorAll("input[type=number][name*=rating], input[type=text][name*=rating]").forEach(function(inp) {
+        inp.style.cssText = "width:64px;text-align:center;font-weight:700;border-radius:6px;border:1.5px solid #E2E8F0;padding:6px 8px;transition:all 0.2s ease;font-family:Courier New,monospace;";
+        colorRatingInput(inp);
+        inp.addEventListener("input", function() { colorRatingInput(this); });
+    });
+    var styleEl = document.createElement("style");
+    styleEl.textContent = ".rating-green{border-color:#059669!important;background:rgba(5,150,105,0.08)!important;color:#059669!important;}.rating-yellow{border-color:#D97706!important;background:rgba(217,119,6,0.08)!important;color:#D97706!important;}.rating-red{border-color:#DC2626!important;background:rgba(220,38,38,0.08)!important;color:#DC2626!important;}";
+    document.head.appendChild(styleEl);
+});
+</script>';
+
 if (!has_capability('local/competency:landdrating', $context)) {
     redirect($CFG->wwwroot. '/my/', \core\notification::error('No access...'));
     exit();
@@ -214,7 +236,7 @@ $tearms .= '<select name="tearmsid" id="tearmsid" class="form-control">
 $tearms .='</select>';
 
 
-$viewcontent ='<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px; padding: 0px 10px 0px 10px;">
+$viewcontent ='<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px;">
   <div class="col-md-2">
      '.$buselct.'
   </div>
@@ -234,7 +256,7 @@ $viewcontent ='<div class="row" style="text-align:center;margin-bottom:10px;marg
 echo $viewcontent; 
 ?>
 <div class="view1">
-    <div id="table-scroll" class="table-scroll">
+    <div id="table-scroll" class="table-scroll border-0 shadow-none">
 			<ul> 
 				<form name="managerrating" id="managerrating" method="POST">
 					<div class="table-wrap wrapper1">
@@ -365,6 +387,6 @@ function filterCheckStatus1(chkid,no){
 </script>
 <script type="text/javascript">
   $(document).ready(function() {
-   $(".main-table").clone(true).appendTo('#table-scroll').addClass('clone');   
+//    $(".main-table").clone(true).appendTo('#table-scroll').addClass('clone');   
  });
 </script>

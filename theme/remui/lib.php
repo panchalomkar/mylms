@@ -808,7 +808,7 @@ function get_company_by_host(){
     global $DB;
     // Check if Disable tenant from setting then below condition working 
     $theme = theme_config::load('remui');
-    $companyid= 0;
+    $companyid= 1;
     $hostname = $_SERVER['HTTP_HOST'];
     $hostcompanyid= $DB->get_record_sql("SELECT id FROM {company} WHERE hostname = 'https://$hostname' OR hostname = 'http://$hostname' LIMIT 1");
     if(!empty($hostcompanyid->id)){
@@ -874,25 +874,26 @@ function show_active_tenant_menu(){
     if( is_siteadmin() && isset($SESSION->currenteditingcompany) && ! empty( $SESSION->currenteditingcompany ) ){
 
         
-       $companyid = $SESSION->currentcompany ?? $SESSION->currenteditingcompany ?? null;
+//        $companyid = $SESSION->currentcompany ?? $SESSION->currenteditingcompany ?? null;
 
-if (!$companyid) {
-    return false;
-}
- if ($companyid == 1) {
-            return false;
-        }
-$companyrecord = $DB->get_record('company', ['id' => $companyid]);
-if (!$companyrecord) {
-    return false;
-}
+// if (!$companyid) {
+//     return false;
+// }
+//  if ($companyid == 1) {
+//             return false;
+//         }
+// $companyrecord = $DB->get_record('company', ['id' => $companyid]);
+// if (!$companyrecord) {
+//     return false;
+// }
 
-        
+                $companyrecord = $DB->get_record('company', array('id' => $SESSION->currenteditingcompany) );
+
         $output = html_writer::start_tag('div', array('class' => 'companyindication'));
         $output .= html_writer::start_tag('ul', array('class'=> 'list-unstyled components'));
         $output .= html_writer::start_tag('li', array( 'class' => 'sidemenu-closed menu-exp pl-0' ));
         $icon = html_writer::tag('span', '<i class="fa fa-sitemap siteCss"></i>' ,  array( 'class' => 'media-left icon' ));
-        $title = html_writer::tag('span', get_string('selectedcompany', 'theme_remui', $companyrecord->name) ,  array( 'class' => 'menu-title' ));
+        $title = html_writer::tag('span', get_string('selectedcompany', 'theme_remui', $companyrecord->name) ,  array( 'class' => 'menu-title active_t' ));
         $output .= html_writer::tag(
             'a', 
                             $icon.$title ,

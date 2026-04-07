@@ -100,21 +100,24 @@ if ($case == 'competencyHeading') {
 	//get course list
 	// $courseSql = "select * from {course} order by shortname ASC";
 	// $courseResult = $DB->get_records_sql($courseSql, array());
-	$courseResult = getCourseList();
-	$coursedata = "<select multiple class='form-control' name='editcourseid[]' id='editcourseid'>";
-$coursedata .= "<option value='' disabled style='pointer-events: none; color: #888;'>Select courses</option>";
+$courseResult = getCourseList();
 
-foreach ($courseResult as $courselist) {
+$coursedata = "<select multiple class='form-control' name='editcourseid[]' id='editcourseid'>";
+
+$options = "<option value='' disabled style='pointer-events: none; color: #888;'>Select courses</option>";
+
+foreach ($courseResult as $key => $courselist) {
     if (in_array($courselist->id, $catArr)) {
-        $coursedata .= "<option value='" . $courselist->id . "' selected='selected'>" . $courselist->shortname . "</option>";
+        $options .= "<option value='" . $courselist->id . "' selected='selected'>" . $courselist->shortname . "</option>";
     } else {
-        $coursedata .= "<option value='" . $courselist->id . "'>" . $courselist->shortname . "</option>";
+        $options .= "<option value='" . $courselist->id . "'>" . $courselist->shortname . "</option>";
     }
 }
 
+$coursedata .= $options;
 $coursedata .= "</select>";
-$data['courseid'] = $coursedata;
 
+$data['courseid'] = $coursedata;
 
 	header('HTTP/1.1 200 Success');
 	echo json_encode($data);
@@ -172,128 +175,144 @@ $data['courseid'] = $coursedata;
 	header('HTTP/1.1 200 Success');
 	echo json_encode($data);
 } else if ($case == 'viewcompetency') {
-	$roleid = required_param('roleid', PARAM_INT);
-	$buid = required_param('buid', PARAM_TEXT);
-	$get_competencyheading = $DB->get_records('competency_title', array('isdeleted' => 0));
-	$show = 'show';
-	$i = 0;
-	$temp = 1;
-	$searchListShow = '';
-	$searchListShow .= '<div class="accordion md-accordion accordion-blocks" id="accordionEx78" role="tablist" aria-multiselectable="false">
-<div class="card">';
-	foreach ($get_competencyheading as $key => $seachVal) {
-		if ($i > 0) {
-			$show = '';
-		}
-		if ($roleid) {
-			$query = " and cc.roleid=$roleid";
-		} else {
-			$query = "";
-		}
-		$searchSqlcomp = "SELECT cp.id, cc.id as cctid, cp.comptencyname, cc.name, r.shortname 
-			FROM {competency_category} as cc 
-			LEFT JOIN {competencies} as cp ON cc.id = cp.ccid 
-			LEFT JOIN {role} as r ON cc.roleid = r.id
-			WHERE cc.isdeleted=0 and cc.ctid=? and cc.buid=? $query
-			ORDER by cc.id";
-		$searchCompResult = $DB->get_records_sql($searchSqlcomp, array($seachVal->id, $buid));
-		if (count($searchCompResult) > 0) {
-			$searchListShow .= '<div class="card-header" role="tab" id="heading"' . $i . '"">
-      <!-- Heading -->
-      <a data-toggle="collapse" data-parent="#accordionEx78" href="#collapse' . $i . '" aria-expanded="false" aria-controls="collapse' . $i . '">
-        <h5 class="mt-1 mb-0">
-          <span>' . $seachVal->title . '</span>
-        </h5>
-      </a>
-    </div>
-	<!-- Card body -->
-    <div id="collapse' . $i . '" class="collapse ' . $show . '" role="tabpanel" aria-labelledby="heading' . $i . '" data-parent="#accordionEx78">
-      <div class="card-body">
-        <!-- Table responsive wrapper -->
-        <div class="table-responsive mx-3">
-          <!--Table-->
-          <table class="table table-hover mb-0">
-            <!--Table head-->
-            <thead>
-              <tr>
-                <th class="th-lg">Sub Competency Name</th>
-                <th class="th-lg">Sub Sub Competency Name </a></th>
-                <th class="th-lg">Role</th>
-                <th class="th-lg">View course</th>
-              </tr>
-            </thead>
-            <!--Table head-->
-            <!--Table body-->
-            <tbody>';
-			foreach ($searchCompResult as $competency_categorys_val) {
 
-				if (empty($competency_categorys_val->id)) {
-					$svid = 0;
-				} else {
-					$svid = $competency_categorys_val->id;
-				}
-				if (empty($competency_categorys_val->cctid)) {
-					$svcctid = 0;
-				} else {
-					$svcctid = $competency_categorys_val->cctid;
-				}
-				if (empty($competency_categorys_val->id) && empty($competency_categorys_val->cctid)) {
-					$searchcomptencyname = '-';
-				} else {
-					$searchcomptencyname = $competency_categorys_val->comptencyname;
-				}
-				$searchListShow .= '<tr>
-                <td>' . $competency_categorys_val->name . '</td>
-                <td>' . $searchcomptencyname . '</td>
-                <td>' . $competency_categorys_val->shortname . '</td>
-                <td>
-                  <a href="#" class="btn btn-primary" data-target="#tabView" data-toggle="modal" onclick="getcourses(' . $svid . ',' . $svcctid . ')"> View Courses </a>
-                </td>
-              </tr>';
-			}
-			$searchListShow .= '</tbody>
-            <!--Table body-->
-          </table>
-          <!--Table-->
+    $roleid = required_param('roleid', PARAM_INT);
+    $buid   = required_param('buid', PARAM_TEXT);
+
+    $get_competencyheading = $DB->get_records('competency_title', array('isdeleted' => 0));
+
+    $i = 0;
+    $temp = 1;
+    $searchListShow = '';
+
+    $searchListShow .= '<div class="accordion custom-accordion" id="accordionEx78">';
+
+    foreach ($get_competencyheading as $key => $seachVal) {
+
+        $show = ($i == 0) ? 'show' : '';
+        $expanded = ($i == 0) ? 'true' : 'false';
+
+        $query = ($roleid) ? " AND cc.roleid=$roleid" : "";
+
+        $searchSqlcomp = "SELECT cp.id, cc.id as cctid, cp.comptencyname, cc.name, r.shortname 
+            FROM {competency_category} as cc 
+            LEFT JOIN {competencies} as cp ON cc.id = cp.ccid 
+            LEFT JOIN {role} as r ON cc.roleid = r.id
+            WHERE cc.isdeleted=0 AND cc.ctid=? AND cc.buid=? $query
+            ORDER BY cc.id";
+
+        $searchCompResult = $DB->get_records_sql($searchSqlcomp, array($seachVal->id, $buid));
+
+        if (count($searchCompResult) > 0) {
+
+            $searchListShow .= '
+            <div class="card custom-card">
+
+                <!-- HEADER -->
+                <div class="card-header" id="heading'.$i.'">
+                    <a class="accordion-link"
+                       data-toggle="collapse"
+                       href="#collapse'.$i.'"
+                       aria-expanded="'.$expanded.'">
+
+                        <div class="header-left">
+                            <i class="fa fa-layer-group icon-main"></i>
+                            <span>'.$seachVal->title.'</span>
+                        </div>
+
+                        <i class="fa fa-chevron-down toggle-icon"></i>
+                    </a>
+                </div>
+
+                <!-- BODY -->
+                <div id="collapse'.$i.'" class="collapse '.$show.'" data-parent="#accordionEx78">
+                    <div class="card-body">
+
+                        <div class="table-responsive">
+                            <table class="table modern-table">
+
+                                <thead>
+                                    <tr>
+                                        <th>Sub Competency</th>
+                                        <th>Sub Sub Competency</th>
+                                        <th>Role</th>
+                                        <th class="text-center">Courses</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>';
+
+            foreach ($searchCompResult as $competency_categorys_val) {
+
+                $svid = !empty($competency_categorys_val->id) ? $competency_categorys_val->id : 0;
+                $svcctid = !empty($competency_categorys_val->cctid) ? $competency_categorys_val->cctid : 0;
+
+                $searchcomptencyname = (empty($competency_categorys_val->id) && empty($competency_categorys_val->cctid))
+                    ? '-' 
+                    : $competency_categorys_val->comptencyname;
+
+                $searchListShow .= '
+                    <tr>
+                        <td class="fw-bold">'.$competency_categorys_val->name.'</td>
+                        <td>'.$searchcomptencyname.'</td>
+                        <td>
+                            <span class="role-badge">'.$competency_categorys_val->shortname.'</span>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-view"
+                                data-toggle="modal"
+                                data-target="#tabView"
+                                onclick="getcourses('.$svid.','.$svcctid.')">
+                                <i class="fa fa-eye"></i> View
+                            </button>
+                        </td>
+                    </tr>';
+            }
+
+            $searchListShow .= '
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>';
+
+            $temp = 0;
+            $i++;
+        }
+    }
+
+    $searchListShow .= '</div>';
+
+    // Modal (single instance - outside loop)
+    $searchListShow .= '
+    <div class="modal fade" id="tabView" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Course Lists</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <div id="courselist" class="courselistclass"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
         </div>
-        <!-- Table responsive wrapper -->
-      </div>
-    </div>
+    </div>';
 
-	<div class="modal fade" id="tabView" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-	  <div class="modal-dialog" role="document">
-	    <div class="modal-content">
-	      
-	      <div class="modal-header">
-	        <h5 class="modal-title" id="exampleModalLabel">Course lists</h5>
-	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	          <span aria-hidden="true">&times;</span>
-	        </button>
-	      </div>
+    if ($temp == 1) {
+        $searchListShow = "<p class='text-center text-danger'>No records found!</p>";
+    }
 
-	      <div class="modal-body">
-	       <div class="form-group courselistclass" id="courselist">
-	           
-	        </div>    
-	      </div>
-
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>     
-	      </div>
-
-	    </div>
-	  </div>
-	</div>
-
-    ';
-			echo $searchListShow;
-			$temp = 0;
-		}
-	}
-	if ($temp == 1) {
-		echo "<p style='color:red;text-align:center;'>No such a record found!</p>";
-		$temp++;
-	}
+    echo $searchListShow;
 } else if ($case == 'viewcompetencycourse') {
 
 	$cid = optional_param('cid', 0, PARAM_INT);
@@ -372,7 +391,7 @@ $data['courseid'] = $coursedata;
         .userlist {
             position: sticky;
             top: 0;
-            background-color: #f1f8ff;
+            background-color: #fff;
             z-index: 2;
             min-width: 140px;
             white-space: nowrap;
@@ -385,24 +404,22 @@ $data['courseid'] = $coursedata;
         }
     </style>';
 
-
+	 $rows.= '<div class="card mb-3 border-0">';
+            // $output .= '<div class="card-header text-white" data-bs-toggle="collapse" data-bs-target="#heading' . $heading->id . '" style="cursor:pointer; background:#003152;">' . $heading->title . '</div>';
+            $rows .= '<div class="collapse show" id="heading' . $heading->id . '">';
+            $rows .= '<div class="card-body">';
+            $rows .= '<div class="responsive-table-wrapper" style="border-radius: 10px;
+			border: 1px solid lightgrey;">';
+            $rows .= '<table class="main-table table table-bordered" style="border-collapse: collapse;" >';
 	foreach ($get_competencyheading as $key => $competencyheading) {
-	
 	$sqlcompetency_category = "SELECT cc.id , cc.name,cc.roleid
 						          FROM {competency_category} as cc 
 						          WHERE cc.isdeleted=0 and cc.ctid=? and cc.roleid=? and cc.buid=?
 						          ORDER by cc.id";
 	$competency_category = $DB->get_records_sql($sqlcompetency_category, array($competencyheading->id,$roleid,$buid));
-	 
+	
 	if(!empty($competency_category)){
-				 $rows.= '<div class="card mb-3">';
-            $rows .= '<div class="card-header text-white" data-bs-toggle="collapse" data-bs-target="#heading' . $competencyheading->id . '" style="cursor:pointer; background:#003152;">'.$competencyheading->title.'</div>';
-            $rows .= '<div class="collapse show" id="heading' . $competencyheading->id . '">';
-            $rows .= '<div class="card-body">';
-            $rows .= '<div class="responsive-table-wrapper" style="border-radius: 10px;
-			border: 1px solid lightgrey;">';
-            $rows .= '<table class="main-table table table-bordered" style="border-collapse: collapse;" >';
-		$rows .='<tr style="border:1px solid #000; background:#003152;">';
+		$rows .='<tr style="border:1px solid #000">';
 			if($roleid != 7){
 				$alluserquery = "SELECT u.* FROM {user} as u 
 				INNER JOIN {role_assignments} as ra  ON ra.userid=u.id
@@ -420,13 +437,11 @@ $data['courseid'] = $coursedata;
 			}
 			
 			$userArr =array();
-			// if(count($allUsers) > 0){
-			// 	$rows .='<th class="competency_title sticky-col first-col" style="width:200px;"><span>'.$competencyheading->title.'</span></th>';
-			// 	$rowCnt ++;
-			// }
-			$rows.='<th class="competency_title sticky-col first-col" style="width:200px;">Competency</th>';
+			if(count($allUsers) > 0){
+				$rows .='<th class="competency_title sticky-col first-col" style="width:200px;"><span>'.$competencyheading->title.'</span></th>';
+				$rowCnt ++;
+			}
 			foreach ($allUsers as $key => $user) {
-				
 				$rows .='<th class="userlist">'.fullname($user).'</th>';
 				$userArr[]=$user->id;
 
@@ -490,23 +505,17 @@ $data['courseid'] = $coursedata;
 					$rows .= '</tr>';
 				}
 			}
-			   $rows .= '</tbody></table>';
-            $rows .= '</div>'; // responsive wrapper
-            $rows .= '<div class="mt-2 text-end"><a href="approval.php" class="btn btn-primary">Submit</a></div>';
-            $rows .= '</div></div></div>';
 		}
-			
 	}
 	if (count($allUsers) == 0 || $allUsers <= 0) {
 		$rows .= "<tr><td>No record found !</td></tr>";
 	} else {
-	
+		$rows .= '<tr><td colspan="' . $rowCnt . '"><a href="approval.php" class="btn btn-primary">Submit</a></td></tr>';
 	}
 
 	echo $rows;
 
-}
- else if ($case == 'approvalformAdd') {
+} else if ($case == 'approvalformAdd') {
 
 	$userId = required_param('userId', PARAM_INT);
 	$mainId = required_param('mainId', PARAM_INT);
@@ -623,7 +632,6 @@ $data['courseid'] = $coursedata;
 	$ratingValue1 = 0;
 	$landdArr = array();
 	foreach ($firstQueryResult as $key => $firstValue) {
-		$rows .= '<table class="rating-table">';
 
 		$rows .= '<tr>';
 
@@ -631,7 +639,7 @@ $data['courseid'] = $coursedata;
 		$rows .= '<th class="userlist" >' . get_string('managersrating', 'local_competency') . '</th>';
 		$rows .= '<th class="userlist" > ' . get_string('studentsrating', 'local_competency') . ' </th>';
 		if ($tearmsid == 2) {
-			$rows .= '<th class="userlist" style="color:#000;background-color:#ec9707;"> ' . get_string('landdpreviousrating', 'local_competency') . ' </th>';
+			$rows .= '<th class="userlist" style="color:#000;background-color:#E6E6E6;"> ' . get_string('landdpreviousrating', 'local_competency') . ' </th>';
 			$rowcnt = 6;
 		} else {
 			$rowcnt = 5;
@@ -723,7 +731,7 @@ $data['courseid'] = $coursedata;
 				$rows .= '<td class="usersrow" ><span>' . $ratingValue . '</span></td>';
 
 				if ($tearmsid == 2) {
-					$rows .= '<td class="usersrow" style="background-color:#ec9707; color:#003152;"><span>' . $preManagerRating . '</span></td>';
+					$rows .= '<td class="usersrow" style="background-color:#E6E6E6;"><span>' . $preManagerRating . '</span></td>';
 				}
 
 
@@ -814,14 +822,13 @@ $data['courseid'] = $coursedata;
 				$rows .= '<td class="usersrow" ><span> ' . $ratingValue1 . ' </span></td>';
 
 				if ($tearmsid == 2) {
-					$rows .= '<td class="usersrow" style="background-color:#ec9707; color:#003152;"><span>' . $preManagerRating1 . '</span></td>';
+					$rows .= '<td class="usersrow" style="background-color:#E6E6E6;"><span>' . $preManagerRating1 . '</span></td>';
 				}
 
 				$rows .= '<td class="usersrow" ><input type="number" min="0" max="10" name="managerfinal_rating1[]" id="managerfinalrating1" value="' . $thirdValue->finalrating . '" ' . $readonly1 . ' /></td>';
 				$rows .= '<td class="usersrow" ><span>' . $landdstatus1 . '</span></td>';
 
 				$rows .= '<tr>';
-				
 
 			}
 
@@ -839,27 +846,43 @@ $data['courseid'] = $coursedata;
 
 } else if ($case == 'fiterDepartment') {
 
-	$departmentId = required_param('departmentId', PARAM_TEXT);
-	$userid = required_param('userid', PARAM_INT);
-	$dapartment = '';
+    $departmentId = required_param('departmentId', PARAM_TEXT);
+    $managerid = required_param('userid', PARAM_INT);
 
-	$userSql = "SELECT DISTINCT ud.userid, u.* from {user_info_data} as ud 
-				  INNER join {user_info_field} as uf on ud.fieldid=uf.id 
-				  Inner join {user} u on ud.userid=u.id where ud.data LIKE '" . $userid . "%' and department = ?";
+    $dapartment = '';
 
-	$allUsers = $DB->get_records_sql($userSql, array($departmentId));
+    // ✅ FIXED QUERY
+if (is_siteadmin($managerid)) {
+    // Admin sees all users
+    $userSql = "SELECT u.id, u.firstname, u.lastname, u.email
+                FROM {user} u
+                WHERE u.department = ?";
+    $params = [$departmentId];
 
-	$dapartment .= '<select name="userid" id="userid" class="form-control">
-            <option value="">Select user</option>';
-	foreach ($allUsers as $user) {
-		$fullname = fullname($user);
-		$dapartment .= "<option value='" . $user->userid . "'>" . $fullname . "  ( " . $user->email . " ) </option>";
-	}
-	$dapartment .= '</select>';
+} else {
+    // Normal manager
+    $userSql = "SELECT u.id, u.firstname, u.lastname, u.email
+                FROM {user} u
+                INNER JOIN {user_info_data} uid ON uid.userid = u.id
+                INNER JOIN {user_info_field} uif ON uif.id = uid.fieldid
+                WHERE u.department = ?
+                AND uif.shortname = 'reportingmanager'
+                AND uid.data = ?";
+    $params = [$departmentId, $managerid];
+}
 
-	echo $dapartment;
+$allUsers = $DB->get_records_sql($userSql, $params);
 
+    $dapartment .= '<select name="userid" id="userid" class="form-control">
+        <option value="">Select user</option>';
 
+    foreach ($allUsers as $user) {
+        $dapartment .= "<option value='{$user->id}'>" . fullname($user) . " ({$user->email})</option>";
+    }
+
+    $dapartment .= '</select>';
+
+    echo $dapartment;
 } else if ($case == 'fiterlanddRating') {
 
 	//$roleid = required_param('roleid', PARAM_INT);
@@ -899,14 +922,14 @@ $data['courseid'] = $coursedata;
 		$rows .= '<th class="userlist" > ' . get_string('studentsrating', 'local_competency') . ' </th>';
 		$rows .= '<th class="userlist" > ' . get_string('managerfinalrating', 'local_competency') . ' </th>';
 		if ($tearmsid == 2) {
-			$rows .= '<th class="userlist" style="color:#000; background-color:#5b7f99;"> ' . get_string('landdpreviousrating', 'local_competency') . ' </th>';
+			$rows .= '<th class="userlist" style="color:#000; background-color:#E6E6E6;"> ' . get_string('landdpreviousrating', 'local_competency') . ' </th>';
 			$rowcnt = 9;
 		} else {
 			$rowcnt = 8;
 		}
 		$rows .= '<th class="userlist" > ' . get_string('landdrating', 'local_competency') . ' </th>';
 		$rows .= '<th class="userlist" > ' . get_string('landdratingstatus', 'local_competency') . ' </th>';
-		$rows .= '<th class="userlist" style="color:#fff; background-color:#5b7f99; width:100px;"> ' . get_string('managerratestate', 'local_competency') . ' </th>';
+		$rows .= '<th class="userlist" style="color:#000; background-color:#E6E6E6; width:100px;"> ' . get_string('managerratestate', 'local_competency') . ' </th>';
 		$rows .= '<th class="userlist" > ' . get_string('landdratingcompletingstatus', 'local_competency') . ' </th>';
 
 		$rows .= '</tr>';
@@ -1033,14 +1056,14 @@ $data['courseid'] = $coursedata;
 
 				$rows .= '<td class="usersrow" ><input type="hidden" min="0" max="10" name="managerfinal_rating[]" id="managerfinalrating" value="' . $finalvalue . '"  ' . $readonly . ' class="txtSize"/>' . $finalvalueshow . '</td>';
 				if ($tearmsid == 2) {
-					$rows .= '<td class="usersrow" style="background-color:#5b7f99; color:#fff"><span>' . $preRating . '</span></td>';
+					$rows .= '<td class="usersrow" style="background-color:#E6E6E6;"><span>' . $preRating . '</span></td>';
 				}
 
 				$rows .= '<td class="usersrow" ><input type="number" min="0" max="10" name="landd_rating[]" id="landd_rating" ' . $landdratingValue . '  ' . $readonly . '' . $predisable . ' class="txtSize" /></td>';
 
 				$rows .= '<td class="usersrow" >' . $landdstatuschecked . '</td>';
 
-				$rows .= '<td class="usersrow" style="background-color:#5b7f99; color:#fff"><span>' . $managerRateStatus . '</span></td>';
+				$rows .= '<td class="usersrow" style="background-color:#E6E6E6;"><span>' . $managerRateStatus . '</span></td>';
 
 				if ($approvalStatus == 'Yes') {
 					$rows .= '<td class="usersrow" ><span id="prgshow_' . $no . '">' . $progressStatus . '</span></td>';
@@ -1168,14 +1191,14 @@ $data['courseid'] = $coursedata;
 
 				$rows .= '<td class="usersrow" ><input type="hidden" min="0" max="10" name="managerfinal_rating1[]" id="managerfinalrating1" value="' . $finalvalue1 . '"  ' . $readonly1 . ' class="txtSize" />' . $finalvalueshow1 . '</td>';
 				if ($tearmsid == 2) {
-					$rows .= '<td class="usersrow" style="background-color:#5b7f99; color:#fff;"><span>' . $preRating1 . '</span></td>';
+					$rows .= '<td class="usersrow" style="background-color:#E6E6E6;"><span>' . $preRating1 . '</span></td>';
 				}
 
 				$rows .= '<td class="usersrow" ><input type="number" min="0" max="10" name="landd_rating1[]" id="landd_rating" ' . $landdratingValue1 . '  ' . $readonly1 . '' . $predisable . ' class="txtSize" /></td>';
 
 				$rows .= '<td class="usersrow" >' . $landdstatuschecked1 . '</td>';
 
-				$rows .= '<td class="usersrow" style="background-color:#5b7f99; color:#fff"><span> ' . $managerRateStatus1 . ' </span></td>';
+				$rows .= '<td class="usersrow" style="background-color:#E6E6E6;"><span> ' . $managerRateStatus1 . ' </span></td>';
 
 				if ($approvalStatus1) {
 					$rows .= '<td class="usersrow" ><span id="prgshow1_' . $no1 . '">' . $progressStatus1 . '</span></td>';

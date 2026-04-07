@@ -33,6 +33,7 @@ $PAGE->set_title(get_string('sub_competency', 'local_competency'));
 $PAGE->set_url($CFG->wwwroot . '/local/competency/subcompetency.php');
 $PAGE->set_heading(get_string('sub_competency', 'local_competency'));
 $PAGE->navbar->add(get_string('sub_competency', 'local_competency'));
+$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/competency/competency_pro.css?v=2'));
 echo $OUTPUT->header();
 //header added
 require_once($CFG->dirroot . '/local/competency/header.php');
@@ -96,7 +97,7 @@ if (!empty($competencyCategory) && !empty($mainHeading) && !empty($roleid)) {
 // edit competency category
 $competencyEditCategory = optional_param('competencyEditCategory', '', PARAM_TEXT);
 $editccid = optional_param('editccid', '', PARAM_INT);
-$courselist = optional_param_array('editcourseid', [], PARAM_TEXT);
+$courselist = optional_param_array('editcourseid', array(), PARAM_TEXT);
 $roleid = optional_param('editroleid', '', PARAM_TEXT);
 $catid = optional_param('catid', '', PARAM_TEXT);
 $mainHeadingEditId = optional_param('mainHeadingEditId', '', PARAM_TEXT);
@@ -106,8 +107,7 @@ if (!empty($competencyEditCategory) && !empty($editccid) && !empty($mainHeadingE
 		redirect($CFG->wwwroot . '/my/', \core\notification::error('No access...'));
 		exit();
 	}
-	$courseid = implode(',', $courselist);
-	$courseArr = explode(',', $courseid);
+	$courseArr = $courselist;
 	$validate = getValidateStringField($competencyEditCategory);
 	$validateId = getValidateNumberField($mainHeadingEditId);
 	$validateId1 = getValidateUnitExistsField($buEditId);
@@ -243,7 +243,7 @@ if (empty($mainid) && empty($subcid)) {
 
 }
 
-$viewcontentbody = '<form method="post"><div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px; padding: 0px 10px 0px 10px;">
+$viewcontentbody = '<form method="post"><div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px;">
 	<div class="col-md-3">
 		' . $viewselct . '
 	</div>

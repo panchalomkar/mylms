@@ -9366,6 +9366,14 @@ a.mail-navbar-menu-item i.icon {
     padding:0 31px 0 5px; line-height: 28px;
 }
 
+.active_t strong{display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+max-width: 100px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;}
 
 #page-contentbank #page-wrapper #page.show-drawer-left.show-drawer-right, #page-question-edit #page-wrapper #page.show-drawer-left.show-drawer-right, 
 #page-course-completion #page-wrapper #page.show-drawer-left.show-drawer-right,

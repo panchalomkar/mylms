@@ -33,6 +33,7 @@ $PAGE->set_title(get_string('sub_sub_competency', 'local_competency'));
 $PAGE->set_url($CFG->wwwroot . '/local/competency/subsubcompetency.php');
 $PAGE->set_heading(get_string('sub_sub_competency', 'local_competency'));
 $PAGE->navbar->add(get_string('sub_sub_competency', 'local_competency'));
+$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/competency/competency_pro.css?v=2'));
 echo $OUTPUT->header();
 //header added
 require_once($CFG->dirroot . '/local/competency/header.php');
@@ -272,7 +273,7 @@ if (empty($subcid) && empty($subccid)) {
 
 	$subsubselct .= '</select>';
 }
-$viewcontentbody = '<form method="post"><div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px; padding: 0px 10px 0px 10px;">
+$viewcontentbody = '<form method="post"><div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px;">
 	<div class="col-md-3">
 		' . $subselct . '
 	</div>

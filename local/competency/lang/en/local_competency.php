@@ -153,3 +153,18 @@ $string['userreport'] = 'User Report';
 $string['managerwisereport'] = 'Manager Report';
 $string['landdstatuslabel'] = 'L and D Status';
 $string['managerratestate'] = 'Re-rated Status';
+
+// Spider Diagram
+$string['spiderdiagram'] = 'Competency Spider Diagram';
+$string['spiderdiagram_desc'] = 'View competency ratings as a radar/spider chart';
+$string['spider_selfrating'] = 'Self Rating';
+$string['spider_managerrating'] = 'Manager Rating';
+$string['spider_landdfinal'] = 'L&D Final Rating';
+$string['spider_nodata'] = 'No competency data found for this selection.';
+$string['spider_filteruser'] = 'Select Employee';
+$string['spider_filterdept'] = 'Department';
+$string['spider_filterterm'] = 'Term';
+$string['spider_overallscore'] = 'Overall Score';
+$string['spider_greenzone'] = 'Green Zone (8-10): Strong Performer';
+$string['spider_yellowzone'] = 'Yellow Zone (5-7): Developing';
+$string['spider_redzone'] = 'Red Zone (1-4): Needs Improvement';

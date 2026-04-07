@@ -34,6 +34,7 @@ $PAGE->set_url($CFG->wwwroot . '/local/competency/approval.php');
 $PAGE->set_heading(get_string('approval', 'local_competency'));
 $PAGE->navbar->add(get_string('approval', 'local_competency'));
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/competency/customtablelayout.css?v=1'));
+$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/competency/competency_pro.css?v=2'));
 echo $OUTPUT->header();
 //header added
 require_once($CFG->dirroot . '/local/competency/header.php');
@@ -55,7 +56,7 @@ $search = getSearchFieldsCompetency();
 $buselct = $search[0];
 $viewselct = $search[1];
 
-$approvalcontentbody .= '<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px; padding: 0px 10px 0px 10px;">
+$approvalcontentbody .= '<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px;">
   <div class="col-md-4">
      ' . $buselct . '
   </div>
@@ -65,7 +66,7 @@ $approvalcontentbody .= '<div class="row" style="text-align:center;margin-bottom
   <div class="col-md-3"><button type="button" class="btn btn-primary" onclick="filtclickfunapproval()">Search</button></div>
 </div><p id="errormessage" style="color:red;text-align:center;"></p><br/><div class="row">
 	<div class="view1"><ul> 
-	 <div id="table-scroll" class="table-scroll">
+	 <div id="table-scroll" class="table-scroll border-0 shadow-none">
         <div class="table-wrap wrapper1 competencytable">';
 
 /*$rows .='<table class="competencytable table" border="1px solid #000">';

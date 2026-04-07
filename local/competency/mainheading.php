@@ -33,6 +33,7 @@ $PAGE->set_title(get_string('competency_title', 'local_competency'));
 $PAGE->set_url($CFG->wwwroot.'/local/competency/mainheading.php');
 $PAGE->set_heading(get_string('competency_title', 'local_competency'));
 $PAGE->navbar->add(get_string('competency_title', 'local_competency'));
+$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/competency/competency_pro.css?v=2'));
 echo $OUTPUT->header();
 global $USER, $CFG, $DB, $OUTPUT, $SESSION;
 if (!empty($SESSION->currenteditingcompany)) {
@@ -153,7 +154,7 @@ foreach ($completencyTitles as $key => $completencyTitle) {
 if($pages > 1){
 	$pagination = custompagination($selectPageNo,$pages,'tabmiainheading');
 }
-$mainbody ='<div class="tab-pane fade show active" id="tabmainheading" role="tabpanel" aria-labelledby="today-tab">'.html_writer::link(new moodle_url('#', array()), 'Add Main Competency', array('class' => 'btn btn-primary','data-toggle'=>'modal', 'data-target'=>'#AddModalHeading','style'=>'margin-bottom:10px;margin-top:10px;')).''.html_writer::table($table).' '.$pagination.'</div>';
+$mainbody ='<div class="tab-pane fade show active" id="tabmainheading" role="tabpanel" aria-labelledby="today-tab"><div class="comp-section-title"><i class="fa fa-sitemap fa-fw"></i> Main Competency Framework</div>'.html_writer::link(new moodle_url('#', array()), '<i class="fa fa-plus fa-fw"></i> Add Main Competency', array('class' => 'btn btn-primary','data-toggle'=>'modal', 'data-target'=>'#AddModalHeading','style'=>'margin-bottom:16px;margin-top:4px;')).''.html_writer::table($table).' '.$pagination.'</div>';
 echo $mainbody;
 ?>
 

@@ -35,10 +35,18 @@ $PAGE->set_heading(get_string('userreport', 'local_competency'));
 $PAGE->navbar->add(get_string('userreport', 'local_competency'));
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/competency/custom.css?v=1'));
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/competency/customtablelayout.css?v=1'));
+$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/competency/competency_pro.css?v=2'));
 echo $OUTPUT->header();
 //header added
 require_once($CFG->dirroot . '/local/competency/header.php');
 require_once($CFG->dirroot . '/local/competency/tabs.php');
+
+// Spider diagram self-view link
+echo '<div style="display:flex;justify-content:flex-end;margin-bottom:16px;">';
+echo '<a href="spiderdiagram.php" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px;">';
+echo '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon><line x1="12" y1="2" x2="12" y2="22"></line><line x1="2" y1="8.5" x2="22" y2="8.5"></line><line x1="2" y1="15.5" x2="22" y2="15.5"></line></svg>';
+echo ' View My Competency Spider</a></div>';
+
 
 //$listCompetencyCount = getListCompetencyTitleCount();
 
@@ -475,7 +483,7 @@ if ($terms == 1) {
 }
 $termsselect .= '</select>';
 
-$viewcontentbody = '<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px; padding: 0px 10px 0px 10px;">
+$viewcontentbody = '<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px;">
 	<div class="col-md-3">
 		' . $viewselct . '
 	</div>
@@ -486,7 +494,7 @@ $viewcontentbody = '<div class="row" style="text-align:center;margin-bottom:10px
 		' . $subsubselct . '
 	</div>
 	</div>
-	<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px; padding: 0px 10px 0px 10px;">
+	<div class="row" style="text-align:center;margin-bottom:10px;margin-top:10px;">
 	<div class="col-md-3">
 		' . $ratstatus . '
 	</div>
@@ -511,9 +519,9 @@ echo $pagination;
 ?>
 </form>
 <?php $PAGE->requires->js('/local/competency/js/report.js?v=1'); ?>
-<script type="text/javascript">
+<!-- <script type="text/javascript">
 	$(document).ready(function () {
 		$(".main-table").clone(true).appendTo('#table-scroll').addClass('clone');
 	});
-</script>
+</script> -->
 <?php echo $OUTPUT->footer(); ?>

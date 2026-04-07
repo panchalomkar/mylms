@@ -1685,3 +1685,192 @@ $string['focusmodeactivenavinfo'] = 'Focus Mode is ON. Click ‘X’ at right bo
 
 $string['moredetails'] = "More Details";
 $string['templatesloading'] = 'Templates are loading — may take 5–10 mins.';
+// added by omkar
+
+// depricatio modal strigs
+$string['homepagedepricationmodalst1'] = 'Introducing a better way to build and customize Homepages!';
+$string['homepagedepricationmodalst2'] = '<p class="para-regular-1 m-0">With this update, you can now leverage the power of the <span class="para-semibold-1">RAPLMS Page Builder specifically designed for homepages.</span></p>';
+$string['homepagedepricationmodalfeatureitem1'] = 'Improved Page Builder';
+$string['homepagedepricationmodalfeatureitem2'] = 'Over 30 +well designed template blocks';
+$string['homepagedepricationmodalfeatureitem3'] = '7 homepage layouts';
+$string['homepagedepricationmodalfeatureitem4'] = 'Create custom designs';
+
+$string['homepagedepricationmodalst3'] = 'Ready to take the next step?';
+$string['homepagedepricationmodalst4'] = 'Click below to go to setting and seamlessly migrate your existing homepage';
+$string['homepagedepricationmodalst5'] = 'Settings\'s Page';
+$string['homepagedepricationmodalst6'] = 'Do not show this again';
+$string['homepagedepricationmodalst7'] = '<span class="para-regular-2">Note:</span> After the next three updates, the current Homepage builder will be deprecated from the RAPLMS';
+
+$string['homepagedrpecationmodalst8'] = 'The new RAPLMS page builder is available in RAPLMS Pro and the above plans. If you are on the RapLMS starter pack, you can';
+$string['upgradeherelinktext'] = 'upgrade here';
+$string['colours_settings'] = 'Color';
+$string['colours_headingsub'] = 'Color Settings';
+$string['colours_desc'] = 'Color choosers will allow you to customize the look and feel of the main elements on the page.  If you are using a Preset other than the default, you will need to remove any custom colors below for best results as these will over-ride the Preset with undesireable results.  Generally, the Preset will have default colors that you will want to see before customizing them here.';
+$string['brandColor'] = 'Brand Color';
+$string['brandColor_desc'] = 'Your main brand Color';
+$string['brandprimary'] = 'Brand Primary';
+$string['brandprimary_desc'] = 'Your main brand Color';
+$string['brandsuccess'] = 'Brand Success';
+$string['brandsuccess_desc'] = 'Brand Color for succesful alerts, postive panels, buttons, etc';
+$string['brandinfo'] = 'Brand info';
+$string['brandinfo_desc'] = 'Brand Color information alerts and panels, etc';
+$string['brandwarning'] = 'Brand Warning';
+$string['brandwarning_desc'] = 'Brand Color for warning alerts and panels, etc';
+$string['branddanger'] = 'Brand Danger';
+$string['branddanger_desc'] = 'Brand Color for danger alerts and panels, etc';
+$string['brandgray'] = 'Gray Base';
+$string['brandgray_desc'] = 'Gray Base setting - This is the Color used to create gray shades. Default will be #000,
+    but this can be adapted if there is a need to adjust contrast levels';
+$string['breadcrumbbkg'] = 'Breadcrumb Background Color';
+$string['breadcrumbbkg_desc'] = 'Breadcrumb background Color.';
+$string['navbarbkg'] = 'Top Navigation bar Background Color';
+$string['navbarbkg_desc'] = 'Top sticky navigation bar background Color.';
+$string['navbarurl'] = 'Top Navigation bar Link Color';
+$string['navbarurl_desc'] = 'Top sticky navigation bar link and menu Color.';
+$string['fpstartwrap'] = 'Homepage Icon Navigation Background';
+$string['fpstartwrap_desc'] = 'Background Color of the icon navigation bar.';
+$string['fpicon-Color'] = 'Homepage Icon Button Link Color';
+$string['fpicon-Color_desc'] = 'Color of the icon inside the button.';
+$string['fpiconnavbg'] = 'Homepage Icon Button Background Color';
+$string['fpiconnavbg_desc'] = 'Color of the icon button background.';
+$string['fpiconnavhover'] = 'Homepage Icon Button Hover Background';
+$string['fpiconnavhover_desc'] = 'Homepage icon navigation button background Color when hovering.';
+$string['cardbkg'] = 'Content Background Color';
+$string['cardbkg_desc'] = 'Content background Color for course content and blocks.';
+$string['drawerbkg'] = 'Side Drawer Background Color';
+$string['drawerbkg_desc'] = 'Side Drawer background Color for the menu on the left side of the page.';
+$string['bodybackground'] = 'Body Background Color of other pages';
+$string['bodybackground_desc'] = 'Body background colors of other pages.';
+$string['footerbg'] = 'Footer Background Color';
+$string['footerbg_desc'] = 'The background Color of the footer.';
+$string['headerscreen'] = 'Header Box Background';
+$string['headerscreen_desc'] = 'This background Color appears in the header area to help separate it from the course content.';
+$string['headingcolor'] = 'Headings Color';
+$string['headingcolor_desc'] = 'H1,H2,H3,H4,H5.H6 Color settings.';
+$string['headercolor'] = 'Page Header Text Color';
+$string['headercolor_desc'] = 'This alters the Page Heading H1 color so that it might stand out better ontop of the header image.';
+$string['bodycolor'] = 'Default Text Color';
+$string['bodycolor_desc'] = 'Default text color.';
+$string['linkcolor'] = 'Default Link Color';
+$string['linkcolor_desc'] = 'Default link color.';
+$string['bodycolor_other_pages'] = 'Sidebar Background Color';
+$string['bodycolor_other_pages_desc'] = 'Sidebar background color of the following pages: Admin home, Student Home, My Records and Courses except "Left navigation course format.';
+
+$string['rawcss'] = 'Raw CSS';
+$string['rawcss_desc'] = 'Use this field to provide CSS code which will be injected at the end of the style sheet. Also you can override the company brand color or any color by adding css here.';
+$string['rawscsspre'] = 'Raw initial SCSS';
+$string['rawscsspre_desc'] = 'In this field you can provide initialising SCSS code, it will be injected before everything else.
+    Most of the time you will use this setting to define variables.';
+
+
+// Image Settings.
+$string['imagesettings'] = 'Custom image settings';
+$string['backgroundimage'] = 'Default page background image';
+$string['backgroundimage_desc'] = 'Background image for pages';
+$string['loginimage'] = 'Default Login image';
+$string['loginimage_desc'] = 'Background image for login page <br> Image file formats: JPG, GIF, PNG, 
+Recommended size 1347 x 612 px. 
+Maximum image size: 5.00 MB';
+
+//Slideshow
+$string['slideshowsettings'] = 'Slideshow';
+$string['slideshowheight'] = 'Slideshow Height';
+$string['slideshowheight_desc'] = 'Adjust the height of the slideshow.';
+$string['showslideshow'] = 'Activate Slideshow';
+$string['showslideshow_desc'] = 'Check this option to turn on the slideshow feature.';
+$string['slide1info'] = 'Slide 1';
+$string['slide1infodesc'] = 'Slide 1 details.';
+$string['slide2info'] = 'Slide 2';
+$string['slide2infodesc'] = 'Slide 2 details.';
+$string['slide3info'] = 'Slide 3';
+$string['slide3infodesc'] = 'Slide 3 details.';
+$string['slidetitle'] = 'Slide Title';
+$string['slidetitle_desc'] = 'Enter a title for this slide.';
+$string['slidecontent'] = 'Slide Description';
+$string['slidecontent_desc'] = 'Add a description for this slide.';
+$string['slideimage'] = 'Slide Image';
+$string['slideimage_desc'] = 'Add a background image for this slide. <br> Image file formats: JPG, GIF, PNG, 
+Recommended size 1920 x 500 px. 
+Maximum image size: 5.00 MB';
+$string['font_name_theme'] = 'Font Name theme';
+$string['font_name_desc'] = 'Set Font Name theme';
+$string['signup_loginfooter'] = 'Already have an account?';
+$string['signup_loginfooter_loginnow'] = 'Login Now';
+$string['font_name_desc'] = 'Upload Other Font:-';
+$string['fonts_settings'] = 'Font';
+$string['fonts_headingsub'] = 'Fonts Settings';
+$string['login_setting'] = 'Login Page Settings';
+$string['logininfodesc'] = 'This setting allows you to customize the text under the login logo';
+$string['login_message'] = 'Login Page welcome Message';
+$string['login_messagedesc'] = 'Below, you will be able to add text to your login page and format it using the HTML tools available. Any text you add here, font size, color combination and even image will affect the overall look of the login page and affect also the elements on it. Be mindful of this as you plan your login page layout so you don\'t have conflicts with the rest of the elements on it';
+$string['custom_nav'] = 'Custom Navigation';
+$string['login_footer'] = 'Login Footer';
+$string['login_footerdescription'] = 'Change login footer text';
+
+//Logo Settings
+$string['logos_settings'] = 'Logo';
+$string['logos_headingsub'] = 'Logo Settings';
+$string['logo'] = 'Logo';
+$string['logo_desc'] = 'A full logo to be used as decoration by some themes (such as core themes). This image can be quite high resolution because it will be scaled down for use (and cached for performance). Logos that are wider than they are high usually give better results. Formats accepted: PNG and JPG. Recommended size';
+$string['logocompact'] = 'Compact logo';
+$string['logocompact_desc'] = 'A compact version of the same logo as above, such as an emblem, shield or icon. The image should be clear even at small sizes. Formats accepted: PNG and JPG.';
+
+// Tenant Theme strings.
+$string['tenantconfigtitle'] = 'Theme Setting';
+$string['tenantpluginname'] = 'Theme Setting';
+//Marketing Tiles
+$string['marketingheading'] = 'Marketing Tiles';
+$string['marketinginfodesc'] = 'Enter the settings for your marketing spot.  You must include a title in order for the Marketing Spot to appear.  The title will activate the individual Marketing Spots.';
+$string['marketingheadingsub'] = 'Three locations on the front page to add information and links';
+$string['marketboxcolor'] = 'Marketing Box Background Color';
+$string['marketboxcolor_desc'] = 'The color of the background for the marketing box.';
+$string['marketboxbuttoncolor'] = 'Marketing Box Button Color';
+$string['marketboxbuttoncolor_desc'] = 'The color of the button background for the marketing box.';
+$string['marketboxcontentcolor'] = 'Marketing Box Content Background Color';
+$string['marketboxcontentcolor_desc'] = 'The color of the background for the marketing box content. This is where the text appears in the marketing spot and can be different from the box background color to draw attention to the text.';
+$string['marketingheight'] = 'Height of Marketing Images';
+$string['marketingheightdesc'] = 'If you want to display images in the Marketing boxes you can specify their hight here.';
+$string['marketingdesc'] = 'This theme provides the option of enabling three "marketing" or "ad" spots just under the slideshow.  These allow you to easily identify core information to your users and provide direct links.';
+$string['marketing1'] = 'Marketing Spot One';
+$string['marketing2'] = 'Marketing Spot Two';
+$string['marketing3'] = 'Marketing Spot Three';
+$string['marketing4'] = 'Marketing Spot Four';
+$string['marketing5'] = 'Marketing Spot Five';
+$string['marketing6'] = 'Marketing Spot six';
+$string['marketingtitle'] = 'Title';
+$string['marketingtitledesc'] = 'Title to show in this marketing spot.  You must include a title in order for the Marketing Tile to appear.';
+$string['marketingicon'] = 'Link Icon';
+$string['marketingicondesc'] = 'Name of the icon you wish to use in the marketing URL Button. List is <a href="http://fortawesome.github.io/Font-Awesome/cheatsheet/" target="_new">here</a>.  Just enter what is after "fa-", e.g. "star".';
+$string['marketingimage'] = 'Image';
+$string['marketingimage_desc'] = 'This provides the option of displaying an image in the marketing spot <br>Image file formats: JPG, GIF, PNG, 
+	Recommended size 1024px x 300px 72dpi.';
+$string['marketingcontent'] = 'Content';
+$string['marketingcontentdesc'] = 'Content to display in the marketing box. Keep it short and sweet.';
+$string['marketingbuttontext'] = 'Link Text';
+$string['marketingbuttontextdesc'] = 'Text to appear on the button.';
+$string['marketingbuttonurl'] = 'Link URL';
+$string['marketingbuttonurldesc'] = 'URL the button will point to.';
+$string['marketingurltarget'] = 'Link Target';
+$string['marketingurltargetdesc'] = 'Choose how the link should be opened';
+$string['marketingurltargetself'] = 'Current Page';
+$string['marketingurltargetnew'] = 'New Page';
+$string['marketingurltargetparent'] = 'Parent Frame';
+$string['togglemarketing'] = 'Marketing Tile Position';
+$string['togglemarketing_desc'] = 'Determine where the marketing tiles will be located on the homepage.';
+$string['displaytop'] = 'Display at Top of Page';
+$string['displaybottom'] = 'Display at Bottom of Page';
+$string['marketimagebg'] = 'Header Background';
+$string['marketimagebg_desc'] = 'Background Color for the Header.';
+$string['selectlog'] = 'Select...';
+$string['selectright'] = 'Right Side';
+$string['selectcenter'] = 'Center';
+$string['loginlayout'] = 'Login Page Layout';
+$string['loginopacity'] = 'Login Block Opacity';
+
+// raju custom string
+$string['certificateissues'] = 'Certificate Earn';
+$string['selectedcompany'] = 'Active Company <strong> {$a} </strong>';
+$string['favicon_desc'] = 'Favicon description';
+$string['txt_role_header'] = 'Role : ';
+$string['role_switch_text'] = 'Preview';
+$string['admin'] = 'Admin';
