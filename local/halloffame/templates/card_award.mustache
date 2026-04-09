@@ -1,0 +1,79 @@
+{{! local_halloffame/card_award — v2 }}
+<div class="hof-award-card" data-id="{{id}}">
+
+  {{! Gradient header }}
+  <div class="hof-award-header" style="background:{{gradient}}">
+    {{#image}}<img src="{{{image}}}" class="hof-award-bg-img" alt="" aria-hidden="true"/>{{/image}}
+    <div class="hof-award-confetti" aria-hidden="true">
+      <span>🎊</span><span>🎉</span><span>⭐</span>
+    </div>
+
+    {{! Profile image — rendered via $OUTPUT->user_picture() in PHP, circular }}
+    <div class="hof-award-avatar-wrap">
+      <div class="hof-avatar-ring">
+        {{{userpicture}}}
+      </div>
+    </div>
+
+    <div class="hof-award-header-text">
+      <h3 class="hof-award-title">{{title}}</h3>
+      {{#department}}
+      <div class="hof-award-dept">
+        <i class="fa fa-sitemap" aria-hidden="true"></i> {{department}}
+      </div>
+      {{/department}}
+    </div>
+  </div>
+
+  {{! Card body }}
+  <div class="hof-award-body">
+    {{#monthname}}
+    <div class="hof-award-period">
+      <i class="fa fa-calendar-o" aria-hidden="true"></i>
+      {{monthname}} {{year}}
+    </div>
+    {{/monthname}}
+
+    <div class="hof-award-congrats">
+      <i class="fa fa-star" aria-hidden="true"></i>
+      {{#str}}congratulations,local_halloffame{{/str}}
+    </div>
+
+    <div class="hof-award-name-badge">
+      <i class="fa fa-user" aria-hidden="true"></i>
+      {{fullname}}
+    </div>
+
+    {{#message}}
+    <p class="hof-award-message">"{{message}}"</p>
+    {{/message}}
+  </div>
+
+  {{! Actions }}
+  <div class="hof-card-actions">
+    <button class="hof-like-btn{{#userliked}} hof-liked{{/userliked}}"
+            data-id="{{id}}" data-type="award"
+            aria-label="{{#str}}like,local_halloffame{{/str}}"
+            aria-pressed="{{#userliked}}true{{/userliked}}{{^userliked}}false{{/userliked}}">
+      <i class="fa fa-thumbs-up" aria-hidden="true"></i>
+      <span class="hof-like-count">{{likecounts}}</span>
+    </button>
+
+    <button class="hof-action-btn" aria-label="Comment">
+      <i class="fa fa-comment-o" aria-hidden="true"></i>
+    </button>
+    <button class="hof-action-btn" aria-label="Share">
+      <i class="fa fa-share-alt" aria-hidden="true"></i>
+    </button>
+
+    {{#canmanage}}
+    <a href="{{deleteurl}}"
+       class="hof-btn-delete-award"
+       onclick="return confirm('Delete this award?')"
+       aria-label="Delete award">
+      <i class="fa fa-trash-o" aria-hidden="true"></i>
+    </a>
+    {{/canmanage}}
+  </div>
+
+</div>

@@ -1,0 +1,850 @@
+/* =============================================================================
+   Hall of Fame  ·  local_halloffame  ·  styles.css  v2.0
+   Design system: Primary #033252  ·  Secondary #eb980d
+   ============================================================================= */
+
+/* ── Design tokens ──────────────────────────────────────────────────────────── */
+:root {
+    --hof-primary:        #033252;
+    --hof-primary-light:  #065a96;
+    --hof-primary-dark:   #021e33;
+    --hof-secondary:      #eb980d;
+    --hof-secondary-light:#f7c26b;
+    --hof-secondary-dark: #c47a0a;
+
+    --hof-success:        #1a7a4a;
+    --hof-danger:         #c0392b;
+    --hof-warning-bg:     #fff3cd;
+
+    --hof-text:           #1a1a2e;
+    --hof-text-muted:     #6b7280;
+    --hof-surface:        #ffffff;
+    --hof-surface-alt:    #f4f7fb;
+    --hof-border:         #dce3ec;
+
+    --hof-radius-sm:      8px;
+    --hof-radius:         14px;
+    --hof-radius-lg:      20px;
+    --hof-radius-pill:    999px;
+
+    --hof-shadow-sm:      0 2px 8px rgba(3,50,82,.08);
+    --hof-shadow:         0 4px 20px rgba(3,50,82,.12);
+    --hof-shadow-lg:      0 8px 40px rgba(3,50,82,.18);
+    --hof-shadow-card:    0 2px 12px rgba(3,50,82,.10);
+
+    --hof-transition:     .2s ease;
+}
+
+/* ── Page header ────────────────────────────────────────────────────────────── */
+.hof-page-header {
+    background: linear-gradient(135deg, var(--hof-primary) 0%, var(--hof-primary-light) 60%, #0a8fd1 100%);
+    border-radius: var(--hof-radius-lg);
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    box-shadow: var(--hof-shadow);
+}
+
+.hof-header-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.hof-header-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(255,255,255,.18);
+    border-radius: var(--hof-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--hof-secondary);
+    flex-shrink: 0;
+}
+
+.hof-title {
+    color: #fff !important;
+    font-size: 1.85rem;
+    font-weight: 800;
+    letter-spacing: -.4px;
+    margin: 0;
+    line-height: 1.2;
+}
+
+/* Company / admin context badges */
+.hof-company-badge,
+.hof-siteadmin-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 14px;
+    border-radius: var(--hof-radius-pill);
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .3px;
+}
+.hof-company-badge  { background: rgba(235,152,13,.25); color: var(--hof-secondary-light); border: 1px solid rgba(235,152,13,.4); }
+.hof-siteadmin-badge{ background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.3); }
+
+.hof-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* ── Button system ──────────────────────────────────────────────────────────── */
+.hof-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 20px;
+    border-radius: var(--hof-radius-pill);
+    font-weight: 600;
+    font-size: .88rem;
+    text-decoration: none !important;
+    border: none;
+    cursor: pointer;
+    transition: all var(--hof-transition);
+    white-space: nowrap;
+    line-height: 1.4;
+}
+.hof-btn:focus-visible { outline: 3px solid var(--hof-secondary); outline-offset: 2px; }
+
+.hof-btn-primary   { background: var(--hof-secondary);      color: #fff; }
+.hof-btn-primary:hover   { background: var(--hof-secondary-dark); color: #fff; transform: translateY(-1px); box-shadow: var(--hof-shadow-sm); }
+
+.hof-btn-secondary { background: rgba(255,255,255,.18);  color: #fff; border: 1.5px solid rgba(255,255,255,.4); }
+.hof-btn-secondary:hover { background: rgba(255,255,255,.28); color: #fff; }
+
+.hof-btn-warning   { background: var(--hof-secondary-light); color: var(--hof-primary); }
+.hof-btn-warning:hover   { background: var(--hof-secondary); color: #fff; }
+
+.hof-btn-ghost     { background: transparent; color: var(--hof-primary); border: 1.5px solid var(--hof-border); }
+.hof-btn-ghost:hover { background: var(--hof-surface-alt); border-color: var(--hof-primary); }
+
+/* Ghost inside header (white text) */
+.hof-page-header .hof-btn-ghost { color: rgba(255,255,255,.85); border-color: rgba(255,255,255,.35); }
+.hof-page-header .hof-btn-ghost:hover { background: rgba(255,255,255,.12); color: #fff; border-color: rgba(255,255,255,.6); }
+
+.hof-btn-sm { padding: 5px 13px; font-size: .8rem; }
+.hof-btn-approve { background: var(--hof-success); color: #fff; }
+.hof-btn-approve:hover { background: #155f38; color: #fff; }
+.hof-btn-reject  { background: var(--hof-danger);  color: #fff; }
+.hof-btn-reject:hover  { background: #922b21; color: #fff; }
+
+.hof-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--hof-danger);
+    color: #fff;
+    border-radius: var(--hof-radius-pill);
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    font-size: .72rem;
+    font-weight: 800;
+    margin-left: 2px;
+}
+
+/* ── Tabs ───────────────────────────────────────────────────────────────────── */
+.hof-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    background: var(--hof-surface);
+    border: 1.5px solid var(--hof-border);
+    border-radius: var(--hof-radius-pill);
+    padding: 4px;
+    width: fit-content;
+    box-shadow: var(--hof-shadow-sm);
+}
+
+.hof-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 24px;
+    border-radius: var(--hof-radius-pill);
+    font-weight: 600;
+    font-size: .92rem;
+    color: var(--hof-text-muted);
+    text-decoration: none !important;
+    transition: all var(--hof-transition);
+    position: relative;
+}
+.hof-tab:hover { color: var(--hof-primary); background: var(--hof-surface-alt); }
+
+.hof-tab-active {
+    background: var(--hof-primary);
+    color: #fff !important;
+    box-shadow: var(--hof-shadow-sm);
+}
+.hof-tab-active:hover { background: var(--hof-primary-dark); color: #fff !important; }
+
+.hof-tab-icon { font-size: .95rem; }
+
+/* ── Filter bar ─────────────────────────────────────────────────────────────── */
+.hof-filter-bar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    margin-bottom: 28px;
+    padding: 16px 20px;
+    background: var(--hof-surface);
+    border: 1.5px solid var(--hof-border);
+    border-radius: var(--hof-radius);
+    box-shadow: var(--hof-shadow-sm);
+}
+
+.hof-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.hof-filter-label {
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--hof-text-muted);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.hof-select {
+    padding: 7px 32px 7px 12px;
+    border-radius: var(--hof-radius-sm);
+    border: 1.5px solid var(--hof-border);
+    background: var(--hof-surface);
+    font-size: .88rem;
+    color: var(--hof-text);
+    outline: none;
+    cursor: pointer;
+    transition: border-color var(--hof-transition), box-shadow var(--hof-transition);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23033252' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    min-width: 140px;
+}
+.hof-select:focus { border-color: var(--hof-primary); box-shadow: 0 0 0 3px rgba(3,50,82,.1); }
+
+/* ── Awards grid ────────────────────────────────────────────────────────────── */
+.hof-awards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+/* ── Award card ─────────────────────────────────────────────────────────────── */
+.hof-award-card {
+    background: var(--hof-surface);
+    border-radius: var(--hof-radius-lg);
+    box-shadow: var(--hof-shadow-card);
+    overflow: hidden;
+    border: 1px solid var(--hof-border);
+    transition: transform var(--hof-transition), box-shadow var(--hof-transition);
+    display: flex;
+    flex-direction: column;
+}
+.hof-award-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--hof-shadow-lg);
+}
+
+.hof-award-header {
+    position: relative;
+    padding: 32px 20px 56px;
+    text-align: center;
+    overflow: hidden;
+    min-height: 160px;
+}
+
+/* Subtle confetti overlay */
+.hof-award-confetti {
+    position: absolute;
+    top: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 12px;
+    pointer-events: none;
+    opacity: .5;
+    font-size: 1rem;
+}
+
+.hof-award-bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: .15;
+}
+
+/* Avatar with white ring */
+.hof-award-avatar-wrap {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+    z-index: 1;
+}
+
+.hof-avatar-ring {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    border: 4px solid rgba(255,255,255,.9);
+    box-shadow: 0 4px 16px rgba(0,0,0,.25);
+    overflow: hidden;
+    background: rgba(255,255,255,.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Force Moodle user_picture img inside ring to fill correctly */
+.hof-avatar-ring img.hof-avatar,
+.hof-avatar-ring img {
+    width: 88px !important;
+    height: 88px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    display: block !important;
+    border: none !important;
+    margin: 0 !important;
+}
+
+.hof-award-header-text {
+    position: relative;
+    z-index: 1;
+}
+
+.hof-award-title {
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 800;
+    text-shadow: 0 1px 4px rgba(0,0,0,.3);
+    margin: 0 0 6px;
+}
+
+.hof-award-dept {
+    color: rgba(255,255,255,.88);
+    font-size: .82rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255,255,255,.15);
+    padding: 2px 10px;
+    border-radius: var(--hof-radius-pill);
+}
+
+/* Card body */
+.hof-award-body {
+    flex: 1;
+    padding: 16px 20px 12px;
+    background: var(--hof-surface-alt);
+    text-align: center;
+    border-top: 1px solid rgba(0,0,0,.05);
+}
+
+.hof-award-period {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--hof-text-muted);
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    margin-bottom: 8px;
+}
+
+.hof-award-congrats {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--hof-secondary-dark);
+    font-weight: 800;
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.hof-award-name-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--hof-primary);
+    color: #fff;
+    padding: 5px 16px;
+    border-radius: var(--hof-radius-pill);
+    font-size: .85rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(3,50,82,.2);
+}
+
+.hof-award-message {
+    font-size: .84rem;
+    color: var(--hof-text-muted);
+    font-style: italic;
+    margin: 8px 0 0;
+    line-height: 1.5;
+}
+
+/* ── Achievements feed ──────────────────────────────────────────────────────── */
+.hof-achievements-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 800px;
+}
+
+/* ── Achievement card ───────────────────────────────────────────────────────── */
+.hof-ach-card {
+    background: var(--hof-surface);
+    border-radius: var(--hof-radius-lg);
+    box-shadow: var(--hof-shadow-card);
+    border: 1px solid var(--hof-border);
+    overflow: hidden;
+    transition: transform var(--hof-transition), box-shadow var(--hof-transition);
+}
+.hof-ach-card:hover { transform: translateY(-2px); box-shadow: var(--hof-shadow); }
+
+.hof-ach-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--hof-border);
+    background: linear-gradient(to right, rgba(3,50,82,.03), transparent);
+}
+
+/* Avatar ring for achievements */
+.hof-ach-avatar-ring {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 3px solid var(--hof-primary);
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(3,50,82,.15);
+    background: var(--hof-surface-alt);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Force Moodle user_picture inside ach avatar */
+.hof-ach-avatar-ring img.hof-ach-avatar,
+.hof-ach-avatar-ring img {
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    display: block !important;
+    border: none !important;
+    margin: 0 !important;
+}
+
+.hof-ach-header-text { flex: 1; }
+
+.hof-ach-earner {
+    font-size: .95rem;
+    color: var(--hof-text);
+    margin-bottom: 6px;
+    line-height: 1.4;
+}
+.hof-ach-name { color: var(--hof-primary); font-weight: 800; }
+.hof-ach-verb { color: var(--hof-text-muted); margin: 0 4px; font-weight: 400; }
+
+.hof-ach-type-pill,
+.hof-ach-dept-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: .75rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: var(--hof-radius-pill);
+    margin-right: 6px;
+    margin-top: 4px;
+}
+.hof-ach-type-pill { background: rgba(3,50,82,.08);  color: var(--hof-primary); }
+.hof-ach-dept-pill { background: rgba(235,152,13,.12); color: var(--hof-secondary-dark); }
+
+.hof-ach-body {
+    display: flex;
+    gap: 20px;
+    padding: 16px 20px;
+    align-items: flex-start;
+}
+
+/* Certificate preview */
+.hof-ach-cert-wrap { flex-shrink: 0; }
+
+.hof-ach-cert-img {
+    width: 160px;
+    height: 118px;
+    object-fit: cover;
+    border-radius: var(--hof-radius);
+    border: 2px solid var(--hof-border);
+    box-shadow: var(--hof-shadow-sm);
+    display: block;
+    transition: transform var(--hof-transition);
+}
+.hof-ach-cert-img:hover { transform: scale(1.03); }
+
+.hof-ach-cert-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 140px;
+    height: 118px;
+    background: var(--hof-surface-alt);
+    border: 2px dashed var(--hof-border);
+    border-radius: var(--hof-radius);
+    text-decoration: none !important;
+    color: var(--hof-primary);
+    transition: all var(--hof-transition);
+    position: relative;
+}
+.hof-ach-cert-link:hover { border-color: var(--hof-primary); background: rgba(3,50,82,.04); }
+
+.hof-cert-pdf-icon { font-size: 2.2rem; color: var(--hof-secondary); }
+.hof-cert-pdf-label { font-weight: 700; font-size: .85rem; color: var(--hof-text); }
+.hof-cert-pdf-sub   { font-size: .72rem; color: var(--hof-text-muted); }
+.hof-cert-pdf-dl    { position: absolute; bottom: 8px; right: 10px; font-size: .9rem; color: var(--hof-primary); }
+
+/* Achievement details */
+.hof-ach-details { flex: 1; }
+
+.hof-ach-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--hof-primary);
+    margin: 0 0 8px;
+    line-height: 1.3;
+}
+
+.hof-ach-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 5px;
+    font-size: .85rem;
+    color: var(--hof-text-muted);
+}
+.hof-ach-meta .fa { color: var(--hof-secondary); width: 14px; }
+
+/* Achievement note / quote */
+.hof-ach-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 20px 14px;
+    font-size: .86rem;
+    font-style: italic;
+    color: var(--hof-text-muted);
+    border-top: 1px solid var(--hof-border);
+}
+.hof-ach-note .fa { color: var(--hof-secondary); flex-shrink: 0; margin-top: 2px; }
+
+/* ── Card actions bar ───────────────────────────────────────────────────────── */
+.hof-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px 12px;
+    background: var(--hof-surface-alt);
+    border-top: 1px solid var(--hof-border);
+}
+
+.hof-like-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 1.5px solid var(--hof-border);
+    border-radius: var(--hof-radius-pill);
+    padding: 5px 14px;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--hof-text-muted);
+    cursor: pointer;
+    transition: all var(--hof-transition);
+}
+.hof-like-btn:hover { border-color: var(--hof-secondary); color: var(--hof-secondary-dark); background: rgba(235,152,13,.06); }
+.hof-like-btn.hof-liked { background: rgba(235,152,13,.1); border-color: var(--hof-secondary); color: var(--hof-secondary-dark); }
+.hof-like-btn.hof-liked .fa-heart-o::before { content: "\f004"; } /* filled heart */
+
+/* Pop animation */
+.hof-like-pop { animation: hofPop .38s cubic-bezier(.36,.07,.19,.97); }
+@keyframes hofPop {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.5); }
+    70%  { transform: scale(.9); }
+    100% { transform: scale(1); }
+}
+
+.hof-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1.5px solid var(--hof-border);
+    background: transparent;
+    color: var(--hof-text-muted);
+    cursor: pointer;
+    font-size: .9rem;
+    transition: all var(--hof-transition);
+}
+.hof-action-btn:hover { border-color: var(--hof-primary-light); color: var(--hof-primary); background: rgba(3,50,82,.05); }
+
+.hof-btn-delete-award {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1.5px solid transparent;
+    background: transparent;
+    color: var(--hof-text-muted);
+    cursor: pointer;
+    font-size: .85rem;
+    text-decoration: none !important;
+    transition: all var(--hof-transition);
+}
+.hof-btn-delete-award:hover { border-color: var(--hof-danger); color: var(--hof-danger); background: rgba(192,57,43,.08); }
+
+/* ── Forms ──────────────────────────────────────────────────────────────────── */
+.hof-form-wrap,
+.hof-admin-wrap,
+.hof-review-wrap { max-width: 800px; margin: 0 auto; padding: 0 16px 40px; }
+
+.hof-form-card,
+.hof-admin-card {
+    background: var(--hof-surface);
+    border: 1.5px solid var(--hof-border);
+    border-radius: var(--hof-radius-lg);
+    padding: 32px 36px;
+    box-shadow: var(--hof-shadow-sm);
+}
+
+.hof-form-title,
+.hof-admin-card h2 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--hof-primary);
+    margin: 0 0 24px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--hof-border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.hof-form-title .fa,
+.hof-admin-card h2 .fa { color: var(--hof-secondary); }
+
+.hof-form-row,
+.hof-admin-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+.hof-form-row label,
+.hof-admin-row label {
+    width: 210px;
+    min-width: 210px;
+    font-weight: 600;
+    color: var(--hof-text);
+    font-size: .9rem;
+    padding-top: 9px;
+    text-align: right;
+}
+
+.hof-input {
+    flex: 1;
+    padding: 8px 14px;
+    border: 1.5px solid var(--hof-border);
+    border-radius: var(--hof-radius-sm);
+    background: var(--hof-surface);
+    font-size: .9rem;
+    color: var(--hof-text);
+    outline: none;
+    transition: border-color var(--hof-transition), box-shadow var(--hof-transition);
+}
+.hof-input:focus { border-color: var(--hof-primary); box-shadow: 0 0 0 3px rgba(3,50,82,.1); }
+.hof-textarea   { min-height: 90px; resize: vertical; }
+.hof-date       { cursor: pointer; }
+.hof-input-sm   { padding: 5px 10px; font-size: .85rem; max-width: 220px; flex: none; }
+
+/* Dropzone */
+.hof-dropzone {
+    flex: 1;
+    border: 2px dashed var(--hof-border);
+    border-radius: var(--hof-radius);
+    background: var(--hof-surface-alt);
+    position: relative;
+    cursor: pointer;
+    transition: all var(--hof-transition);
+    min-height: 80px;
+}
+.hof-dropzone:hover,
+.hof-dz-over { border-color: var(--hof-primary); background: rgba(3,50,82,.03); }
+.hof-file-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.hof-dropzone-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    gap: 6px;
+    color: var(--hof-text-muted);
+    font-size: .88rem;
+    pointer-events: none;
+}
+.hof-upload-icon { font-size: 1.8rem; color: var(--hof-secondary); }
+.hof-dz-label   { font-weight: 600; color: var(--hof-primary); }
+
+.hof-form-note {
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--hof-text-muted);
+    margin: 14px 0;
+    text-align: center;
+    line-height: 1.5;
+}
+.hof-form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--hof-border);
+}
+
+/* Inline col layout */
+.hof-row-inline { align-items: flex-end; }
+.hof-col        { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+.hof-col label  { width: auto; text-align: left; padding-top: 0; }
+
+/* ── Review queue ───────────────────────────────────────────────────────────── */
+.hof-review-list     { display: flex; flex-direction: column; gap: 24px; }
+.hof-review-card     { background: var(--hof-surface); border: 1.5px solid var(--hof-border); border-radius: var(--hof-radius-lg); overflow: hidden; box-shadow: var(--hof-shadow-sm); }
+.hof-review-body     { padding: 24px 28px; }
+.hof-review-title    { font-size: 1.15rem; font-weight: 800; margin: 0 0 18px; color: var(--hof-primary); border-bottom: 2px solid var(--hof-border); padding-bottom: 10px; }
+.hof-review-grid     { display: grid; grid-template-columns: 190px 1fr; gap: 10px 18px; align-items: start; }
+.hof-review-label    { font-weight: 700; color: var(--hof-text-muted); text-align: right; font-size: .88rem; padding-top: 2px; }
+.hof-review-cert-img { max-width: 200px; border-radius: var(--hof-radius); border: 2px solid var(--hof-border); }
+.hof-cert-link       { display: inline-flex; align-items: center; gap: 8px; background: var(--hof-surface-alt); border: 1.5px solid var(--hof-border); border-radius: var(--hof-radius-sm); padding: 8px 14px; text-decoration: none !important; color: var(--hof-text); font-weight: 600; font-size: .88rem; }
+.hof-cert-icon-lg    { font-size: 1.6rem; color: var(--hof-secondary); }
+.hof-cert-dl         { margin-left: 6px; color: var(--hof-primary); }
+.hof-review-actions  { display: flex; justify-content: space-between; padding: 14px 28px 18px; background: var(--hof-surface-alt); border-top: 1px solid var(--hof-border); }
+
+/* ── Management tables ──────────────────────────────────────────────────────── */
+.hof-table-wrap         { overflow-x: auto; border-radius: var(--hof-radius); border: 1.5px solid var(--hof-border); }
+.hof-manage-table       { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.hof-manage-table th    { background: var(--hof-primary); color: #fff; font-weight: 700; padding: 11px 16px; text-align: left; font-size: .82rem; text-transform: uppercase; letter-spacing: .4px; }
+.hof-manage-table td    { padding: 10px 16px; border-bottom: 1px solid var(--hof-border); vertical-align: middle; color: var(--hof-text); }
+.hof-manage-table tr:last-child td { border-bottom: none; }
+.hof-manage-table tr:hover td      { background: rgba(3,50,82,.03); }
+.hof-inline-form        { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+/* ── Status pills ───────────────────────────────────────────────────────────── */
+.hof-status-pill     { display: inline-flex; align-items: center; gap: 5px; padding: 3px 12px; border-radius: var(--hof-radius-pill); font-size: .77rem; font-weight: 700; letter-spacing: .2px; }
+.hof-status-pending  { background: #fff3cd; color: #92640a; border: 1px solid #f7c26b; }
+.hof-status-approved { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+.hof-status-rejected { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+
+/* ── Empty / loading states ─────────────────────────────────────────────────── */
+.hof-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 56px 32px;
+    text-align: center;
+    background: var(--hof-surface);
+    border: 2px dashed var(--hof-border);
+    border-radius: var(--hof-radius-lg);
+    color: var(--hof-text-muted);
+    gap: 12px;
+}
+.hof-empty .fa { font-size: 2.5rem; color: var(--hof-border); }
+.hof-empty-text { font-size: .95rem; font-weight: 500; }
+
+.hof-loading { opacity: .4; pointer-events: none; transition: opacity .2s; }
+.hof-loading::after {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--hof-border);
+    border-top-color: var(--hof-primary);
+    border-radius: 50%;
+    margin: 40px auto;
+    animation: hofSpin .65s linear infinite;
+}
+@keyframes hofSpin { to { transform: rotate(360deg); } }
+
+/* ── Misc helpers ───────────────────────────────────────────────────────────── */
+.hof-back-link { margin-top: 20px; }
+.hof-back-link a { display: inline-flex; align-items: center; gap: 6px; color: var(--hof-primary); text-decoration: none; font-weight: 600; font-size: .9rem; }
+.hof-back-link a:hover { color: var(--hof-secondary-dark); }
+
+.hof-thumb { width: 54px; height: 38px; object-fit: cover; border-radius: var(--hof-radius-sm); border: 1.5px solid var(--hof-border); vertical-align: middle; }
+.hof-cert-link-sm { font-size: .84rem; color: var(--hof-primary); text-decoration: none; font-weight: 600; }
+.hof-cert-link-sm:hover { color: var(--hof-secondary-dark); text-decoration: underline; }
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .hof-page-header { flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px; }
+    .hof-awards-grid { grid-template-columns: 1fr; }
+    .hof-form-row, .hof-admin-row { flex-direction: column; }
+    .hof-form-row label, .hof-admin-row label { width: auto; text-align: left; min-width: 0; }
+    .hof-review-grid { grid-template-columns: 1fr; }
+    .hof-review-label { text-align: left; }
+    .hof-ach-body { flex-direction: column; }
+    .hof-ach-cert-img { width: 100%; height: auto; }
+    .hof-tabs { width: 100%; }
+    .hof-tab { flex: 1; justify-content: center; }
+    .hof-filter-bar { padding: 12px; gap: 8px; }
+    .hof-select { min-width: 100px; }
+}
+
+@media (max-width: 480px) {
+    .hof-header-actions { width: 100%; }
+    .hof-btn { font-size: .8rem; padding: 7px 14px; }
+    .hof-form-card, .hof-admin-card { padding: 20px 16px; }
+}
+
+/* ── Print ───────────────────────────────────────────────────────────────────── */
+@media print {
+    .hof-header-actions, .hof-filter-bar, .hof-card-actions,
+    .hof-btn-delete-award { display: none !important; }
+    .hof-award-card, .hof-ach-card { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
+    .hof-awards-grid { grid-template-columns: 1fr 1fr; }
+    .hof-page-header { background: var(--hof-primary) !important; -webkit-print-color-adjust: exact; }
+}

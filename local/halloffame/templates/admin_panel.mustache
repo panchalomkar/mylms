@@ -1,0 +1,106 @@
+{{! local_halloffame/admin_panel }}
+<div class="hof-admin-wrap">
+  <div class="hof-admin-card">
+    <h2>{{#str}}adminpanel,local_halloffame{{/str}} — {{#str}}createaward,local_halloffame{{/str}}</h2>
+
+    <form method="post" enctype="multipart/form-data" class="hof-form">
+      <input type="hidden" name="sesskey" value="{{sesskey}}"/>
+
+      <div class="hof-admin-row">
+        <label>{{#str}}selectlevel,local_halloffame{{/str}}</label>
+        <select name="level" id="levelSelect" class="hof-select hof-input">
+  <option value="global">Global</option>
+  <option value="department">Department</option>
+</select>
+      </div>
+
+     <div class="hof-admin-row" id="departmentRow">
+  <label>{{#str}}selectdepartment,local_halloffame{{/str}}</label>
+  <select name="department" class="hof-select hof-input ml-3 col-md-8">
+    <option value="">{{#str}}alldepartments,local_halloffame{{/str}}</option>
+    {{#departments}}
+      <option value="{{value}}">{{label}}</option>
+    {{/departments}}
+  </select>
+</div>
+
+      <div class="hof-admin-row">
+        <label>{{#str}}selectcategory,local_halloffame{{/str}}</label>
+        <select name="category" class="hof-select hof-input">
+          <option value="">— Select —</option>
+          {{#categories}}<option value="{{name}}">{{name}}</option>{{/categories}}
+        </select>
+      </div>
+
+      <div class="hof-admin-row">
+        <label>{{#str}}awardtitle,local_halloffame{{/str}}</label>
+        <input type="text" name="title" class="hof-input" required/>
+      </div>
+
+      <div class="hof-admin-row">
+        <label>{{#str}}selectmonth,local_halloffame{{/str}}</label>
+        <select name="month" class="hof-select hof-input">
+          {{#months}}<option value="{{value}}"{{#selected}} selected{{/selected}}>{{label}}</option>{{/months}}
+        </select>
+      </div>
+
+      <div class="hof-admin-row">
+        <label>{{#str}}selectachiever,local_halloffame{{/str}}</label>
+        <select name="userid" class="hof-select hof-input" required>
+          <option value="">— Select User —</option>
+          {{#users}}<option value="{{id}}">{{fullname}}</option>{{/users}}
+        </select>
+      </div>
+
+      <div class="hof-admin-row">
+        <label>{{#str}}messagetodisplay,local_halloffame{{/str}}</label>
+        <textarea name="message" class="hof-input hof-textarea" placeholder="Enter Message Here"></textarea>
+      </div>
+
+      <div class="hof-admin-row hof-row-inline">
+        <div class="hof-col">
+          <label>{{#str}}uploadcertificate,local_halloffame{{/str}}</label>
+          <input type="file" name="certificate" accept=".pdf,.jpg,.png" class="hof-input"/>
+        </div>
+        <div class="hof-col">
+          <label>{{#str}}uploadachieversimage,local_halloffame{{/str}}</label>
+          <input type="file" name="achieverimage" accept=".jpg,.jpeg,.png" class="hof-input"/>
+        </div>
+      </div>
+
+      <div class="hof-form-actions">
+        <button type="submit" class="btn hof-btn-primary">{{#str}}post,local_halloffame{{/str}}</button>
+        <a href="{{backurl}}" class="btn hof-btn-secondary">Cancel</a>
+      </div>
+    </form>
+
+    <p class="hof-manage-links" style="margin-top:20px;font-size:.88rem;">
+      Manage:
+      <a href="{{caturl}}">{{#str}}managecategories,local_halloffame{{/str}}</a> ·
+      <a href="{{depturl}}">{{#str}}managedepartments,local_halloffame{{/str}}</a>
+    </p>
+  </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    var levelSelect = document.getElementById("levelSelect");
+    var departmentRow = document.getElementById("departmentRow");
+
+    function toggleDepartment() {
+        var selected = levelSelect.value;
+
+        if (selected === "global") {
+            departmentRow.style.display = "none";
+        } else if (selected === "department") {
+            departmentRow.style.display = "block";
+        }
+    }
+
+    // Run on load
+    toggleDepartment();
+
+    // Run on change
+    levelSelect.addEventListener("change", toggleDepartment);
+});
+</script>

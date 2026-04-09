@@ -1,0 +1,82 @@
+{{! local_halloffame/card_achievement — v2 social feed }}
+<div class="hof-ach-card" data-id="{{id}}">
+
+  {{! Header: avatar + earned message }}
+  <div class="hof-ach-header">
+    <div class="hof-ach-avatar-ring">
+      {{! PROFILE IMAGE FIX: rendered from $OUTPUT->user_picture() in PHP }}
+      {{{userpicture}}}
+    </div>
+    <div class="hof-ach-header-text">
+      <div class="hof-ach-earner">
+        <strong class="hof-ach-name">{{fullname}}</strong>
+        <span class="hof-ach-verb">{{#str}}earnedcertificate,local_halloffame{{/str}}</span>
+      </div>
+      {{#type}}
+      <span class="hof-ach-type-pill">
+        <i class="fa fa-certificate" aria-hidden="true"></i> {{type}}
+      </span>
+      {{/type}}
+      {{#department}}
+      <span class="hof-ach-dept-pill">
+        <i class="fa fa-sitemap" aria-hidden="true"></i> {{department}}
+      </span>
+      {{/department}}
+    </div>
+  </div>
+
+  {{! Certificate preview + details }}
+  <div class="hof-ach-body">
+    {{#fileurl}}
+    <div class="hof-ach-cert-wrap">
+      {{#fileisimage}}
+      <img src="{{{fileurl}}}" class="hof-ach-cert-img" alt="Certificate for {{title}}"/>
+      {{/fileisimage}}
+      {{^fileisimage}}
+      <a href="{{{fileurl}}}" class="hof-ach-cert-link" target="_blank" rel="noopener noreferrer">
+        <div class="hof-cert-pdf-icon">
+          <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+        </div>
+        <span class="hof-cert-pdf-label">Certificate</span>
+        <span class="hof-cert-pdf-sub">PDF</span>
+        <i class="fa fa-download hof-cert-pdf-dl" aria-hidden="true"></i>
+      </a>
+      {{/fileisimage}}
+    </div>
+    {{/fileurl}}
+
+    <div class="hof-ach-details">
+      <h4 class="hof-ach-title">{{title}}</h4>
+      {{#issuer}}
+      <p class="hof-ach-meta">
+        <i class="fa fa-university" aria-hidden="true"></i> {{issuer}}
+      </p>
+      {{/issuer}}
+      {{#issuedateformatted}}
+      <p class="hof-ach-meta">
+        <i class="fa fa-calendar-check-o" aria-hidden="true"></i> {{issuedateformatted}}
+      </p>
+      {{/issuedateformatted}}
+    </div>
+  </div>
+
+  {{! Congratulatory note }}
+  {{#notes}}
+  <div class="hof-ach-note">
+    <i class="fa fa-quote-left" aria-hidden="true"></i>
+    {{notes}}
+  </div>
+  {{/notes}}
+
+  {{! Like action }}
+  <div class="hof-card-actions">
+    <button class="hof-like-btn{{#userliked}} hof-liked{{/userliked}}"
+            data-id="{{id}}" data-type="achievement"
+            aria-label="{{#str}}like,local_halloffame{{/str}}"
+            aria-pressed="{{#userliked}}true{{/userliked}}{{^userliked}}false{{/userliked}}">
+      <i class="fa fa-heart{{^userliked}}-o{{/userliked}}" aria-hidden="true"></i>
+      <span class="hof-like-count">{{likecount}}</span>
+    </button>
+  </div>
+
+</div>

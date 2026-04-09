@@ -1,0 +1,5 @@
+{{! local_halloffame/achievements }}
+<div class="hof-achievements-feed" id="achievementsFeed">
+  {{#achievements}}{{> local_halloffame/card_achievement}}{{/achievements}}
+  {{^achievements}}<div class="hof-empty">{{#str}}nosubmissions,local_halloffame{{/str}}</div>{{/achievements}}
+</div>

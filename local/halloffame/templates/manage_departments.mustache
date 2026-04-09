@@ -1,0 +1,48 @@
+{{! local_halloffame/manage_departments }}
+<div class="hof-admin-wrap">
+  <div class="hof-admin-card">
+    <h2>{{#str}}managedepartments,local_halloffame{{/str}}</h2>
+
+    <form method="post" action="{{pageurl}}" class="hof-form" style="margin-bottom:28px;">
+      <input type="hidden" name="sesskey" value="{{sesskey}}"/>
+      <input type="hidden" name="action"  value="add"/>
+      <div class="hof-admin-row">
+        <label>New Department Name</label>
+        <input type="text" name="deptname" class="hof-input" required placeholder="e.g. Engineering"/>
+        <button type="submit" class="btn hof-btn-primary" style="white-space:nowrap">Add</button>
+      </div>
+    </form>
+
+    <table class="hof-manage-table">
+      <thead><tr><th>#</th><th>Name</th><th>Actions</th></tr></thead>
+      <tbody>
+        {{#departments}}
+        <tr>
+          <td>{{@index_plus_one}}</td>
+          <td>
+            <form method="post" action="{{pageurl}}" class="hof-inline-form">
+              <input type="hidden" name="sesskey" value="{{sesskey}}"/>
+              <input type="hidden" name="action"  value="rename"/>
+              <input type="hidden" name="did"     value="{{id}}"/>
+              <input type="text" name="deptname" value="{{name}}" class="hof-input hof-input-sm" required/>
+              <button type="submit" class="btn hof-btn-secondary hof-btn-sm">Save</button>
+            </form>
+          </td>
+          <td>
+            <a href="{{pageurl}}?action=delete&did={{id}}&sesskey={{sesskey}}"
+               class="btn hof-btn-reject hof-btn-sm"
+               onclick="return confirm('Delete department: {{name}}?')">Delete</a>
+          </td>
+        </tr>
+        {{/departments}}
+        {{^departments}}
+        <tr><td colspan="3" class="hof-empty" style="text-align:center">No departments yet.</td></tr>
+        {{/departments}}
+      </tbody>
+    </table>
+
+    <p class="hof-back-link" style="margin-top:20px;">
+      <a href="{{backurl}}">← Back to Admin Panel</a>
+    </p>
+  </div>
+</div>

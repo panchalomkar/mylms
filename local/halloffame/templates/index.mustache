@@ -1,0 +1,101 @@
+{{! local_halloffame/index — v2 }}
+<div class="hof-page-header">
+  <div class="hof-header-brand">
+    <span class="hof-header-icon"><i class="fa fa-trophy" aria-hidden="true"></i></span>
+    <h1 class="hof-title">{{#str}}halloffame,local_halloffame{{/str}}</h1>
+    {{#hascompany}}
+    <span class="hof-company-badge"><i class="fa fa-building" aria-hidden="true"></i> {{companyname}}</span>
+    {{/hascompany}}
+    {{#issiteadmin}}
+    <span class="hof-siteadmin-badge"><i class="fa fa-globe" aria-hidden="true"></i> All Companies</span>
+    {{/issiteadmin}}
+  </div>
+  <div class="hof-header-actions">
+    {{#canmanage}}
+      <a href="{{adminurl}}" class="hof-btn hof-btn-primary"><i class="fa fa-plus-circle" aria-hidden="true"></i> {{#str}}createaward,local_halloffame{{/str}}</a>
+      <a href="{{caturl}}"   class="hof-btn hof-btn-ghost hof-btn-sm">{{#str}}managecategories,local_halloffame{{/str}}</a>
+      <a href="{{depturl}}"  class="hof-btn hof-btn-ghost hof-btn-sm">{{#str}}managedepartments,local_halloffame{{/str}}</a>
+    {{/canmanage}}
+    {{#canapprove}}
+      <a href="{{reviewurl}}" class="hof-btn hof-btn-warning"><i class="fa fa-inbox" aria-hidden="true"></i> {{#str}}review,local_halloffame{{/str}}{{#haspending}} <span class="hof-badge">{{pendingcount}}</span>{{/haspending}}</a>
+    {{/canapprove}}
+    {{#cansubmit}}
+      <a href="{{submiturl}}" class="hof-btn hof-btn-secondary"><i class="fa fa-upload" aria-hidden="true"></i> {{#str}}submit,local_halloffame{{/str}}</a>
+      <a href="{{mysuburl}}"  class="hof-btn hof-btn-ghost hof-btn-sm"><i class="fa fa-list" aria-hidden="true"></i> {{#str}}mysubmissions,local_halloffame{{/str}}</a>
+    {{/cansubmit}}
+  </div>
+</div>
+
+<div class="hof-tabs" role="tablist">
+  <a href="{{awardsurl}}" class="hof-tab{{#tab_awards}} hof-tab-active{{/tab_awards}}" data-tab="awards" role="tab">
+    <i class="fa fa-trophy hof-tab-icon" aria-hidden="true"></i>{{#str}}awards,local_halloffame{{/str}}
+  </a>
+  <a href="{{achievementsurl}}" class="hof-tab{{#tab_achievements}} hof-tab-active{{/tab_achievements}}" data-tab="achievements" role="tab">
+    <i class="fa fa-certificate hof-tab-icon" aria-hidden="true"></i>{{#str}}achievements,local_halloffame{{/str}}
+  </a>
+</div>
+
+<div class="hof-filter-bar" id="hofFilters">
+  {{#tab_awards}}
+  <div class="hof-filter-group">
+    <label class="hof-filter-label" for="filterMonth"><i class="fa fa-calendar" aria-hidden="true"></i></label>
+    <select class="hof-select" id="filterMonth" data-filter="month">
+      <option value="">{{#str}}allmonths,local_halloffame{{/str}}</option>
+      {{#filters.months}}<option value="{{value}}">{{label}}</option>{{/filters.months}}
+    </select>
+  </div>
+  <div class="hof-filter-group">
+    <label class="hof-filter-label" for="filterQuarter"><i class="fa fa-calendar-o" aria-hidden="true"></i></label>
+    <select class="hof-select" id="filterQuarter" data-filter="quarter">
+      <option value="">{{#str}}allquarters,local_halloffame{{/str}}</option>
+      {{#filters.quarters}}<option value="{{value}}">{{label}}</option>{{/filters.quarters}}
+    </select>
+  </div>
+  <div class="hof-filter-group">
+    <label class="hof-filter-label" for="filterYear"><i class="fa fa-clock-o" aria-hidden="true"></i></label>
+    <select class="hof-select" id="filterYear" data-filter="year">
+      <option value="">{{#str}}allyears,local_halloffame{{/str}}</option>
+      {{#filters.years}}<option value="{{value}}">{{label}}</option>{{/filters.years}}
+    </select>
+  </div>
+  <div class="hof-filter-group">
+    <label class="hof-filter-label" for="filterDepartment"><i class="fa fa-sitemap" aria-hidden="true"></i></label>
+    <select class="hof-select" id="filterDepartment" data-filter="department">
+      <option value="">{{#str}}alldepartments,local_halloffame{{/str}}</option>
+      {{#filters.departments}}<option value="{{value}}">{{label}}</option>{{/filters.departments}}
+    </select>
+  </div>
+  <div class="hof-filter-group">
+    <label class="hof-filter-label" for="filterCategory"><i class="fa fa-tag" aria-hidden="true"></i></label>
+    <select class="hof-select" id="filterCategory" data-filter="category">
+      <option value="">{{#str}}allcategories,local_halloffame{{/str}}</option>
+      {{#filters.categories}}<option value="{{value}}">{{label}}</option>{{/filters.categories}}
+    </select>
+  </div>
+  {{/tab_awards}}
+  {{#tab_achievements}}
+  <div class="hof-filter-group">
+    <label class="hof-filter-label" for="filterType"><i class="fa fa-certificate" aria-hidden="true"></i></label>
+    <select class="hof-select" id="filterType" data-filter="type">
+      <option value="">{{#str}}allcategories,local_halloffame{{/str}}</option>
+      <option value="Technical">{{#str}}type_technical,local_halloffame{{/str}}</option>
+      <option value="Project Management">{{#str}}type_management,local_halloffame{{/str}}</option>
+      <option value="Leadership">{{#str}}type_leadership,local_halloffame{{/str}}</option>
+      <option value="Compliance">{{#str}}type_compliance,local_halloffame{{/str}}</option>
+      <option value="Other">{{#str}}type_other,local_halloffame{{/str}}</option>
+    </select>
+  </div>
+  <div class="hof-filter-group">
+    <label class="hof-filter-label" for="filterYearAch"><i class="fa fa-clock-o" aria-hidden="true"></i></label>
+    <select class="hof-select" id="filterYearAch" data-filter="year">
+      <option value="">{{#str}}allyears,local_halloffame{{/str}}</option>
+      {{#filters.years}}<option value="{{value}}">{{label}}</option>{{/filters.years}}
+    </select>
+  </div>
+  {{/tab_achievements}}
+</div>
+
+<div id="hofContent" class="hof-content">
+  {{#tab_awards}}{{> local_halloffame/awards}}{{/tab_awards}}
+  {{#tab_achievements}}{{> local_halloffame/achievements}}{{/tab_achievements}}
+</div>

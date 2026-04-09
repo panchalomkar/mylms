@@ -1,0 +1,54 @@
+{{! local_halloffame/manage_categories }}
+<div class="hof-admin-wrap">
+  <div class="hof-admin-card">
+    <h2>{{#str}}managecategories,local_halloffame{{/str}}</h2>
+
+    <form method="post" action="{{pageurl}}" class="hof-form" style="margin-bottom:28px;">
+      <input type="hidden" name="sesskey" value="{{sesskey}}"/>
+      <input type="hidden" name="action"  value="add"/>
+      <div class="hof-admin-row">
+        <label>New Category Name</label>
+        <input type="text" name="catname" class="hof-input" required placeholder="e.g. Innovation Award"/>
+        <button type="submit" class="btn hof-btn-primary" style="white-space:nowrap">Add</button>
+      </div>
+      <div class="hof-admin-row">
+        <label>Description <small>(optional)</small></label>
+        <input type="text" name="catdesc" class="hof-input" placeholder="Short description"/>
+      </div>
+    </form>
+
+    <table class="hof-manage-table">
+      <thead><tr><th>#</th><th>Name</th><th>Description</th><th>Actions</th></tr></thead>
+      <tbody>
+        {{#categories}}
+        <tr>
+          <td>{{@index_plus_one}}</td>
+          <td>
+            <form method="post" action="{{pageurl}}" class="hof-inline-form">
+              <input type="hidden" name="sesskey" value="{{sesskey}}"/>
+              <input type="hidden" name="action"  value="rename"/>
+              <input type="hidden" name="cid"     value="{{id}}"/>
+              <input type="hidden" name="catdesc" value="{{description}}"/>
+              <input type="text" name="catname" value="{{name}}" class="hof-input hof-input-sm" required/>
+              <button type="submit" class="btn hof-btn-secondary hof-btn-sm">Save</button>
+            </form>
+          </td>
+          <td>{{description}}</td>
+          <td>
+            <a href="{{pageurl}}?action=delete&cid={{id}}&sesskey={{sesskey}}"
+               class="btn hof-btn-reject hof-btn-sm"
+               onclick="return confirm('Delete category: {{name}}?')">Delete</a>
+          </td>
+        </tr>
+        {{/categories}}
+        {{^categories}}
+        <tr><td colspan="4" class="hof-empty" style="text-align:center">No categories yet.</td></tr>
+        {{/categories}}
+      </tbody>
+    </table>
+
+    <p class="hof-back-link" style="margin-top:20px;">
+      <a href="{{backurl}}">← Back to Admin Panel</a>
+    </p>
+  </div>
+</div>

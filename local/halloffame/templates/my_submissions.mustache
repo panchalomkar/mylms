@@ -1,0 +1,56 @@
+{{! local_halloffame/my_submissions }}
+<div class="hof-admin-wrap">
+  <div class="hof-admin-card">
+    <h2>{{#str}}mysubmissions,local_halloffame{{/str}}</h2>
+
+    {{#hasrows}}
+    <div class="hof-table-wrap">
+      <table class="hof-manage-table">
+        <thead>
+          <tr>
+            <th>{{#str}}certificatetitle,local_halloffame{{/str}}</th>
+            <th>{{#str}}issuingorganisation,local_halloffame{{/str}}</th>
+            <th>{{#str}}certificatetype,local_halloffame{{/str}}</th>
+            <th>Submitted</th>
+            <th>Status</th>
+            <th>File</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#rows}}
+          <tr>
+            <td>{{title}}</td>
+            <td>{{issuer}}</td>
+            <td>{{type}}</td>
+            <td>{{timecreated}}</td>
+            <td><span class="hof-status-pill {{statusclass}}">{{statuslabel}}</span></td>
+            <td>
+              {{#fileurl}}
+                {{#fileisimage}}
+                <a href="{{{fileurl}}}" target="_blank">
+                  <img src="{{{fileurl}}}" class="hof-thumb" alt="Certificate"/>
+                </a>
+                {{/fileisimage}}
+                {{^fileisimage}}
+                <a href="{{{fileurl}}}" target="_blank" class="hof-cert-link-sm">📄 View</a>
+                {{/fileisimage}}
+              {{/fileurl}}
+              {{^fileurl}}—{{/fileurl}}
+            </td>
+          </tr>
+          {{/rows}}
+        </tbody>
+      </table>
+    </div>
+    {{/hasrows}}
+
+    {{^hasrows}}
+    <div class="hof-empty">You have not submitted any certificates yet.</div>
+    {{/hasrows}}
+
+    <div class="hof-form-actions" style="margin-top:24px;">
+      <a href="{{submiturl}}" class="btn hof-btn-primary">+ Submit New Certificate</a>
+      <a href="{{backurl}}"   class="btn hof-btn-secondary">← Back to Hall of Fame</a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,5 @@
+{{! local_halloffame/awards }}
+<div class="hof-awards-grid" id="awardsGrid">
+  {{#awards}}{{> local_halloffame/card_award}}{{/awards}}
+  {{^awards}}<div class="hof-empty">{{#str}}nosubmissions,local_halloffame{{/str}}</div>{{/awards}}
+</div>

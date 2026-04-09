@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#f7971e"/>
+      <stop offset="100%" stop-color="#ffd200"/>
+    </linearGradient>
+  </defs>
+  <!-- Cup body -->
+  <path d="M34 14 h32 v26 a16 16 0 0 1-32 0 Z" fill="url(#g)" stroke="#e8890e" stroke-width="2"/>
+  <!-- Left handle -->
+  <path d="M34 20 Q17 20 17 36 Q17 46 28 48" fill="none" stroke="url(#g)" stroke-width="4" stroke-linecap="round"/>
+  <!-- Right handle -->
+  <path d="M66 20 Q83 20 83 36 Q83 46 72 48" fill="none" stroke="url(#g)" stroke-width="4" stroke-linecap="round"/>
+  <!-- Stem -->
+  <rect x="45" y="56" width="10" height="17" rx="3" fill="url(#g)"/>
+  <!-- Base -->
+  <rect x="30" y="73" width="40" height="8" rx="4" fill="url(#g)" stroke="#e8890e" stroke-width="1.5"/>
+  <!-- Star -->
+  <polygon points="50,21 52.5,28.5 60.5,28.5 54.2,33.2 56.7,40.7 50,36 43.3,40.7 45.8,33.2 39.5,28.5 47.5,28.5"
+           fill="#fff" opacity="0.88"/>
+</svg>

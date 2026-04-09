@@ -1,0 +1,60 @@
+{{! local_halloffame/admin_review }}
+<div class="hof-review-wrap">
+  <h2>{{#str}}review,local_halloffame{{/str}}</h2>
+  {{#hassubmissions}}
+  <div class="hof-review-list">
+    {{#submissions}}
+    <div class="hof-review-card">
+      <div class="hof-review-body">
+        <h3 class="hof-review-title">{{#str}}adminreview,local_halloffame{{/str}}</h3>
+        <div class="hof-review-grid">
+          <span class="hof-review-label">{{#str}}certificatetitle,local_halloffame{{/str}}:</span>
+          <span>{{title}}</span>
+          <span class="hof-review-label">{{#str}}issuingorganisation,local_halloffame{{/str}}:</span>
+          <span>{{issuer}}</span>
+          <span class="hof-review-label">{{#str}}dateofissue,local_halloffame{{/str}}:</span>
+          <span>{{issuedatefmt}}</span>
+          <span class="hof-review-label">{{#str}}certificatetype,local_halloffame{{/str}}:</span>
+          <span>{{type}}</span>
+          <span class="hof-review-label">{{#str}}additionalnotes,local_halloffame{{/str}}:</span>
+          <span>{{notes}}</span>
+          {{#fileurl}}
+          <span class="hof-review-label">{{#str}}externalcertificate,local_halloffame{{/str}}:</span>
+          <span>
+            {{#fileisimage}}
+            <img src="{{{fileurl}}}" class="hof-review-cert-img" alt="Certificate"/>
+            {{/fileisimage}}
+            {{^fileisimage}}
+            <a href="{{{fileurl}}}" target="_blank" rel="noopener" class="hof-cert-link">
+              <span class="hof-cert-icon-lg">📄</span>
+              <span>Certificate</span>
+              <span>PDF</span>
+              <span class="hof-cert-dl">⬇</span>
+            </a>
+            {{/fileisimage}}
+          </span>
+          {{/fileurl}}
+          <span class="hof-review-label">Submitted by:</span>
+          <span>{{fullname}}</span>
+          <span class="hof-review-label">Submitted:</span>
+          <span>{{timecreated}}</span>
+        </div>
+      </div>
+      <div class="hof-review-actions">
+        <a href="{{rejecturl}}"
+           class="btn hof-btn-reject"
+           onclick="return confirm('Reject this submission?')">
+          {{#str}}reject,local_halloffame{{/str}}
+        </a>
+        <a href="{{approveurl}}" class="btn hof-btn-approve">
+          {{#str}}approve,local_halloffame{{/str}}
+        </a>
+      </div>
+    </div>
+    {{/submissions}}
+  </div>
+  {{/hassubmissions}}
+  {{^hassubmissions}}
+  <div class="hof-empty">{{#str}}nosubmissions,local_halloffame{{/str}}</div>
+  {{/hassubmissions}}
+</div>

@@ -1,0 +1,61 @@
+{{! local_halloffame/submit_form }}
+<div class="hof-form-wrap">
+  <div class="hof-form-card">
+    <h2 class="hof-form-title">{{#str}}uploadexternalcertificate,local_halloffame{{/str}}</h2>
+
+    {{#error}}<div class="alert alert-danger">{{error}}</div>{{/error}}
+
+    <form method="post" enctype="multipart/form-data" class="hof-form">
+      <input type="hidden" name="sesskey" value="{{sesskey}}"/>
+
+      <div class="hof-form-row">
+        <label for="hof-title">{{#str}}certificatetitle,local_halloffame{{/str}}</label>
+        <input type="text" name="title" id="hof-title" class="hof-input" required/>
+      </div>
+
+      <div class="hof-form-row">
+        <label for="hof-issuer">{{#str}}issuingorganisation,local_halloffame{{/str}}</label>
+        <input type="text" name="issuer" id="hof-issuer" class="hof-input"/>
+      </div>
+
+      <div class="hof-form-row">
+        <label for="hof-issuedate">{{#str}}dateofissue,local_halloffame{{/str}}</label>
+        <input type="date" name="issuedate" id="hof-issuedate" class="hof-input hof-date"/>
+      </div>
+
+      <div class="hof-form-row">
+        <label for="hof-type">{{#str}}certificatetype,local_halloffame{{/str}}</label>
+        <select name="type" id="hof-type" class="hof-input hof-select">
+          {{#types}}<option value="{{value}}">{{label}}</option>{{/types}}
+        </select>
+      </div>
+
+      <div class="hof-form-row">
+        <label for="hof-notes">{{#str}}additionalnotes,local_halloffame{{/str}}</label>
+        <textarea name="notes" id="hof-notes" class="hof-input hof-textarea"></textarea>
+      </div>
+
+      <div class="hof-form-row">
+        <label>{{#str}}uploadexternalcertificate,local_halloffame{{/str}}</label>
+        <div class="hof-dropzone" id="hofDropzone">
+          <input type="file" name="certfile" id="certfile"
+                 class="hof-file-input" accept=".pdf,.jpg,.jpeg,.png"/>
+          <div class="hof-dropzone-inner">
+            <span class="hof-upload-icon">☁</span>
+            <span class="hof-dz-label">Upload a File</span>
+            <small>Drag and drop or click to browse</small>
+          </div>
+        </div>
+      </div>
+
+      <p class="hof-form-note">{{#str}}submissionnote,local_halloffame{{/str}}</p>
+
+      <div class="hof-form-actions">
+        <button type="submit" class="btn hof-btn-primary">
+          {{#str}}submitforreview,local_halloffame{{/str}}
+        </button>
+        <a href="{{backurl}}" class="btn hof-btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
