@@ -13,6 +13,18 @@ $PAGE->set_url(new moodle_url('/local/incourse/index.php', ['id' => $courseid]))
 $PAGE->set_title(format_string($course->fullname));
 $PAGE->set_pagelayout('standard');
 
+// ✅ Read active cmid from PHP session for this course
+if (!isset($_SESSION['incourse_active_cmid'])) {
+    $_SESSION['incourse_active_cmid'] = [];
+}
+$urlcmid = optional_param('cmid', 0, PARAM_INT);
+
+if ($urlcmid) {
+    $_SESSION['incourse_active_cmid'][$courseid] = $urlcmid;
+}
+
+$saved_cmid = $urlcmid ?: ($_SESSION['incourse_active_cmid'][$courseid] ?? 0);
+
 echo $OUTPUT->header();
 ?>
  
@@ -303,6 +315,7 @@ $PAGE->requires->js(new moodle_url('/local/incourse/js/main.js'));?>
 <script>
 
 var coursecontextid = <?= $context->id ?>;
+var savedActiveCmid = <?= (int)$saved_cmid ?>;
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -516,6 +529,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+});
+let currentCmid = null;
+
+document.addEventListener('click', function(e) {
+    const link = e.target.closest('.activity-link');
+    if (!link) return;
+
+    const newCmid = link.dataset.cmid;
+
+    if (currentCmid && currentCmid !== newCmid) {
+        console.log('Activity changed → refreshing');
+        window.location.reload();
+    }
+
+    currentCmid = newCmid;
 });
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -2360,7 +2388,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 .forEach(el => el.classList.remove("courseindex-active"));
 
             // Add highlight to clicked item
-            link.classList.add("courseindex-active");
+            // Add highlight + save to PHP session
+        link.classList.add("courseindex-active");
+
+        fetch('<?= $CFG->wwwroot ?>/local/incourse/set_active_cmid.php?courseid=<?= $courseid ?>&cmid=' + link.dataset.cmid, {
+            method: 'GET',
+            credentials: 'same-origin'
+        });
 
             //  Auto-open its accordion section
             let section = link.closest(".accordion-content");
@@ -2438,15 +2472,17 @@ function safeScroll(element) {
 }
 document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
-    const cmid = params.get('cmid');
+    const cmidFromUrl = params.get('cmid');
+
+    // ✅ Prefer URL param, fallback to PHP session value (injected server-side)
+    const cmid = cmidFromUrl || (savedActiveCmid > 0 ? String(savedActiveCmid) : null);
 
     if (!cmid) return;
 
-    // Wait until activity links are registered
     const tryOpen = () => {
         const link = document.querySelector(`.activity-link[data-cmid="${cmid}"]`);
         if (link) {
-            link.click(); //  reuse your entire inline system
+            link.click();
         } else {
             setTimeout(tryOpen, 300);
         }
