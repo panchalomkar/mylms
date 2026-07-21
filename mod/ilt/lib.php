@@ -4529,7 +4529,9 @@ class ilt_existing_selector extends user_selector_base {
         $groupname = get_string('existingusers', 'role', count($availableusers));
         return array($groupname => $availableusers);
     }
-
+function ilt_get_module_purpose() {
+    return 'other';
+}
     protected function get_options() {
         $options = parent::get_options();
         $options['sessionid'] = $this->sessionid;
