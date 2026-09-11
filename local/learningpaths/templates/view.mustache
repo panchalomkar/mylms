@@ -1,7 +1,241 @@
-<div class="content-title back row">
+<style>
+#page-local-learningpaths-view .moodle-dialogue-exception .moodle-dialogue-lightbox,#page-local-learningpaths-view .moodle-dialogue-exception .moodle-dialogue {
+    display: none !important;
+}
+/* =========================================================
+   Learning Paths - Overview tab visual override
+   Brand: --lp-primary #003152 (navy)  --lp-accent #ec9707 (amber)
+   Append AFTER your existing stylesheet(s) so it wins on
+   specificity. Class names are new (lp-ov-*, lp-stat-*,
+   lp-dash-*) so nothing existing is overwritten by accident.
+   ========================================================= */
+
+.lp-ov { --lpc-primary: #003152; --lpc-primary-dark: #001b2e; --lpc-accent: #ec9707; }
+
+/* ---------- Hero card ---------- */
+.lp-ov-card {
+  background: linear-gradient(135deg, var(--lpc-primary) 0%, var(--lpc-primary-dark) 65%, #10202b 100%);
+  border-radius: 20px;
+  padding: 1.75rem;
+  color: #fff;
+  box-shadow: 0 18px 40px rgba(0, 27, 46, 0.28);
+}
+.lp-ov-card .row.description { margin: 0; align-items: stretch; }
+
+/* ---------- Media / thumbnail + draft badge ---------- */
+.lp-ov-media-col { padding-right: 1.5rem; }
+.lp-ov-media {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  min-height: 100%;
+  background: rgba(255, 255, 255, 0.04);
+}
+.lp-ov-media .lp_img_description {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+  display: block;
+}
+.lp-ov-draft-badge {
+    position: relative;
+    top: -66px;
+    left: 675px;
+    width: fit-content !important;
+}
+/* Style whatever markup {{{publish_btn}}} renders as a small pill badge */
+.lp-ov-draft-badge > * {
+  display: inline-flex !important;
+  align-items: center;
+  gap: .35rem;
+  background: var(--lpc-accent) !important;
+  color: #1c1200 !important;
+  font-size: .68rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  padding: .3rem .7rem !important;
+  border-radius: 999px !important;
+  border: none !important;
+  box-shadow: 0 6px 14px rgba(236, 151, 7, .35);
+}
+
+/* ---------- Description ---------- */
+.lp-ov-body { padding-left: .5rem; }
+.lp-ov-desc-label {
+  display: block;
+  color: var(--lpc-accent);
+  font-weight: 700;
+  font-size: .78rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: .35rem;
+}
+.lp-ov-desc-text {
+  color: #eef3f6;
+  font-size: .98rem;
+  line-height: 1.5;
+  margin-bottom: .9rem;
+}
+.lp-ov-desc-text p { margin: 0; }
+
+/* ---------- Tag pills (custom properties) ---------- */
+.lp-ov-tags { margin-bottom: 1.1rem; display: flex; flex-wrap: wrap; gap: .5rem; }
+.lp-ov-tags:empty { display: none; }
+.lp-ov-tags > * { margin: 0 !important; }
+.lp-ov-tags span,
+.lp-ov-tags a,
+.lp-ov-tags li,
+.lp-ov-tags .badge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border-radius: 999px;
+  padding: .3rem .8rem;
+  font-size: .78rem;
+  font-weight: 600;
+}
+.lp-ov-tags > *:nth-child(2) {
+  background: var(--lpc-accent);
+  color: #1c1200;
+}
+
+/* ---------- Stat pills grid ---------- */
+.lp-ov-stats-row { margin: 0 -6px; }
+.lp-stat-col { padding: 0 6px; margin-bottom: .6rem; }
+.lp-stat-pill {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: .55rem .7rem;
+  height: 100%;
+  transition: background-color .18s ease, transform .18s ease;
+}
+/*.lp-stat-pill:hover { background: rgba(255, 255, 255, 0.12); transform: translateY(-2px); }*/
+.lp-stat-icon {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--lpc-accent);
+  color: #1c1200;
+  font-size: .95rem;
+}
+.lp-stat-text { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.lp-stat-text small {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: .64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.lp-stat-text strong {
+  color: #fff;
+  font-size: .95rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Dashboard header ---------- */
+.lp-dash-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: 1.75rem;
+  margin-bottom: .75rem;
+}
+.lp-dash-heading h4 {
+  font-weight: 800;
+  color: var(--lpc-primary);
+  margin: 0 0 .15rem;
+  font-size: 1.5rem;
+}
+.lp-dash-subtitle { color: #6b7d89; font-size: .9rem; margin: 0; }
+.lp-dash-edit a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #eef2f5;
+  color: var(--lpc-primary);
+}
+.lp-dash-edit a:hover { background: var(--lpc-accent); color: #1c1200; }
+
+/* ---------- Dashboard card wrapper (contains the courses table block) ---------- */
+.lp-dash-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0, 49, 82, .08);
+  padding: .25rem;
+  overflow: hidden;
+}
+
+/* Best-effort generic styling for whatever table/search/buttons live inside
+   the courses dashboard block - refine selectors once that template is shared. */
+.lp-dash-card table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.lp-dash-card thead th {
+  background: #f3f6f8;
+  color: var(--lpc-primary);
+  text-transform: uppercase;
+  font-size: .72rem;
+  letter-spacing: .05em;
+  padding: .75rem 1rem;
+  border: none;
+}
+.lp-dash-card tbody td { padding: .75rem 1rem; border-top: 1px solid #eef1f3; }
+.lp-dash-card tbody tr:hover { background: #f8fafc; }
+.lp-dash-card .btn-primary,
+.lp-dash-card button[type="submit"] {
+  background: var(--lpc-accent);
+  border-color: var(--lpc-accent);
+  color: #1c1200;
+  font-weight: 700;
+  border-radius: 999px;
+}
+.lp-custom-img .lp-ov-media {     display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;     background: transparent !important;}
+.lp-custom-img .lp_img_description {
+    width: 330px !important;
+    height: auto !important;
+}
+.custom-course-table {    padding: 20px !important; background: #ffffff !important;  }
+ .custom-course-table .start-date,.custom-course-table .course-name,.custom-course-table .end-date,.custom-course-table .credits,.custom-course-table .certificate{
+      justify-content: left !important;
+    gap: 10px !important;}
+
+ .conent-descriptionlp-custom .col-sm-3 span i {
+    position: relative !important;
+    float: left !important;
+    left: 0px !important;
+    top: 1px !important;
+    font-size: 11px;
+}
+.cusotm-lp-txt p{color: white !important;}
+/* ---------- Responsive ---------- */
+@media (max-width: 767.98px) {
+  .lp-ov-card { padding: 1.1rem; }
+  .lp-ov-media-col { padding-right: 0; margin-bottom: 1rem; }
+  .lp-ov-body { padding-left: 0; }
+  .lp-dash-header { flex-direction: column; align-items: flex-start; gap: .5rem; }
+}
+</style>
+<div class="content-title back d-flex gap-2">
   <div class="">
-    <a class="back_page" href="{{site_url}}/local/learningpaths/#">
-      <i class="wid wid-icon-phback-to fa fa-chevron-circle-left" aria-hidden="true" title="{{#str}}back, local_learningpaths{{/str}}">
+    <a class="back_page"  href="{{site_url}}/local/learningpaths/#">
+      <i class="wid wid-icon-phback-to fa fa-chevron-circle-left" style="color:#003152;" aria-hidden="true" title="{{#str}}back, local_learningpaths{{/str}}">
       </i>
     </a>
   </div>

@@ -1,0 +1,828 @@
+{{!
+  @template local_skillgap/user_dashboard
+  User competency dashboard — shows assigned assessments, competencies, results, spider chart.
+  Renders inside Moodle standard layout — no custom sidebar.
+
+  NOTE: Visual layer only has been re-styled to match the approved Figma design.
+  All original mustache variables, sections (#/^), and loops are preserved unchanged
+  so existing PHP/JS data wiring keeps working exactly as before.
+}}
+<style>
+  .local-skillgap{
+    --sg-navy-1:#0A1F3D;
+    --sg-navy-2:#123A63;
+    --sg-orange:#F5A623;
+    --sg-orange-light:#FDF1DC;
+    --sg-blue:#2F6FED;
+    --sg-blue-light:#EAF0FE;
+    --sg-green:#1E9E58;
+    --sg-green-light:#E7F8EE;
+    --sg-red:#E5484D;
+    --sg-red-light:#FDEAEA;
+    --sg-gray-bg:#F5F7FA;
+    --sg-border:#E7EBF1;
+    --sg-text-muted:#8A93A3;
+    --sg-text-dark:#1B2A41;
+    font-family:inherit;
+    color:var(--sg-text-dark);
+    background:var(--sg-gray-bg);
+    padding:20px;
+    border-radius:14px;
+  }
+  .local-skillgap *{box-sizing:border-box;}
+
+  /* ── Banner ── */
+  .sg-banner{
+    background:linear-gradient(135deg,var(--sg-navy-1) 0%,var(--sg-navy-2) 100%);
+    border:none;border-radius:16px;overflow:hidden;
+  }
+  .sg-banner .card-body{padding:22px 26px;}
+  .sg-eyebrow{
+    color:rgba(255,255,255,.55);font-size:11px;letter-spacing:1.5px;
+    text-transform:uppercase;font-weight:700;margin-bottom:4px;
+  }
+  .sg-avatar{
+    width:52px;height:52px;border-radius:50%;
+    background:var(--sg-orange);color:#fff;font-weight:700;font-size:18px;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .sg-banner h4{font-weight:700;letter-spacing:.2px;}
+  .sg-banner .sg-sub{color:rgba(255,255,255,.7);font-size:13.5px;}
+  .sg-pill-white{
+    background:#fff;color:var(--sg-navy-1);border:none;border-radius:24px;
+    font-weight:600;font-size:13.5px;padding:8px 16px;
+  }
+  .sg-btn-blue{
+    background:var(--sg-blue);color:#fff;border:none;border-radius:24px;
+    font-weight:600;font-size:13.5px;padding:8px 18px;
+    box-shadow:0 4px 10px rgba(47,111,237,.35);
+  }
+  .sg-btn-blue:hover{background:#2559c9;color:#fff;}
+  .sg-btn-outline-navy{
+    background:#fff;color:var(--sg-navy-1);border:1.5px solid var(--sg-orange);
+    border-radius:24px;font-weight:600;font-size:13.5px;padding:8px 16px;
+  }
+
+  /* ── Metric cards ── */
+  .sg-metric-card{
+    background:#fff;border:1px solid var(--sg-border);border-radius:14px;
+    padding:16px 18px;height:100%;position:relative;
+  }
+  .sg-metric-label{
+    font-size:11px;letter-spacing:.6px;text-transform:uppercase;
+    color:var(--sg-text-muted);font-weight:700;margin-bottom:10px;
+  }
+  .sg-metric-value{font-size:26px;font-weight:800;color:var(--sg-text-dark);line-height:1;}
+  .sg-metric-desc{font-size:12px;color:var(--sg-text-muted);margin-top:8px;}
+  .sg-metric-icon{
+    position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:14px;
+  }
+  .sg-icon-blue{background:var(--sg-blue-light);color:var(--sg-blue);}
+  .sg-icon-orange{background:var(--sg-orange-light);color:var(--sg-orange);}
+  .sg-icon-gray{background:#EEF1F5;color:#9AA3B2;}
+  .sg-icon-green{background:var(--sg-green-light);color:var(--sg-green);}
+
+  /* ── Section header bar ── */
+  .sg-card{background:#fff;border:1px solid var(--sg-border);border-radius:14px;overflow:hidden;}
+  .sg-section-header{
+    background:linear-gradient(135deg,var(--sg-navy-1) 0%,var(--sg-navy-2) 100%);
+    color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+  }
+  .sg-section-header h5{color:#fff;margin:0;font-weight:700;font-size:15.5px;display:flex;align-items:center;gap:10px;}
+  .sg-icon-circle{
+    width:30px;height:30px;border-radius:50%;background:var(--sg-orange);
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;flex-shrink:0;
+  }
+  .sg-count-badge{
+    background:rgba(255,255,255,.18);color:#fff;font-size:12px;font-weight:700;
+    border-radius:20px;padding:2px 10px;
+  }
+  .sg-section-sub{color:rgba(255,255,255,.65);font-size:12px;margin-left:40px;margin-top:-4px;}
+
+  /* ── Toolbar (search / filters) ── */
+  .sg-toolbar{padding:16px 20px;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;border-bottom:1px solid var(--sg-border);}
+  .sg-search-wrap{position:relative;flex:1 1 220px;max-width:320px;}
+  .sg-search-wrap i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--sg-text-muted);font-size:12px;}
+  .sg-search-input{
+    width:100%;border:1px solid var(--sg-border);border-radius:24px;
+    padding:8px 14px 8px 32px;font-size:13px;background:var(--sg-gray-bg);
+  }
+  .sg-filter-select{
+    border:1px solid var(--sg-border);border-radius:24px;background:var(--sg-gray-bg);
+    font-size:13px;padding:8px 14px;color:var(--sg-text-dark);
+  }
+
+  /* ── Tabs ── */
+  .sg-tabs{display:flex;gap:6px;padding:14px 20px 0 20px;}
+  .sg-tab-btn{
+    border:none;background:transparent;padding:8px 16px;border-radius:20px;
+    font-size:13px;font-weight:600;color:var(--sg-text-muted);cursor:pointer;
+  }
+  .sg-tab-btn.active{background:var(--sg-navy-1);color:#fff;}
+  .sg-tab-panel{display:none;}
+  .sg-tab-panel.active{display:block;}
+
+  /* ── Tables ── */
+  .local-skillgap table thead th{
+    font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--sg-text-muted);
+    font-weight:700;border-top:none;border-bottom:1px solid var(--sg-border);background:#fff;
+  }
+  .local-skillgap table td{vertical-align:middle;border-color:var(--sg-border);font-size:13.5px;}
+  .sg-badge-pill{
+    display:inline-block;background:#EEF1F5;color:var(--sg-text-dark);
+    border-radius:20px;font-size:11.5px;font-weight:600;padding:3px 10px;margin:2px 3px 2px 0;
+  }
+  .sg-status-badge{border-radius:20px;font-size:11.5px;font-weight:600;padding:4px 10px;display:inline-flex;align-items:center;gap:5px;}
+  .sg-status-green{background:var(--sg-green-light);color:var(--sg-green);}
+  .sg-status-red{background:var(--sg-red-light);color:var(--sg-red);}
+  .sg-status-gray{background:#EEF1F5;color:var(--sg-text-muted);}
+  .sg-progress-track{background:#EEF1F5;border-radius:10px;height:6px;min-width:70px;overflow:hidden;}
+  .sg-progress-fill{height:100%;border-radius:10px;background:var(--sg-blue);}
+  .sg-progress-fill.green{background:var(--sg-green);}
+  .sg-progress-fill.red{background:var(--sg-red);}
+  .sg-action-btn{
+    background:var(--sg-blue);color:#fff;border:none;border-radius:20px;
+    font-size:12.5px;font-weight:600;padding:6px 14px;
+  }
+  .sg-action-btn:hover{background:#2559c9;color:#fff;}
+  .sg-action-outline{
+    background:#fff;color:var(--sg-green);border:1.5px solid var(--sg-green);
+    border-radius:20px;font-size:12.5px;font-weight:600;padding:5px 13px;
+  }
+
+  /* ── Assigned competency cards ── */
+  .sg-comp-card{
+    background:#fff;border:1px solid var(--sg-border);border-radius:14px;padding:16px 18px;height:100%;
+  }
+  .sg-comp-card-title{font-weight:700;font-size:14.5px;color:var(--sg-text-dark);}
+  .sg-comp-card-pct{font-weight:800;font-size:15px;color:var(--sg-text-dark);}
+  .sg-comp-card-desc{font-size:12.5px;color:var(--sg-text-muted);margin:6px 0 12px;}
+
+  /* ── Radar card ── */
+  .sg-radar-sub{font-size:12px;color:var(--sg-text-muted);margin-top:-2px;}
+
+  /* ── Promotion track ── */
+  .sg-promo-label{font-size:12px;color:var(--sg-text-muted);text-transform:uppercase;letter-spacing:.4px;}
+  .sg-promo-role{font-size:19px;font-weight:800;color:var(--sg-text-dark);}
+  .sg-readiness-pct{color:var(--sg-blue);font-weight:700;}
+  .sg-btn-outline-full{
+    width:100%;background:#fff;border:1px solid var(--sg-border);border-radius:10px;
+    padding:9px;font-size:13px;font-weight:600;color:var(--sg-text-dark);
+  }
+
+  /* ── Promotion history ── */
+  .sg-from-text{color:var(--sg-text-muted);}
+  .sg-to-text{color:var(--sg-green);font-weight:700;}
+
+  /* ── Past records ── */
+  .sg-record-row{padding:14px 20px;border-bottom:1px solid var(--sg-border);}
+  .sg-record-row:last-child{border-bottom:none;}
+  .sg-record-title{font-weight:700;color:var(--sg-text-dark);font-size:14.5px;}
+  .sg-record-score{font-weight:800;font-size:16px;color:var(--sg-text-dark);text-align:right;}
+  .sg-record-date{font-size:11.5px;color:var(--sg-text-muted);text-align:right;}
+
+  .sg-alert-promo{
+    background:#EAF0FE;border:1px solid #C9DAFB;border-radius:12px;
+  }
+</style>
+
+<div class="local-skillgap container-fluid px-0">
+
+  {{! ── User banner ── }}
+  <div class="card sg-banner mb-4">
+    <div class="card-body">
+      <div class="d-flex align-items-center justify-content-between flex-wrap" style="gap:12px;">
+        <div class="d-flex align-items-center">
+          <div class="sg-avatar mr-3">
+            {{user_initials}}
+          </div>
+          <div>
+            <div class="sg-eyebrow">Skill Gap Analysis</div>
+            <h4 class="mb-0 text-white">{{fullname}}</h4>
+            <small class="sg-sub">
+              {{department}}
+              {{#current_designation}}&nbsp;&bull;&nbsp;<span style="color:rgba(255,255,255,.9);">{{current_designation}}</span>{{/current_designation}}
+              {{#recently_promoted}}&nbsp;<span class="badge" style="background:#28a745;color:#fff;font-size:10px;vertical-align:middle;">
+                <i class="fa fa-arrow-up mr-1"></i>Promoted &rarr; {{promoted_designation}}
+              </span>{{/recently_promoted}}
+              {{#pending_count}}&nbsp;&bull;&nbsp;<span style="color:rgba(255,255,255,.9);">{{pending_count}} pending assessment(s)</span>{{/pending_count}}
+            </small>
+          </div>
+        </div>
+        <div class="d-flex flex-wrap align-items-center" style="gap:8px;">
+          {{#has_pending_assessments}}
+          {{#single_pending}}
+          <a href="{{{pending_url}}}" class="btn sg-btn-blue">
+            <i class="fa fa-play mr-1"></i>Start: {{pending_title}}
+          </a>
+          {{/single_pending}}
+          {{#multi_pending}}
+          <div class="dropdown">
+            <button class="btn sg-pill-white dropdown-toggle" type="button" data-toggle="dropdown">
+              <i class="fa fa-play mr-1"></i>{{pending_count}} Pending Assessments
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" style="min-width:260px;">
+              {{#assigned_pending}}
+              <a class="dropdown-item" href="{{{url}}}">
+                <i class="fa fa-play-circle mr-2 text-warning"></i>{{title}}
+              </a>
+              {{/assigned_pending}}
+            </div>
+          </div>
+          {{/multi_pending}}
+          {{/has_pending_assessments}}
+          {{#has_running_assessments}}
+          {{#single_running}}
+          <a href="{{{running_url}}}" class="btn sg-btn-blue">
+            <i class="fa fa-clock-o mr-1"></i>Resume assessment
+          </a>
+          {{/single_running}}
+          {{#multi_running}}
+          <div class="dropdown">
+            <button class="btn sg-pill-white dropdown-toggle" type="button" data-toggle="dropdown">
+              <i class="fa fa-clock-o mr-1"></i>{{running_count}} In Progress
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" style="min-width:260px;">
+              {{#assigned_running}}
+              <a class="dropdown-item" href="{{{url}}}">
+                <i class="fa fa-clock-o mr-2 text-warning"></i>Continue: {{title}}
+              </a>
+              {{/assigned_running}}
+            </div>
+          </div>
+          {{/multi_running}}
+          {{/has_running_assessments}}
+          {{#is_manager}}
+          <a href="{{{manager_url}}}" class="btn sg-btn-outline-navy">
+            <i class="fa fa-bar-chart mr-1" style="color:var(--sg-orange);"></i>
+            My Team Analytics
+            <span class="badge badge-warning ml-1" style="font-size:10px;">{{team_member_count}}</span>
+          </a>
+          {{/is_manager}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{! ── Top metric cards ── }}
+  <div class="row mb-4">
+    <div class="col-6 col-md-3 mb-3">
+      <div class="sg-metric-card">
+        <div class="sg-metric-icon sg-icon-blue"><i class="fa fa-tachometer"></i></div>
+        <div class="sg-metric-label">Avg Score</div>
+        <div class="sg-metric-value">{{avg_score}}%</div>
+        <div class="sg-metric-desc">Across all assessed competencies</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <div class="sg-metric-card">
+        <div class="sg-metric-icon sg-icon-orange"><i class="fa fa-bullseye"></i></div>
+        <div class="sg-metric-label">Competencies Met</div>
+        <div class="sg-metric-value">{{competent_count}}/{{total_count}}</div>
+        <div class="sg-metric-desc">Target level reached</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <div class="sg-metric-card">
+        <div class="sg-metric-icon sg-icon-gray"><i class="fa fa-inbox"></i></div>
+        <div class="sg-metric-label">Pending Assessments</div>
+        <div class="sg-metric-value">{{pending_count}}</div>
+        <div class="sg-metric-desc">No overdue items</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <div class="sg-metric-card">
+        <div class="sg-metric-icon sg-icon-green"><i class="fa fa-check-circle"></i></div>
+        <div class="sg-metric-label">Completed</div>
+        <div class="sg-metric-value">{{completed_count}}</div>
+        <div class="sg-metric-desc">Lifetime submissions</div>
+      </div>
+    </div>
+  </div>
+
+  {{! ── Manager: Team Analytics Section ── }}
+  {{#is_manager}}
+  <div class="sg-card mb-4">
+    <div class="sg-section-header">
+      <h5><span class="sg-icon-circle"><i class="fa fa-bar-chart"></i></span>My Team Analytics
+        <span class="sg-count-badge">{{team_member_count}} members</span>
+      </h5>
+      <a href="{{{manager_url}}}" class="btn sg-action-btn">
+        <i class="fa fa-eye mr-1"></i>View Full Report
+      </a>
+    </div>
+    <div class="card-body">
+      <p class="mb-2 text-muted small">
+        You have <strong>{{team_member_count}}</strong> team member(s) whose assessment analytics you can view
+        based on your designation mapping.
+      </p>
+      <a href="{{{manager_url}}}" class="btn sg-action-btn">
+        <i class="fa fa-bar-chart mr-1"></i>View Full Team Report
+      </a>
+    </div>
+  </div>
+  {{/is_manager}}
+
+  {{! ── My Assessments (Pending / In Progress / Completed) ── }}
+  {{#has_pending_assessments}}{{^__myassess}}{{/__myassess}}{{/has_pending_assessments}}
+  <div class="sg-card mb-4 sg-myassessments">
+    <div class="sg-section-header">
+      <h5><span class="sg-icon-circle"><i class="fa fa-list-alt"></i></span>My Assessments
+        <span class="sg-count-badge">{{pending_count}}{{running_count}}{{completed_count}}</span>
+      </h5>
+    </div>
+
+    <div class="sg-toolbar">
+      <div class="sg-search-wrap">
+        <i class="fa fa-search"></i>
+        <input type="text" class="sg-search-input sg-myassess-search" placeholder="Search assessments">
+      </div>
+      <select class="sg-filter-select sg-myassess-dept"><option value="">All departments</option></select>
+      <select class="sg-filter-select sg-myassess-desig"><option value="">All designations</option></select>
+      <select class="sg-filter-select sg-myassess-sort">
+        <option value="name">Sort: Name</option>
+      </select>
+    </div>
+
+    <div class="sg-tabs">
+      {{#has_pending_assessments}}<button type="button" class="sg-tab-btn" data-target="sg-tab-pending">Pending ({{pending_count}})</button>{{/has_pending_assessments}}
+      {{#has_running_assessments}}<button type="button" class="sg-tab-btn" data-target="sg-tab-running">In Progress ({{running_count}})</button>{{/has_running_assessments}}
+      {{#has_completed_assessments}}<button type="button" class="sg-tab-btn" data-target="sg-tab-completed">Completed ({{completed_count}})</button>{{/has_completed_assessments}}
+      <button type="button" class="sg-tab-btn" data-target="sg-tab-all">All</button>
+    </div>
+
+    {{! -- Pending panel -- }}
+    {{#has_pending_assessments}}
+    <div class="sg-tab-panel sg-myassess-panel" data-panel="sg-tab-pending">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>Assessment</th><th>Department</th><th>Designation</th><th>Frequency</th>
+              <th>Competencies</th><th>Questions</th><th>Progress</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#assigned_pending}}
+            <tr data-dept="{{dept_name}}" data-desig="{{desig_name}}" data-name="{{title}}">
+              <td class="font-weight-medium">{{title}}</td>
+              <td>{{dept_name}}</td>
+              <td><small class="text-muted">{{desig_name}}</small></td>
+              <td>{{frequency}}</td>
+              <td>{{#comp_names}}<span class="sg-badge-pill">{{cname}}</span>{{/comp_names}}</td>
+              <td class="text-center"><span class="sg-badge-pill">{{total_q}}</span></td>
+              <td><div class="sg-progress-track"><div class="sg-progress-fill" style="width:0%;"></div></div>
+                  <small class="text-muted">0/{{total_q}} answered</small></td>
+              <td><a href="{{{url}}}" class="btn sg-action-btn"><i class="fa fa-play mr-1"></i>Start</a></td>
+            </tr>
+            {{/assigned_pending}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {{/has_pending_assessments}}
+
+    {{! -- Running panel -- }}
+    {{#has_running_assessments}}
+    <div class="sg-tab-panel sg-myassess-panel" data-panel="sg-tab-running">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr><th>Assessment</th><th>Department</th><th>Designation</th><th>Competencies</th><th>Progress</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            {{#assigned_running}}
+            <tr data-dept="{{dept_name}}" data-desig="{{desig_name}}" data-name="{{title}}">
+              <td class="font-weight-medium">{{title}}</td>
+              <td>{{dept_name}}</td>
+              <td><small class="text-muted">{{desig_name}}</small></td>
+              <td>{{#comp_names}}<span class="sg-badge-pill">{{cname}}</span>{{/comp_names}}</td>
+              <td><div class="sg-progress-track"><div class="sg-progress-fill" style="width:40%;"></div></div></td>
+              <td><a href="{{{url}}}" class="btn sg-action-btn"><i class="fa fa-clock-o mr-1"></i>Continue</a></td>
+            </tr>
+            {{/assigned_running}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {{/has_running_assessments}}
+
+    {{! -- Completed panel -- }}
+    {{#has_completed_assessments}}
+    <div class="sg-tab-panel sg-myassess-panel" data-panel="sg-tab-completed">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr><th>Assessment</th><th>Department</th><th>Designation</th><th>Competencies</th><th>Completed On</th><th>Score</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            {{#assigned_completed}}
+            <tr data-dept="{{dept_name}}" data-desig="{{desig_name}}" data-name="{{title}}">
+              <td class="font-weight-medium">{{title}}</td>
+              <td>{{dept_name}}</td>
+              <td><small class="text-muted">{{desig_name}}</small></td>
+              <td>{{#comp_names}}<span class="sg-badge-pill">{{cname}}</span>{{/comp_names}}</td>
+              <td>{{timecompleted}}</td>
+              <td>
+                {{#overall_pct}}<span class="sg-status-badge {{#overall_badge}}sg-status-{{overall_badge}}{{/overall_badge}}">{{overall_pct}}%</span>{{/overall_pct}}
+                {{^overall_pct}}<span class="text-muted small">—</span>{{/overall_pct}}
+              </td>
+              <td><a href="{{{url}}}" class="btn sg-action-outline"><i class="fa fa-repeat mr-1"></i>Retake</a></td>
+            </tr>
+            {{/assigned_completed}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {{/has_completed_assessments}}
+
+    {{! -- All panel (union, JS-populated by cloning the rows above) -- }}
+    <div class="sg-tab-panel sg-myassess-panel" data-panel="sg-tab-all">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0 sg-all-table">
+          <thead><tr><th>Assessment</th><th>Department</th><th>Designation</th><th>Competencies</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody class="sg-all-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    {{! ── No assessments message ── }}
+    {{^has_pending_assessments}}{{^has_running_assessments}}{{^has_completed_assessments}}
+    <div class="alert alert-info m-3">
+      <i class="fa fa-info-circle mr-2"></i>
+      No assessments have been assigned to your department yet. Please contact your administrator.
+    </div>
+    {{/has_completed_assessments}}{{/has_running_assessments}}{{/has_pending_assessments}}
+  </div>
+
+  {{! ── Section D: Assigned Competencies ── }}
+  {{#has_assigned_comps}}
+  <div class="sg-card mb-4">
+    <div class="sg-section-header">
+      <h5><span class="sg-icon-circle"><i class="fa fa-star"></i></span>Assigned Competencies
+        <span class="sg-count-badge">{{assigned_comp_count}}</span>
+      </h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        {{#assigned_competencies}}
+        <div class="col-12 col-md-4 mb-3">
+          <div class="sg-comp-card">
+            <div class="d-flex align-items-start justify-content-between">
+              <div class="sg-comp-card-title">{{name}}</div>
+              <div class="sg-comp-card-pct">{{score}}</div>
+            </div>
+            <div class="sg-comp-card-desc" style="display:block;max-width:100%;white-space:normal;overflow:hidden;text-overflow:ellipsis;">{{description}}</div>
+            <div class="sg-progress-track mb-2">
+              <div class="sg-progress-fill {{#badge_class}}{{#is_red}}red{{/is_red}}{{/badge_class}}" style="width:{{score}};"></div>
+            </div>
+            <div class="d-flex align-items-center justify-content-between">
+              <span class="sg-status-badge sg-status-{{badge_class}}">{{status_label}}</span>
+              <small class="text-muted">2 sub-competencies</small>
+            </div>
+          </div>
+        </div>
+        {{/assigned_competencies}}
+      </div>
+    </div>
+  </div>
+  {{/has_assigned_comps}}
+
+  {{! ── Section E: Results — Spider chart + competency score table ── }}
+  {{#has_scores}}
+  <div class="row mb-4">
+    <div class="col-12 col-md-5 mb-4">
+      <div class="sg-card h-100">
+        <div class="sg-section-header">
+          <h5><span class="sg-icon-circle"><i class="fa fa-bullseye"></i></span>Competency Radar</h5>
+        </div>
+        <div class="sg-section-sub">Current level vs target</div>
+        <div class="card-body d-flex flex-column align-items-center justify-content-center">
+          <canvas id="sg-spider-chart" width="300" height="300"
+                  data-labels='{{chart_labels_json}}'
+                  data-scores='{{chart_scores_json}}'>
+          </canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-7 mb-4">
+      <div class="sg-card h-100">
+        <div class="sg-section-header">
+          <h5><span class="sg-icon-circle"><i class="fa fa-list"></i></span>Competency Results</h5>
+        </div>
+        <div class="sg-section-sub">Expand a competency to see sub-competencies</div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>Competency</th>
+                  <th>Score</th>
+                  <th>Status</th>
+                  <th>Progress</th>
+                  <th>Trend</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#competency_rows}}
+                <tr>
+                  <td class="font-weight-medium">
+                    {{#has_subs}}
+                    <button class="btn btn-link btn-sm p-0 mr-1 sg-toggle-subs"
+                            data-compid="{{compid}}">
+                      <i class="fa fa-caret-right small"></i>
+                    </button>
+                    {{/has_subs}}
+                    {{compname}}
+                  </td>
+                  <td>
+                    <div class="sg-progress-track mb-1">
+                      <div class="sg-progress-fill {{#is_red}}red{{/is_red}}{{^is_red}}green{{/is_red}}" style="width:{{pct}}%;"></div>
+                    </div>
+                    <small class="text-muted">{{score}}/5</small>
+                  </td>
+                  <td><span class="sg-status-badge sg-status-{{badge_class}}">{{status_label}}</span></td>
+                  <td>
+                    <button class="btn btn-link btn-sm p-0 sg-progress-btn"
+                            data-userid="{{userid}}"
+                            data-compid="{{compid}}"
+                            data-compname="{{compname}}">
+                      {{progress_str}}
+                      <i class="fa fa-info-circle ml-1 text-muted small"></i>
+                    </button>
+                  </td>
+                  <td>
+                    {{#trend_up}}<span class="text-success font-weight-bold"><i class="fa fa-arrow-up"></i></span>{{/trend_up}}
+                    {{#trend_down}}<span class="text-danger font-weight-bold"><i class="fa fa-arrow-down"></i></span>{{/trend_down}}
+                    {{^trend_up}}{{^trend_down}}<span class="text-muted">&mdash;</span>{{/trend_down}}{{/trend_up}}
+                  </td>
+                </tr>
+                {{#has_subs}}
+                {{#sub_rows}}
+                <tr class="sg-sub-row sg-sub-{{compid}} d-none" style="background:#F8FAFC;">
+                  <td class="pl-4 align-middle" style="font-size:13px;">
+                    <i class="fa fa-angle-right mr-1 text-muted"></i>
+                    <span class="font-weight-medium">{{name}}</span>
+                  </td>
+                  <td class="align-middle">
+                    {{#has_score}}
+                    <div class="sg-progress-track mb-1" style="height:5px;">
+                      <div class="sg-progress-fill {{#is_red}}red{{/is_red}}{{^is_red}}green{{/is_red}}" style="width:{{pct}}%;"></div>
+                    </div>
+                    <small class="text-muted" style="font-size:11px;">{{score}}</small>
+                    {{/has_score}}
+                    {{#is_na}}<small class="text-muted">—</small>{{/is_na}}
+                  </td>
+                  <td class="align-middle">
+                    {{#has_score}}
+                    <span class="sg-status-badge sg-status-{{badge_class}}" style="font-size:11px;">{{status_label}}</span>
+                    {{/has_score}}
+                    {{#is_na}}<small class="text-muted">—</small>{{/is_na}}
+                  </td>
+                  <td class="text-muted align-middle" style="font-size:11px;">—</td>
+                  <td class="text-muted align-middle" style="font-size:11px;">—</td>
+                </tr>
+                {{/sub_rows}}
+                {{/has_subs}}
+                {{/competency_rows}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {{/has_scores}}
+
+  {{! ── Promotion track + Promotion history ── }}
+  <div class="row mb-4">
+    {{#show_promotion}}
+    <div class="col-12 col-md-5 mb-3">
+      <div class="sg-card h-100">
+        <div class="sg-section-header">
+          <h5><span class="sg-icon-circle"><i class="fa fa-arrow-up"></i></span>Promotion Track</h5>
+        </div>
+        <div class="card-body">
+          <div class="sg-promo-label">Next role</div>
+          <div class="sg-promo-role mb-3">{{next_designation}}</div>
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="sg-promo-label">Readiness</span>
+            <span class="sg-readiness-pct">{{avg_score}}%</span>
+          </div>
+          <div class="sg-progress-track mb-3"><div class="sg-progress-fill" style="width:{{avg_score}}%;"></div></div>
+          <button type="button" class="sg-btn-outline-full">View remaining requirements</button>
+        </div>
+      </div>
+    </div>
+    {{/show_promotion}}
+
+    {{! ── Section F: My Promotion History ── }}
+    <div class="col-12 {{#show_promotion}}col-md-7{{/show_promotion}} mb-3">
+      <div class="sg-card h-100">
+        <div class="sg-section-header">
+          <h5><span class="sg-icon-circle"><i class="fa fa-trophy"></i></span>My Promotion History</h5>
+        </div>
+        <div class="card-body p-0">
+          {{#has_promotion_history}}
+          <div class="table-responsive">
+            <table class="table table-sm mb-0">
+              <thead>
+                <tr>
+                  <th>From</th>
+                  <th></th>
+                  <th>To</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#promotion_history}}
+                <tr>
+                  <td><span class="sg-from-text">{{from_desig}}</span></td>
+                  <td class="text-center"><i class="fa fa-long-arrow-right" style="color:var(--sg-green);"></i></td>
+                  <td><span class="sg-to-text">{{to_desig}}</span></td>
+                  <td><small class="text-muted">{{date}}</small></td>
+                </tr>
+                {{/promotion_history}}
+              </tbody>
+            </table>
+          </div>
+          {{/has_promotion_history}}
+          {{^has_promotion_history}}
+          <div class="p-4 text-center text-muted">
+            {{promo_history_message}}
+          </div>
+          {{/has_promotion_history}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{! ── Section G: Past Assessment Records (Competency Snapshots) ── }}
+  {{#has_snapshots}}
+  <div class="sg-card mb-4">
+    <div class="sg-section-header">
+      <h5><span class="sg-icon-circle"><i class="fa fa-history"></i></span>Past Assessment Records
+        <span class="sg-count-badge">{{snapshot_count}}</span>
+      </h5>
+    </div>
+    <div class="sg-toolbar">
+      <div class="sg-search-wrap">
+        <i class="fa fa-search"></i>
+        <input type="text" class="sg-search-input sg-records-search" placeholder="Search records">
+      </div>
+      <select class="sg-filter-select"><option>All competencies</option></select>
+    </div>
+    <div class="card-body p-0 sg-records-list">
+      {{#past_competency_snapshots}}
+      <div class="sg-record-row">
+        <div class="d-flex align-items-start justify-content-between flex-wrap">
+          <div>
+            <div class="sg-record-title mb-1">{{assessment_title}}</div>
+            <div class="d-flex flex-wrap" style="gap:6px;">
+              {{#comp_snaps}}
+              <span class="sg-badge-pill">{{compname}}</span>
+              <span class="sg-status-badge sg-status-{{badge_class}}">{{status_label}}</span>
+              {{/comp_snaps}}
+            </div>
+          </div>
+          <div>
+            <div class="sg-record-score">{{avg_pct}}%</div>
+            <div class="sg-record-date">{{date}}</div>
+          </div>
+        </div>
+      </div>
+      {{/past_competency_snapshots}}
+    </div>
+  </div>
+  {{/has_snapshots}}
+
+  {{! ── Progress detail modal ── }}
+  <div class="modal fade" id="sg-progress-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header" style="background:linear-gradient(135deg,var(--sg-navy-1) 0%,var(--sg-navy-2) 100%);color:#fff;">
+          <h5 class="modal-title text-white">
+            <i class="fa fa-line-chart mr-2" style="color:var(--sg-orange);"></i>
+            Progress Detail &mdash; <span id="sg-modal-compname"></span>
+          </h5>
+          <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body" id="sg-progress-modal-body">
+          <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var root = document.currentScript.previousElementSibling;
+  if(!root || !root.classList.contains('local-skillgap')) {
+    root = document.querySelector('.local-skillgap');
+  }
+  if(!root) return;
+
+  var container = root.querySelector('.sg-myassessments');
+  if(!container) return;
+
+  var tabBtns   = container.querySelectorAll('.sg-tab-btn');
+  var panels    = container.querySelectorAll('.sg-myassess-panel');
+  var searchBox = container.querySelector('.sg-myassess-search');
+  var deptSel   = container.querySelector('.sg-myassess-dept');
+  var desigSel  = container.querySelector('.sg-myassess-desig');
+  var sortSel   = container.querySelector('.sg-myassess-sort');
+  var allBody   = container.querySelector('.sg-all-body');
+
+  function showPanel(target){
+    tabBtns.forEach(function(b){ b.classList.toggle('active', b.dataset.target === target); });
+    panels.forEach(function(p){ p.classList.toggle('active', p.dataset.panel === target); });
+  }
+  if(tabBtns.length){
+    tabBtns.forEach(function(b){ b.addEventListener('click', function(){ showPanel(b.dataset.target); }); });
+    showPanel(tabBtns[0].dataset.target);
+  }
+
+  // Build "All" panel by cloning rows from the individual panels.
+  if(allBody){
+    ['sg-tab-pending','sg-tab-running','sg-tab-completed'].forEach(function(key){
+      var panel = container.querySelector('[data-panel="'+key+'"]');
+      if(!panel) return;
+      var status = key === 'sg-tab-pending' ? 'Pending' : (key === 'sg-tab-running' ? 'In Progress' : 'Completed');
+      panel.querySelectorAll('tbody tr').forEach(function(tr){
+        var cells = tr.querySelectorAll('td');
+        if(cells.length < 5) return;
+        var clone = document.createElement('tr');
+        clone.dataset.dept = tr.dataset.dept || '';
+        clone.dataset.desig = tr.dataset.desig || '';
+        clone.dataset.name = tr.dataset.name || '';
+        clone.innerHTML =
+          '<td class="font-weight-medium">'+cells[0].innerHTML+'</td>'+
+          '<td>'+cells[1].innerHTML+'</td>'+
+          '<td>'+cells[2].innerHTML+'</td>'+
+          '<td>'+cells[3].innerHTML+'</td>'+
+          '<td><span class="sg-badge-pill">'+status+'</span></td>'+
+          '<td>'+cells[cells.length-1].innerHTML+'</td>';
+        allBody.appendChild(clone);
+      });
+    });
+  }
+
+  // Populate department / designation filter options from row data.
+  function collectUnique(attr){
+    var set = {};
+    container.querySelectorAll('tr[data-dept]').forEach(function(tr){
+      var v = tr.dataset[attr];
+      if(v) set[v] = true;
+    });
+    return Object.keys(set);
+  }
+  if(deptSel){ collectUnique('dept').forEach(function(v){ var o=document.createElement('option'); o.value=v; o.textContent=v; deptSel.appendChild(o); }); }
+  if(desigSel){ collectUnique('desig').forEach(function(v){ var o=document.createElement('option'); o.value=v; o.textContent=v; desigSel.appendChild(o); }); }
+
+  function applyFilters(){
+    var q = (searchBox && searchBox.value || '').toLowerCase();
+    var d = deptSel && deptSel.value || '';
+    var g = desigSel && desigSel.value || '';
+    container.querySelectorAll('tr[data-dept]').forEach(function(tr){
+      var matches =
+        (!q || (tr.dataset.name || '').toLowerCase().indexOf(q) !== -1) &&
+        (!d || tr.dataset.dept === d) &&
+        (!g || tr.dataset.desig === g);
+      tr.style.display = matches ? '' : 'none';
+    });
+  }
+  [searchBox, deptSel, desigSel].forEach(function(el){
+    if(el) el.addEventListener('input', applyFilters);
+  });
+
+  if(sortSel){
+    sortSel.addEventListener('change', function(){
+      panels.forEach(function(panel){
+        var tbody = panel.querySelector('tbody');
+        if(!tbody) return;
+        var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+        rows.sort(function(a,b){ return (a.dataset.name||'').localeCompare(b.dataset.name||''); });
+        rows.forEach(function(r){ tbody.appendChild(r); });
+      });
+    });
+  }
+
+  // Records search (Past Assessment Records section)
+  var recSearch = root.querySelector('.sg-records-search');
+  var recList   = root.querySelector('.sg-records-list');
+  if(recSearch && recList){
+    recSearch.addEventListener('input', function(){
+      var q = recSearch.value.toLowerCase();
+      recList.querySelectorAll('.sg-record-row').forEach(function(row){
+        row.style.display = row.textContent.toLowerCase().indexOf(q) !== -1 ? '' : 'none';
+      });
+    });
+  }
+})();
+</script>

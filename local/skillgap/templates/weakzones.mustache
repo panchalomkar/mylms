@@ -1,0 +1,61 @@
+{{!
+  @template local_skillgap/weakzones
+  Competency Insight Engine — flags weak zones by organisation/dept/designation level.
+}}
+<div class="local-skillgap">
+  <h3 class="mb-4"><i class="fa fa-exclamation-triangle mr-2 text-warning"></i>{{#str}} weakzones, local_skillgap {{/str}}</h3>
+  <div class="alert alert-warning small">
+    <i class="fa fa-info-circle mr-1"></i>
+    A competency is flagged when: <strong>average score &lt; 90%</strong> OR <strong>&gt;50% of users are in Needs Improvement</strong>.
+  </div>
+
+  {{#has_zones}}
+  <div class="alert alert-danger">
+    <i class="fa fa-exclamation-circle mr-1"></i>
+    <strong>{{zone_count}} weak zone(s) detected</strong> — immediate intervention recommended.
+  </div>
+  {{/has_zones}}
+
+  <div class="card">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="thead-light">
+            <tr>
+              <th>{{#str}} competency, local_skillgap {{/str}}</th>
+              <th>{{#str}} level, local_skillgap {{/str}}</th>
+              <th>Department</th>
+              <th>{{#str}} entity, local_skillgap {{/str}}</th>
+              <th>{{#str}} avg_score, local_skillgap {{/str}}</th>
+              <th>{{#str}} red_percent, local_skillgap {{/str}}</th>
+              <th>{{#str}} users_in_red, local_skillgap {{/str}}</th>
+              <th>Severity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#weak_zones}}
+            <tr class="{{#is_critical}}table-danger{{/is_critical}}{{^is_critical}}table-warning{{/is_critical}}">
+              <td class="font-weight-medium">{{compname}}</td>
+              <td><span class="badge badge-secondary">{{level}}</span></td>
+              <td class="small text-muted">{{#has_dept}}{{dept_name}}{{/has_dept}}{{^has_dept}}—{{/has_dept}}</td>
+              <td>{{entity}}</td>
+              <td><strong>{{avg_score}}</strong></td>
+              <td class="font-weight-bold">{{red_pct}}</td>
+              <td>{{users_red}}</td>
+              <td><span class="badge badge-{{badge_class}}">{{#is_critical}}Critical{{/is_critical}}{{^is_critical}}Warning{{/is_critical}}</span></td>
+            </tr>
+            {{/weak_zones}}
+            {{^has_zones}}
+            <tr>
+              <td colspan="8" class="text-center text-success py-4">
+                <i class="fa fa-check-circle mr-2"></i>
+                No weak zones detected. All competency scores are within acceptable thresholds.
+              </td>
+            </tr>
+            {{/has_zones}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

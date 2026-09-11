@@ -1,5 +1,5 @@
-{{! local_halloffame/my_submissions }}
-<div class="hof-admin-wrap">
+{{! local_halloffame/my_submissions — v1.1.1 with edit/delete + cert popup }}
+<div class="hof-admin-wrap" style="    max-width: 100%;">
   <div class="hof-admin-card">
     <h2>{{#str}}mysubmissions,local_halloffame{{/str}}</h2>
 
@@ -14,6 +14,7 @@
             <th>Submitted</th>
             <th>Status</th>
             <th>File</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -27,15 +28,34 @@
             <td>
               {{#fileurl}}
                 {{#fileisimage}}
-                <a href="{{{fileurl}}}" target="_blank">
-                  <img src="{{{fileurl}}}" class="hof-thumb" alt="Certificate"/>
-                </a>
+                <img src="{{{fileurl}}}" class="hof-thumb hof-cert-clickable"
+                     data-fileurl="{{{fileurl}}}" data-title="{{title}}"
+                     data-fileisimage="1" data-candownload="1"
+                     alt="Certificate" style="cursor:pointer"/>
                 {{/fileisimage}}
                 {{^fileisimage}}
-                <a href="{{{fileurl}}}" target="_blank" class="hof-cert-link-sm">📄 View</a>
+                <a href="#" class="hof-cert-link-sm hof-cert-clickable"
+                   data-fileurl="{{{fileurl}}}" data-title="{{title}}"
+                   data-fileisimage="0" data-candownload="1">📄 View</a>
                 {{/fileisimage}}
               {{/fileurl}}
               {{^fileurl}}—{{/fileurl}}
+            </td>
+            <td>
+              {{#caneditdelete}}
+              <a href="{{editurl}}" style="color: #003152;" class="hof-btn hof-btn-sm hof-btn-secondary"
+                 title="{{#str}}edit,local_halloffame{{/str}}"
+                 aria-label="{{#str}}edit,local_halloffame{{/str}}">
+                <i class="fa fa-pencil" aria-hidden="true"></i>
+              </a>
+              <a href="{{deleteurl}}" style="color: #003152;"  class="hof-btn hof-btn-sm hof-btn-danger"
+                 onclick="return confirm('Delete this submission?');"
+                 title="{{#str}}delete,local_halloffame{{/str}}"
+                 aria-label="{{#str}}delete,local_halloffame{{/str}}">
+                <i class="fa fa-trash-o" aria-hidden="true"></i>
+              </a>
+              {{/caneditdelete}}
+              {{^caneditdelete}}—{{/caneditdelete}}
             </td>
           </tr>
           {{/rows}}
@@ -50,7 +70,7 @@
 
     <div class="hof-form-actions" style="margin-top:24px;">
       <a href="{{submiturl}}" class="btn hof-btn-primary">+ Submit New Certificate</a>
-      <a href="{{backurl}}"   class="btn hof-btn-secondary">← Back to Hall of Fame</a>
+      <a href="{{backurl}}"  style="background: #003152;"  class="btn hof-btn-secondary">← Back to Wall of Fame</a>
     </div>
   </div>
 </div>

@@ -1,0 +1,276 @@
+{{! local_halloffame/edit_award_panel — professional clean UI }}
+
+<style>
+/* WRAPPER */
+.hof-admin-page {
+  padding: 30px;
+  background: #f4f7fb;
+  min-height: 100vh;
+}
+
+/* HEADER */
+.hof-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.hof-panel-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #003152;
+}
+
+/* CARD */
+.hof-admin-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+}
+
+/* COMPANY BADGE */
+.hof-company-badge {
+  background: #ec9707;
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+/* FORM */
+.hof-award-form {
+  width: 100%;
+}
+
+/* GRID */
+.hof-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.hof-form-group {
+  margin-bottom: 18px;
+}
+
+.hof-form-col {
+  width: 100%;
+}
+
+/* LABEL */
+.hof-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #003152;
+  text-align: left !important;
+}
+
+/* INPUT */
+.hof-input,
+.hof-select {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  transition: 0.3s;
+  font-size: 14px;
+}
+
+.hof-input:focus,
+.hof-select:focus {
+  border-color: #ec9707;
+  box-shadow: 0 0 0 2px rgba(236,151,7,0.2);
+}
+
+/* TEXTAREA */
+.hof-textarea {
+  min-height: 100px;
+}
+
+/* MANAGE LINKS */
+.hof-manage-link {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #ec9707;
+  text-decoration: none;
+}
+
+/* IMAGE PREVIEW */
+.hof-current-image-wrap {
+  margin-bottom: 10px;
+}
+
+.hof-current-img-preview {
+  max-width: 100%;
+  border: 2px solid #ec9707;
+  border-radius: 10px;
+}
+
+/* BUTTONS */
+.hof-btn {
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.hof-btn-primary {
+  background: linear-gradient(135deg, #003152, #065a96);
+  color: #fff;
+}
+
+.hof-btn-secondary {
+  background: #ec9707;
+  color: #fff;
+}
+
+.hof-form-actions {
+  margin-top: 25px;
+  display: flex;
+  gap: 12px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .hof-form-row {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<div class="hof-admin-page">
+
+  <!-- HEADER -->
+  <div class="hof-panel-header">
+    <h2 class="hof-panel-title">
+      {{#str}}editaward,local_halloffame{{/str}}
+    </h2>
+  </div>
+
+  <!-- CARD -->
+  <div class="hof-admin-card">
+
+    {{#hascompany}}
+    <div class="hof-company-badge">
+      {{companyname}}
+    </div>
+    {{/hascompany}}
+
+    <form method="post" enctype="multipart/form-data" class="hof-award-form">
+      <input type="hidden" name="sesskey" value="{{sesskey}}"/>
+
+      <!-- USER -->
+      <div class="hof-form-row">
+      <div class="hof-form-group">
+        <label class="hof-label">{{#str}}selectachiever,local_halloffame{{/str}}</label>
+        <select name="userid" class="hof-select" required>
+          <option value="">Select User</option>
+          {{#users}}
+          <option value="{{id}}" {{#selected}}selected{{/selected}}>
+            {{fullname}}
+          </option>
+          {{/users}}
+        </select>
+      </div>
+
+      <!-- TITLE -->
+      <div class="hof-form-group">
+        <label class="hof-label">{{#str}}awardtitle,local_halloffame{{/str}}</label>
+        <input type="text" name="title" class="hof-input"
+               value="{{title}}" required />
+      </div>
+</div>
+      <!-- DEPARTMENT + CATEGORY -->
+      <div class="hof-form-row">
+        <div class="hof-form-group">
+          <label class="hof-label">{{#str}}department,local_halloffame{{/str}}</label>
+          <select name="department" class="hof-select">
+            <option value="">All Departments</option>
+            {{#departments}}
+            <option value="{{value}}" {{#selected}}selected{{/selected}}>
+              {{label}}
+            </option>
+            {{/departments}}
+          </select>
+    
+        </div>
+
+        <div class="hof-form-group">
+          <label class="hof-label">{{#str}}category,local_halloffame{{/str}}</label>
+          <select name="category" class="hof-select">
+            <option value="">All Categories</option>
+            {{#categories}}
+            <option value="{{name}}" {{#selected}}selected{{/selected}}>
+              {{name}}
+            </option>
+            {{/categories}}
+          </select>
+          <a href="{{caturl}}" class="hof-manage-link">Manage Categories</a>
+        </div>
+      </div>
+
+      <!-- MONTH + YEAR -->
+      <div class="hof-form-row">
+        <div class="hof-form-group">
+          <label class="hof-label">{{#str}}month,local_halloffame{{/str}}</label>
+          <select name="month" class="hof-select">
+            {{#months}}
+            <option value="{{value}}" {{#selected}}selected{{/selected}}>
+              {{label}}
+            </option>
+            {{/months}}
+          </select>
+        </div>
+
+        <div class="hof-form-group">
+          <label class="hof-label">{{#str}}year,local_halloffame{{/str}}</label>
+          <select name="year" class="hof-select">
+            {{#years}}
+            <option value="{{value}}" {{#selected}}selected{{/selected}}>
+              {{label}}
+            </option>
+            {{/years}}
+          </select>
+        </div>
+      </div>
+
+      <!-- MESSAGE -->
+      <div class="hof-form-group">
+        <label class="hof-label">{{#str}}messagetodisplay,local_halloffame{{/str}}</label>
+        <textarea name="message" class="hof-input hof-textarea">{{message}}</textarea>
+      </div>
+
+      <!-- IMAGE -->
+      <div class="hof-form-group">
+        <label class="hof-label">Uploaded Certificate</label>
+
+        {{#currentimage}}
+        <div class="hof-current-image-wrap">
+          <img src="{{{currentimage}}}" class="hof-current-img-preview" />
+        </div>
+        {{/currentimage}}
+
+        <input type="file" name="achieverimage" class="hof-input"/>
+        <small>Leave blank to keep existing file</small>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="hof-form-actions">
+        <button type="submit" class="hof-btn hof-btn-primary">
+          {{#str}}savechanges,local_halloffame{{/str}}
+        </button>
+        <a href="{{backurl}}" class="hof-btn hof-btn-secondary">
+          {{#str}}cancel,local_halloffame{{/str}}
+        </a>
+      </div>
+
+    </form>
+  </div>
+</div>

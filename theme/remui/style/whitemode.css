@@ -4586,9 +4586,7 @@ div#fgroup_id_updatebuttonar {
 .modchooser .activityiconcontainer {
     width: 30px;
     height: 30px;
-    border-radius: 0 !important;
     margin: inherit !important;
-    background: transparent !important;
     padding: 0 !important;
 }
 
@@ -4655,9 +4653,7 @@ body#page-course-view-remuiformat #page .activityiconcontainer {
     padding: 10px;
 }
 
-.modchoosercontainer .optionscontainer .option:hover .optionactions .optionaction i {
-    color: #fff;
-}
+
 .modchoosercontainer .optionscontainer .option .optionactions .optionaction.btn.btn-icon:hover i {
     color: #000;
 }
@@ -10473,7 +10469,7 @@ div#fgroup_id_updatebuttonar {
     font-weight: 500;
 }
 .modchooser .optioninfo {
-    padding: 10px !important; position: relative;
+    padding: 5px !important; position: relative;
 }
 .modchoosercontainer .optionscontainer .option, .modchoosercontainer .searchresultitemscontainer .option {
     flex-basis: calc(32% - 0.5rem);
@@ -10487,9 +10483,8 @@ div#fgroup_id_updatebuttonar {
 .modchooser .activityiconcontainer {
     width: 30px;
     height: 30px;
-    border-radius: 0 !important;
+    border-radius: 12px !important;
     margin: inherit !important;
-    background: transparent !important;
     padding: 0 !important;
 }
 
@@ -10557,11 +10552,12 @@ body#page-course-view-remuiformat #page .activityiconcontainer {
 }
 
 .modchoosercontainer .optionscontainer .option:hover .optionactions .optionaction i {
-    color: #fff;
+    color: #ec9707;
 }
-.modchoosercontainer .optionscontainer .option .optionactions .optionaction.btn.btn-icon:hover i {
-    color: #000;
+.modchoosercontainer .optionscontainer  .optionactions .optionaction i {
+    color: #ec9707;
 }
+
 
 #page-course-view-remuiformat #page.drawers {
     padding-left: 9em;

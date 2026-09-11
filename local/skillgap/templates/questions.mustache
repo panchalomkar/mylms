@@ -1,0 +1,358 @@
+{{!
+  @template local_skillgap/questions
+  Question management page. Linked to assessmentid context.
+  Shows competency list for assessment, per-competency question manager.
+}}
+<div class="local-skillgap container-fluid px-0">
+
+  {{! Assessment context bar }}
+  {{#has_assessment}}
+  <div class="alert alert-info d-flex align-items-center justify-content-between flex-wrap mb-4">
+    <div>
+      <i class="fa fa-check-square-o mr-2"></i>
+      <strong>Assessment:</strong> {{assess_title}}
+      &nbsp;&mdash;&nbsp;Add 5 questions per competency before users can take this assessment.
+    </div>
+    <a href="{{{wwwroot}}}/local/skillgap/admin/assessments.php" class="btn btn-sm btn-outline-info mt-2 mt-md-0">
+      <i class="fa fa-arrow-left mr-1"></i>{{#str}} back_to_assessments, local_skillgap {{/str}}
+    </a>
+  </div>
+
+  {{! Competency progress list for this assessment }}
+  {{#has_assess_comps}}
+  <div class="card mb-4">
+    <div class="card-header" style="background:#033252;color:#fff;">
+      <h6 class="mb-0"><i class="fa fa-list mr-2"></i>Competencies in this Assessment</h6>
+    </div>
+    <div class="card-body py-2">
+      <div class="row">
+        {{#assess_comps}}
+        <div class="col-12 col-md-6 col-lg-4 mb-2">
+          <a href="{{{url}}}" class="d-block p-2 border rounded text-decoration-none
+            {{#is_selected}}border-primary{{/is_selected}}{{^is_selected}}border-light{{/is_selected}}"
+             style="{{#is_selected}}background:#e8f1f8;{{/is_selected}}{{#is_sub}}border-left:3px solid #eb980d!important;{{/is_sub}}">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="font-weight-medium text-dark small">
+                {{#is_sub}}<span class="text-muted small mr-1">{{{level_prefix}}}</span>{{/is_sub}}{{name}}
+              </span>
+              <span class="badge {{#has_5_questions}}badge-success{{/has_5_questions}}{{^has_5_questions}}badge-warning{{/has_5_questions}}">
+                {{q_count}}/5
+              </span>
+            </div>
+            <div class="progress" style="height:5px;">
+              <div class="progress-bar {{#has_5_questions}}bg-success{{/has_5_questions}}{{^has_5_questions}}bg-warning{{/has_5_questions}}"
+                   style="width:{{q_pct}}%;"></div>
+            </div>
+          </a>
+        </div>
+        {{/assess_comps}}
+      </div>
+    </div>
+  </div>
+  {{/has_assess_comps}}
+  {{/has_assessment}}
+
+  {{^has_assessment}}
+  {{! Standalone competency selector }}
+  <div class="card mb-4">
+    <div class="card-body">
+      <form method="get" action="{{{wwwroot}}}/local/skillgap/admin/questions.php" class="form-inline flex-wrap">
+        {{#selected_assessmentid}}<input type="hidden" name="assessmentid" value="{{selected_assessmentid}}">{{/selected_assessmentid}}
+        <label class="mr-2 font-weight-bold">{{#str}} competency, local_skillgap {{/str}}:</label>
+        <select name="compid" class="form-control mr-2 mb-2" onchange="this.form.submit()">
+          {{#comp_options}}
+          <option value="{{id}}" {{#selected}}selected{{/selected}}>{{name}}</option>
+          {{/comp_options}}
+        </select>
+        <button type="submit" class="btn mb-2" style="background:#033252;color:#fff;">
+          <i class="fa fa-search mr-1"></i>{{#str}} load, local_skillgap {{/str}}
+        </button>
+      </form>
+    </div>
+  </div>
+  {{/has_assessment}}
+
+  {{#has_comp}}
+  {{! Progress bar }}
+  <div class="mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+      <span class="font-weight-bold">{{comp_name}}</span>
+      <span class="badge {{#has_5_questions}}badge-success{{/has_5_questions}}{{^has_5_questions}}badge-warning{{/has_5_questions}}">
+        {{q_count}} / 5
+      </span>
+    </div>
+    <div class="progress" style="height:10px;">
+      <div class="progress-bar {{#has_5_questions}}bg-success{{/has_5_questions}}{{^has_5_questions}}bg-warning{{/has_5_questions}}"
+           role="progressbar" style="width:{{q_pct}}%;" aria-valuenow="{{q_pct}}" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+    {{#has_5_questions}}
+    <p class="text-success small mt-1 mb-0"><i class="fa fa-check-circle mr-1"></i>{{#str}} questions_complete, local_skillgap {{/str}}</p>
+    {{/has_5_questions}}
+    {{^has_5_questions}}
+    <p class="text-warning small mt-1 mb-0"><i class="fa fa-exclamation-triangle mr-1"></i>{{remaining}} more question(s) needed.</p>
+    {{/has_5_questions}}
+  </div>
+
+  <div class="row">
+    {{! ── Left: Add question panel ── }}
+    {{#can_add_more}}
+    <div class="col-12 col-lg-5 mb-4">
+      <div class="card h-100">
+        <div class="card-header" style="background:#033252;color:#fff;">
+          <ul class="nav nav-tabs card-header-tabs" id="q-tabs" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active text-white" id="tab-manual-link" data-toggle="tab" href="#tab-manual" role="tab">
+                <i class="fa fa-keyboard-o mr-1"></i>Manual
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white-50" id="tab-csv-link" data-toggle="tab" href="#tab-csv" role="tab">
+                <i class="fa fa-upload mr-1"></i>CSV
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white-50" id="tab-ai-link" data-toggle="tab" href="#tab-ai" role="tab">
+                <i class="fa fa-magic mr-1"></i>AI
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="card-body">
+          <div class="tab-content">
+
+            {{! Manual entry }}
+            <div class="tab-pane fade show active" id="tab-manual" role="tabpanel">
+              <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/questions.php?compid={{selected_compid}}&assessmentid={{selected_assessmentid}}">
+                <input type="hidden" name="action"         value="save_question">
+                <input type="hidden" name="compid"         value="{{selected_compid}}">
+                <input type="hidden" name="assessmentid"   value="{{selected_assessmentid}}">
+                <input type="hidden" name="sesskey"        value="{{sesskey}}">
+                <div class="form-group">
+                  <label class="font-weight-bold small">{{#str}} question_text, local_skillgap {{/str}} <span class="text-danger">*</span></label>
+                  <textarea name="questiontext" class="form-control" rows="3" required placeholder="Enter your question..."></textarea>
+                </div>
+                <div class="form-group">
+                  <label class="font-weight-bold small">{{#str}} option_a, local_skillgap {{/str}} <span class="text-danger">*</span></label>
+                  <input type="text" name="option_a" class="form-control form-control-sm" required placeholder="Option A text">
+                </div>
+                <div class="form-group">
+                  <label class="font-weight-bold small">{{#str}} option_b, local_skillgap {{/str}} <span class="text-danger">*</span></label>
+                  <input type="text" name="option_b" class="form-control form-control-sm" required placeholder="Option B text">
+                </div>
+                <div class="form-group">
+                  <label class="font-weight-bold small">{{#str}} option_c, local_skillgap {{/str}} <span class="text-danger">*</span></label>
+                  <input type="text" name="option_c" class="form-control form-control-sm" required placeholder="Option C text">
+                </div>
+                <div class="form-group">
+                  <label class="font-weight-bold small">{{#str}} option_d, local_skillgap {{/str}} <span class="text-danger">*</span></label>
+                  <input type="text" name="option_d" class="form-control form-control-sm" required placeholder="Option D text">
+                </div>
+                <div class="form-group">
+                  <label class="font-weight-bold small">{{#str}} correct_option, local_skillgap {{/str}} <span class="text-danger">*</span></label>
+                  <select name="correct" class="form-control form-control-sm" required>
+                    <option value="0">A — is correct</option>
+                    <option value="1">B — is correct</option>
+                    <option value="2">C — is correct</option>
+                    <option value="3">D — is correct</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-block" style="background:#033252;color:#fff;">
+                  <i class="fa fa-save mr-1"></i>{{#str}} save, local_skillgap {{/str}} Question
+                </button>
+              </form>
+            </div>
+
+            {{! CSV upload }}
+            <div class="tab-pane fade" id="tab-csv" role="tabpanel">
+              <p class="small text-muted mb-3">
+                CSV columns: <strong>Question, Option A (correct), Option B, Option C, Option D</strong>
+              </p>
+              <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/questions.php?compid={{selected_compid}}&assessmentid={{selected_assessmentid}}" enctype="multipart/form-data">
+                <input type="hidden" name="action"       value="upload_csv">
+                <input type="hidden" name="compid"       value="{{selected_compid}}">
+                <input type="hidden" name="assessmentid" value="{{selected_assessmentid}}">
+                <input type="hidden" name="sesskey"      value="{{sesskey}}">
+                <div class="form-group">
+                  <label class="font-weight-bold small">Select CSV file:</label>
+                  <input type="file" name="csvfile" class="form-control-file" accept=".csv" required>
+                </div>
+                <button type="submit" class="btn btn-warning btn-block">
+                  <i class="fa fa-upload mr-1"></i>{{#str}} import_csv, local_skillgap {{/str}}
+                </button>
+              </form>
+              <a href="{{{wwwroot}}}/local/skillgap/admin/download_sample.php?type=questions" class="btn btn-link btn-sm btn-block mt-2">
+                <i class="fa fa-download mr-1"></i>{{#str}} download_sample, local_skillgap {{/str}}
+              </a>
+            </div>
+
+            {{! AI generation }}
+            <div class="tab-pane fade sg-ai-section" id="tab-ai" role="tabpanel">
+              <div class="alert alert-info py-2 small mb-3">
+                <i class="fa fa-magic mr-1"></i>
+                Uses <strong>GPT-4o</strong> to generate <strong>{{remaining}}</strong> question(s) for
+                <strong>{{comp_name}}</strong>. Requires OpenAI API key in Settings.
+              </div>
+              <button type="button" class="btn btn-info btn-block sg-ai-generate-btn"
+                      data-compid="{{selected_compid}}"
+                      data-assessmentid="{{selected_assessmentid}}">
+                <i class="fa fa-magic mr-1"></i>{{#str}} generate_ai, local_skillgap {{/str}}
+              </button>
+              <div class="sg-ai-status mt-2"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    {{/can_add_more}}
+
+    {{! ── Right: Existing questions ── }}
+    <div class="{{#can_add_more}}col-12 col-lg-7{{/can_add_more}}{{^can_add_more}}col-12{{/can_add_more}} mb-4">
+      <div class="card">
+        <div class="card-header" style="background:#033252;color:#fff;">
+          <h6 class="mb-0"><i class="fa fa-list mr-2"></i>{{#str}} existing_questions, local_skillgap {{/str}}</h6>
+        </div>
+        <div class="card-body p-0">
+          {{#question_rows}}
+          <div class="p-3 border-bottom">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <span class="badge badge-secondary mr-1">Q{{num}}</span>
+                <span class="badge badge-{{source_badge}} mr-2">{{source}}</span>
+                <span class="font-weight-medium small">{{questiontext}}</span>
+              </div>
+              <div class="d-flex gap-1 ml-2 flex-shrink-0">
+                {{! Edit button }}
+                <button type="button" class="btn btn-sm btn-outline-secondary sg-edit-question-btn"
+                        data-qid="{{id}}" title="Edit this question">
+                  <i class="fa fa-pencil"></i>
+                </button>
+                {{! Delete button }}
+                <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/questions.php?compid={{selected_compid}}&assessmentid={{selected_assessmentid}}"
+                      class="d-inline" onsubmit="return confirm('Delete this question?');">
+                  <input type="hidden" name="action"       value="delete_question">
+                  <input type="hidden" name="id"           value="{{id}}">
+                  <input type="hidden" name="compid"       value="{{selected_compid}}">
+                  <input type="hidden" name="assessmentid" value="{{selected_assessmentid}}">
+                  <input type="hidden" name="sesskey"      value="{{sesskey}}">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </form>
+              </div>
+            </div>
+            <div class="row">
+              {{#options}}
+              <div class="col-6 mb-1">
+                <span class="badge {{#iscorrect}}badge-success{{/iscorrect}}{{^iscorrect}}badge-light border{{/iscorrect}} mr-1">
+                  {{#iscorrect}}<i class="fa fa-check"></i>{{/iscorrect}}{{^iscorrect}}&nbsp;{{/iscorrect}}
+                </span>
+                <small class="{{^iscorrect}}text-muted{{/iscorrect}}">{{text}}</small>
+              </div>
+              {{/options}}
+            </div>
+
+            {{! ── Inline edit form (hidden by default) ── }}
+            <div class="sg-edit-question-form mt-3 p-3 border rounded" id="sg-edit-qform-{{id}}" style="display:none;background:#f8f9fa;">
+              <h6 class="font-weight-bold mb-3" style="color:#033252;"><i class="fa fa-pencil mr-1" style="color:#eb980d;"></i>Edit Question</h6>
+              <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/questions.php?compid={{selected_compid}}&assessmentid={{selected_assessmentid}}">
+                <input type="hidden" name="action"       value="update_question">
+                <input type="hidden" name="id"           value="{{id}}">
+                <input type="hidden" name="compid"       value="{{selected_compid}}">
+                <input type="hidden" name="assessmentid" value="{{selected_assessmentid}}">
+                <input type="hidden" name="sesskey"      value="{{sesskey}}">
+                <div class="form-group">
+                  <label class="font-weight-bold small">Question Text <span class="text-danger">*</span></label>
+                  <textarea name="questiontext" class="form-control form-control-sm" rows="2" required>{{questiontext}}</textarea>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label class="font-weight-bold small">Option A <span class="text-danger">*</span></label>
+                    <input type="text" name="option_a" class="form-control form-control-sm" value="{{opt_a}}" required>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label class="font-weight-bold small">Option B <span class="text-danger">*</span></label>
+                    <input type="text" name="option_b" class="form-control form-control-sm" value="{{opt_b}}" required>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label class="font-weight-bold small">Option C <span class="text-danger">*</span></label>
+                    <input type="text" name="option_c" class="form-control form-control-sm" value="{{opt_c}}" required>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label class="font-weight-bold small">Option D <span class="text-danger">*</span></label>
+                    <input type="text" name="option_d" class="form-control form-control-sm" value="{{opt_d}}" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="font-weight-bold small">Correct Option <span class="text-danger">*</span></label>
+                  <select name="correct" class="form-control form-control-sm" required>
+                    <option value="0" {{#correct_0}}selected{{/correct_0}}>A — is correct</option>
+                    <option value="1" {{#correct_1}}selected{{/correct_1}}>B — is correct</option>
+                    <option value="2" {{#correct_2}}selected{{/correct_2}}>C — is correct</option>
+                    <option value="3" {{#correct_3}}selected{{/correct_3}}>D — is correct</option>
+                  </select>
+                </div>
+                <div class="d-flex gap-2">
+                  <button type="submit" class="btn btn-sm btn-primary">
+                    <i class="fa fa-save mr-1"></i>Save Changes
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary sg-cancel-edit-question"
+                          data-qid="{{id}}">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          {{/question_rows}}
+          {{^question_rows}}
+          <div class="p-4 text-center text-muted">
+            <i class="fa fa-question-circle fa-2x mb-2"></i>
+            <p class="mb-0">{{#str}} no_questions, local_skillgap {{/str}}</p>
+          </div>
+          {{/question_rows}}
+        </div>
+      </div>
+    </div>
+  </div>
+  {{/has_comp}}
+
+  {{^has_comp}}
+  {{^has_assessment}}
+  <div class="alert alert-warning">
+    <i class="fa fa-info-circle mr-2"></i>{{#str}} select_comp_first, local_skillgap {{/str}}
+  </div>
+  {{/has_assessment}}
+  {{#has_assessment}}
+  {{^has_assess_comps}}
+  <div class="alert alert-warning">
+    <i class="fa fa-info-circle mr-2"></i>Select a competency from the list above to add questions.
+  </div>
+  {{/has_assess_comps}}
+  {{/has_assessment}}
+  {{/has_comp}}
+
+</div>
+
+<script>
+(function() {
+  // Toggle inline question edit form
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.sg-edit-question-btn');
+    if (btn) {
+      var qid  = btn.getAttribute('data-qid');
+      var form = document.getElementById('sg-edit-qform-' + qid);
+      if (form) {
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+      }
+    }
+  });
+  // Cancel edit question
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.sg-cancel-edit-question');
+    if (btn) {
+      var qid  = btn.getAttribute('data-qid');
+      var form = document.getElementById('sg-edit-qform-' + qid);
+      if (form) { form.style.display = 'none'; }
+    }
+  });
+})();
+</script>

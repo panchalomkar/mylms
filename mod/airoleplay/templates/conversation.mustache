@@ -1,0 +1,215 @@
+{{!
+    Conversation UI template - full-screen roleplay interface.
+    @template mod_airoleplay/conversation
+    @copyright 2024 Enterprise AI Learning Platform
+}}
+
+<div class="air-platform">
+  <div class="air-conversation-layout">
+
+    {{! ============================================================ }}
+    {{! TOP BAR                                                        }}
+    {{! ============================================================ }}
+    <header class="air-conversation-topbar">
+
+      {{! Persona info }}
+      <div class="air-persona-mini">
+        <div class="air-persona-mini__avatar">
+          {{#persona}}
+            {{#avatar_url}}
+              <img src="{{avatar_url}}" alt="{{name}}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">
+            {{/avatar_url}}
+            {{^avatar_url}}
+              {{#name}}{{substring 0 1}}{{/name}}
+            {{/avatar_url}}
+          {{/persona}}
+          {{^persona}}AI{{/persona}}
+        </div>
+        <div class="air-persona-mini__info">
+          <strong>{{#persona}}{{name}}{{/persona}}{{^persona}}AI Persona{{/persona}}</strong>
+          <small>
+            {{industry}} · {{difficulty}}
+            {{#enable_voice}}&nbsp;· 🎙️ Voice enabled{{/enable_voice}}
+          </small>
+        </div>
+      </div>
+
+      {{! Status indicators }}
+      <div class="d-flex align-items-center gap-3 ms-auto me-3">
+        {{! Sentiment }}
+        <div class="air-side-widget__title d-none d-md-block" style="margin:0">Sentiment:</div>
+        <div id="air-sentiment-indicator" title="Sentiment indicator" style="font-size:1.5rem">😐</div>
+
+        {{! Turn counter }}
+        <div class="d-none d-md-flex align-items-center gap-1">
+          <span class="air-side-widget__title" style="margin:0">Turn</span>
+          <span id="air-turn-count" class="fw-bold">0</span>
+          {{#max_turns}}<span class="text-muted">/ {{max_turns}}</span>{{/max_turns}}
+        </div>
+
+        {{! Timer }}
+        <div id="air-timer" class="air-timer">00:00</div>
+      </div>
+
+      {{! Controls }}
+      <div class="air-topbar-controls">
+        <button id="air-end-btn" class="air-btn air-btn--danger" title="End session">
+          <i class="fa fa-stop-circle"></i>
+          <span class="d-none d-md-inline">{{#str}}endsession, mod_airoleplay{{/str}}</span>
+        </button>
+        <a href="{{view_url}}" class="air-btn air-btn--ghost" title="Exit without submitting">
+          <i class="fa fa-times"></i>
+        </a>
+      </div>
+
+    </header>
+
+    {{! ============================================================ }}
+    {{! CHAT MESSAGES AREA                                             }}
+    {{! ============================================================ }}
+    <main class="air-chat-area" id="air-chat-messages" role="log" aria-live="polite" aria-label="Conversation">
+
+      {{! Scenario context banner }}
+      <div class="air-system-message air-system-message--info" style="max-width:600px;border-radius:12px;padding:1rem;font-size:0.875rem">
+        <strong>Scenario:</strong> {{scenario_name}}
+        {{#max_turns}} · Max {{max_turns}} turns{{/max_turns}}
+        {{#max_duration}} · {{max_duration}}s time limit{{/max_duration}}
+      </div>
+
+      {{! Typing indicator (hidden by default) }}
+      <div class="air-message air-message--assistant" style="align-self:flex-start">
+        <div class="air-message__avatar">
+          <div class="air-avatar-placeholder">
+            {{#persona}}{{#name}}{{substring 0 1}}{{/name}}{{/persona}}{{^persona}}AI{{/persona}}
+          </div>
+        </div>
+        <div id="air-typing-indicator" class="air-typing-indicator">
+          <div class="air-typing-dot"></div>
+          <div class="air-typing-dot"></div>
+          <div class="air-typing-dot"></div>
+        </div>
+      </div>
+
+    </main>
+
+    {{! ============================================================ }}
+    {{! INPUT AREA                                                     }}
+    {{! ============================================================ }}
+    <footer class="air-input-area">
+
+      {{! Waveform canvas (shown during voice recording) }}
+      <canvas id="air-waveform" height="40" style="display:none;margin-bottom:0.5rem;border-radius:8px"></canvas>
+
+      {{! Confidence meter }}
+      <div class="air-progress-track" style="margin-bottom:0.5rem" title="Communication confidence">
+        <div id="air-confidence-meter" class="air-progress-fill" style="width:50%;background:#6366f1"></div>
+      </div>
+
+      <div class="air-input-container">
+
+        {{! Voice button (if enabled) }}
+        {{#enable_voice}}
+          <button id="air-voice-btn"
+                  class="air-btn air-btn--ghost air-btn--icon flex-shrink-0"
+                  title="{{#str}}startvoice, mod_airoleplay{{/str}}"
+                  aria-label="Start voice input">
+            <i class="fa fa-microphone"></i>
+          </button>
+        {{/enable_voice}}
+
+        {{! Text input }}
+        <textarea
+          id="air-message-input"
+          placeholder="{{#str}}typeyourmessage, mod_airoleplay{{/str}}"
+          rows="1"
+          aria-label="Your message"
+          autocomplete="off"
+          spellcheck="true"
+          lang="{{language}}"
+        ></textarea>
+
+        {{! Send button }}
+        <button id="air-send-btn" class="air-btn air-btn--primary flex-shrink-0" aria-label="Send message">
+          <span class="air-btn-text"><i class="fa fa-paper-plane"></i></span>
+          <span class="air-btn-spinner d-none">
+            <span class="spinner-border spinner-border-sm" role="status"></span>
+          </span>
+        </button>
+
+      </div>
+
+      {{! Hints area (if enabled) }}
+      {{#enable_hints}}
+        <div id="air-hints-area" class="mt-2" style="font-size:0.8125rem;color:#64748b"></div>
+      {{/enable_hints}}
+
+      <div class="text-center mt-1" style="font-size:0.75rem;color:#94a3b8">
+        {{#str}}aiconversationnote, mod_airoleplay{{/str}}
+      </div>
+
+    </footer>
+
+    {{! ============================================================ }}
+    {{! SIDE PANEL (hidden on mobile)                                  }}
+    {{! ============================================================ }}
+    <aside class="air-side-panel" aria-label="Session info panel">
+
+      {{! Live stats }}
+      <div class="air-side-widget">
+        <div class="air-side-widget__title">📊 Live Analysis</div>
+        <div class="air-sentiment-display">
+          <span id="air-sentiment-indicator" style="font-size:2rem">😐</span>
+          <div style="flex:1">
+            <div style="font-size:0.8125rem;color:#64748b;margin-bottom:0.25rem">Tone sentiment</div>
+            <div class="air-progress-track">
+              <div id="air-confidence-meter" class="air-progress-fill" style="width:50%;background:#6366f1"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {{! Persona details }}
+      {{#persona}}
+        <div class="air-side-widget">
+          <div class="air-side-widget__title">🎭 Persona</div>
+          <div style="font-weight:700;margin-bottom:0.25rem">{{name}}</div>
+          <div style="font-size:0.8125rem;color:#64748b;text-transform:capitalize">{{type}} · {{tone}}</div>
+        </div>
+      {{/persona}}
+
+      {{! Transcript toggle }}
+      {{#enable_transcript}}
+        <div class="air-side-widget">
+          <div class="air-side-widget__title">📝 Live Transcript</div>
+          <div id="air-transcript-panel" style="font-size:0.8125rem;color:#475569;max-height:200px;overflow-y:auto">
+            <em style="color:#94a3b8">Transcript appears here...</em>
+          </div>
+        </div>
+      {{/enable_transcript}}
+
+      {{! Quick tips }}
+      <div class="air-side-widget">
+        <div class="air-side-widget__title">💡 Tips</div>
+        <ul style="font-size:0.8125rem;color:#64748b;padding-left:1.25rem;margin:0">
+          <li>Stay professional and calm</li>
+          <li>Listen carefully to responses</li>
+          <li>Use clear, confident language</li>
+          <li>Address concerns directly</li>
+        </ul>
+      </div>
+
+    </aside>
+
+  </div>{{! .air-conversation-layout }}
+</div>{{! .air-platform }}
+
+{{! Preload existing messages (resumed sessions) }}
+<script>
+(function() {
+  var existing = {{{existing_messages_json}}};
+  if (existing && existing.length) {
+    // Will be consumed by AMD module on init.
+    window.airExistingMessages = existing;
+  }
+})();
+</script>

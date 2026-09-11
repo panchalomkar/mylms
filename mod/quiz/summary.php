@@ -30,12 +30,26 @@ require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 
 $attemptid = required_param('attempt', PARAM_INT); // The attempt to summarise.
 $cmid = optional_param('cmid', null, PARAM_INT);
-
+$PAGE->set_pagelayout('base'); // or 'base'
 $PAGE->set_url('/mod/quiz/summary.php', ['attempt' => $attemptid]);
 // During quiz attempts, the browser back/forwards buttons should force a reload.
 $PAGE->set_cacheable(false);
 $PAGE->set_secondary_active_tab("modulepage");
-
+$PAGE->add_body_class('quiz-clean-ui-summary');
+?>
+<!-- added by omkar -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+.quiz-clean-ui-summary .drawercontent{
+    display: none !important;
+}
+.quiz-clean-ui-summary #page{
+    margin-right: 0px !important;
+}
+.quiz-clean-ui-summary #page{margin-left:0px !important;}
+</style>
+<?php
 $attemptobj = quiz_create_attempt_handling_errors($attemptid, $cmid);
 
 // Check login.
@@ -49,7 +63,14 @@ if ($attemptobj->get_userid() != $USER->id) {
         throw new moodle_exception('notyourattempt', 'quiz', $attemptobj->view_url());
     }
 }
-
+$PAGE->add_body_class('quiz-clean-ui');
+?>
+<style>
+.quiz-clean-ui .drawer-left,button[data-target="theme_remui-drawers-courseindex"],.activity-navigation, .quiz-clean-ui .breadcrumb {
+    display: none !important;
+}
+</style>
+<?php
 // Check capabilites.
 if (!$attemptobj->is_preview_user()) {
     $attemptobj->require_capability('mod/quiz:attempt');

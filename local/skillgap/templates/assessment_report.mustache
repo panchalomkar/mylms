@@ -1,0 +1,114 @@
+{{!
+  @template local_skillgap/assessment_report
+  Detailed competency-wise score report for an assessment.
+}}
+<div class="local-skillgap container-fluid px-0">
+
+  <div class="d-flex align-items-center justify-content-between flex-wrap mb-4">
+    <h3 class="mb-0" style="color:#033252;">
+      <i class="fa fa-bar-chart mr-2" style="color:#eb980d;"></i>
+      Competency Report: {{title}}
+    </h3>
+    <a href="{{{wwwroot}}}/local/skillgap/admin/assessments.php" class="btn btn-outline-secondary btn-sm">
+      <i class="fa fa-arrow-left mr-1"></i>Back to Assessments
+    </a>
+  </div>
+
+  {{! Assessment meta }}}
+  <div class="alert py-2 small mb-4" style="background:#e8f1f8;border:1px solid #b5d4f4;border-radius:6px;">
+    <i class="fa fa-info-circle mr-1" style="color:#033252;"></i>
+    <strong>Department:</strong> {{dept_name}} &nbsp;|&nbsp;
+    <strong>Designation:</strong> {{desig_name}} &nbsp;|&nbsp;
+    <strong>Frequency:</strong> {{frequency}} &nbsp;|&nbsp;
+    <strong>Total Attempts:</strong> {{total_attempts}}
+  </div>
+
+  {{! Summary Section }}
+  {{#summary_comps}}
+  {{#-first}}
+  <div class="card mb-4">
+    <div class="card-header" style="background:#033252;color:#fff;">
+      <h5 class="mb-0"><i class="fa fa-pie-chart mr-2" style="color:#eb980d;"></i>Competency Average Scores (All Users)</h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-sm table-hover mb-0">
+          <thead class="thead-light">
+            <tr>
+              <th>Competency</th>
+              <th style="width:200px;">Avg Score</th>
+              <th style="width:80px;" class="text-center">%</th>
+            </tr>
+          </thead>
+          <tbody>
+  {{/-first}}
+            <tr>
+              <td class="font-weight-medium">{{compname}}</td>
+              <td>
+                <div class="progress" style="height:8px;">
+                  <div class="progress-bar bg-{{status_badge}}" style="width:{{avg_pct}}%;"></div>
+                </div>
+              </td>
+              <td class="text-center"><span class="badge badge-{{status_badge}}">{{avg_pct}}%</span></td>
+            </tr>
+  {{#-last}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {{/-last}}
+  {{/summary_comps}}
+
+  {{! Per-User Detail }}
+  {{#has_data}}
+  <div class="card mb-4">
+    <div class="card-header" style="background:#033252;color:#fff;">
+      <h5 class="mb-0"><i class="fa fa-users mr-2" style="color:#eb980d;"></i>User-wise Competency Breakdown</h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-sm table-bordered table-hover mb-0">
+          <thead class="thead-light">
+            <tr>
+              <th>User</th>
+              {{#comp_headers}}
+              <th class="text-center small" style="min-width:110px;">{{compname}}</th>
+              {{/comp_headers}}
+              <th class="text-center" style="width:100px;">Overall</th>
+              <th class="text-center">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#user_rows}}
+            <tr>
+              <td class="font-weight-medium">{{fullname}}</td>
+              {{#comp_scores}}
+              <td class="text-center">
+                <span class="badge badge-{{status_badge}}" title="{{correct}}/{{total}} correct">
+                  {{pct}}%
+                </span>
+                <br><small class="text-muted" style="font-size:10px;">{{correct}}/{{total}}</small>
+              </td>
+              {{/comp_scores}}
+              <td class="text-center">
+                <span class="badge badge-{{overall_badge}} font-weight-bold">{{overall_pct}}%</span>
+              </td>
+              <td class="text-center small text-muted">{{date}}</td>
+            </tr>
+            {{/user_rows}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {{/has_data}}
+
+  {{^has_data}}
+  <div class="alert alert-info">
+    <i class="fa fa-info-circle mr-2"></i>
+    No completed attempts found for this assessment yet.
+  </div>
+  {{/has_data}}
+
+</div>

@@ -5,7 +5,7 @@ class plms_form
 
 	private $javascript = '';
 
-	public function fieldGeneralCheckbox($help,$name='', $checked ='', $label='',$attr=null)
+	public function fieldGeneralCheckbox($name='', $checked ='', $label='', $help,$attr=null)
 		{
 		global $OUTPUT,$CFG;
 

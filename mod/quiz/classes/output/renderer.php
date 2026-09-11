@@ -59,26 +59,1007 @@ class renderer extends plugin_renderer_base {
      *      Passing an array is deprecated.
      * @return string HTML to display.
      */
-    public function review_page(quiz_attempt $attemptobj, $slots, $page, $showall,
-            $lastpage, display_options $displayoptions, $summarydata) {
-        if (is_array($summarydata)) {
-            debugging('Since Moodle 4.4, $summarydata passed to review_page should be a attempt_summary_information.',
-                DEBUG_DEVELOPER);
-            $summarydata = $this->filter_review_summary_table($summarydata, $page);
-            $summarydata = attempt_summary_information::create_from_legacy_array($summarydata);
+public function review_page(quiz_attempt $attemptobj, $slots, $page, $showall,
+        $lastpage, display_options $displayoptions, $summarydata) {
+
+    if (is_array($summarydata)) {
+        debugging('Since Moodle 4.4, $summarydata passed to review_page should be a attempt_summary_information.',
+            DEBUG_DEVELOPER);
+        $summarydata = $this->filter_review_summary_table($summarydata, $page);
+        $summarydata = attempt_summary_information::create_from_legacy_array($summarydata);
+    }
+ 
+    // ── Attempt data ─────────────────────────────────────────────────────
+    $attempt   = $attemptobj->get_attempt();
+    $quiz      = $attemptobj->get_quiz();
+    
+    $sumgrades = (float)($attempt->sumgrades ?? 0);
+    $maxgrades = (float)($quiz->sumgrades ?? 0);
+    // $converted = ($maxgrades > 0) ? round(($sumgrades / $maxgrades) * 35, 1) : 0;
+    $score     = $maxgrades > 0 ? round(($sumgrades / $maxgrades) * 100, 1) : 0;
+    $duration  = ($attempt->timefinish > 0) ? ($attempt->timefinish - $attempt->timestart) : 0;
+    $timetaken = $duration > 0 ? format_time($duration) : '—';
+    $quizname  = format_string($attemptobj->get_quiz_name());
+    $viewurl   = $attemptobj->view_url()->out(false);
+ 
+    // ── Per-question stats ────────────────────────────────────────────────
+    $allslots   = $attemptobj->get_slots();
+    $statCorrect = $statIncorrect = $statPartial = $statUnanswered = $statFlagged = 0;
+ 
+    // Build slot meta for palette
+    $slotMeta = [];
+    foreach ($allslots as $s) {
+        if (!$attemptobj->is_real_question($s)) { continue; }
+        $sc      = $attemptobj->get_question_state($s)->get_state_class(true);
+        $flagged = $attemptobj->is_question_flagged($s);
+        $chipCls = in_array($sc, ['answersaved','complete']) ? 'correct' : $sc;
+        if (!in_array($chipCls, ['correct','incorrect','partial'])) { $chipCls = 'unanswered'; }
+ 
+        if ($chipCls === 'correct')   { $statCorrect++;   }
+        elseif ($chipCls === 'incorrect') { $statIncorrect++; }
+        elseif ($chipCls === 'partial')   { $statPartial++;   }
+        else                              { $statUnanswered++; }
+        if ($flagged) { $statFlagged++; }
+ 
+        $slotMeta[$s] = [
+            'cls'     => $chipCls,
+            'flagged' => $flagged,
+            'num'     => $attemptobj->get_question_number($s),
+            'url' => "#qs{$s}",
+        ];
+    }
+ 
+    // ── Score ring ────────────────────────────────────────────────────────
+    if ($score >= 75)     { $gc = '#16a34a'; $gb = '#dcfce7'; $gl = 'Excellent'; }
+    elseif ($score >= 50) { $gc = '#d97706'; $gb = '#fef3c7'; $gl = 'Average';   }
+    else                  { $gc = '#dc2626'; $gb = '#fee2e2'; $gl = 'Needs Work'; }
+ 
+    $circ      = round(2 * M_PI * 52, 2);
+    $dashoff   = round($circ * (1 - $score / 100), 2);
+    $marksBar  = $maxgrades > 0 ? round(($sumgrades / $maxgrades) * 100) : 0;
+    $marksDisp = number_format($sumgrades, 1) . ' / ' . number_format($maxgrades, 1);
+ 
+    // ── Build output ──────────────────────────────────────────────────────
+    $output = '';
+    $output .= $this->header();
+ 
+    /* ── Fonts & master CSS ─────────────────────────────────────────────── */
+    $output .= <<<'CSS'
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+.ms-icon{
+  font-family: 'Material Symbols Rounded' !important;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+  display: inline-block;
+  line-height: 1;
+
+  /* REQUIRED for icons to render */
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 500,
+    'GRAD' 0,
+    'opsz' 24;
+}
+#page-mod-quiz-review{overflow: hidden;}
+.path-mod-quiz #page {
+    margin-right: 10px;
+}
+/* ── TOP SUMMARY CARDS ───────────────── */
+.qr-top-cards{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    margin-bottom:20px;
+}
+.qr-top-card{
+    background:#fff;
+    border-radius:14px;
+    padding:16px;
+    box-shadow:0 2px 10px rgba(0,0,0,.05);
+}
+.qr-top-title{
+    font-size:12px;
+    color:#64748b;
+    font-weight:600;
+}
+.qr-top-value{
+    font-size:22px;
+    font-weight:800;
+    color:#0f172a;
+    margin-top:5px;
+}
+.qr-top-icon{
+    width:40px;height:40px;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:8px;
+    color:#fff;
+}
+.qr-i-blue{background:#1e3a8a;}
+.qr-i-green{background:#16a34a;}
+.qr-i-red{background:#dc2626;}
+.qr-i-orange{background:#f97316;}
+/* ── scope ── */
+#qrw,#qrw *{box-sizing:border-box;font-family:'Plus Jakarta Sans',sans-serif;}
+ 
+/* ── full-height shell: header stays, body fills, no outer scroll ── */
+#qrw{
+    display:flex;flex-direction:column;
+    height:100vh; /* adjust 60px to your theme header height */
+    background:#f1f5f9;
+    overflow:hidden;
+}
+ 
+/* ── top hero bar (fixed height) ─────────────────────────── */
+.qr-hero{
+    flex-shrink:0;
+    background:linear-gradient(135deg,#003152 0%,#005288 100%);
+    padding:2px 28px;
+    display:flex;align-items:center;gap:14px;
+    position:fixed;overflow:hidden;width: 100%;
+}
+.qr-hero::before{
+    content:'';position:absolute;inset:0;
+    background:url("data:image/svg+xml,%3Csvg width='52' height='52' viewBox='0 0 52 52' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='26' cy='26' r='4'/%3E%3C/g%3E%3C/svg%3E");
+}
+.qr-back{
+    position:relative;z-index:1;
+    display:inline-flex;align-items:center;gap:5px;
+    background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);
+    color:#fff;border-radius:10px;padding:7px 14px;
+    font-size:13px;font-weight:600;text-decoration:none;transition:.2s;
+    white-space:nowrap;
+}
+.qr-back:hover{background:rgba(255,255,255,.22);color:#fff;}
+.qr-hero-text{position:relative;z-index:1;flex:1;}
+.qr-hero-title{color:#fff;font-size:17px;font-weight:800;line-height:1.2;}
+.qr-hero-sub{color:rgba(255,255,255,.6);font-size:12px;margin-top:2px;}
+ 
+/* ── two-column body: left fixed, right scrolls ────────────── */
+.qr-body{
+    flex:1;overflow:hidden;
+    display:grid;
+    grid-template-columns:290px 1fr;
+    gap:0;
+    
+    min-height:0;
+    
+}
+ 
+/* ── left sidebar (sticky, no scroll — internal scroll only) ── */
+.qr-sidebar{
+    overflow-y:auto;
+    padding:18px 14px;
+    background:#f8fafc;
+    border-right:1px solid #e2e8f0;
+    display:flex;flex-direction:column;gap:14px;
+}
+.qr-sidebar::-webkit-scrollbar{width:4px;}
+.qr-sidebar::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px;}
+ 
+/* ── right content area (scrolls independently) ─────────────── */
+.qr-content{
+    overflow-y:auto;
+    padding:20px 22px 40px;
+}
+.qr-content::-webkit-scrollbar{width:5px;}
+.qr-content::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px;}
+ 
+/* ── shared card ─────────────────────────────────────────────── */
+.qr-card{
+    background:#fff;border-radius:16px;
+    box-shadow:0 2px 12px rgba(0,49,82,.07);
+    overflow:hidden;
+}
+ 
+/* ── score ring card ─────────────────────────────────────────── */
+.qr-score-pad{padding:20px 14px;  position: relative;z-index: 1001;overflow: auto;    height: 100%;}
+.qr-ring-label{font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;text-align:center;margin-bottom:10px;}
+.qr-ring-wrap{display:flex;justify-content:center;margin-bottom:10px;}
+.qr-ring-track{fill:none;stroke:#e2e8f0;stroke-width:9;}
+.qr-ring-fill{fill:none;stroke-width:9;stroke-linecap:round;transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset 1.1s cubic-bezier(.4,0,.2,1);}
+.qr-ring-pct{font-size:22px;font-weight:800;dominant-baseline:middle;text-anchor:middle;}
+.qr-ring-lbl{font-size:10px;font-weight:600;fill:#94a3b8;dominant-baseline:middle;text-anchor:middle;}
+.qr-badge-wrap{display:flex;justify-content:center;margin-bottom:14px;}
+.qr-badge{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:50px;font-size:11px;font-weight:700;}
+ 
+/* stats 2x2 */
+.qr-stats{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:12px;}
+.qr-stat{background:#f8fafc;border-radius:10px;padding:5px 3px;text-align:center;}
+.qr-stat-v{font-size:18px;font-weight:800;color:#0f172a;}
+.qr-stat-l{font-size:9px;font-weight:600;color:#94a3b8;margin-top:1px;}
+ 
+/* marks bar */
+.qr-mbar-lbl{display:flex;justify-content:space-between;font-size:11px;font-weight:600;color:#64748b;margin-bottom:5px;}
+.qr-mbar-out{height:7px;background:#e2e8f0;border-radius:99px;overflow:hidden;margin-bottom:14px;}
+.qr-mbar-in{height:100%;border-radius:99px;background:linear-gradient(90deg,#003152,#0077b6);transition:width 1s ease;}
+ 
+/* action btns */
+.qr-actions{display:flex;flex-direction:column;gap:8px;}
+.qr-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;border-radius:10px;font-size:12px;font-weight:700;text-decoration:none;border:none;cursor:pointer;transition:.2s;}
+.qr-btn-primary{background:linear-gradient(135deg,#003152,#005288);color:#fff;}
+.qr-btn-primary:hover{opacity:.88;color:#fff;}
+.qr-btn-outline{background:#fff;color:#003152;border:2px solid #003152;}
+.qr-btn-outline:hover{background:#003152;color:#fff;}
+ 
+/* ── nav palette card ─────────────────────────────────────────── */
+.qr-nav-pad{padding:16px 14px;}
+.qr-sec-title{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;gap:6px;margin-bottom:12px;}
+.qr-palette{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+ 
+/* chip: base */
+.qr-chip{
+    width:34px;height:34px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:700;text-decoration:none;
+    transition:transform .15s,box-shadow .15s;
+    position:relative;
+}
+.qr-chip:hover{transform:scale(1.1);box-shadow:0 4px 10px rgba(0,0,0,.15);}
+.qr-chip.correct  {background:#dcfce7;color:#15803d;}
+.qr-chip.incorrect{background:#fee2e2;color:#dc2626;}
+.qr-chip.partial  {background:#fef9c3;color:#a16207;}
+.qr-chip.unanswered{background:#f1f5f9;color:#64748b;}
+/* flagged pin */
+.qr-chip.flagged::after{
+    content:'';position:absolute;top:-3px;right:-3px;
+    width:8px;height:8px;border-radius:50%;
+    background:#f97316;border:1.5px solid #fff;
+}
+ 
+/* legend */
+.qr-legend{display:flex;flex-wrap:wrap;gap:8px;}
+.qr-leg{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#64748b;}
+.qr-leg-dot{width:9px;height:9px;border-radius:2px;}
+.qr-leg-dot.correct  {background:#16a34a;}
+.qr-leg-dot.incorrect{background:#dc2626;}
+.qr-leg-dot.partial  {background:#ca8a04;}
+.qr-leg-dot.unanswered{background:#cbd5e1;}
+.qr-leg-dot.flagged  {background:#f97316;border-radius:50%;}
+ 
+/* ── question blocks (right side) ─────────────────────────────── */
+.qr-q-block{
+    border-radius:14px;
+    background:#fff;
+    margin-bottom:18px;
+    overflow:hidden;
+    box-shadow:0 2px 10px rgba(0,49,82,.06);
+    border-left:4px solid #e2e8f0;
+    transition:box-shadow .2s;
+}
+.qr-q-block:hover{box-shadow:0 4px 18px rgba(0,49,82,.1);}
+.qr-q-block.correct  {border-left-color:#16a34a;}
+.qr-q-block.incorrect{border-left-color:#dc2626;}
+.qr-q-block.partial  {border-left-color:#ca8a04;}
+.qr-q-block.unanswered{border-left-color:#94a3b8;}
+ 
+/* question header */
+.qr-q-hdr{
+    display:flex;align-items:center;gap:10px;
+    padding:12px 16px;
+    border-bottom:1px solid #f1f5f9;
+    background:#fafafa;
+}
+.qr-q-hdr-num{font-size:14px;font-weight:800;color:#0f172a;}
+.qr-q-hdr-mark{margin-left:auto;font-size:13px;font-weight:700;}
+.qr-q-hdr-mark.correct  {color:#16a34a;}
+.qr-q-hdr-mark.incorrect{color:#dc2626;}
+.qr-q-hdr-mark.partial  {color:#ca8a04;}
+.qr-q-hdr-mark.unanswered{color:#94a3b8;}
+ 
+/* flag icon on header */
+.qr-flag-icon{
+    display:inline-flex;align-items:center;
+    color:#f97316;margin-left:6px;
+}
+ 
+/* question body — the Moodle rendered content lives here */
+.qr-q-body{padding:14px 16px;}
+ 
+/* ── override Moodle default question styles inside our blocks ── */
+ 
+/* TRUE / FALSE pill buttons */
+.qr-q-body .answer .r0,
+.qr-q-body .answer .r1{
+    display:inline-block;width:calc(50% - 6px);
+}
+/* We re-skin via a wrapper added in JS below */
+ 
+/* ── Material Symbols fix (no text leaking) ── */
+.ms-icon{
+    font-family:'Material Symbols Rounded';
+    font-weight:normal;font-style:normal;
+    font-size:inherit;line-height:1;
+    letter-spacing:normal;text-transform:none;
+    display:inline-block;white-space:nowrap;
+    word-wrap:normal;direction:ltr;
+    font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;
+    vertical-align:middle;
+}
+ 
+/* status badge (header) */
+.qr-status-badge{
+    display:inline-flex;align-items:center;gap:4px;
+    padding:3px 10px;border-radius:50px;
+    font-size:11px;font-weight:700;
+}
+.qr-status-badge.correct  {background:#dcfce7;color:#15803d;}
+.qr-status-badge.incorrect{background:#fee2e2;color:#dc2626;}
+.qr-status-badge.partial  {background:#fef9c3;color:#a16207;}
+.qr-status-badge.unanswered{background:#f1f5f9;color:#64748b;}
+ 
+/* ── custom True/False pill UI ─────────────────────────────────── */
+.tf-wrap{
+    display:grid;grid-template-columns:1fr 1fr;
+    gap:10px;margin:10px 0;
+}
+.tf-btn{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    padding:14px 10px;
+    border-radius:50px;
+    font-size:14px;font-weight:600;
+    border:2px solid #e2e8f0;
+    background:#fff;color:#374151;
+    cursor:default;
+    transition:.15s;
+}
+/* selected + correct */
+.tf-btn.selected-correct{
+    border-color:#16a34a;color:#16a34a;
+    background:#f0fdf4;
+}
+/* selected + wrong */
+.tf-btn.selected-wrong{
+    border-color:#dc2626;color:#dc2626;
+    background:#fef2f2;
+}
+/* correct answer (not selected) */
+.tf-btn.correct-answer{
+    border-color:#16a34a;color:#16a34a;
+    background:#f0fdf4;
+}
+.qr-q-body .outcome,
+.qr-q-body .specificfeedback,
+.qr-q-body .generalfeedback {
+    display: none !important;
+}
+/* feedback bar */
+.qr-feedback{
+    display:flex;align-items:center;gap:8px;
+    padding:10px 14px;
+    border-radius:10px;
+    font-size:13px;font-weight:500;
+    margin-top:10px;
+}
+.qr-feedback.correct  {background:#f0fdf4;color:#15803d;}
+.qr-feedback.incorrect{background:#fef2f2;color:#dc2626;}
+.qr-feedback .ms-icon{font-size:18px;}
+ 
+/* ── nav buttons (prev/next) ─────────────────────────────────── */
+/* .qr-nav-btns{
+    display:flex;align-items:center;justify-content:center;
+    gap:12px;padding:16px 22px;
+    background:#f8fafc;border-top:1px solid #e2e8f0;
+    flex-shrink:0;
+} */
+    
+.qr-nav-btns {
+    width: 80%;
+    right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: -3px;
+    padding: 16px 22px;
+    background: #fff;
+    position: fixed;
+    bottom: 0;
+    z-index: 1;}
+
+.qr-nav-btns a,.qr-nav-btns button{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:9px 20px;border-radius:10px;font-size:13px;font-weight:700;
+    text-decoration:none;border:none;cursor:pointer;transition:.2s;
+}
+.qr-nav-btns .prev-btn{background:#fff;color:#003152;border:2px solid #003152;}
+.qr-nav-btns .prev-btn:hover{background:#003152;color:#fff;}
+.qr-nav-btns .next-btn,.qr-nav-btns .finish-btn{background:linear-gradient(135deg,#003152,#005288);color:#fff;}
+.qr-nav-btns .next-btn:hover,.qr-nav-btns .finish-btn:hover{opacity:.88;color:#fff;}
+ 
+/* ── hide original Moodle question chrome we don't need ─────── */
+.qr-q-body .que > .info,
+.qr-q-body .que .formulation .qtext + br{display:none!important;}
+/* keep formulation readable */
+.qr-q-body .que .formulation{
+    background:#f8fafc!important;
+    border:1px solid #e2e8f0!important;
+    border-radius:10px!important;
+    padding:14px!important;
+    font-size:14px!important;
+    color:#1e293b!important;
+    margin-bottom:12px!important;
+}
+/* hide moodle's own correct/incorrect outcome (we show our own) */
+.qr-q-body .outcome{display:none!important;}
+/* hide moodle's radio buttons / labels for tf — we replace in JS */
+/* .qr-q-body .answer{display:none!important;} */
+/* but show answer for non-tf question types */
+.qr-q-body.non-tf .answer{display:block!important;}
+</style>
+CSS;
+ 
+    /* ── HERO ───────────────────────────────────────────────────────────── */
+    $output .= <<<HTML
+<div id="qrw" >
+<div class="qr-hero" style="z-index:1002;">
+  <a href="{$viewurl}" class="qr-back">
+    <span class="ms-icon" style="font-size:18px;">arrow_back</span> Back
+  </a>
+  <div class="qr-hero-text">
+    <div class="qr-hero-title">{$quizname}</div>
+    <div class="qr-hero-sub">Attempt Review</div>
+  </div>
+</div>
+HTML;
+ 
+    /* ── BODY ───────────────────────────────────────────────────────────── */
+    $output .= '<div class="qr-body">';
+ 
+    /* ════════════════════════════════
+/* ── Score card + Navigator (MERGED) ───────────────────────────────────── */
+$reattempturl = $attemptobj->start_attempt_url()->out(false);
+
+$output .= <<<HTML
+<div class="qr-card ">
+<div class="qr-score-pad">
+
+  <div class="qr-ring-label mt-5" >Your Score</div>
+
+  <div class="qr-ring-wrap ">
+    <svg width="90" height="90" viewBox="0 0 120 120" >
+      <circle class="qr-ring-track" cx="60" cy="60" r="52"/>
+      <circle class="qr-ring-fill" cx="60" cy="60" r="52"
+        stroke="{$gc}"
+        stroke-dasharray="{$circ}"
+        stroke-dashoffset="{$dashoff}"
+        id="qr-ring"/>
+      <text class="qr-ring-pct" x="60" y="57" fill="{$gc}">{$score}%</text>
+      <text class="qr-ring-lbl" x="60" y="72">{$gl}</text>
+    </svg>
+  </div>
+
+  <!-- Badge -->
+  <div class="qr-badge-wrap ">
+    <span class="qr-badge" style="background:{$gb};color:{$gc};">
+      <span class="ms-icon" style="font-size:15px;">emoji_events</span>{$gl}
+    </span>
+  </div>
+
+  <!-- 🔥 NAVIGATOR MOVED HERE -->
+  <div class="qr-nav-pad" style="margin-top:16px;">
+    <div class="qr-sec-title">
+      <span class="ms-icon" style="font-size:14px;">grid_view</span> Navigator
+    </div>
+
+    <div class="qr-palette">
+HTML;
+
+foreach ($slotMeta as $sm) {
+    $flagCls = $sm['flagged'] ? ' flagged' : '';
+    $output .= "<a href=\"{$sm['url']}\" class=\"qr-chip {$sm['cls']}{$flagCls}\" title=\"Q{$sm['num']}\">{$sm['num']}</a>";
+}
+
+$output .= <<<HTML
+    </div>
+
+    <!-- Legend -->
+   <!-- 🔥 MERGED STATS (Legend + Stats) -->
+<div class="qr-stats qr-stats-lg d-flex ">
+
+  <div class="qr-stat">
+    <div class="qr-stat-v" style="color:#16a34a;">{$statCorrect}</div>
+    <div class="qr-stat-l">✔ Correct</div>
+  </div>
+
+  <div class="qr-stat">
+    <div class="qr-stat-v" style="color:#dc2626;">{$statIncorrect}</div>
+    <div class="qr-stat-l">✖ Incorrect</div>
+  </div>
+
+
+
+  <div class="qr-stat">
+    <div class="qr-stat-v" style="color:#64748b;">{$statUnanswered}</div>
+    <div class="qr-stat-l">○ Skipped</div>
+  </div>
+
+  <div class="qr-stat">
+    <div class="qr-stat-v" style="color:#f97316;">{$statFlagged}</div>
+    <div class="qr-stat-l">⚑ Flagged</div>
+  </div>
+
+</div>
+  </div>
+
+
+
+  <!-- Marks -->
+  <div class="qr-mbar-lbl ">
+    <span>Marks</span><span style="font-weight:800;color:#0f172a;">{$marksDisp}</span>
+  </div>
+  <div class="qr-mbar-out ">
+    <div class="qr-mbar-in" style="width:{$marksBar}%;"></div>
+  </div>
+
+  <!-- Actions -->
+  <div class="qr-actions">
+    <a href="{$reattempturl}" class="qr-btn qr-btn-outline">
+      <span class="ms-icon" style="font-size:16px;">refresh</span> Re-attempt
+    </a>
+  </div>
+
+</div>
+</div>
+HTML;
+
+/* ── REMOVE THIS OLD BLOCK COMPLETELY ───────────────── */
+
+    /* ════════════════════════════════
+       RIGHT CONTENT
+    ════════════════════════════════ */
+    $output .= '<div class="qr-content">';
+ $totalquestions = count($allslots);
+
+$output .= <<<HTML
+<div class="qr-top-cards mt-5">
+
+  <div class="qr-top-card">
+    <div class="qr-top-icon qr-i-blue">
+      <span class="ms-icon">help</span>
+    </div>
+    <div class="qr-top-title">Total Questions</div>
+    <div class="qr-top-value">{$totalquestions}</div>
+  </div>
+  <div class="qr-top-card">
+    <div class="qr-top-icon qr-i-green">
+      <span class="ms-icon">emoji_events</span>
+    </div>
+    <div class="qr-top-title">Your Score</div>
+    <div class="qr-top-value">
+      {$sumgrades}/{$maxgrades}
+      <br><span style="font-size:14px;color:#64748b;">{$score}%</span>
+    </div>
+  </div>
+
+  <div class="qr-top-card">
+    <div class="qr-top-icon qr-i-orange">
+      <span class="ms-icon">refresh</span>
+    </div>
+    <div class="qr-top-title">Attempts</div>
+    <div class="qr-top-value">Unlimited</div>
+  </div>
+
+  <div class="qr-top-card">
+    <div class="qr-top-icon qr-i-red">
+      <span class="ms-icon">schedule</span>
+    </div>
+    <div class="qr-top-title">Time Taken</div>
+    <div class="qr-top-value">{$timetaken}</div>
+  </div>
+
+</div>
+HTML;
+    // Build slot lookup for the current page slots
+    $slotArr = [];
+    foreach ($slots as $s) {
+        $slotArr[] = $s;
+    }
+ 
+    foreach ($slotArr as $slot) {
+        if (!$attemptobj->is_real_question($slot)) { continue; }
+ 
+        $meta    = $slotMeta[$slot] ?? null;
+        $cls     = $meta ? $meta['cls'] : 'unanswered';
+        $flagged = $meta ? $meta['flagged'] : false;
+        $qnum    = $attemptobj->get_question_number($slot);
+ 
+        // Status badge text & icon
+        $statusMap = [
+            'correct'    => ['check_circle',  'Correct'],
+            'incorrect'  => ['cancel',         'Incorrect'],
+            'partial'    => ['adjust',          'Partial'],
+            'unanswered' => ['help',            'Not Answered'],
+        ];
+        [$sIcon, $sLabel] = $statusMap[$cls] ?? ['help','Unknown'];
+ 
+        // Mark display
+        $markVal  = $attemptobj->get_question_mark($slot);
+        $markMax  = $quiz->sumgrades > 0
+                        ? $attemptobj->get_question_mark($slot)   // fallback
+                        : 0;
+        // Get proper max per question via qa
+        try {
+            $qa      = $attemptobj->get_question_attempt($slot);
+            $markMax = $qa->get_max_mark();
+            $markVal = $qa->get_mark();
+        } catch (\Throwable $e) { }
+ 
+        $markValFmt = $markVal !== null ? number_format((float)$markVal, 2) : '—';
+        $markMaxFmt = $markMax !== null ? number_format((float)$markMax, 2) : '—';
+ 
+        $flagHtml = $flagged
+            ? '<span class="qr-flag-icon"><span class="ms-icon" style="font-size:16px;color:#f97316;">flag</span></span>'
+            : '';
+ 
+        $output .= <<<HTML
+<div class="qr-q-block {$cls}" id="qs{$slot}">
+  <div class="qr-q-hdr">
+    <span class="qr-q-hdr-num">Question {$qnum}{$flagHtml}</span>
+    <span class="qr-status-badge {$cls}">
+      <span class="ms-icon" style="font-size:13px;">{$sIcon}</span>{$sLabel}
+    </span>
+    <span class="qr-q-hdr-mark {$cls}" style="margin-left:auto;">
+      Mark {$markValFmt} out of {$markMaxFmt}
+    </span>
+  </div>
+  <div class="qr-q-body" data-slot="{$slot}" data-cls="{$cls}">
+HTML;
+        $output .= $attemptobj->render_question($slot, true, $this,
+                $attemptobj->review_url($slot, $page, $showall));
+        $output .= '</div></div>';
+    }
+ 
+       /* ── Bottom nav buttons ─────────────────────────────────────────────── */
+    $output .= '<div class="qr-nav-btns">';
+    if ($page > 0) {
+        $prevUrl = $attemptobj->review_url(null, $page - 1, $showall)->out(false);
+        $output .= "<a href=\"{$prevUrl}\" class=\"prev-btn\"><span class=\"ms-icon\" style=\"font-size:16px;\">chevron_left</span>Previous</a>";
+    }
+    if ($lastpage) {
+        $finUrl  = $attemptobj->view_url()->out(false);
+        $output .= "<a href=\"{$finUrl}\" class=\"finish-btn\">Finish Review <span class=\"ms-icon\" style=\"font-size:16px;\">check_circle</span></a>";
+    } else {
+        $nextUrl = $attemptobj->review_url(null, $page + 1, $showall)->out(false);
+        $output .= "<a href=\"{$nextUrl}\" class=\"next-btn\">Next <span class=\"ms-icon\" style=\"font-size:16px;\">chevron_right</span></a>";
+    }
+    $output .= '</div>';
+    $output .= '</div>'; // qr-content
+    $output .= '</div>'; // qr-body
+ 
+ 
+ 
+    $output .= '</div>'; // #qrw
+ 
+    /* ── JS: ring animation + rebuild True/False UI ─────────────────────── */
+$output .= <<<'JS'
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+
+    /* ── Ring animation ── */
+    var ring = document.getElementById('qr-ring');
+    if(ring){
+        var final = ring.getAttribute('stroke-dashoffset');
+        ring.style.strokeDashoffset = ring.getAttribute('stroke-dasharray');
+        setTimeout(function(){ ring.style.strokeDashoffset = final; }, 150);
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       SHARED HELPER: detect selected & correct row index from Moodle HTML
+       
+       From actual Moodle HTML we can see:
+       - Each option is a div like <div class="r0"> or <div class="r1">
+         (these alternate 0/1 for odd/even styling — NOT the option index)
+       - SELECTED = the row whose <input> has checked="checked" attribute
+       - CORRECT  = the row that has class "correct" on the div
+    ══════════════════════════════════════════════════════════════════ */
+    function getAnswerInfo(answerDiv) {
+        var rows = answerDiv.querySelectorAll('.r0, .r1');
+        var selectedRow = null;
+        var correctRow  = null;
+
+        rows.forEach(function(row){
+            var radio = row.querySelector('input[type="radio"]');
+            // Check HTML attribute (server-rendered) AND JS property
+            if(radio && (radio.checked || radio.getAttribute('checked') !== null)){
+                selectedRow = row;
+            }
+            if(row.classList.contains('correct')){
+                correctRow = row;
+            }
+        });
+
+        return { rows: rows, selectedRow: selectedRow, correctRow: correctRow };
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       PROCESS EACH QUESTION BODY
+    ══════════════════════════════════════════════════════════════════ */
+ /* ══════════════════════════════════════════════════════════════════
+   SHARED HELPER
+══════════════════════════════════════════════════════════════════ */
+function getAnswerInfo(answerDiv) {
+    var rows = answerDiv.querySelectorAll('.r0, .r1');
+    var selectedRow = null;
+    var correctRow  = null;
+
+    rows.forEach(function(row){
+        var radio = row.querySelector('input[type="radio"]');
+        if(radio && (radio.checked || radio.getAttribute('checked') !== null)){
+            selectedRow = row;
+        }
+        if(row.classList.contains('correct')){
+            correctRow = row;
+        }
+    });
+
+    return { rows: rows, selectedRow: selectedRow, correctRow: correctRow };
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   FEEDBACK BAR HELPER
+══════════════════════════════════════════════════════════════════ */
+function buildFeedbackBar(wasAnswered, selectedRow, correctRow, correctText){
+    var fb = document.createElement('div');
+
+    if(!wasAnswered){
+        fb.className = 'qr-feedback incorrect';
+        fb.innerHTML = '<span class="ms-icon">help</span> <strong>Not answered.</strong>'
+                     + (correctText ? ' The correct answer is: <strong>' + correctText + '</strong>' : '');
+    } else if(selectedRow && correctRow && selectedRow === correctRow){
+        fb.className = 'qr-feedback correct';
+        fb.innerHTML = '<span class="ms-icon">check_circle</span> Your answer is correct.';
+    } else if(correctRow){
+        fb.className = 'qr-feedback incorrect';
+        fb.innerHTML = '<span class="ms-icon">cancel</span>'
+                     + ' <strong>Incorrect.</strong> The correct answer is: <strong>' + correctText + '</strong>';
+    } else {
+        fb.className = 'qr-feedback incorrect';
+        fb.innerHTML = '<span class="ms-icon">cancel</span> Your answer is incorrect.';
+    }
+
+    return fb;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   LOOP 1 — MCQ / TRUE-FALSE
+   Runs first. Marks body with data-qr-processed so Loop 2 skips it.
+══════════════════════════════════════════════════════════════════ */
+document.querySelectorAll('.qr-q-body').forEach(function(body){
+    var blockCls    = body.getAttribute('data-cls');
+    var wasAnswered = (blockCls !== 'unanswered');
+
+    var answerDiv = body.querySelector('.answer');
+    if(!answerDiv) return;
+
+    // Only handle if .r0/.r1 rows exist — otherwise it's a DD question, skip to Loop 2
+    var info = getAnswerInfo(answerDiv);
+    if(info.rows.length === 0) return;
+
+    // Mark as processed — Loop 2 will skip this body
+    body.setAttribute('data-qr-processed', '1');
+
+    // Hide Moodle default feedback
+    body.querySelectorAll('.outcome, .specificfeedback, .generalfeedback').forEach(function(el){
+        el.style.display = 'none';
+    });
+
+    // Detect True/False
+    var allTexts = Array.from(info.rows).map(function(row){
+        var lbl = row.querySelector('[data-region="answer-label"], label');
+        return lbl ? lbl.textContent.trim() : '';
+    });
+
+    var isTF = (info.rows.length === 2) && allTexts.every(function(t){
+        return /^(true|false)$/i.test(t);
+    });
+
+    /* ── TRUE / FALSE ── */
+    if(isTF){
+        answerDiv.style.display = 'none';
+
+        var wrap = document.createElement('div');
+        wrap.className = 'tf-wrap';
+
+        info.rows.forEach(function(row, i){
+            var btn        = document.createElement('div');
+            btn.className  = 'tf-btn';
+            var text       = allTexts[i];
+            var iconHtml   = '';
+            var isSelected = (row === info.selectedRow);
+            var isCorrect  = (row === info.correctRow);
+
+            if(wasAnswered && isSelected && isCorrect){
+                btn.classList.add('selected-correct');
+                iconHtml = '<span class="ms-icon" style="font-size:18px;">check_circle</span>';
+            } else if(wasAnswered && isSelected && !isCorrect){
+                btn.classList.add('selected-wrong');
+                iconHtml = '<span class="ms-icon" style="font-size:18px;">cancel</span>';
+            } else if(isCorrect){
+                btn.classList.add('correct-answer');
+                iconHtml = '<span class="ms-icon" style="font-size:18px;">check_circle</span>';
+            }
+
+            btn.innerHTML = text + (iconHtml ? ' ' + iconHtml : '');
+            wrap.appendChild(btn);
+        });
+
+        var formulation = body.querySelector('.formulation');
+        if(formulation) formulation.after(wrap);
+        else body.appendChild(wrap);
+
+        var correctLbl = info.correctRow
+            ? info.correctRow.querySelector('[data-region="answer-label"], label')
+            : null;
+        var fb = buildFeedbackBar(
+            wasAnswered, info.selectedRow, info.correctRow,
+            correctLbl ? correctLbl.textContent.trim() : ''
+        );
+        wrap.after(fb);
+
+    /* ── MCQ ── */
+    } else {
+        info.rows.forEach(function(row){
+            row.style.cssText = [
+                'display:flex',
+                'align-items:center',
+                'padding:12px 16px',
+                'border-radius:50px',
+                'border:2px solid #e2e8f0',
+                'margin-bottom:8px',
+                'font-size:14px',
+                'font-weight:500',
+                'background:#fff',
+                'color:#374151',
+                'cursor:default',
+                'transition:.15s'
+            ].join(';');
+
+            var isSelected = (row === info.selectedRow);
+            var isCorrect  = (row === info.correctRow);
+
+            var moodleIcon = row.querySelector('i.icon, .fa');
+            if(moodleIcon){
+                if(moodleIcon.parentElement && moodleIcon.parentElement.tagName === 'SPAN'){
+                    moodleIcon.parentElement.remove();
+                } else {
+                    moodleIcon.remove();
+                }
+            }
+
+            var icon = document.createElement('span');
+            icon.className = 'ms-icon';
+            icon.style.cssText = 'font-size:18px;margin-left:auto;flex-shrink:0;';
+
+            if(wasAnswered && isSelected && isCorrect){
+                row.style.borderColor = '#16a34a';
+                row.style.background  = '#f0fdf4';
+                row.style.color       = '#15803d';
+                icon.textContent      = 'check_circle';
+                row.appendChild(icon);
+            } else if(wasAnswered && isSelected && !isCorrect){
+                row.style.borderColor = '#dc2626';
+                row.style.background  = '#fef2f2';
+                row.style.color       = '#dc2626';
+                icon.textContent      = 'cancel';
+                row.appendChild(icon);
+            } else if(isCorrect){
+                row.style.borderColor = '#16a34a';
+                row.style.background  = '#f0fdf4';
+                row.style.color       = '#15803d';
+                icon.textContent      = 'check_circle';
+                row.appendChild(icon);
+            }
+        });
+
+        answerDiv.style.display = '';
+
+        var correctText = info.correctRow
+            ? (info.correctRow.querySelector('[data-region="answer-label"], label') || {textContent:''}).textContent.trim()
+            : '';
+        var fb = buildFeedbackBar(wasAnswered, info.selectedRow, info.correctRow, correctText);
+        var formulation = body.querySelector('.formulation');
+        if(formulation) formulation.after(fb);
+        else answerDiv.after(fb);
+    }
+});
+
+/* ══════════════════════════════════════════════════════════════════
+   LOOP 2 — DRAG AND DROP (ddwtos / ddimageortext / ddmatch)
+   Runs after Loop 1. Skips anything already marked processed.
+══════════════════════════════════════════════════════════════════ */
+document.querySelectorAll('.qr-q-body').forEach(function(body){
+    var blockCls = body.getAttribute('data-cls');
+
+    // Skip if MCQ/TF loop already handled this
+    if(body.getAttribute('data-qr-processed') === '1') return;
+
+    // Only match genuine DD containers
+    var isDDWTOS  = !!body.querySelector('.ddwtos, .fposwrapper');
+    var isDDImage = !!body.querySelector('.ddimageortext, .dropbackground, .ddarea');
+    var isDDMatch = !!body.querySelector('.ddintoimage');
+
+    if(!isDDWTOS && !isDDImage && !isDDMatch) return;
+
+    body.setAttribute('data-qr-processed', '1');
+
+    var wasAnswered = (blockCls !== 'unanswered');
+
+    body.querySelectorAll('.outcome, .specificfeedback, .generalfeedback').forEach(function(el){
+        el.style.display = 'none';
+    });
+
+    var fb = document.createElement('div');
+    fb.className = 'qr-feedback';
+
+    if(!wasAnswered){
+        fb.classList.add('incorrect');
+        fb.innerHTML = '<span class="ms-icon">help</span>'
+                     + ' <strong>Not answered.</strong> This question was not attempted.';
+    } else if(blockCls === 'correct'){
+        fb.classList.add('correct');
+        fb.innerHTML = '<span class="ms-icon">check_circle</span>'
+                     + ' Your answer is correct.';
+    } else if(blockCls === 'partial'){
+        fb.classList.add('partial');
+        fb.style.background = '#fef9c3';
+        fb.style.color      = '#a16207';
+        fb.innerHTML = '<span class="ms-icon">adjust</span>'
+                     + ' <strong>Partially correct.</strong>'
+                     + ' Some placements were wrong — review the highlighted answers above.';
+    } else {
+        fb.classList.add('incorrect');
+        fb.innerHTML = '<span class="ms-icon">cancel</span>'
+                     + ' <strong>Incorrect.</strong>'
+                     + ' Review the correct answer shown above.';
+    }
+
+    var insertAfter = body.querySelector(
+        '.ddwtos, .fposwrapper, .ddimageortext, .dropbackground, .ddarea, .ddintoimage, .formulation'
+    );
+    if(insertAfter) insertAfter.after(fb);
+    else body.appendChild(fb);
+});
+
+    /* ── Build feedback bar (shared between TF and MCQ) ─────────────── */
+    function buildFeedbackBar(wasAnswered, selectedRow, correctRow, correctText){
+        var fb = document.createElement('div');
+
+        if(!wasAnswered){
+            fb.className = 'qr-feedback incorrect';
+            fb.innerHTML = '<span class="ms-icon">help</span> <strong>Not answered.</strong>'
+                         + (correctText
+                            ? ' The correct answer is: <strong>' + correctText + '</strong>'
+                            : '');
+
+        } else if(selectedRow && correctRow && selectedRow === correctRow){
+            fb.className = 'qr-feedback correct';
+            fb.innerHTML = '<span class="ms-icon">check_circle</span> Your answer is correct.';
+
+        } else if(correctRow){
+            fb.className = 'qr-feedback incorrect';
+            fb.innerHTML = '<span class="ms-icon">cancel</span>'
+                         + ' <strong>Incorrect.</strong> The correct answer is: <strong>'
+                         + correctText + '</strong>';
+        } else {
+            fb.className = 'qr-feedback incorrect';
+            fb.innerHTML = '<span class="ms-icon">cancel</span> Your answer is incorrect.';
         }
 
-        $output = '';
-        $output .= $this->header();
-        $output .= $this->review_attempt_summary($summarydata, $page);
-        $output .= $this->review_form($page, $showall, $displayoptions,
-                $this->questions($attemptobj, true, $slots, $page, $showall, $displayoptions),
-                $attemptobj);
-
-        $output .= $this->review_next_navigation($attemptobj, $page, $lastpage, $showall);
-        $output .= $this->footer();
-        return $output;
+        return fb;
     }
+
+});
+</script>
+JS;
+ 
+    $output .= $this->footer();
+    return $output;
+}
 
     /**
      * Renders the review question pop-up.
@@ -366,7 +1347,7 @@ public function navigation_panel(navigation_panel_base $panel) {
 
     // Card wrapper
     $output = html_writer::start_div(
-        'w-full bg-white shadow-md rounded-2xl p-5 mt-4 quiz-nav-card border border-gray-100'
+        'w-full bg-white shadow-md rounded-2xl p-3 mt-4 quiz-nav-card border border-gray-100'
     );
 
     // 🔑 MUST KEEP (hidden autosave + form metadata)
@@ -383,7 +1364,7 @@ public function navigation_panel(navigation_panel_base $panel) {
     );
 
     // Question buttons grid
-    $output .= html_writer::start_div('flex gap-3 mb-4 flex-wrap');
+    $output .= html_writer::start_div('flex gap-1 mb-4 flex-wrap justify-content-center');
 
     $buttons = $panel->get_question_buttons();
     foreach ($buttons as $button) {
@@ -958,18 +1939,147 @@ public function during_attempt_progress($attemptobj, $page): string {
      * @param quiz_attempt $attemptobj
      * @param display_options $displayoptions
      */
-    public function summary_page($attemptobj, $displayoptions) {
-        $output = '';
-        $output .= $this->header();
-        $output .= $this->during_attempt_tertiary_nav($attemptobj->view_url());
-        $output .= $this->heading(format_string($attemptobj->get_quiz_name()));
-        $output .= $this->heading(get_string('summaryofattempt', 'quiz'), 3);
-        $output .= $this->summary_table($attemptobj, $displayoptions);
-        $output .= $this->summary_page_controls($attemptobj);
-        $output .= $this->footer();
-        return $output;
+    // public function summary_page($attemptobj, $displayoptions) {
+    //     $output = '';
+    //     $output .= $this->header();
+    //     $output .= $this->during_attempt_tertiary_nav($attemptobj->view_url());
+    //     $output .= $this->heading(format_string($attemptobj->get_quiz_name()));
+    //     $output .= $this->heading(get_string('summaryofattempt', 'quiz'), 3);
+    //     $output .= $this->summary_table($attemptobj, $displayoptions);
+    //     $output .= $this->summary_page_controls($attemptobj);
+    //     $output .= $this->footer();
+    //     return $output;
+    // }
+public function summary_page($attemptobj, $displayoptions) {
+    global $DB;
+
+    // Prepare summary table HTML (reuse existing logic)
+    $summarytable = $this->summary_table($attemptobj, $displayoptions);
+
+    // Controls (submit + return)
+    $returnurl = $attemptobj->attempt_url(null, $attemptobj->get_currentpage());
+
+$returnbtn = '';
+if ($attemptobj->get_state() == quiz_attempt::IN_PROGRESS) {
+    $returnbtn = html_writer::link(
+        $attemptobj->attempt_url(null, $attemptobj->get_currentpage()),
+        'Return to Attempt',
+        ['class' => 'btn-return']
+    );
+}
+
+// Submit button (IMPORTANT: must POST)
+$options = [
+    'attempt' => $attemptobj->get_attemptid(),
+    'finishattempt' => 1,
+    'timeup' => 0,
+    'slots' => '',
+    'cmid' => $attemptobj->get_cmid(),
+    'sesskey' => sesskey(),
+];
+
+$submitbutton = new single_button(
+    new moodle_url($attemptobj->processattempt_url(), $options),
+    'Submit All and Finish'
+);
+
+$submitbutton->class = 'btn-submit';
+$submitbutton->type = \single_button::BUTTON_PRIMARY;
+
+$submitbtn = $this->render($submitbutton);
+
+    // Quiz info
+    $quizname = format_string($attemptobj->get_quiz_name());
+   $attempt = $attemptobj->get_attempt();
+
+// Pre-calculate result (before submission)
+$marks = $attempt->sumgrades ?? 0;
+$totalmarks = $attemptobj->get_quiz()->sumgrades ?? 0;
+
+$score = $totalmarks > 0 ? round(($marks / $totalmarks) * 100, 2) : 0;
+if (!empty($attempt->timefinish)) {
+    $duration = $attempt->timefinish - $attempt->timestart;
+} else {
+    $duration = time() - $attempt->timestart;
+}
+$reviewurl = (new moodle_url('/mod/quiz/review.php', [
+    'attempt' => $attemptobj->get_attemptid(),
+    'cmid' => $attemptobj->get_cmid()
+]))->out(false);
+
+$reattemptbtn = $this->render(new single_button(
+    $attemptobj->start_attempt_url(),
+    'Re-attempt Quiz'
+));
+
+$timetaken = format_time($duration);
+    $totalquestions = count($attemptobj->get_slots());
+
+    // Calculate answered
+    $answered = 0;
+    $questions = [];
+$unanswered = 0;
+$flagged = 0;
+
+foreach ($attemptobj->get_slots() as $slot) {
+
+    if (!$attemptobj->is_real_question($slot)) {
+        continue;
     }
 
+    $state = $attemptobj->get_question_state($slot);
+    $stateclass = $state->get_state_class(true);
+
+    $status = $attemptobj->get_question_status($slot, $displayoptions->correctness);
+
+    // Count stats
+    if (in_array($stateclass, ['answersaved','complete','correct','incorrect','partial'])) {
+        $answered++;
+    } else {
+        $unanswered++;
+    }
+
+    if ($attemptobj->is_question_flagged($slot)) {
+        $flagged++;
+    }
+
+    $questions[] = [
+        'slot' => $slot,
+        'number' => $attemptobj->get_question_number($slot),
+        'status' => $status,
+        'url' => $attemptobj->attempt_url($slot)->out(false)
+    ];
+}
+
+    $percent = $totalquestions > 0 ? round(($answered / $totalquestions) * 100) : 0;
+
+    $data = [
+    'quizname' => $quizname,
+    'summarytitle' => get_string('summaryofattempt', 'quiz'),
+    'timetaken' => $timetaken,
+
+    'answered' => $answered,
+    'unanswered' => $unanswered,
+    'flagged' => $flagged,
+
+    'questions' => $questions,
+     'returnbtn' => $returnbtn,
+    'submitbtn' => $submitbtn,
+     'score' => $score,
+    'marks' => $marks,
+    'totalmarks' => $totalmarks,
+    'timetaken' => $timetaken,
+    'reviewurl' => $reviewurl,
+    'reattemptbtn' => $reattemptbtn
+];
+
+    $output = '';
+    $output .= $this->header();
+    $output .= $this->render_from_template('theme_remui/quiz_summary', $data);
+    $output .= $this->footer();
+
+    return $output;
+}
     /**
      * Generates the table of summarydata
      *

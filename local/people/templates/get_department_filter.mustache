@@ -1,0 +1,68 @@
+{{! People Plugin - Department Filter (from user custom profile field) }}
+<div class="filterslist people-subfilter" data-filter-name="department">
+    <div class="people-subfilter-header" role="button" aria-expanded="false" tabindex="0">
+        <span class="people-subfilter-title">
+            <i class="fa fa-sitemap mr-1"></i>
+            {{#str}}department, local_people{{/str}}
+        </span>
+        <i class="fa fa-chevron-down people-subfilter-icon"></i>
+    </div>
+    <div class="people-subfilter-body" style="display:none;">
+        {{#departmentvalue}}
+        <a href="#" data-name="department" class="reset people-clear-link">
+            <i class="fa fa-times-circle mr-1"></i>{{#str}}clear, local_people{{/str}}
+        </a>
+        {{/departmentvalue}}
+        <form id="form-department" method="post" action="">
+            {{#departmentvalue}}
+            <input class="filter-true" type="hidden" name="filter-true" value="true">
+            {{/departmentvalue}}
+
+            {{! Selected department tags }}
+            <div class="people-selected-courses" id="people-selected-department-display">
+                {{#departmentselected}}
+                <span class="people-course-selected-tag" data-value="{{{value}}}">
+                    <span class="people-course-tag-text">{{{value}}}</span>
+                    <span class="people-course-tag-remove" title="Remove"><i class="fa fa-times"></i></span>
+                </span>
+                {{/departmentselected}}
+            </div>
+
+            {{! Search box }}
+            <div class="people-course-search-wrap">
+                <input type="text"
+                       class="form-control people-course-search-input people-select-search"
+                       data-target="people-department-checkbox-list"
+                       placeholder="Search departments..."
+                       autocomplete="off">
+                <i class="fa fa-search people-course-search-icon"></i>
+            </div>
+
+            {{! Hidden real select for form submission }}
+            <select class="people-hidden-select" multiple="multiple"
+                    id="menudepartmentop" name="departmentop[]" style="display:none;">
+                {{#departmentopt}}
+                    <option value="{{{value}}}" {{#selected}}selected{{/selected}}>{{{value}}}</option>
+                {{/departmentopt}}
+            </select>
+
+            {{! Visible checkbox list }}
+            <div class="people-course-list-wrap">
+                <div class="people-course-checkbox-list people-generic-checkbox-list"
+                     id="people-department-checkbox-list"
+                     data-tags-container="people-selected-department-display"
+                     data-hidden-select="menudepartmentop">
+                    {{#departmentopt}}
+                    <label class="people-course-item" data-value="{{{value}}}" data-label="{{{value}}}">
+                        <input type="checkbox" class="people-generic-checkbox"
+                               value="{{{value}}}" {{#selected}}checked{{/selected}}>
+                        <span class="people-course-item-label">{{{value}}}</span>
+                    </label>
+                    {{/departmentopt}}
+                </div>
+            </div>
+
+            <input type="hidden" name="multipleselectfilter" value="department">
+        </form>
+    </div>
+</div>

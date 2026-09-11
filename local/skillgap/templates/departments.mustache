@@ -1,0 +1,72 @@
+{{!
+  @template local_skillgap/departments
+  Departments list and sync from Moodle user profiles.
+}}
+<div class="local-skillgap container-fluid px-0">
+  <div class="d-flex align-items-center justify-content-between flex-wrap mb-4">
+    <h3 class="mb-0" style="color:#033252;">
+      <i class="fa fa-building mr-2" style="color:#eb980d;"></i>
+      {{#str}} departments, local_skillgap {{/str}}
+    </h3>
+    <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/departments.php" class="d-inline">
+      <input type="hidden" name="action"  value="sync">
+      <input type="hidden" name="sesskey" value="{{sesskey}}">
+      <button type="submit" class="btn" style="background:#033252;color:#fff;">
+        <i class="fa fa-refresh mr-1"></i>{{#str}} sync_departments, local_skillgap {{/str}}
+      </button>
+    </form>
+  </div>
+
+  <div class="alert alert-info small py-2">
+    <i class="fa fa-info-circle mr-1"></i>
+    {{#str}} dept_sync_info, local_skillgap {{/str}}
+  </div>
+
+  <div class="card">
+    <div class="card-header" style="background:#033252;color:#fff;">
+      <h5 class="mb-0"><i class="fa fa-list mr-2" style="color:#eb980d;"></i>All Departments</h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="thead-light">
+            <tr>
+              <th>#</th>
+              <th>{{#str}} name, local_skillgap {{/str}}</th>
+              <th>{{#str}} users, local_skillgap {{/str}}</th>
+              <th>{{#str}} action, local_skillgap {{/str}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#departments}}
+            <tr>
+              <td class="text-muted small">{{id}}</td>
+              <td class="font-weight-medium">{{name}}</td>
+              <td><span class="badge badge-info">{{user_count}}</span></td>
+              <td>
+                <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/departments.php"
+                      class="d-inline" onsubmit="return confirm('Delete department?');">
+                  <input type="hidden" name="action"  value="delete">
+                  <input type="hidden" name="id"      value="{{id}}">
+                  <input type="hidden" name="sesskey" value="{{sesskey}}">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {{/departments}}
+            {{^departments}}
+            <tr>
+              <td colspan="4" class="text-center text-muted py-4">
+                <i class="fa fa-building fa-2x mb-2 d-block"></i>
+                {{#str}} no_departments, local_skillgap {{/str}}
+              </td>
+            </tr>
+            {{/departments}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,727 @@
+{{!
+    Evaluation results page template.
+    @template mod_airoleplay/results
+    @copyright 2024 Enterprise AI Learning Platform
+}}
+
+<div class="air-platform">
+<div class="air-results-page">
+
+  {{! ============================================================ }}
+  {{! EVALUATION PENDING STATE                                       }}
+  {{! ============================================================ }}
+  {{^session.evaluated}}
+    <div class="air-evaluation-pending" id="air-evaluation-pending">
+      <div class="air-evaluation-pending__spinner"></div>
+      <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:0.75rem">
+        Evaluating your session...
+      </h2>
+      <p style="color:#64748b;font-size:1rem;max-width:400px;margin:0 auto">
+        Our AI is analysing your conversation, scoring competencies, and generating personalised coaching feedback. This usually takes 1–2 minutes.
+      </p>
+    </div>
+  {{/session.evaluated}}
+
+  {{! ============================================================ }}
+  {{! RESULTS CONTENT (hidden until evaluated)                       }}
+  {{! ============================================================ }}
+  <div id="air-results-container" class="{{^session.evaluated}}d-none{{/session.evaluated}}">
+
+    {{! Header }}
+    <div class="air-results-header">
+      <div style="font-size:0.875rem;color:#64748b;margin-bottom:0.5rem">
+        <a href="{{view_url}}" style="color:#6366f1;text-decoration:none">← {{scenario.name}}</a>
+        &nbsp;·&nbsp; Attempt {{session.attempt}}
+        &nbsp;·&nbsp; {{session.date}}
+      </div>
+      <h1 style="font-size:2rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:0.5rem">
+        {{#session.passed}}🏆 Great Work!{{/session.passed}}
+        {{^session.passed}}📈 Keep Practising{{/session.passed}}
+      </h1>
+      <p style="color:#64748b">
+        {{session.turn_count}} turns · {{session.duration}}
+        {{#session.pronunciation_score}} · Pronunciation: {{session.pronunciation_score}}/100{{/session.pronunciation_score}}
+      </p>
+
+      {{! Attempt navigation }}
+      <div class="d-flex justify-content-center gap-3 mt-2">
+        {{#prev_session_url}}
+          <a href="{{prev_session_url}}" class="air-btn air-btn--ghost" style="font-size:0.875rem">
+            ← Attempt {{prev_attempt}}
+          </a>
+        {{/prev_session_url}}
+        {{#next_session_url}}
+          <a href="{{next_session_url}}" class="air-btn air-btn--ghost" style="font-size:0.875rem">
+            Attempt {{next_attempt}} →
+          </a>
+        {{/next_session_url}}
+      </div>
+    </div>
+
+    {{! ============================================================ }}
+    {{! SCORE + COMPETENCY RADAR                                      }}
+    {{! ============================================================ }}
+    <div class="air-results-grid">
+
+      {{! Score circle }}
+      <div class="air-results-card">
+        <div class="air-results-card__title">📊 Overall Score</div>
+        <div class="air-score-center">
+          <div id="air-score-circle"></div>
+          {{#session.passed}}
+            <span class="air-badge" style="background:#d1fae5;color:#065f46;font-size:0.9375rem;padding:0.5rem 1.25rem">
+              ✓ PASSED
+            </span>
+          {{/session.passed}}
+          {{^session.passed}}
+            <span class="air-badge" style="background:#fee2e2;color:#991b1b;font-size:0.9375rem;padding:0.5rem 1.25rem">
+              ✗ NEEDS WORK
+            </span>
+          {{/session.passed}}
+        </div>
+
+        {{! Quick stats }}
+        <div class="row g-2 mt-3">
+          <div class="col-6 text-center" style="border-right:1px solid #f1f5f9">
+            <div style="font-size:1.375rem;font-weight:800">{{session.turn_count}}</div>
+            <div style="font-size:0.75rem;color:#94a3b8">Turns</div>
+          </div>
+          <div class="col-6 text-center">
+            <div style="font-size:1.375rem;font-weight:800">{{session.duration}}</div>
+            <div style="font-size:0.75rem;color:#94a3b8">Duration</div>
+          </div>
+        </div>
+
+        {{! CTA buttons }}
+        <div class="d-grid gap-2 mt-3">
+          {{#can_retry}}
+            <a href="{{retry_url}}" class="air-btn air-btn--primary" style="justify-content:center">
+              🔄 Try Again
+            </a>
+          {{/can_retry}}
+          <a href="{{view_url}}" class="air-btn air-btn--ghost" style="justify-content:center">
+            ← Back to Scenario
+          </a>
+        </div>
+      </div>
+
+      {{! Competency radar — canvas drawn once by JS after data loads.
+          Wrapped in a fixed-height container so Chart.js can determine its
+          drawing dimensions even when responsive sizing kicks in. }}
+      <div class="air-results-card">
+        <div class="air-results-card__title">🎯 Competency Profile</div>
+        <div style="position:relative;height:300px;width:100%">
+          <canvas id="air-radar-chart"></canvas>
+        </div>
+        <p id="air-radar-empty" class="text-muted text-center py-4 d-none">
+          Competency data is being generated…
+        </p>
+      </div>
+
+    </div>
+
+    {{! ============================================================ }}
+    {{! MOOD-O-METER + CONVERSATION RECORDING (side-by-side)          }}
+    {{! ============================================================ }}
+    {{#mood.available}}
+      <div class="air-results-grid" id="air-mood-row">
+        {{! Mood-o-meter speedometer }}
+        <div class="air-results-card air-moodometer-card">
+          <div class="air-results-card__title">🎚️ Mood-o-meter</div>
+          <p class="text-muted" style="font-size:0.8125rem;margin-bottom:0.5rem">
+            How the AI perceived your emotional tone across the call.
+          </p>
+          <div class="air-moodometer" id="air-moodometer">
+            <svg viewBox="0 0 200 130" width="100%" preserveAspectRatio="xMidYMid meet">
+              {{! Coloured arc: -100 (red, left) → +100 (green, right) }}
+              <defs>
+                <linearGradient id="air-moodgrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%"   stop-color="#ef4444"/>
+                  <stop offset="25%"  stop-color="#f97316"/>
+                  <stop offset="50%"  stop-color="#f59e0b"/>
+                  <stop offset="75%"  stop-color="#22c55e"/>
+                  <stop offset="100%" stop-color="#10b981"/>
+                </linearGradient>
+              </defs>
+              <path d="M 30 100 A 70 70 0 0 1 170 100"
+                    fill="none" stroke="url(#air-moodgrad)" stroke-width="18" stroke-linecap="round"/>
+              {{! Tick marks at -50/0/+50 }}
+              <line x1="100" y1="22" x2="100" y2="32" stroke="#cbd5e1" stroke-width="2"/>
+              <line x1="50.5" y1="46" x2="58.5" y2="51" stroke="#cbd5e1" stroke-width="2"/>
+              <line x1="149.5" y1="46" x2="141.5" y2="51" stroke="#cbd5e1" stroke-width="2"/>
+              {{! Needle }}
+              <line id="air-mood-needle" x1="100" y1="100" x2="{{mood.needle_x}}" y2="{{mood.needle_y}}"
+                    stroke="#1e293b" stroke-width="3" stroke-linecap="round"
+                    style="transition:all 1.2s cubic-bezier(.34,1.56,.64,1)"/>
+              <circle cx="100" cy="100" r="6" fill="#1e293b"/>
+              {{! Labels }}
+              <text x="30"  y="118" font-size="10" fill="#94a3b8" text-anchor="middle">😡 Negative</text>
+              <text x="100" y="118" font-size="10" fill="#94a3b8" text-anchor="middle">😐 Neutral</text>
+              <text x="170" y="118" font-size="10" fill="#94a3b8" text-anchor="middle">😄 Positive</text>
+            </svg>
+            <div class="air-mood-readout" style="text-align:center;margin-top:0.5rem">
+              <div style="font-size:2rem;line-height:1">{{mood.emoji}}</div>
+              <div style="font-weight:700;color:{{mood.colour}};margin-top:0.25rem">{{mood.band}}</div>
+              <div style="font-size:0.75rem;color:#94a3b8" title="Mood reflects the learner's emotional tone on a scale from −100 (very negative) to +100 (very positive). This is separate from the Overall Score.">Mood: {{mood.score}} (range −100 to +100)</div>
+            </div>
+          </div>
+        </div>
+
+        {{! Conversation recording playback }}
+        <div class="air-results-card">
+          <div class="air-results-card__title">🎧 Conversation Recording</div>
+          {{#has_recording}}
+            <p class="text-muted" style="font-size:0.8125rem;margin-bottom:0.5rem">
+              Listen back to your full conversation with the AI partner.
+            </p>
+            <audio controls preload="metadata" style="width:100%" src="{{session.audio_url}}">
+              Your browser doesn't support inline audio playback.
+            </audio>
+            <div style="margin-top:0.75rem;text-align:right">
+              <a href="{{session.audio_url}}" download class="air-btn air-btn--ghost" style="font-size:0.8125rem">
+                ⬇ Download recording
+              </a>
+            </div>
+          {{/has_recording}}
+          {{^has_recording}}
+            <p class="text-muted py-4 text-center" style="font-size:0.8125rem">
+              No recording was captured for this session.
+              <br><span style="font-size:0.75rem">Recording requires microphone permission on a supported browser.</span>
+            </p>
+          {{/has_recording}}
+        </div>
+      </div>
+    {{/mood.available}}
+
+    {{! If no mood but we do have a recording, still show the recording card. }}
+    {{^mood.available}}
+      {{#has_recording}}
+        <div class="air-results-card mb-4">
+          <div class="air-results-card__title">🎧 Conversation Recording</div>
+          <audio controls preload="metadata" style="width:100%" src="{{session.audio_url}}">
+            Your browser doesn't support inline audio playback.
+          </audio>
+        </div>
+      {{/has_recording}}
+    {{/mood.available}}
+
+    {{! ============================================================ }}
+    {{! AI COACHING SUMMARY                                           }}
+    {{! ============================================================ }}
+    {{#ai_summary}}
+      <div class="air-results-card mb-4">
+        <div class="air-results-card__title">🤖 AI Coaching Feedback</div>
+        <div id="air-summary-text" style="font-size:0.9375rem;line-height:1.75;color:#374151">
+          {{{ai_summary}}}
+        </div>
+      </div>
+    {{/ai_summary}}
+
+    {{! ============================================================ }}
+    {{! COMPETENCY BREAKDOWN BARS                                     }}
+    {{! Rendered by inline JS (renderCompetencyBars) after evaluation. }}
+    {{! ============================================================ }}
+    <div class="air-results-card mb-4" id="air-competency-breakdown-card">
+      <div class="air-results-card__title">📈 Competency Breakdown</div>
+      <div id="air-competency-bars">
+        <p class="text-muted">Loading competency scores…</p>
+      </div>
+    </div>
+
+    {{! ============================================================ }}
+    {{! STRENGTHS & IMPROVEMENTS (2-col)                              }}
+    {{! ============================================================ }}
+    <div class="row g-4 mb-4">
+
+      {{! Strengths — list filled by renderStrengths() }}
+      <div class="col-md-6">
+        <div class="air-results-card h-100">
+          <div class="air-results-card__title">✅ Strengths</div>
+          <ul id="air-strengths-list" class="list-unstyled mb-0">
+            <li class="text-muted">Loading…</li>
+          </ul>
+        </div>
+      </div>
+
+      {{! Improvements — filled by renderImprovements() }}
+      <div class="col-md-6">
+        <div class="air-results-card h-100">
+          <div class="air-results-card__title">⚡ Areas to Improve</div>
+          <div id="air-improvements-list">
+            <p class="text-muted">Loading…</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    {{! ============================================================ }}
+    {{! IDEAL RESPONSE EXAMPLES — filled by renderIdealResponses()    }}
+    {{! ============================================================ }}
+    <div class="air-results-card mb-4" id="air-ideal-card">
+      <div class="air-results-card__title">💬 Ideal Response Examples</div>
+      <p style="font-size:0.875rem;color:#64748b;margin-bottom:1.25rem">
+        See how you could have responded more effectively at key moments.
+      </p>
+      <div id="air-ideal-responses">
+        <p class="text-muted">Loading…</p>
+      </div>
+    </div>
+
+    {{! ============================================================ }}
+    {{! LEARNING RECOMMENDATIONS — filled by renderRecommendations()  }}
+    {{! ============================================================ }}
+    <div class="air-results-card mb-4" id="air-recommendations-card" style="display:none">
+      <div class="air-results-card__title">🎓 Learning Recommendations</div>
+      <ul id="air-recommendations-list" class="list-unstyled mb-0"></ul>
+    </div>
+
+    {{! ============================================================ }}
+    {{! VOICE ANALYTICS (if voice session)                            }}
+    {{! ============================================================ }}
+    {{#has_voice}}
+      <div class="air-results-card mb-4">
+        <div class="air-results-card__title">🎙️ Voice Analytics</div>
+        <div class="row g-3">
+          {{#voice_analytics}}
+            {{#accuracy}}
+              <div class="col-6 col-md-3 text-center">
+                <div style="font-size:1.75rem;font-weight:800;color:#6366f1">{{accuracy}}</div>
+                <div style="font-size:0.75rem;color:#94a3b8">Pronunciation</div>
+              </div>
+            {{/accuracy}}
+            {{#fluency}}
+              <div class="col-6 col-md-3 text-center">
+                <div style="font-size:1.75rem;font-weight:800;color:#10b981">{{fluency}}</div>
+                <div style="font-size:0.75rem;color:#94a3b8">Fluency</div>
+              </div>
+            {{/fluency}}
+            {{#completeness}}
+              <div class="col-6 col-md-3 text-center">
+                <div style="font-size:1.75rem;font-weight:800;color:#f59e0b">{{completeness}}</div>
+                <div style="font-size:0.75rem;color:#94a3b8">Completeness</div>
+              </div>
+            {{/completeness}}
+          {{/voice_analytics}}
+        </div>
+      </div>
+    {{/has_voice}}
+
+    {{! Footer actions }}
+    <div class="d-flex justify-content-between align-items-center pt-2 pb-4">
+      <a href="{{view_url}}" class="air-btn air-btn--ghost">← Back to Scenario</a>
+      {{#can_retry}}
+        <a href="{{retry_url}}" class="air-btn air-btn--primary">🔄 Try Again</a>
+      {{/can_retry}}
+    </div>
+
+  </div>{{! #air-results-container }}
+
+</div>{{! .air-results-page }}
+</div>{{! .air-platform }}
+
+{{! ============================================================ }}
+{{! Inline JS: evaluation poll + chart rendering + animations     }}
+{{! ============================================================ }}
+<script>
+(function () {
+  var SESSION_ID = {{session.id}};
+  var AJAX_URL   = '{{{ajaxurl}}}';
+  var INITIAL_EVALUATED = {{#session.evaluated}}true{{/session.evaluated}}{{^session.evaluated}}false{{/session.evaluated}};
+
+  // ---------- helpers ----------------------------------------------------
+  function $(id) { return document.getElementById(id); }
+
+  function callWs(method, args) {
+    return fetch(AJAX_URL, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify([{ index: 0, methodname: method, args: args }]),
+    }).then(function (r) { return r.json(); })
+      .then(function (rows) {
+        if (!Array.isArray(rows) || !rows[0]) { throw new Error('Empty response'); }
+        if (rows[0].error) {
+          var e = rows[0].exception || rows[0].error;
+          throw new Error(typeof e === 'string' ? e : (e.message || JSON.stringify(e)));
+        }
+        return rows[0].data;
+      });
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  // ---------- score circle ----------------------------------------------
+  function renderScoreCircle(score, passed) {
+    var el = $('air-score-circle');
+    if (!el) return;
+    var radius = 54;
+    var circ   = 2 * Math.PI * radius;
+    var pct    = Math.max(0, Math.min(100, Number(score) || 0));
+    var offset = circ - (pct / 100) * circ;
+    var color  = passed ? '#22c55e' : pct >= 50 ? '#f59e0b' : '#ef4444';
+    el.innerHTML =
+      '<svg width="140" height="140" viewBox="0 0 140 140">' +
+        '<circle cx="70" cy="70" r="' + radius + '" fill="none" stroke="#e2e8f0" stroke-width="10"/>' +
+        '<circle cx="70" cy="70" r="' + radius + '" fill="none" stroke="' + color + '" stroke-width="10"' +
+        ' stroke-dasharray="' + circ + '" stroke-dashoffset="' + offset + '"' +
+        ' stroke-linecap="round" transform="rotate(-90 70 70)"' +
+        ' style="transition: stroke-dashoffset 1.5s ease"/>' +
+        '<text x="70" y="65" text-anchor="middle" fill="' + color + '" font-size="28" font-weight="700">' + Math.round(pct) + '</text>' +
+        '<text x="70" y="85" text-anchor="middle" fill="#94a3b8" font-size="12">' + (passed ? '✓ PASSED' : '✗ NEEDS WORK') + '</text>' +
+      '</svg>';
+  }
+
+  // ---------- competency radar ------------------------------------------
+  function renderRadar(competencies) {
+    var canvas = $('air-radar-chart');
+    var empty  = $('air-radar-empty');
+    if (!competencies || !competencies.length) {
+      if (canvas) { canvas.style.display = 'none'; }
+      if (empty)  { empty.classList.remove('d-none'); }
+      return;
+    }
+    if (empty)  { empty.classList.add('d-none'); }
+    if (!canvas) { return; }
+
+    // Self-contained SVG radar. We avoided Chart.js here because the CDN may
+    // be blocked on customer networks (firewall, ad blocker, air-gapped). SVG
+    // works everywhere and renders crisply at any size with no external code.
+    var svg = buildRadarSvg(competencies);
+    // Replace the canvas with the SVG once; idempotent across re-paints.
+    var slot = canvas.parentNode;
+    if (slot) {
+      // Remove any prior svg from a previous paint.
+      var prior = slot.querySelector('svg[data-radar="1"]');
+      if (prior) { slot.removeChild(prior); }
+      canvas.style.display = 'none';
+      slot.insertAdjacentHTML('beforeend', svg);
+    }
+  }
+
+  // Build a radar SVG for an array of {label, score (0-100)}.
+  // Defensive: returns an empty <svg> stub if competencies is invalid.
+  function buildRadarSvg(items) {
+    if (!Array.isArray(items) || items.length < 3) {
+      // A radar needs at least 3 axes to make geometric sense; below that we
+      // fall back to a horizontal bar style. Inline so we never break the page.
+      var rows = (items || []).map(function (c) {
+        var pct = Math.max(0, Math.min(100, Number(c.score) || 0));
+        var color = pct >= 80 ? '#22c55e' : pct >= 60 ? '#f59e0b' : '#ef4444';
+        return '<div style="margin:0.5rem 0">' +
+          '<div style="display:flex;justify-content:space-between;font-size:0.875rem;margin-bottom:2px">' +
+            '<span>' + esc(c.label) + '</span>' +
+            '<span style="font-weight:700;color:' + color + '">' + pct + '/100</span>' +
+          '</div>' +
+          '<div style="background:#e2e8f0;border-radius:4px;height:8px;overflow:hidden">' +
+            '<div style="background:' + color + ';height:100%;width:' + pct + '%"></div>' +
+          '</div></div>';
+      }).join('');
+      return '<svg data-radar="1" xmlns="http://www.w3.org/2000/svg" width="0" height="0"></svg>' +
+             '<div>' + rows + '</div>';
+    }
+
+    // SVG viewBox sized generously to give long labels (e.g. "Objection Handling 75")
+    // breathing room on both sides without clipping. Radius kept modest so the
+    // ring sits in the centre with ~80px of label area on each side.
+    var W = 520, H = 300;
+    var cx = W / 2, cy = H / 2 + 6;
+    var R = 95;                              // outer ring radius
+    var n = items.length;
+    var rings = [0.25, 0.5, 0.75, 1];        // grid rings at 25/50/75/100
+    var twoPi = Math.PI * 2;
+
+    // Truncate any label that's still too long for safety (with ellipsis).
+    function truncLabel(s) {
+      s = String(s == null ? '' : s);
+      return s.length > 18 ? s.substring(0, 17) + '…' : s;
+    }
+
+    function ptForAxis(i, frac) {
+      // Place first axis at the top (-90°) for a pleasant orientation.
+      var angle = -Math.PI / 2 + (i / n) * twoPi;
+      return {
+        x: cx + Math.cos(angle) * R * frac,
+        y: cy + Math.sin(angle) * R * frac,
+      };
+    }
+
+    // Grid rings.
+    var ringPaths = rings.map(function (f) {
+      var pts = [];
+      for (var i = 0; i < n; i++) {
+        var p = ptForAxis(i, f);
+        pts.push(p.x.toFixed(1) + ',' + p.y.toFixed(1));
+      }
+      return '<polygon points="' + pts.join(' ') + '" fill="none" stroke="#e2e8f0" stroke-width="1"/>';
+    }).join('');
+
+    // Axis spokes.
+    var axes = '';
+    for (var i = 0; i < n; i++) {
+      var p = ptForAxis(i, 1);
+      axes += '<line x1="' + cx + '" y1="' + cy + '" x2="' + p.x.toFixed(1) + '" y2="' + p.y.toFixed(1) + '" stroke="#e2e8f0" stroke-width="1"/>';
+    }
+
+    // Score polygon.
+    var dataPts = [];
+    for (var i = 0; i < n; i++) {
+      var s = Math.max(0, Math.min(100, Number(items[i].score) || 0));
+      var p2 = ptForAxis(i, s / 100);
+      dataPts.push(p2.x.toFixed(1) + ',' + p2.y.toFixed(1));
+    }
+    var dataPoly = '<polygon points="' + dataPts.join(' ') + '" fill="rgba(99,102,241,0.18)" stroke="rgba(99,102,241,0.9)" stroke-width="2" stroke-linejoin="round"/>';
+
+    // Data point markers.
+    var markers = '';
+    for (var i = 0; i < n; i++) {
+      var s = Math.max(0, Math.min(100, Number(items[i].score) || 0));
+      var pm = ptForAxis(i, s / 100);
+      markers += '<circle cx="' + pm.x.toFixed(1) + '" cy="' + pm.y.toFixed(1) + '" r="3" fill="#6366f1"/>';
+    }
+
+    // Labels around the outside. Sit them ~18px past the ring so text doesn't overlap.
+    var labels = '';
+    for (var i = 0; i < n; i++) {
+      var lp = ptForAxis(i, 1.22);
+      var anchor = 'middle';
+      // Heuristic horizontal anchor based on x position relative to centre.
+      if (lp.x > cx + 8) { anchor = 'start'; }
+      else if (lp.x < cx - 8) { anchor = 'end'; }
+      labels += '<text x="' + lp.x.toFixed(1) + '" y="' + lp.y.toFixed(1) + '" font-size="11" fill="#475569" text-anchor="' + anchor + '" dominant-baseline="middle">' +
+        esc(truncLabel(items[i].label)) + ' <tspan font-weight="700" fill="#0f172a">' + Math.round(items[i].score) + '</tspan>' +
+        '</text>';
+    }
+
+    return '<svg data-radar="1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H +
+      '" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" style="display:block;max-height:320px">' +
+      ringPaths + axes + dataPoly + markers + labels + '</svg>';
+  }
+
+  // ---------- competency bars -------------------------------------------
+  function renderCompetencyBars(competencies) {
+    var container = $('air-competency-bars');
+    if (!container) return;
+    if (!competencies || !competencies.length) {
+      container.innerHTML = '<p class="text-muted">No competency results yet.</p>';
+      return;
+    }
+    container.innerHTML = competencies.map(function (c) {
+      var pct   = Math.round(Number(c.score) || 0);
+      var color = pct >= 80 ? '#22c55e' : pct >= 60 ? '#f59e0b' : '#ef4444';
+      return (
+        '<div class="air-comp-bar mb-3">' +
+          '<div class="d-flex justify-content-between align-items-center mb-1">' +
+            '<span class="air-comp-label">' + esc(c.label) + '</span>' +
+            '<span class="air-comp-score" style="color:' + color + ';font-weight:700">' + pct + '/100</span>' +
+          '</div>' +
+          '<div class="air-progress-track">' +
+            '<div class="air-progress-fill" style="width:' + pct + '%;background:' + color + ';transition:width 1s ease"></div>' +
+          '</div>' +
+          (c.rationale ? '<p class="air-comp-rationale mt-1" style="font-size:0.8125rem;color:#64748b">' + esc(c.rationale) + '</p>' : '') +
+        '</div>'
+      );
+    }).join('');
+  }
+
+  // ---------- text lists -------------------------------------------------
+  function renderStrengths(items) {
+    var el = $('air-strengths-list');
+    if (!el) return;
+    if (!items || !items.length) { el.innerHTML = '<li class="text-muted">No specific strengths identified.</li>'; return; }
+    el.innerHTML = items.map(function (s) {
+      return '<li class="air-list-item air-list-item--success">' +
+             '<span class="air-list-icon">✓</span><span>' + esc(s) + '</span></li>';
+    }).join('');
+  }
+
+  function renderImprovements(items) {
+    var el = $('air-improvements-list');
+    if (!el) return;
+    if (!items || !items.length) { el.innerHTML = '<p class="text-muted">No specific improvements identified.</p>'; return; }
+    el.innerHTML = items.map(function (i) {
+      return '<div class="air-improvement-card">' +
+        '<div class="air-improvement-area">' + esc(i.area || 'Area') + '</div>' +
+        (i.specific_gap ? '<p class="air-improvement-gap">' + esc(i.specific_gap) + '</p>' : '') +
+        (i.suggestion   ? '<p class="air-improvement-tip">💡 ' + esc(i.suggestion) + '</p>' : '') +
+        '</div>';
+    }).join('');
+  }
+
+  function renderIdealResponses(items) {
+    var el = $('air-ideal-responses');
+    if (!el) return;
+    if (!items || !items.length) { el.innerHTML = '<p class="text-muted">No ideal-response examples were generated.</p>'; return; }
+    el.innerHTML = items.map(function (r) {
+      return '<div class="air-ideal-card">' +
+        (r.context ? '<div class="air-ideal-context">📍 ' + esc(r.context) + '</div>' : '') +
+        '<div class="air-ideal-comparison">' +
+          '<div class="air-ideal-said"><label>You said:</label>' +
+            '<p>' + esc(r.learner_said || '(quote unavailable)') + '</p></div>' +
+          '<div class="air-ideal-better"><label>Better response:</label>' +
+            '<p class="text-success">' + esc(r.better_response || '') + '</p></div>' +
+        '</div></div>';
+    }).join('');
+  }
+
+  function renderRecommendations(items) {
+    var card = $('air-recommendations-card');
+    var list = $('air-recommendations-list');
+    if (!card || !list) return;
+    if (!items || !items.length) { card.style.display = 'none'; return; }
+    card.style.display = '';
+    list.innerHTML = items.map(function (r) {
+      return '<li class="air-list-item air-list-item--warning">' +
+             '<span class="air-list-icon">→</span><span>' + esc(r) + '</span></li>';
+    }).join('');
+  }
+
+  // ---------- mood-o-meter (live update from polled data) ---------------
+  function updateMood(score) {
+    var needle = $('air-mood-needle');
+    if (!needle) return;
+    var s     = Math.max(-100, Math.min(100, Number(score) || 0));
+    var angle = (s / 100) * 90;
+    var rad   = (angle - 90) * Math.PI / 180;
+    var cx = 100, cy = 100, r = 70;
+    needle.setAttribute('x2', (cx + r * Math.cos(rad)).toFixed(1));
+    needle.setAttribute('y2', (cy + r * Math.sin(rad)).toFixed(1));
+  }
+
+  // ---------- master paint + poll ---------------------------------------
+  function paint(evaluation) {
+    // Reveal container FIRST so charts render into properly-sized canvases.
+    var c = $('air-results-container'); if (c) { c.classList.remove('d-none'); }
+    var p = $('air-evaluation-pending'); if (p) { p.style.display = 'none'; }
+
+    renderScoreCircle(evaluation.score_overall, evaluation.passed);
+    renderRadar(evaluation.competencies);
+    renderCompetencyBars(evaluation.competencies);
+    renderStrengths(evaluation.strengths);
+    renderImprovements(evaluation.improvements);
+    renderIdealResponses(evaluation.ideal_responses);
+    renderRecommendations(evaluation.recommendations);
+    if (typeof evaluation.mood_score === 'number') {
+      updateMood(evaluation.mood_score);
+    }
+    var sumEl = $('air-summary-text');
+    if (sumEl && evaluation.ai_summary) {
+      sumEl.innerHTML = esc(evaluation.ai_summary).replace(/\n/g, '<br>');
+    }
+  }
+
+  // Show a failure card with retry button when evaluation has errored.
+  function showEvaluationError(message) {
+    var pending = $('air-evaluation-pending');
+    if (!pending) return;
+    var safeMsg = esc(message || 'Unknown error');
+    pending.innerHTML =
+      '<div style="text-align:center;padding:1rem 0">' +
+        '<div style="font-size:3rem;margin-bottom:0.75rem">⚠️</div>' +
+        '<h2 style="font-size:1.5rem;font-weight:800;margin-bottom:0.75rem;color:#991b1b">' +
+          'Evaluation could not be completed' +
+        '</h2>' +
+        '<p style="color:#64748b;font-size:0.95rem;max-width:520px;margin:0 auto 1rem">' +
+          'The AI evaluation failed. This usually means the provider returned an error ' +
+          '(missing/expired API key, model not available, or quota exceeded).' +
+        '</p>' +
+        '<details style="text-align:left;max-width:520px;margin:0 auto 1rem;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:0.75rem">' +
+          '<summary style="cursor:pointer;color:#991b1b;font-weight:600;font-size:0.875rem">Show details</summary>' +
+          '<pre style="white-space:pre-wrap;margin:0.5rem 0 0;font-size:0.75rem;color:#7f1d1d">' + safeMsg + '</pre>' +
+        '</details>' +
+        '<button type="button" id="air-retry-eval" class="air-btn air-btn--primary" ' +
+          'style="margin-right:0.5rem">🔄 Try Evaluation Again</button>' +
+        '<a href="' + esc(window.location.pathname) + window.location.search + '" class="air-btn air-btn--ghost">' +
+          'Reload page</a>' +
+      '</div>';
+    var btn = $('air-retry-eval');
+    if (btn) {
+      btn.addEventListener('click', function () {
+        btn.disabled = true;
+        btn.textContent = 'Retrying…';
+        // Trigger evaluation again on the server side.
+        callWs('mod_airoleplay_get_evaluation', { session_id: SESSION_ID, trigger: true })
+          .then(function (data) {
+            if (data && data.evaluated) {
+              window.location.replace(window.location.href);
+            } else if (data && data.evaluation_error) {
+              showEvaluationError(data.evaluation_error);
+            } else {
+              // No error and not evaluated — keep polling for a bit.
+              startPolling();
+            }
+          })
+          .catch(function (e) {
+            showEvaluationError(e && e.message ? e.message : 'Network error');
+          });
+      });
+    }
+  }
+
+  function pollOnce(trigger) {
+    return callWs('mod_airoleplay_get_evaluation', { session_id: SESSION_ID, trigger: !!trigger })
+      .then(function (data) {
+        if (data && data.evaluated) {
+          // Reload so the server re-renders with the mood-o-meter, conversation
+          // recording, attempt history, and any other cards that were skipped
+          // on first render because evaluation hadn't completed yet.
+          try {
+            window.location.replace(window.location.href);
+          } catch (_) {
+            window.location.reload();
+          }
+          return 'done';
+        }
+        if (data && data.evaluation_error) {
+          showEvaluationError(data.evaluation_error);
+          return 'error';
+        }
+        return 'pending';
+      });
+  }
+
+  function startPolling() {
+    // First poll triggers inline evaluation (in case cron isn't running), then
+    // we poll every 5 seconds for up to 5 minutes without re-triggering.
+    var attempts = 0;
+    pollOnce(true).then(function (state) {
+      if (state === 'done' || state === 'error') return;
+      var iv = setInterval(function () {
+        attempts++;
+        if (attempts > 60) { clearInterval(iv); return; } // 60 × 5s = 5 min
+        pollOnce(false).then(function (s) {
+          if (s === 'done' || s === 'error') { clearInterval(iv); }
+        }).catch(function () {});
+      }, 5000);
+    }).catch(function (e) {
+      // Don't leave the user staring at a spinner if the very first poll fails.
+      showEvaluationError(e && e.message ? e.message : 'Could not reach the evaluation service.');
+    });
+  }
+
+  // ---------- boot -------------------------------------------------------
+  document.addEventListener('DOMContentLoaded', function () {
+    // Animate any pre-rendered progress bars.
+    setTimeout(function () {
+      document.querySelectorAll('.air-progress-fill[data-target]').forEach(function (el) {
+        el.style.width = el.dataset.target;
+      });
+    }, 300);
+
+    if (INITIAL_EVALUATED) {
+      // Server rendered with data; we still re-paint via JS to draw the
+      // score circle/radar/bars consistently.
+      callWs('mod_airoleplay_get_evaluation', { session_id: SESSION_ID, trigger: false })
+        .then(function (data) { if (data && data.evaluated) paint(data); })
+        .catch(function () {});
+    } else {
+      startPolling();
+    }
+  });
+})();
+</script>
+

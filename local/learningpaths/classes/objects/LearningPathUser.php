@@ -47,37 +47,37 @@ class LearningPathUser extends LearningPathUserBase
     /**
      * Get courses completed in learningpath by this user. This will be used to calculated the learningpath progress and completion
      */
-    public function completed_courses() {
-        // Get learningpath courses list.
-        $learningpath = new LearningPath($this->data->learningpathid);
+   public function completed_courses() {
+    // Get learningpath courses list.
+    $learningpath = new LearningPath($this->data->learningpathid);
 
-        // Load completion library.
-        global $CFG;
-        require_once("{$CFG->dirroot}/lib/completionlib.php");
+    // Load completion library.
+    global $CFG;
+    require_once("{$CFG->dirroot}/lib/completionlib.php");
 
-        // Flags to count number of completed courses and courses required for learningpath completion.
-        $completed = $required = 0;
-        foreach ($learningpath->data->courses as $learningpathcourse) {
-            //if (!$learningpathcourse->data->required) {
-                //continue;
-            //}
-            $course = $this->db->get_record('course', ['id' => $learningpathcourse->data->courseid]);
-            $completion = new completion_info($course);
-            $completed += ($completion->is_course_complete($this->data->userid)) ? 1 : 0;
-            $required += 1;
-        }
-        if ($required == 0) {
-            return (object) [
-                'complated' => $completed,
-                'total_required' => $required,
-                'percentage' => 0
-            ];
-        }
-
+    // Flags to count number of completed courses and courses required for learningpath completion.
+    $completed = $required = 0;
+    foreach ($learningpath->data->courses as $learningpathcourse) {
+        //if (!$learningpathcourse->data->required) {
+            //continue;
+        //}
+        $course = $this->db->get_record('course', ['id' => $learningpathcourse->data->courseid]);
+        $completion = new completion_info($course);
+        $completed += ($completion->is_course_complete($this->data->userid)) ? 1 : 0;
+        $required += 1;
+    }
+    if ($required == 0) {
         return (object) [
             'complated' => $completed,
-            'total_required' => is_array($required) ? count($required) : 0,
-            'percentage' => round(($completed / $required) * 100)
+            'total_required' => $required,
+            'percentage' => 0
         ];
     }
+
+    return (object) [
+        'complated' => $completed,
+        'total_required' => $required,
+        'percentage' => round(($completed / $required) * 100)
+    ];
+}
 }

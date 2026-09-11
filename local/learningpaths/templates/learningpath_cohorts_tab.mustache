@@ -1,3 +1,7 @@
+<style>
+#cohorts-popup-content .custom-search-form {margin-top: 10px;}
+#cohorts-popup-content .custom-search-form .input-group-btn .text-muted{    left: -10px !important;    top: 0px !important;}
+</style>
 {{#learningpath_cohorts_tab}}
 <div class="content-search">
   <div class="row searchbox-add">
@@ -32,7 +36,7 @@
       {{/has_add_course_lp}}
       {{#has_add_course_lp_other}}
       <span class="course">
-        <a href="#" id="add-cohorts-lp" class="btn btn-primary new-button" data-toggle="modal" data-target="#cohorts-popup">
+        <a href="#" id="add-cohorts-lp" class="btn btn-primary new-button" data-toggle="modal" data-bs-toggle="modal" data-target="#cohorts-popup" data-bs-target="#cohorts-popup">
           <i class="fa fa-plus-circle" title="{{#str}}add_users, local_learningpaths{{/str}}"></i>
             <span>{{#str}}add_cohorts, local_learningpaths{{/str}}</span>
         </a>

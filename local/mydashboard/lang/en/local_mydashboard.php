@@ -19,6 +19,88 @@
   * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author      Uvais
  */
+// Dashboard
+$string['gamification_dashboard'] = 'Gamification Dashboard';
+$string['dashboard_subtitle'] = 'Track your progress, points and achievements';
+$string['department'] = 'Department:';
+$string['employee_id'] = 'Employee ID:';
+$string['contact'] = 'Contact:';
+$string['next_level'] = 'Next Level:';
+$string['points_to_next'] = 'Points to Next:';
+$string['course_average'] = 'Course Average:';
+$string['achievements'] = 'Achievements';
+$string['points'] = 'Points';
+$string['badges'] = 'Badges';
+$string['level'] = 'Level';
+$string['loginpoints'] = 'Login Points';
+$string['spinwheel'] = 'Spin Wheel';
+$string['leadership'] = 'Leadership';
+$string['quizpoints'] = 'Quiz Points';
+$string['rewards'] = 'Rewards';
+$string['my_active_points'] = 'My Active Points';
+$string['points_log'] = 'Points Log';
+$string['points_distribution'] = 'Points Distribution';
+$string['seven_day_trends'] = '7-Day Trends';
+$string['daily_quiz_login_analytics'] = 'Daily Quiz & Login Analytics';
+$string['daily_quiz'] = 'Daily Quiz';
+$string['attempt_now'] = 'Attempt Now';
+$string['points_graph'] = 'Points Graph';
+$string['daily_login'] = 'Daily Login';
+$string['login_points_label'] = 'Login Points';
+$string['scratchcard'] = 'Scratch Cards';
+$string['available_scratch_card'] = 'Available Scratch Cards:';
+$string['rewards_and_redemption'] = 'Rewards & Redemption';
+$string['spin_wheel'] = 'Spin Wheel';
+$string['take_poll'] = 'Take Poll';
+$string['poll'] = 'Poll';
+$string['redemption_zone'] = 'Redemption Zone';
+$string['point_redeem'] = 'Point Redeem';
+$string['gift_rewards'] = 'Gift Rewards';
+$string['leaderboard'] = 'Leaderboard';
+$string['lb_name'] = 'Name';
+$string['lb_rank'] = 'Rank';
+$string['lb_department'] = 'Department';
+$string['lb_points'] = 'Points';
+$string['lb_badges'] = 'Badges';
+$string['lb_action'] = 'Action';
+
+// Spin popup
+$string['congratulations'] = 'Congratulations!';
+$string['you_have_won'] = 'You have won';
+$string['better_luck'] = 'Better luck next time, keep spinning to earn more points!';
+$string['you_have_won_spin'] = 'You have won';
+$string['points_suffix'] = 'points on the spin wheel!';
+
+// Scratch card popup
+$string['scratch_card_reveal'] = '🎁 Scratch Card Reveal';
+$string['congrats_emoji'] = '🎉 Congratulations!';
+$string['you_won'] = 'You won';
+$string['reward_added'] = 'Your reward has been added to your account.';
+
+// Gift modal
+$string['gift_rewards_title'] = 'Gift your rewards to friends';
+$string['search_employee'] = 'Search employee...';
+$string['search'] = 'Search';
+$string['points_placeholder'] = 'Enter points';
+$string['close'] = 'Close';
+$string['send'] = 'Send';
+
+// Redeem modal
+$string['redeem_avl_pts'] = 'Redeem Points (Available Points:';
+$string['lifetime_points'] = 'Lifetime Points';
+$string['burnout_points'] = 'Burnout Points';
+$string['active_points'] = 'Active Points';
+$string['redeemable_points'] = 'Redeemable Points';
+$string['redeem_note'] = '*5000 points can be redeemed at once';
+$string['redeem_now'] = 'Redeem Now';
+
+// Message modal
+$string['message'] = 'Message';
+$string['type_text'] = 'Type your message';
+
+// Spin won today
+$string['spin_won_today'] = 'You have won today\'s luck on wheel, Try next day';
+
 $string['pluginname'] = "My Custom Dashboard";
 $string['title'] = "My Dashboard";
 $string['enterpoint'] = "Add user point";
@@ -72,7 +154,7 @@ $string['download_csv'] = "Download csv";
 $string['gradeaverage'] = "Grade average";
 $string['ratingaverage'] = "Rating average";
 $string['norecordfound'] = "No Records Found";
-
+$string['showing_entries'] = 'Showing {$a->start} to {$a->end} of {$a->total} entries';
 // sme leader feedback report 
 $string['viewfeedback'] = "View Feedback";
 $string['fromuser'] = "From User";
@@ -90,3 +172,36 @@ $string['status'] = "Status";
 $string['mentor'] = "Mentor";
 $string['student'] = "Student";
 $string['porposerequest'] = "Purpose";
+$string['empid'] = 'Emp ID';
+$string['point_type'] = 'Point Type';
+$string['action_col'] = 'Action';
+$string['date_time'] = 'Date Time';
+$string['added'] = 'Added';
+$string['pointtype_welcome'] = 'Welcome';
+$string['pointtype_login'] = 'Login';
+$string['pointtype_quiz_passed'] = 'Quiz Passed';
+$string['my_points_logs'] = 'My Points Logs';
+$string['copy'] = 'Copy';
+$string['csv'] = 'CSV';
+$string['excel'] = 'Excel';
+$string['pdf'] = 'PDF';
+$string['print'] = 'Print';
+$string['search_placeholder'] = 'Search...';
+$string['removed'] = 'Removed';
+
+
+// Gift modal footer
+$string['gift_modal_close'] = 'Close';
+$string['gift_modal_send'] = 'Send';
+$string['gift_modal_title'] = 'Gift your rewards to friends (Avl Pts: {$a})';
+
+// Redeem modal
+$string['redeem_note'] = '*5000 points can be redeemed at once';
+$string['redeem_now'] = 'Redeem Now';
+
+// Better luck popup
+$string['better_luck_title'] = '😢 Better Luck Next Time!';
+$string['try_again'] = 'Try Again! 🎯';
+
+// Points modal
+$string['points_log_title'] = 'Points Log';

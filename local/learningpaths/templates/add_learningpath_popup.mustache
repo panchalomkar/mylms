@@ -2,19 +2,22 @@
 <div class="col-xs-4 col-sm-8 new-learning">
   <div class="create-buttons cbtn_lp">
     <span class="course">
-      <a href="#" class="btn btn-primary new-button" data-toggle="modal" data-target="#largeModal">
-        <i class="fa fa-plus-circle tooltipelement_left"></i>
+      <a href="#" class="btn btn-primary new-button" data-toggle="modal" data-bs-toggle="modal" data-target="#largeModal" data-bs-target="#largeModal">
+        <i class="fa fa-plus-circle tooltipelement_left" aria-hidden="true"></i>
           <span>{{#str}}add_learning, local_learningpaths{{/str}}</span>
       </a>
     </span>
   </div>
-  <div class="modal fade add-learningspath" id="largeModal" aria-labelledby="largeModal" role="dialog" aria-hidden="true">
+  <div class="modal fade add-learningspath lp-modal" id="largeModal" aria-labelledby="yModalLabel" role="dialog" aria-hidden="true" data-lp-icon="route">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title" id="yModalLabel">{{#str}}create, local_learningpaths{{/str}}</h4>
-            <span class="close" data-dismiss="modal" aria-hidden="true">
-              <i class="wid wid-icon-close-x fa fa-close"></i>
+          <h4 class="modal-title" id="yModalLabel">
+            <span class="lp-modal-title-icon" aria-hidden="true"></span>
+            {{#str}}create, local_learningpaths{{/str}}
+          </h4>
+            <span class="close" data-dismiss="modal" data-bs-dismiss="modal" aria-hidden="true" role="button" tabindex="0" aria-label="Close">
+              <i class="wid wid-icon-close-x fa fa-close" aria-hidden="true"></i>
             </span>
         </div>
           <div class="modal-body">

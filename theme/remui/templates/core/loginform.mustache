@@ -1,3 +1,10 @@
+
+
+<style>
+.cookies-section .dropdown-menu {
+    top: 25px;
+}
+</style>
 <div class="w-full flex flex-col gap-2">
 
     <!-- Welcome Text -->
@@ -37,9 +44,18 @@
             </label>
 
             <div class="relative">
-                <span class="material-symbols-outlined absolute left-3 top-2 text-gray-400 text-xl">
-                    person
-                </span>
+               <span class="absolute left-3 top-2 text-gray-400">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         class="w-5 h-5"
+         fill="none"
+         viewBox="0 0 24 24"
+         stroke="currentColor">
+        <path stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5.121 17.804A9.953 9.953 0 0112 15c2.5 0 4.847.92 6.879 2.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+</span>
                 <input
                     type="text"
                     name="username"
@@ -59,9 +75,18 @@
             </label>
 
             <div class="relative">
-                <span class="material-symbols-outlined absolute left-3 top-2 text-gray-400 text-xl">
-                    lock
-                </span>
+               <span class="absolute left-3 top-2 text-gray-400">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         class="w-5 h-5"
+         fill="none"
+         viewBox="0 0 24 24"
+         stroke="currentColor">
+        <path stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 11c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm6-3V7a6 6 0 10-12 0v1H5a2 2 0 00-2 2v8a2 2 0 002 2h14a2 2 0 002-2v-8a2 2 0 00-2-2h-1zm-2 0H8V7a4 4 0 118 0v1z"/>
+    </svg>
+</span>
                 <input
                     type="password"
                     name="password"
@@ -70,9 +95,18 @@
                     placeholder="{{#cleanstr}}password{{/cleanstr}}"
                     autocomplete="current-password"
                 >
-                <span class="material-symbols-outlined absolute right-3 top-3 text-gray-400 cursor-pointer show-password-icon">
-                    visibility
-                </span>
+              <span class="absolute right-3 top-3 text-gray-400 cursor-pointer show-password-icon">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         class="w-5 h-5"
+         fill="none"
+         viewBox="0 0 24 24"
+         stroke="currentColor">
+        <path stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm6.36 0C20.23 7.94 16.42 5 12 5S3.77 7.94 2.64 12c1.13 4.06 4.94 7 9.36 7s8.23-2.94 9.36-7z" />
+    </svg>
+</span>
             </div>
         </div>
 
@@ -126,7 +160,7 @@
             </div>
 
      <!-- Social Login Buttons -->
-<div class="flex justify-center gap-4 mb-3">
+<div class="flex justify-center gap-4 mb-3 d-none">
 
     <!-- Gmail / Google -->
     <button class="w-10 h-10 border  flex items-center justify-center hover:bg-gray-100" style="border-radius: 99% !important; padding: 4px;">
@@ -148,7 +182,24 @@
 
 </div>
 
+    {{#hasidentityproviders}}
+    <div class="login-identityproviders d-flex flex-column flex-gap-6">
+        <h2 class="login-heading text-align-middle h-semibold-6 m-0">{{#str}} potentialidps, theme_remui {{/str}}</h2>
 
+        <div class="login-identityprovider-btn-wrapper d-flex flex-gap-6 justify-content-center">
+        {{#identityproviders}}
+            <a class="login-identityprovider-btn border-0" href="{{url}}" title="{{name}}">
+                {{#iconurl}}
+                    <img src="{{iconurl}}" alt="" width="24" height="24"/>
+                {{/iconurl}}
+                {{^iconurl}}
+                <img src = "{{extraimageforloginbtn}}}" alt="" width="24" height="24"/>
+                {{/iconurl}}
+            </a>
+        {{/identityproviders}}
+        </div>
+    </div>
+    {{/hasidentityproviders}}
             <!-- Register -->
             <p class="text-center text-sm text-gray-600 mb-2">
                 Don't have account?
@@ -163,11 +214,23 @@
             {{/canshowdesc}}
 
     <!-- Language & Cookies -->
-    <div class="flex justify-center gap-4 text-xs pt-2 text-gray-500 d-none">
+     <div class="d-flex justify-content-center flex-gap-3 cookies-section" style="position: relative;bottom: 591px !important;right: 178px;margin-bottom: -50px !important;">
+        {{#languagemenu}}
+            <div class="login-languagemenu text-link-semibold">
+                {{>core/action_menu}}
+            </div>
+        {{/languagemenu}}
+        <a class="text-link-semibold d-none" href="#" {{!
+        }} data-modal="alert"{{!
+        }} data-modal-title-str='["cookiesenabled", "core"]' {{!
+        }} data-modal-content-str='["cookiesenabled_help_html", "core"]'{{!
+        }}>{{#str}}cookiesnotice{{/str}}</a>
+    </div>
+   <!-- <div class="flex justify-center gap-4 text-xs pt-2 text-gray-500 d-none">
         {{#languagemenu}} <div>{{>core/action_menu}}</div> {{/languagemenu}}
         <a href="#" data-modal="alert" data-modal-title-str='["cookiesenabled","core"]' data-modal-content-str='["cookiesenabled_help_html","core"]'
            class="underline">Cookies</a>
-    </div>
+    </div>-->
 </div>
 
 {{#js}}
@@ -181,13 +244,45 @@ document.addEventListener("DOMContentLoaded", function () {
     const toggleIcon = document.querySelector(".show-password-icon");
     const passwordField = document.getElementById("password");
 
-    if (toggleIcon && passwordField) {
-        toggleIcon.addEventListener("click", function () {
-            const isHidden = passwordField.type === "password";
-            passwordField.type = isHidden ? "text" : "password";
+if (toggleIcon && passwordField) {
+    toggleIcon.addEventListener("click", function () {
 
-            // Change icon
-            this.textContent = isHidden ? "visibility_off" : "visibility";
+        const isHidden = passwordField.type === "password";
+        passwordField.type = isHidden ? "text" : "password";
+
+        // Replace SVG icon
+        this.innerHTML = isHidden
+            ? `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.42 0-8.23-2.94-9.36-7a9.956 9.956 0 012.87-4.57M6.18 6.18A9.956 9.956 0 0112 5c4.42 0 8.23 2.94 9.36 7a9.96 9.96 0 01-4.19 5.17M15 12a3 3 0 00-4.24-2.83M9.88 9.88A3 3 0 0012 15m9-9L3 21" />
+               </svg>`
+            : `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm6.36 0C20.23 7.94 16.42 5 12 5S3.77 7.94 2.64 12c1.13 4.06 4.94 7 9.36 7s8.23-2.94 9.36-7z" />
+               </svg>`;
+    });
+}
+});
+document.addEventListener("DOMContentLoaded", function () {
+    const langToggle = document.getElementById("action-menu-toggle-0");
+    if (langToggle) {
+        langToggle.addEventListener("click", function (e) {
+            e.preventDefault();
+            const menu = document.getElementById("action-menu-0-menu");
+            if (menu) {
+                menu.classList.toggle("show");
+                this.setAttribute("aria-expanded", menu.classList.contains("show"));
+            }
+        });
+
+        // Close on outside click
+        document.addEventListener("click", function (e) {
+            if (!langToggle.closest(".dropdown").contains(e.target)) {
+                const menu = document.getElementById("action-menu-0-menu");
+                if (menu) menu.classList.remove("show");
+            }
         });
     }
 });

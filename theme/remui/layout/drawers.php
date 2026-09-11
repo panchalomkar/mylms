@@ -29,6 +29,46 @@ global $CFG, $PAGE, $COURSE;
 require_once($CFG->dirroot . '/theme/remui/layout/common.php');
 
 $coursecontext = context_course::instance($COURSE->id);
+global $PAGE, $SESSION, $DB, $CFG;
+require_once($CFG->dirroot . '/local/iomad/lib/iomad.php');
+ 
+$layout_company_id = 0;
+if (isset($SESSION->currenteditingcompany)) {
+    $layout_company_id = $SESSION->currenteditingcompany;
+} else if (iomad::is_company_user() || iomad::is_company_admin()) {
+    $layout_company_id = iomad::is_company_user();
+} else if (function_exists('get_company_by_host') && get_company_by_host() > 0) {
+    $layout_company_id = get_company_by_host();
+}
+ 
+// ── STEP 2: Get tenant favicon URL ─────────────────────────────────────────
+$tenant_favicon_url = '';
+if ($layout_company_id) {
+    $context = context_system::instance();
+    $fs = get_file_storage();
+ 
+    $fav_files = $fs->get_area_files(
+        $context->id,
+        'theme_remui',
+        'tenant_favicon_' . $layout_company_id,
+        0,
+        'itemid, filepath, filename',
+        false
+    );
+ 
+    if (!empty($fav_files)) {
+        $fav_file = reset($fav_files);
+        $tenant_favicon_url = moodle_url::make_pluginfile_url(
+            $fav_file->get_contextid(),
+            $fav_file->get_component(),
+            $fav_file->get_filearea(),
+            $fav_file->get_itemid(),
+            $fav_file->get_filepath(),
+            $fav_file->get_filename()
+        )->out(false);
+    }
+}
+ 
 if (!is_guest($coursecontext, $USER) &&
     \theme_remui\toolbox::get_setting('enabledashboardcoursestats') &&
     $PAGE->pagelayout == 'mydashboard' && $PAGE->pagetype == 'my-index') {

@@ -1,5 +1,216 @@
 {{! local_halloffame/awards }}
+<style>
+/* Overlay */
+.hof-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 25, 47, 0.65);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+}
+
+/* Modal Box */
+.hof-modal-box {
+    background: #ffffff;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    overflow: hidden;
+    animation: hofFadeIn 0.25s ease;
+}
+
+/* Header */
+.hof-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background:#003152;
+    color: #fff;
+}
+
+.hof-modal-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color:#fff !important;
+}
+
+/* Close Button */
+.hof-modal-close {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: #fff;
+    font-size: 1.4rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.hof-modal-close:hover {
+    background: rgba(255,255,255,0.35);
+}
+
+/* Body */
+.hof-modal-body {
+    padding: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Likes List */
+.hof-likes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.hof-like-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+.hof-like-user:hover {
+    background: #f5f7fb;
+}
+
+/* Avatar */
+.hof-like-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Text wrapper */
+.hof-like-info {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Name */
+.hof-like-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #222;
+}
+
+/* Time */
+.hof-like-time {
+    font-size: 0.8rem;
+    color: #777;
+}
+</style>
 <div class="hof-awards-grid" id="awardsGrid">
   {{#awards}}{{> local_halloffame/card_award}}{{/awards}}
   {{^awards}}<div class="hof-empty">{{#str}}nosubmissions,local_halloffame{{/str}}</div>{{/awards}}
 </div>
+<div id="hofImageModal" class="hof-modal">
+
+  <div class="hof-modal-box">
+
+    <!-- HEADER -->
+    <div class="hof-modal-header">
+      <div>
+        <h3 id="hofModalTitle"></h3>
+        <p id="hofModalUser" class="text-light"></p>
+      </div>
+
+      <button class="hof-modal-close" onclick="closeAwardImage()">×</button>
+    </div>
+
+    <!-- BODY -->
+    <div class="hof-modal-body">
+      <img id="hofModalImg" src="" />
+    </div>
+
+  </div>
+
+</div>
+<div id="hofLikesModal" class="hof-modal">
+  <div class="hof-modal-box hof-likes-box">
+
+    <div class="hof-modal-header">
+      <h3>Liked by</h3>
+      <button class="hof-modal-close" onclick="closeLikesModal()">×</button>
+    </div>
+
+    <div class="hof-modal-body">
+      <div id="hofLikesList" class="hof-likes-list">
+        <div class="hof-loading">Loading...</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<script>
+document.addEventListener("click", function(e) {
+
+    const btn = e.target.closest(".hof-btn-view-award");
+    if (!btn) return;
+
+    const imageUrl = btn.getAttribute("data-image");
+    const title    = btn.getAttribute("data-title");
+    const user     = btn.getAttribute("data-user");
+
+    if (!imageUrl) return;
+
+    document.getElementById("hofModalImg").src = imageUrl;
+    document.getElementById("hofModalTitle").textContent = title || "Award";
+    document.getElementById("hofModalUser").textContent = user || "";
+
+    document.getElementById("hofImageModal").style.display = "flex";
+});
+
+function closeAwardImage() {
+    document.getElementById("hofImageModal").style.display = "none";
+}
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.hof-view-likes');
+    if (!btn) return;
+
+    const id = btn.dataset.id;
+    const type = btn.dataset.type;
+
+    fetch(M.cfg.wwwroot + '/local/halloffame/ajax/get_likes.php?id=' + id + '&type=' + type)
+        .then(res => res.json())
+        .then(data => {
+            const list = document.getElementById('hofLikesList');
+
+            if (!list) return;
+
+            if (!data.length) {
+                list.innerHTML = '<p class="hof-empty">No likes yet</p>';
+            } else {
+          list.innerHTML = data.map(u => {
+    return `
+    <div class="hof-like-user">
+        <img src="${u.profilepic}" class="hof-like-avatar" />
+        <div class="hof-like-info">
+            <span class="hof-like-name">${u.fullname}</span>
+            <span class="hof-like-time">${u.time}</span>
+        </div>
+    </div>
+`;
+}).join('');
+            }
+
+            document.getElementById('hofLikesModal').style.display = 'flex';
+        });
+});
+
+function closeLikesModal() {
+    document.getElementById('hofLikesModal').style.display = 'none';
+}
+</script>

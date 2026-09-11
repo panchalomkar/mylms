@@ -1,36 +1,271 @@
 {{#lp_course_tab}}
-  <div class="content-courses">
-    <div class="row">
-      <div class="col-sm-6">
-        <div class="searchbox" id="searchbox"  role="search">
-          <div class="input-group mb-3 mt-search input-group custom-search-form">
-            <div class="input-group-btn">
-              <div class="">
-                <input class="form-control " type="text" placeholder="{{#str}}search_courses, local_learningpaths{{/str}}" aria-label="" onkeyup="" value="{{coursename}}" id="search-courses" 
-                name="search-courses" for="search-courses">
-              </div>
-                <span class="input-group-btn search-lp">
-                  <button class="" type="button" onclick="" aria-label="" id="btn-search-courses">
-                    <i class="men men-search-phx fa fa-search header-txt i-search" aria-hidden="true"></i>
-                  </button>
-                </span>
+  <div class="content-courses lp-courses-wrap">
+
+    {{! ===== Toolbar: Search + Add Course ===== }}
+    <div class="row lp-toolbar align-items-center">
+      <div class="col-sm-7 col-md-8">
+        <div class="searchbox lp-searchbox" id="searchbox" role="search">
+          <div class="input-group mb-3 mt-search input-group custom-search-form lp-search-shell">
+            <div class="input-group-btn lp-search-inner">
+              {{! Circular search button - keeps the exact #btn-search-courses id/classes
+                  the existing jQuery handlers (js/functions.js, amd/src/learningpaths.js)
+                  already bind click events to. }}
+              <button class="lp-search-circle"
+                      type="button" onclick=""
+                      aria-label="{{#str}}search_courses, local_learningpaths{{/str}}"
+                      id="btn-search-courses">
+                <svg xmlns="http://www.w3.org/2000/svg" style="    top: 24px;
+    position: relative;" viewBox="0 0 24 24" width="18" height="18"
+                     fill="none" stroke="currentColor" stroke-width="2.4"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="7"></circle>
+                  <path d="m21 21-4.3-4.3"></path>
+                </svg>
+                <span class="sr-only">{{#str}}search_courses, local_learningpaths{{/str}}</span>
+              </button>
+
+              {{! Same #search-courses id/name the existing keypress handler listens on }}
+              <input class="form-control lp-search-input"
+                     type="text"
+                     placeholder="{{#str}}search_courses, local_learningpaths{{/str}}"
+                     aria-label="{{#str}}search_courses, local_learningpaths{{/str}}"
+                     onkeyup=""
+                     value="{{coursename}}"
+                     id="search-courses"
+                     name="search-courses"
+                     for="search-courses">
             </div>
           </div>
         </div>
       </div>
+
       {{#has_add_course_lp}}
-        <div class="col-sm-6 text-right new-course">
+        <div class="col-sm-5 col-md-4 text-right new-course lp-add-wrap">
           <span class="course">
-            <a href="#" id="add-courses-lp" class="btn btn-primary new-button" data-toggle="modal" data-target="#courses-popup">
-              <i class="fa fa-plus-circle" title="{{#str}}add_courses, local_learningpaths{{/str}}"></i>
-              <span>{{#str}}add_courses, local_learningpaths{{/str}}</span>
+            <a href="#" id="add-courses-lp"
+               class="btn btn-primary new-button lp-add-btn"
+               data-toggle="modal" data-bs-toggle="modal"
+               data-target="#courses-popup" data-bs-target="#courses-popup">
+              <span class="lp-add-btn__icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"
+                     fill="none" stroke="currentColor" stroke-width="2.4"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M12 8v8M8 12h8"></path>
+                </svg>
+              </span>
+              <i class="fa fa-plus-circle lp-add-btn__fallback" title="{{#str}}add_courses, local_learningpaths{{/str}}"></i>
+              <span class="lp-add-btn__label">{{#str}}add_courses, local_learningpaths{{/str}}</span>
             </a>
           </span>
         </div>
       {{/has_add_course_lp}}
     </div>
-    <div class="" id="learningpath-courses-list">
-      {{{courselist}}}
+
+    {{! ===== Course list container (rendered server-side by
+         templates/learningpath_courses_list.mustache - untouched) ===== }}
+    <div class="lp-courses-card">
+      <div class="lp-courses-card__inner" id="learningpath-courses-list">
+        {{{courselist}}}
+      </div>
     </div>
+
   </div>
+
+  {{! ===== Scoped styles: brand navy #003152 + orange #ec9707 =====
+       Selectors below match the REAL markup produced by
+       templates/learningpath_courses_list.mustache:
+         ul.header.lpd-courses            -> table header row
+         ul.card-box.list-courses         -> table body rows
+         li.course-description            -> a single row
+         .course_name / .credits / .required / .actions -> the 4 columns
+         i.icons_lp (fa-circle-thin / fa-lock) -> the leading circle icon
+         label.switch > input.course-switch + span.slider.round -> the toggle
+         a.edit-course (fa-pencil) / a.delete-course-learning-path (fa-trash) -> actions
+       No class or id used by AMD/jQuery was renamed. }}
+  <style>
+  .prerequisites-drag-and-drop i.men.men-icon-search.header-txtmen.men-icon-search.i-search {
+    padding: 7px 0 7px 13px !important;
+}
+ul#available-prerequisites li.name.active, ul#added-prerequisites li.name.active {
+    background-color: #ec9707 !important;}
+    .lp-courses-wrap{
+      --lp-navy:#003152;
+      --lp-navy-600:#012741;
+      --lp-orange:#ec9707;
+      --lp-orange-600:#c97e04;
+      --lp-bg:#f6f8fb;
+      --lp-line:#e5ecf3;
+      --lp-text:#0f2740;
+      --lp-muted:#657792;
+      font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+      color:var(--lp-text);
+    }
+
+    /* ---------------- Toolbar ---------------- */
+    .lp-courses-wrap .lp-toolbar{margin:6px 0 20px;}
+
+ 
+
+    /* Add course button - flat navy rounded-rect, matches mockup */
+    .lp-courses-wrap .lp-add-btn{
+      display:inline-flex;align-items:center;gap:8px;
+      background:var(--lp-navy);color:#fff !important;border:0;
+      border-radius:10px;padding:13px 22px;font-weight:700;font-size:14px;
+      box-shadow:0 6px 16px -6px rgba(0,49,82,.45);
+      transition:transform .15s ease,box-shadow .2s ease,background .2s ease;
+      text-decoration:none;
+    }
+    .lp-courses-wrap .lp-add-btn:hover{
+      background:var(--lp-orange);
+      box-shadow:0 10px 22px -8px rgba(236,151,7,.55);
+      transform:translateY(-1px);color:#fff !important;text-decoration:none;
+    }
+    .lp-courses-wrap .lp-add-btn:active{transform:translateY(0);}
+    .lp-courses-wrap .lp-add-btn__icon{display:inline-flex;}
+    .lp-courses-wrap .lp-add-btn__fallback{display:none;} /* SVG replaces FA */
+    .lp-courses-wrap .lp-courses-card{
+      background:#fff;border:1px solid var(--lp-line);border-radius:16px;
+      box-shadow:0 8px 24px -18px rgba(0,49,82,.25);overflow:hidden;
+    }
+    .lp-courses-wrap .lp-courses-card__inner{padding:0;}
+    .lp-courses-wrap #learningpath-courses-list ul.header.lpd-courses{
+      list-style:none;margin:0;padding:0;background:linear-gradient(180deg,#f4f7fb,#eaf0f6);
+    }
+    .lp-courses-wrap #learningpath-courses-list ul.header.lpd-courses li{
+      margin:0;padding:16px 20px;display:flex;align-items:center;
+    }
+    .lp-courses-wrap #learningpath-courses-list ul.header.lpd-courses .course_name,
+    .lp-courses-wrap #learningpath-courses-list ul.header.lpd-courses .credits,
+    .lp-courses-wrap #learningpath-courses-list ul.header.lpd-courses .required,
+    .lp-courses-wrap #learningpath-courses-list ul.header.lpd-courses .actions{
+      color:var(--lp-navy);font-weight:700;font-size:14px;
+    }
+
+    /* ---------------- Body rows (ul.card-box.list-courses) ---------------- */
+    .lp-courses-wrap #learningpath-courses-list ul.card-box.list-courses{
+      list-style:none;margin:0;padding:0;
+    }
+    .lp-courses-wrap #learningpath-courses-list li.course-description{
+      margin:0;padding:14px 20px;display:flex;align-items:center;
+      border-top:1px solid var(--lp-line);background:#fff;
+      transition:background .18s ease;
+    }
+    .lp-courses-wrap #learningpath-courses-list li.course-description:hover{
+      background:linear-gradient(90deg,rgba(236,151,7,.06),rgba(0,49,82,.03));
+    }
+
+    /* Column base spacing (keeps Bootstrap col-* widths, just adds gaps) */
+    .lp-courses-wrap #learningpath-courses-list .course_name,
+    .lp-courses-wrap #learningpath-courses-list .credits,
+    .lp-courses-wrap #learningpath-courses-list .required,
+    .lp-courses-wrap #learningpath-courses-list .actions{
+      display:flex;align-items:center;font-size:14px;color:var(--lp-text);
+    }
+    .lp-courses-wrap #learningpath-courses-list .course_name{gap:12px;font-weight:600;}
+    .lp-courses-wrap #learningpath-courses-list .actions{gap:14px;}
+
+    /* Leading circle / lock icon (fa-circle-thin / fa-lock rendered by the server) */
+    .lp-courses-wrap #learningpath-courses-list .icons_lp{
+      width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;
+      color:#aebccd;font-size:18px;flex:0 0 auto;
+    }
+
+    /* Toggle switch: label.switch > input.course-switch + span.slider.round */
+    .lp-courses-wrap #learningpath-courses-list .switch{
+      position:relative;display:inline-block;width:44px;height:24px;margin:0;
+    }
+    .lp-courses-wrap #learningpath-courses-list .switch .course-switch{
+      opacity:0;width:0;height:0;position:absolute;
+    }
+    .lp-courses-wrap #learningpath-courses-list .switch .slider{
+      position:absolute;cursor:pointer;inset:0;
+      background-color:#d7dee6;transition:.2s ease;
+    }
+    .lp-courses-wrap #learningpath-courses-list .switch .slider::before{
+      content:"";position:absolute;height:18px;width:18px;left:3px;top:3px;
+      background:#fff;transition:.2s ease;box-shadow:0 1px 3px rgba(0,0,0,.25);
+    }
+    .lp-courses-wrap #learningpath-courses-list .switch .slider.round{border-radius:999px;}
+    .lp-courses-wrap #learningpath-courses-list .switch .slider.round::before{border-radius:50%;}
+    .lp-courses-wrap #learningpath-courses-list .switch .course-switch:checked + .slider{
+      background-color:var(--lp-orange);
+    }
+    .lp-courses-wrap #learningpath-courses-list .switch .course-switch:checked + .slider::before{
+      transform:translateX(20px);
+    }
+    .lp-courses-wrap #learningpath-courses-list .switch .course-switch:focus-visible + .slider{
+      box-shadow:0 0 0 3px rgba(236,151,7,.35);
+    }
+
+    /* Course name link */
+    .lp-courses-wrap #learningpath-courses-list .course_name a{
+      color:var(--lp-navy);font-weight:600;text-decoration:none;
+    }
+    .lp-courses-wrap #learningpath-courses-list .course_name a:hover{
+      color:var(--lp-orange);text-decoration:underline;
+    }
+
+    /* Action icons (edit / delete) - a.edit-course > i.fa-pencil, a.delete-course-learning-path > i.fa-trash */
+    .lp-courses-wrap #learningpath-courses-list .actions a{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:30px;height:30px;border-radius:8px;text-decoration:none;
+    }
+    .lp-courses-wrap #learningpath-courses-list .actions a:hover{background:var(--lp-bg);}
+    .lp-courses-wrap #learningpath-courses-list .actions .fa-pencil{
+      color:#6f8299;transition:color .2s ease,transform .15s ease;
+    }
+    .lp-courses-wrap #learningpath-courses-list .actions .fa-pencil:hover{
+      color:var(--lp-navy);transform:scale(1.15);
+    }
+    .lp-courses-wrap #learningpath-courses-list .actions .wid-deleteicon,
+    .lp-courses-wrap #learningpath-courses-list .actions .fa-trash{
+      color:#c48a92;transition:color .2s ease,transform .15s ease;
+    }
+    .lp-courses-wrap #learningpath-courses-list .actions .fa-trash:hover{
+      color:#e53935;transform:scale(1.15);
+    }
+
+    /* Pagination / per-page select row */
+    .lp-courses-wrap #learningpath-courses-list .pagination_lp{
+      padding:14px 20px;border-top:1px solid var(--lp-line);
+    }
+    .lp-courses-wrap #learningpath-courses-list .pagination_lp select{
+      border:1px solid var(--lp-line);border-radius:8px;padding:4px 8px;
+    }
+
+    /* Empty state */
+    .lp-courses-wrap #loction_no_record_courses{
+      padding:40px 20px;text-align:center;color:var(--lp-muted);font-size:14px;
+    }
+
+    /* ---------------- Responsive ---------------- */
+    @media (max-width:575px){
+      .lp-courses-wrap .lp-toolbar .new-course{margin-top:12px;text-align:left !important;}
+      .lp-courses-wrap .lp-add-btn{width:100%;justify-content:center;}
+      .lp-courses-wrap #learningpath-courses-list li.course-description,
+      .lp-courses-wrap #learningpath-courses-list ul.header.lpd-courses li{padding:12px;}
+      .lp-courses-wrap #learningpath-courses-list ul.header.lpd-courses .credits{display:none;}
+      .lp-courses-wrap #learningpath-courses-list li.course-description .credits{display:none;}
+    }
+  </style>
 {{/lp_course_tab}}
+<script>
+document.addEventListener('change', function(e) {
+
+    if (e.target.matches('.course-learninpath')) {
+        document.getElementById('lp-selected-count').textContent =
+            document.querySelectorAll('.course-learninpath:checked').length;
+    }
+
+    if (e.target.matches('.courses-lpall')) {
+        document.querySelectorAll('.course-learninpath').forEach(function(cb) {
+            cb.checked = e.target.checked;
+        });
+
+        document.getElementById('lp-selected-count').textContent =
+            document.querySelectorAll('.course-learninpath:checked').length;
+    }
+
+});
+</script>

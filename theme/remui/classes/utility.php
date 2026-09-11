@@ -1093,6 +1093,47 @@ if (isset($course['durationweeks'])) {
      * @param string $url
      * @return array
      */
+    /**
+ * Get course IDs visible to the current user, filtered by IOMAD tenant.
+ *
+ * @param int|string $categoryid Category ID or 'all'
+ * @return array Course IDs
+ */
+public static function get_tenant_visible_courseids($categoryid) {
+    global $DB, $USER;
+
+    $coursehandler = new \theme_remui_coursehandler();
+    $categoryids   = $coursehandler->get_allowed_categories($categoryid);
+
+    $systemcontext      = context_system::instance();
+    $canviewhidden      = has_capability('moodle/course:viewhiddencourses', $systemcontext);
+
+    $params = ['canviewhidden' => (int)$canviewhidden];
+
+    list($catsql, $catparams) = $DB->get_in_or_equal($categoryids, SQL_PARAMS_NAMED, 'cat');
+    $params = array_merge($params, $catparams);
+
+    // Check if user belongs to an IOMAD company
+    $companyid = $DB->get_field('company_users', 'companyid', ['userid' => $USER->id]);
+
+    if ($companyid && !is_siteadmin()) {
+        // Restrict to courses assigned to user's company via IOMAD
+        $params['companyid'] = $companyid;
+        $sql = "SELECT c.id
+                FROM {course} c
+                JOIN {company_course} cc ON cc.courseid = c.id AND cc.companyid = :companyid
+                WHERE c.category $catsql
+                  AND (c.visible = 1 OR :canviewhidden = 1)";
+    } else {
+        // Admin/manager or non-IOMAD user: return all visible courses in category
+        $sql = "SELECT c.id
+                FROM {course} c
+                WHERE c.category $catsql
+                  AND (c.visible = 1 OR :canviewhidden = 1)";
+    }
+
+    return $DB->get_fieldset_sql($sql, $params);
+}
     public static function url_get_contents ($url) {
         global $CFG;
         $urlgetcontentsdata = array();
@@ -2118,7 +2159,7 @@ if (isset($course['durationweeks'])) {
             $categoryid = 'all';
         }
 
-        $courseids = self::get_visible_courseids($categoryid);
+       $courseids = self::get_tenant_visible_courseids($categoryid);
 
         // Generate filter data for different categories.
         $pricingfilters = self::generate_pricing_filter_data($courseids);
@@ -2245,7 +2286,9 @@ foreach ($courseids as $cid) {
 }
 
 // Enrolled courses for the logged-in user
-$enrolledcourses = count(enrol_get_users_courses($USER->id, true));
+// Count only enrolled courses that also belong to user's tenant
+$allenrolled   = enrol_get_users_courses($USER->id, true);
+$enrolledcourses = count(array_intersect(array_keys($allenrolled), $courseids));
 
 // $dashboardstats = [
 //     ['icon' => 'inventory_2', 'value' => $totalcourses, 'label' => 'Available Courses', 'description' => 'Total in catalog'],

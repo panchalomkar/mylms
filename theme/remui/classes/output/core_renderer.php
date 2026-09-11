@@ -332,25 +332,130 @@ if ($DB->get_manager()->table_exists('iomadcertificate')) {
  * @param string $filter all|today|thisweek|thismonth
  * @return array
  */
+// public function admindashboard_stats(string $filter = 'all'): array {
+//     global $DB, $USER;
+
+//     $now = time();
+
+//     /* ================================
+//      * IOMAD COMPANY COUNT
+//      * ================================ */
+//     $totalcompanies = 0;
+//     if ($DB->get_manager()->table_exists('company')) {
+//         $totalcompanies = $DB->count_records('company', ['suspended' => 0]);
+//     }
+
+//     /* ================================
+//      * COURSES COUNT
+//      * ================================ */
+//     $coursesql = "SELECT id, timecreated FROM {course} WHERE id > 1";
+//     $courses   = $DB->get_records_sql($coursesql);
+
+//     $filteredcourses = [];
+//     foreach ($courses as $course) {
+//         if ($this->match_time_filter($course->timecreated, $filter, $now)) {
+//             $filteredcourses[] = $course;
+//         }
+//     }
+//     $totalcourses = count($filteredcourses);
+
+//     /* ================================
+//      * USERS COUNT (IOMAD AWARE)
+//      * ================================ */
+//     $usersql = "
+//         SELECT u.id, u.timecreated
+//           FROM {user} u
+//          WHERE u.deleted = 0
+//            AND u.suspended = 0
+//            AND u.id > 1
+//     ";
+//     $users = $DB->get_records_sql($usersql);
+
+//     $filteredusers = [];
+//     foreach ($users as $user) {
+//         if ($this->match_time_filter($user->timecreated, $filter, $now)) {
+//             $filteredusers[] = $user;
+//         }
+//     }
+//     $totalusers = count($filteredusers);
+
+//     /* ================================
+//      * LEARNING PATHS (IOMAD)
+//      * ================================ */
+//     $totalpaths = 0;
+//     if ($DB->get_manager()->table_exists('iomad_learningpath')) {
+//         $totalpaths = $DB->count_records('iomad_learningpath');
+//     }
+
+//     /* ================================
+//      * ADMIN STATS ARRAY (Mustache-ready)
+//      * ================================ */
+//     return [
+//         'userdashboard_stats-admin' => true,
+
+//         'adminstats' => [
+//             [
+//                 'label' => 'Companies',
+//                 'value' => $totalcompanies,
+//                 'trend' => '+12%',
+//                 'trendtype' => [
+//                     'up' => true
+//                 ],
+//                 'accent' => 'rose',
+//                 'icon' => $this->get_admin_icon_svg('building-2'),
+//             ],
+//             [
+//                 'label' => 'Courses',
+//                 'value' => $totalcourses,
+//                 'trend' => '+8%',
+//                 'trendtype' => [
+//                     'up' => true
+//                 ],
+//                 'accent' => 'emerald',
+//                 'icon' => $this->get_admin_icon_svg('book-open'),
+//             ],
+//             [
+//                 'label' => 'Users',
+//                 'value' => $totalusers,
+//                 'trend' => '-5%',
+//                 'trendtype' => [
+//                     'down' => true
+//                 ],
+//                 'accent' => 'violet',
+//                 'icon' => $this->get_admin_icon_svg('users'),
+//             ],
+//             [
+//                 'label' => 'Learning Paths',
+//                 'value' => $totalpaths,
+//                 'trend' => '+15%',
+//                 'trendtype' => [
+//                     'up' => true
+//                 ],
+//                 'accent' => 'sky',
+//                 'icon' => $this->get_admin_icon_svg('git-branch'),
+//             ]
+//         ]
+//     ];
+// }
 public function admindashboard_stats(string $filter = 'all'): array {
     global $DB, $USER;
-
+ 
     $now = time();
-
+ 
     /* ================================
-     * IOMAD COMPANY COUNT
+     * IOMAD COMPANY COUNT (current)
      * ================================ */
     $totalcompanies = 0;
     if ($DB->get_manager()->table_exists('company')) {
         $totalcompanies = $DB->count_records('company', ['suspended' => 0]);
     }
-
+ 
     /* ================================
-     * COURSES COUNT
+     * COURSES COUNT (current)
      * ================================ */
     $coursesql = "SELECT id, timecreated FROM {course} WHERE id > 1";
     $courses   = $DB->get_records_sql($coursesql);
-
+ 
     $filteredcourses = [];
     foreach ($courses as $course) {
         if ($this->match_time_filter($course->timecreated, $filter, $now)) {
@@ -358,9 +463,9 @@ public function admindashboard_stats(string $filter = 'all'): array {
         }
     }
     $totalcourses = count($filteredcourses);
-
+ 
     /* ================================
-     * USERS COUNT (IOMAD AWARE)
+     * USERS COUNT (current, IOMAD AWARE)
      * ================================ */
     $usersql = "
         SELECT u.id, u.timecreated
@@ -370,7 +475,7 @@ public function admindashboard_stats(string $filter = 'all'): array {
            AND u.id > 1
     ";
     $users = $DB->get_records_sql($usersql);
-
+ 
     $filteredusers = [];
     foreach ($users as $user) {
         if ($this->match_time_filter($user->timecreated, $filter, $now)) {
@@ -378,66 +483,158 @@ public function admindashboard_stats(string $filter = 'all'): array {
         }
     }
     $totalusers = count($filteredusers);
-
+ 
     /* ================================
-     * LEARNING PATHS (IOMAD)
+     * LEARNING PATHS (current, IOMAD)
      * ================================ */
     $totalpaths = 0;
     if ($DB->get_manager()->table_exists('iomad_learningpath')) {
         $totalpaths = $DB->count_records('iomad_learningpath');
     }
-
+ 
+    /* ================================
+     * PREVIOUS PERIOD COUNTS (NEW - this was missing)
+     * ================================ */
+ 
+    // Companies: only usable if the table actually tracks timecreated.
+    $previouscompanies = 0;
+    if ($DB->get_manager()->table_exists('company')
+        && $DB->get_manager()->field_exists('company', 'timecreated')) {
+        $companies = $DB->get_records_select('company', 'suspended = 0', null, '', 'id, timecreated');
+        foreach ($companies as $company) {
+            if ($this->match_previous_time_filter($company->timecreated, $filter, $now)) {
+                $previouscompanies++;
+            }
+        }
+    }
+ 
+    // Courses: reuse the $courses array already fetched above.
+    $previouscourses = 0;
+    foreach ($courses as $course) {
+        if ($this->match_previous_time_filter($course->timecreated, $filter, $now)) {
+            $previouscourses++;
+        }
+    }
+ 
+    // Users: reuse the $users array already fetched above.
+    $previoususers = 0;
+    foreach ($users as $user) {
+        if ($this->match_previous_time_filter($user->timecreated, $filter, $now)) {
+            $previoususers++;
+        }
+    }
+ 
+    // Learning paths: only usable if the table tracks timecreated.
+    $previouspaths = 0;
+    if ($DB->get_manager()->table_exists('iomad_learningpath')
+        && $DB->get_manager()->field_exists('iomad_learningpath', 'timecreated')) {
+        $paths = $DB->get_records('iomad_learningpath', null, '', 'id, timecreated');
+        foreach ($paths as $path) {
+            if ($this->match_previous_time_filter($path->timecreated, $filter, $now)) {
+                $previouspaths++;
+            }
+        }
+    }
+ 
+    /* ================================
+     * TRENDS (now based on real previous-period data)
+     * ================================ */
+    $companytrend = $this->calculate_trend($totalcompanies, $previouscompanies);
+    $coursetrend  = $this->calculate_trend($totalcourses, $previouscourses);
+    $usertrend    = $this->calculate_trend($totalusers, $previoususers);
+    $pathtrend    = $this->calculate_trend($totalpaths, $previouspaths);
+ 
     /* ================================
      * ADMIN STATS ARRAY (Mustache-ready)
      * ================================ */
     return [
         'userdashboard_stats-admin' => true,
-
+ 
         'adminstats' => [
             [
                 'label' => 'Companies',
                 'value' => $totalcompanies,
-                'trend' => '+12%',
-                'trendtype' => [
-                    'up' => true
-                ],
+                'trend' => $companytrend['trend'],
+                'trendtype' => $companytrend['trendtype'],
                 'accent' => 'rose',
                 'icon' => $this->get_admin_icon_svg('building-2'),
             ],
             [
                 'label' => 'Courses',
                 'value' => $totalcourses,
-                'trend' => '+8%',
-                'trendtype' => [
-                    'up' => true
-                ],
+                'trend' => $coursetrend['trend'],
+                'trendtype' => $coursetrend['trendtype'],
                 'accent' => 'emerald',
                 'icon' => $this->get_admin_icon_svg('book-open'),
             ],
             [
                 'label' => 'Users',
                 'value' => $totalusers,
-                'trend' => '-5%',
-                'trendtype' => [
-                    'down' => true
-                ],
+                'trend' => $usertrend['trend'],
+                'trendtype' => $usertrend['trendtype'],
                 'accent' => 'violet',
                 'icon' => $this->get_admin_icon_svg('users'),
             ],
             [
                 'label' => 'Learning Paths',
                 'value' => $totalpaths,
-                'trend' => '+15%',
-                'trendtype' => [
-                    'up' => true
-                ],
+                'trend' => $pathtrend['trend'],
+                'trendtype' => $pathtrend['trendtype'],
                 'accent' => 'sky',
                 'icon' => $this->get_admin_icon_svg('git-branch'),
             ]
         ]
     ];
 }
-
+ 
+/**
+ * Mirrors match_time_filter() but checks whether a timestamp falls in the
+ * PREVIOUS comparable period (yesterday / last week / last month / >30 days
+ * ago for 'all'). Needed so trends have a real baseline to compare against.
+ */
+private function match_previous_time_filter($timecreated, $filter, $now) {
+    switch ($filter) {
+        case 'today':
+            $yesterday = strtotime('-1 day', $now);
+            return date('Y-m-d', $timecreated) == date('Y-m-d', $yesterday);
+ 
+        case 'thisweek':
+            $prevweekstart = strtotime('monday last week', $now);
+            $prevweekend   = strtotime('sunday last week', $now) + 86399;
+            return $timecreated >= $prevweekstart && $timecreated <= $prevweekend;
+ 
+        case 'thismonth':
+            $prevmonth = strtotime('first day of last month', $now);
+            return date('Y-m', $timecreated) == date('Y-m', $prevmonth);
+ 
+        default: // 'all' - use a rolling 30-day-ago baseline.
+            return $timecreated <= ($now - (30 * 86400));
+    }
+}
+ 
+private function calculate_trend($current, $previous): array {
+ 
+    if ($previous <= 0) {
+ 
+        return [
+            'trend' => $current > 0 ? '+100%' : '0%',
+            'trendtype' => [
+                'up' => $current > 0,
+                'down' => false
+            ]
+        ];
+    }
+ 
+    $percent = round((($current - $previous) / $previous) * 100);
+ 
+    return [
+        'trend' => ($percent >= 0 ? '+' : '') . $percent . '%',
+        'trendtype' => [
+            'up' => $percent > 0,
+            'down' => $percent < 0
+        ]
+    ];
+}
 /**
  * Match record against date filter
  */
@@ -1252,7 +1449,16 @@ private function get_admin_icon_svg(string $icon): string {
     /**
      * Returns the url of the custom favicon.
      */
-    public function favicon() {
+      public function favicon() {
+        $id = '';
+        if (!empty($SESSION->currenteditingcompany)) {
+            $id = $SESSION->currenteditingcompany;
+        } else if (\iomad::is_company_user()) {
+            $id = \iomad::is_company_user();
+        }
+        if (!empty($id)) {
+            return \theme_remui\toolbox::setting_file_url('tenant_favicon_' . $id, 'tenant_favicon_' . $id);
+        }
         $favicon = \theme_remui\toolbox::setting_file_url('faviconurl', 'faviconurl');
         if (empty($favicon)) {
             return \theme_remui\toolbox::image_url('favicon', 'theme');

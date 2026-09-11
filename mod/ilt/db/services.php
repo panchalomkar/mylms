@@ -41,3 +41,14 @@ $functions = array(
             'capabilities'  => ''
         ),
 );
+$services = array(
+    'custom_mobile_app' => array(
+        'functions' => array(
+            'mod_ilt_get_ilt_session_ecommerce',
+            'mod_ilt_enroll_ilt_session_ecommerce'
+        ),
+        'restrictedusers' => 0,
+        'enabled' => 1,
+        'shortname' => 'custom_mobile_app'
+    )
+);

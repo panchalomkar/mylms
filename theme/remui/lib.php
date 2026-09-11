@@ -51,38 +51,98 @@ function theme_remui_get_extra_css() {
  * @param array $options
  * @return bool
  */
+// File: theme/remui/lib.php
+// Find function: theme_remui_get_module_icon_colors()
+// If it doesn't exist, add it:
+
+function theme_remui_get_module_icon_colors() {
+    return [
+        // Core Moodle activities
+        'assign'        => '#7c3aed',  // purple  - Assignment
+        'attendance'    => '#2563eb',  // blue    - Attendance
+        'choice'        => '#16a34a',  // green   - Choice
+        'data'          => '#ea580c',  // orange  - Database
+        'feedback'      => '#db2777',  // pink    - Feedback
+        'forum'         => '#6d28d9',  // violet  - Forum
+        'glossary'      => '#0f766e',  // teal    - Glossary
+        'h5pactivity'   => '#2563eb',  // blue    - H5P
+        'lesson'        => '#7c3aed',  // purple  - Lesson
+        'quiz'          => '#be185d',  // rose    - Quiz
+        'scorm'         => '#92400e',  // brown   - SCORM
+        'survey'        => '#0891b2',  // cyan    - Survey
+        'wiki'          => '#7c3aed',  // purple  - Wiki
+        'workshop'      => '#db2777',  // pink    - Workshop
+
+        // Resources
+        'page'          => '#16a34a',  // green   - Page
+        'url'           => '#2563eb',  // blue    - URL
+        'label'         => '#6d28d9',  // violet  - Text area
+        'folder'        => '#ca8a04',  // amber   - Folder
+        'resource'      => '#dc2626',  // red     - File
+
+        // 3rd-party plugins
+        'zoom'          => '#ea580c',  // orange  - Zoom
+        'bigbluebuttonbn' => '#2563eb',// blue    - BBB
+        'iomadcertificate'=> '#92400e',// brown   - IOMAD Cert
+        'certificate'   => '#0891b2',  // cyan    - Custom Cert
+        'hvp'           => '#2563eb',  // blue    - H5P (old)
+        'kialo'         => '#1d4ed8',  // indigo  - Kialo
+        'videotime'     => '#16a34a',  // green   - Video Time
+    ];
+}
+
 function theme_remui_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
     if ($context->contextlevel != CONTEXT_SYSTEM) {
         send_file_not_found();
     }
     // By default, theme files must be cache-able by both browsers and proxies.
-    $settings = [
-        'frontpageloader',
-        'staticimage',
-        'testimonialimage1',
-        'testimonialimage2',
-        'testimonialimage3',
-        'slideimage0',
-        'slideimage1',
-        'slideimage2',
-        'slideimage3',
-        'slideimage4',
-        'slideimage5',
-        'frontpageblockimage1',
-        'frontpageblockimage2',
-        'frontpageblockimage3',
-        'frontpageblockimage4',
-        'logo',
-        'logomini',
-        'faviconurl',
-        'loginsettingpic',
-        'loginpanellogo',
-        'secondaryfooterlogo',
-        'secondaryfooterlogodarkmode',
-        'loaderimage',
-        'darkmodelogo',
-        'darkmodelogomini'
-    ];
+  $settings = [
+    'frontpageloader',
+    'staticimage',
+    'testimonialimage1',
+    'testimonialimage2',
+    'testimonialimage3',
+    'slideimage0',
+    'slideimage1',
+    'slideimage2',
+    'slideimage3',
+    'slideimage4',
+    'slideimage5',
+    'frontpageblockimage1',
+    'frontpageblockimage2',
+    'frontpageblockimage3',
+    'frontpageblockimage4',
+    'logo',
+    'logomini',
+    'faviconurl',
+    'loginsettingpic',
+    'loginpanellogo',
+    'secondaryfooterlogo',
+    'secondaryfooterlogodarkmode',
+    'loaderimage',
+    'darkmodelogo',
+    'darkmodelogomini'
+];
+global $DB;
+
+$company_id = rap_is_company_user();
+if (empty($company_id)) {
+    $hostcompanyid = get_company_by_host();
+    if (!empty($hostcompanyid)) {
+        $company_id = $hostcompanyid;
+    }
+}
+
+if (!empty($company_id)) {
+    $tenantfavicon = 'tenant_favicon_' . $company_id;
+    $settings[] = $tenantfavicon;
+
+    $tenantlogo = 'tenant_logo_' . $company_id;
+    $settings[] = $tenantlogo;
+
+    $tenantlogin = 'tenant_loginimage_' . $company_id;
+    $settings[] = $tenantlogin;
+}
     if (in_array($filearea, $settings)) {
         $theme = theme_config::load('remui');
         // By default, theme files must be cache-able by both browsers and proxies.
@@ -808,7 +868,7 @@ function get_company_by_host(){
     global $DB;
     // Check if Disable tenant from setting then below condition working 
     $theme = theme_config::load('remui');
-    $companyid= 1;
+    $companyid= 0;
     $hostname = $_SERVER['HTTP_HOST'];
     $hostcompanyid= $DB->get_record_sql("SELECT id FROM {company} WHERE hostname = 'https://$hostname' OR hostname = 'http://$hostname' LIMIT 1");
     if(!empty($hostcompanyid->id)){

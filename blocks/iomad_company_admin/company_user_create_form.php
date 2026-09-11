@@ -60,7 +60,7 @@ $companylist = new moodle_url('/blocks/iomad_company_admin/index.php', $urlparam
 $linktext = get_string('createuser', 'block_iomad_company_admin');
 // Set the url.
 $linkurl = new moodle_url('/blocks/iomad_company_admin/company_user_create_form.php');
-$dashboardurl = new moodle_url('/blocks/iomad_company_admin/index.php');
+$dashboardurl = new moodle_url('/local/mt_dashboard/edit.php?tabid=2');
 
 // Print the page header.
 $PAGE->set_context($companycontext);

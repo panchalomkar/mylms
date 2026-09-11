@@ -1,0 +1,369 @@
+{{!
+  @template local_skillgap/manager_dashboard
+  Manager team analytics. Renders inside Moodle standard layout.
+}}
+<div class="local-skillgap container-fluid px-0">
+
+  <div class="d-flex align-items-center justify-content-between flex-wrap mb-4">
+    <div>
+      <h3 class="mb-0" style="color:#033252;">
+        <i class="fa fa-users mr-2" style="color:#eb980d;"></i>
+        {{#str}} manager_dashboard, local_skillgap {{/str}}
+      </h3>
+      <p class="text-muted small mb-0 mt-1">{{fullname}} &mdash; {{team_count}} reportees</p>
+    </div>
+  </div>
+
+  {{! Filter bar }}
+  <div class="card mb-4">
+    <div class="card-body py-2">
+      <form method="get" action="{{{wwwroot}}}/local/skillgap/manager/dashboard.php" class="form-inline flex-wrap" style="gap:8px;">
+        <div class="form-group mb-2 mr-2">
+          <label class="mr-2 small font-weight-bold">{{#str}} department, local_skillgap {{/str}}</label>
+          <select name="deptid" class="form-control form-control-sm">
+            {{#departments}}<option value="{{id}}" {{#selected}}selected{{/selected}}>{{name}}</option>{{/departments}}
+          </select>
+        </div>
+        <div class="form-group mb-2 mr-2">
+          <label class="mr-2 small font-weight-bold">{{#str}} competency, local_skillgap {{/str}}</label>
+          <select name="compid" class="form-control form-control-sm">
+            {{#competencies}}<option value="{{id}}" {{#selected}}selected{{/selected}}>{{name}}</option>{{/competencies}}
+          </select>
+        </div>
+        <button type="submit" class="btn btn-sm mb-2" style="background:#033252;color:#fff;">
+          <i class="fa fa-filter mr-1"></i>{{#str}} apply_filter, local_skillgap {{/str}}
+        </button>
+        <a href="{{{wwwroot}}}/local/skillgap/manager/dashboard.php"
+           class="btn btn-outline-secondary btn-sm mb-2">{{#str}} reset, local_skillgap {{/str}}</a>
+      </form>
+    </div>
+  </div>
+
+  {{#no_team}}
+  <div class="alert alert-warning">
+    <i class="fa fa-info-circle mr-2"></i>{{#str}} no_team, local_skillgap {{/str}}
+  </div>
+  {{/no_team}}
+
+  {{^no_team}}
+  {{! Metric cards }}
+  <div class="row mb-4">
+    <div class="col-6 col-md-3 mb-3">
+      <div class="card h-100" style="border-top:4px solid #033252;">
+        <div class="card-body text-center py-3">
+          <i class="fa fa-users fa-2x mb-2" style="color:#033252;"></i>
+          <div class="h2 font-weight-bold mb-1" style="color:#033252;">{{team_count}}</div>
+          <div class="small text-muted text-uppercase">{{#str}} team_members, local_skillgap {{/str}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <div class="card h-100" style="border-top:4px solid #28a745;">
+        <div class="card-body text-center py-3">
+          <i class="fa fa-line-chart fa-2x mb-2 text-success"></i>
+          <div class="h2 font-weight-bold text-success mb-1">{{team_readiness}}%</div>
+          <div class="small text-muted text-uppercase">{{#str}} team_readiness, local_skillgap {{/str}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <div class="card h-100" style="border-top:4px solid #dc3545;">
+        <div class="card-body text-center py-3">
+          <i class="fa fa-exclamation-circle fa-2x mb-2 text-danger"></i>
+          <div class="h5 font-weight-bold text-danger mt-2 mb-1">{{most_failing}}</div>
+          <div class="small text-muted text-uppercase">{{#str}} most_failing, local_skillgap {{/str}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <div class="card h-100" style="border-top:4px solid #eb980d;">
+        <div class="card-body text-center py-3">
+          <i class="fa fa-trophy fa-2x mb-2" style="color:#eb980d;"></i>
+          <div class="h5 font-weight-bold mt-2 mb-1" style="color:#854F0B;">{{most_improved}}</div>
+          <div class="small text-muted text-uppercase">{{#str}} most_improved, local_skillgap {{/str}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    {{! Competency Performance table with clickable counts }}
+    <div class="col-12 col-lg-7 mb-4">
+      <div class="card h-100">
+        <div class="card-header" style="background:#033252;color:#fff;">
+          <h5 class="mb-0"><i class="fa fa-bar-chart mr-2" style="color:#eb980d;"></i>{{#str}} competency_performance, local_skillgap {{/str}}</h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0">
+              <thead class="thead-light">
+                <tr>
+                  <th>{{#str}} competency, local_skillgap {{/str}}</th>
+                  <th class="text-center">{{#str}} total, local_skillgap {{/str}}</th>
+                  <th class="text-center text-success">{{#str}} competent, local_skillgap {{/str}}</th>
+                  <th class="text-center text-danger">{{#str}} non_competent, local_skillgap {{/str}}</th>
+                  <th>{{#str}} avg_score, local_skillgap {{/str}}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#comp_report}}
+                <tr>
+                  <td class="font-weight-medium">{{compname}}</td>
+                  <td class="text-center">
+                    <button type="button" class="btn btn-sm btn-link p-0 font-weight-bold sg-drilldown-btn"
+                      style="color:#033252;"
+                      data-compname="{{compname}}"
+                      data-type="total"
+                      data-users="{{total_users_json}}">
+                      {{total_users}}
+                    </button>
+                  </td>
+                  <td class="text-center">
+                    <button type="button" class="btn btn-sm btn-link p-0 font-weight-bold text-success sg-drilldown-btn"
+                      data-compname="{{compname}}"
+                      data-type="competent"
+                      data-users="{{competent_users_json}}">
+                      {{competent}}
+                    </button>
+                  </td>
+                  <td class="text-center">
+                    <button type="button" class="btn btn-sm btn-link p-0 font-weight-bold text-danger sg-drilldown-btn"
+                      data-compname="{{compname}}"
+                      data-type="non_competent"
+                      data-users="{{non_competent_users_json}}">
+                      {{non_competent}}
+                    </button>
+                  </td>
+                  <td>
+                    <div class="progress mb-1" style="height:6px;min-width:55px;">
+                      <div class="progress-bar {{bar_class}}" style="width:{{avg_pct}}%;"></div>
+                    </div>
+                    <small>{{avg_pct}}%</small>
+                  </td>
+                </tr>
+                {{/comp_report}}
+                {{^comp_report}}
+                <tr><td colspan="5" class="text-center text-muted py-4">{{#str}} no_data, local_skillgap {{/str}}</td></tr>
+                {{/comp_report}}
+              </tbody>
+            </table>
+          </div>
+          <p class="text-muted small px-3 py-2 mb-0">
+            <i class="fa fa-info-circle mr-1"></i>Click any count to see the list of users.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {{! Team Member Drilldown with competency breakdown }}
+    <div class="col-12 col-lg-5 mb-4">
+      <div class="card h-100">
+        <div class="card-header" style="background:#033252;color:#fff;">
+          <h5 class="mb-0"><i class="fa fa-user mr-2" style="color:#eb980d;"></i>{{#str}} member_drilldown, local_skillgap {{/str}}</h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-sm mb-0">
+              <thead class="thead-light">
+                <tr>
+                  <th>{{#str}} name, local_skillgap {{/str}}</th>
+                  <th class="text-center">Avg</th>
+                  <th>{{#str}} status, local_skillgap {{/str}}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#team_members}}
+                {{! Main member row — clickable to expand competencies }}
+                <tr class="sg-member-row" style="cursor:pointer;" data-userid="{{userid}}">
+                  <td class="font-weight-medium">
+                    <i class="fa fa-chevron-right mr-1 sg-member-chevron" style="font-size:10px;color:#eb980d;transition:transform .2s;"></i>
+                    {{fullname}}
+                  </td>
+                  <td class="text-center">{{avg_score}}%</td>
+                  <td><span class="badge badge-{{badge_class}}">{{status_label}}</span></td>
+                </tr>
+                {{! Competency breakdown row — hidden by default }}
+                {{#has_comps}}
+                <tr class="sg-member-comps d-none" data-userid="{{userid}}">
+                  <td colspan="3" class="p-0">
+                    <table class="table table-sm mb-0" style="background:#f8f9fa;">
+                      <thead>
+                        <tr style="font-size:11px;color:#6c757d;">
+                          <th class="pl-4">Competency</th>
+                          <th class="text-center">Score</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {{#member_comps}}
+                        <tr style="font-size:12px;">
+                          <td class="pl-4">{{compname}}</td>
+                          <td class="text-center">{{score}}</td>
+                          <td><span class="badge badge-{{badge_class}}" style="font-size:10px;">{{status_label}}</span></td>
+                        </tr>
+                        {{/member_comps}}
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+                {{/has_comps}}
+                {{/team_members}}
+                {{^team_members}}
+                <tr><td colspan="3" class="text-center text-muted py-3">{{#str}} no_team, local_skillgap {{/str}}</td></tr>
+                {{/team_members}}
+              </tbody>
+            </table>
+          </div>
+          <p class="text-muted small px-3 py-2 mb-0">
+            <i class="fa fa-info-circle mr-1"></i>Click a member row to expand their competency scores.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  {{/no_team}}
+</div>
+
+{{! ── Drilldown Modal ─────────────────────────────────────────────────────── }}
+<div class="modal fade" id="sg-drilldown-modal" tabindex="-1" role="dialog"
+     aria-labelledby="sg-drilldown-title" aria-hidden="true"
+     data-bs-backdrop="true" data-bs-keyboard="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header p-2" style="background:#033252;color:#fff;">
+        <h5 class="modal-title text-light" id="sg-drilldown-title">
+          <i class="fa fa-users mr-2" style="color:#eb980d;"></i>
+          <span id="sg-drilldown-heading">Users</span>
+        </h5>
+<button type="button" class="close" data-dismiss="modal" data-bs-dismiss="modal"
+        aria-label="Close" style="color:#fff;">
+  <span aria-hidden="true">&times;</span>
+</button>
+      </div>
+      <div class="modal-body p-0" id="sg-drilldown-body">
+      </div>
+    </div>
+  </div>
+</div>
+
+ <script>
+(function() {
+  function showModal(modalEl) {
+    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+      bootstrap.Modal.getOrCreateInstance(modalEl).show();
+    } else {
+      modalEl.classList.add('show');
+      modalEl.style.display = 'block';
+      modalEl.removeAttribute('aria-hidden');
+      document.body.classList.add('modal-open');
+      var backdrop = document.createElement('div');
+      backdrop.className = 'modal-backdrop fade show';
+      backdrop.id = 'sg-modal-backdrop';
+      document.body.appendChild(backdrop);
+    }
+  }
+
+  function hideModal(modalEl) {
+    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+      bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+    } else {
+      modalEl.classList.remove('show');
+      modalEl.style.display = 'none';
+      modalEl.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
+      var backdrop = document.getElementById('sg-modal-backdrop');
+      if (backdrop) { backdrop.remove(); }
+    }
+  }
+
+  // ── Competency count drilldown popup ────────────────────────────────────
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.sg-drilldown-btn');
+    if (!btn) { return; }
+
+    var compname = btn.getAttribute('data-compname') || '';
+    var type     = btn.getAttribute('data-type')     || 'total';
+    var users    = [];
+    try {
+      var b64 = btn.getAttribute('data-users') || '';
+      users = b64 ? JSON.parse(atob(b64)) : [];
+    } catch(ex) { users = []; }
+
+    var typeLabel = type === 'competent'     ? 'Competent'
+                  : type === 'non_competent' ? 'Non-Competent'
+                  : 'All';
+
+    document.getElementById('sg-drilldown-heading').textContent =
+      compname + ' \u2014 ' + typeLabel + ' (' + users.length + ')';
+
+    var body = document.getElementById('sg-drilldown-body');
+    if (!users.length) {
+      body.innerHTML = '<p class="text-center text-muted py-4 mb-0">No users in this group.</p>';
+    } else {
+      var rows = users.map(function(u) {
+        var badgeColor = u.badge_class === 'success' ? '#28a745'
+                       : u.badge_class === 'warning' ? '#ffc107'
+                       : u.badge_class === 'danger'  ? '#dc3545' : '#6c757d';
+        return '<tr>' +
+          '<td class="font-weight-medium">' + u.fullname + '</td>' +
+          '<td class="text-center">' + u.score + '</td>' +
+          '<td><span class="badge" style="background:' + badgeColor + ';color:#fff;">' +
+            u.status_label + '</span></td>' +
+          '</tr>';
+      }).join('');
+      body.innerHTML =
+        '<div class="table-responsive">' +
+        '<table class="table table-sm table-hover mb-0">' +
+        '<thead class="thead-light"><tr>' +
+        '<th>Name</th><th class="text-center">Score</th><th>Status</th>' +
+        '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+    }
+
+    var modalEl = document.getElementById('sg-drilldown-modal');
+    showModal(modalEl);
+  });
+
+  // ── Close modal — close button ───────────────────────────────────────────
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('[data-dismiss="modal"], [data-bs-dismiss="modal"]')) {
+      var modalEl = document.getElementById('sg-drilldown-modal');
+      hideModal(modalEl);
+    }
+  });
+
+  // ── Close modal — backdrop click ─────────────────────────────────────────
+  document.addEventListener('click', function(e) {
+    var modalEl = document.getElementById('sg-drilldown-modal');
+    if (e.target === modalEl) {
+      hideModal(modalEl);
+    }
+  });
+
+  // ── Close modal — ESC key ────────────────────────────────────────────────
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      var modalEl = document.getElementById('sg-drilldown-modal');
+      hideModal(modalEl);
+    }
+  });
+
+  // ── Member row expand/collapse ───────────────────────────────────────────
+  document.addEventListener('click', function(e) {
+    var row = e.target.closest('.sg-member-row');
+    if (!row) { return; }
+
+    var uid     = row.getAttribute('data-userid');
+    var compRow = document.querySelector('.sg-member-comps[data-userid="' + uid + '"]');
+    var chevron = row.querySelector('.sg-member-chevron');
+
+    if (compRow) {
+      var hidden = compRow.classList.contains('d-none');
+      compRow.classList.toggle('d-none', !hidden);
+      if (chevron) {
+        chevron.style.transform = hidden ? 'rotate(90deg)' : 'rotate(0deg)';
+      }
+    }
+  });
+
+})();
+</script>

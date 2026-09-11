@@ -10,17 +10,13 @@ $learningpathscompanymanager = has_capability('local/learningpaths:managecompany
 if (!$learningpathsmanager && !$learningpathscompanymanager) {
     throw new moodle_exception('access_denied','local_learningpaths');
 }
-global $PAGE, $CFG;
-$context = context_system::instance(); // or correct context
-$PAGE->set_context($context);
-$PAGE->set_url('/local/learningpaths/index.php');
-$PAGE->set_pagelayout('standard'); // FIX layout also
+global $PAGE, $CFG, $OUTPUT;
+
 // Require learningpath class.
 require_once("{$CFG->dirroot}/local/learningpaths/classes/objects/LearningPath.php");
 require_once("{$CFG->dirroot}/local/learningpaths/lib.php");
 // Learning path object definition and check forms submit to create new learningpaths.
-$learningpath = new LearningPath();
-$learningpath->check_forms_submit(optional_param('form', "", PARAM_TEXT));
+
 
 // Page configurations.
 $PAGE->set_title(get_string('pluginname', 'local_learningpaths'));
@@ -29,6 +25,11 @@ $PAGE->navbar->add(get_string('pluginname', 'local_learningpaths'), '/local/lear
 // Load additional resources.
 $PAGE->requires->css(new moodle_url("/local/learningpaths/css/styles.css"));
 $PAGE->requires->js_call_amd('local_learningpaths/save_botton', 'init');
+// Load the visual redesign layer (Moodle 5.0 UI refresh - presentation only, see custom-ui/README.md).
+$PAGE->requires->css(new moodle_url("/local/learningpaths/custom-ui/css/learningpaths-redesign.css"));
+$PAGE->requires->js(new moodle_url("/local/learningpaths/custom-ui/js/learningpaths-enhance.js"), true);
+$learningpath = new LearningPath();
+$learningpath->check_forms_submit(optional_param('form', "", PARAM_TEXT));
 // Show header.
 echo $OUTPUT->header();
 $blinker = get_config('local_trial', 'local_trial_enable_blinker');

@@ -47,7 +47,9 @@ if ($page !== 0) {
 }
 $PAGE->set_url($url);
 $PAGE->set_secondary_active_tab("modulepage");
-
+ ?>
+ <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
+ <?php
 $attemptobj = quiz_create_attempt_handling_errors($attemptid, $cmid);
 $attemptobj->preload_all_attempt_step_users();
 $page = $attemptobj->force_page_number_into_range($page);
@@ -57,9 +59,21 @@ if ($showall === null) {
     $showall = $page == 0 && $attemptobj->get_default_show_all('review');
 }
 $PAGE->set_url($attemptobj->review_url(null, $page, $showall));
-
+?>
+<!-- added by omkar -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<?php
 // Check login.
 require_login($attemptobj->get_course(), false, $attemptobj->get_cm());
+$context = context_module::instance($attemptobj->get_cm()->id);
+
+// Teacher/Admin capability check
+$isstaff = has_capability('mod/quiz:viewreports', $context);
+if (!$isstaff) {
+    // Students → clean UI
+    $PAGE->set_pagelayout('embedded'); // removes left + right panels
+}
 $attemptobj->check_review_capability();
 
 // Create an object to manage all the other (non-roles) access rules.
@@ -129,10 +143,12 @@ if ($showall) {
 $output = $PAGE->get_renderer('mod_quiz');
 
 // Arrange for the navigation to be displayed.
-$navbc = $attemptobj->get_navigation_panel($output, navigation_panel_review::class, $page, $showall);
-$regions = $PAGE->blocks->get_regions();
-$PAGE->blocks->add_fake_block($navbc, reset($regions));
-
+if ($isstaff) {
+    // Admin/Teacher → keep default navigation
+    // $navbc = $attemptobj->get_navigation_panel($output, navigation_panel_review::class, $page, $showall);
+    // $regions = $PAGE->blocks->get_regions();
+    // $PAGE->blocks->add_fake_block($navbc, reset($regions));
+}
 echo $output->review_page($attemptobj, $slots, $page, $showall, $lastpage, $options, $summarydata);
 
 // Trigger an event for this review.

@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/skillgap/db" VERSION="20250623" COMMENT="local_skillgap database tables v3.1 — designation hierarchy from user profiles">
+  <TABLES>
+
+    <!-- Departments synced from Moodle user profiles -->
+    <TABLE NAME="local_skillgap_dept" COMMENT="Departments synced from Moodle user profile department field">
+      <FIELDS>
+        <FIELD NAME="id"          TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name"        TYPE="char" LENGTH="255" NOTNULL="true"/>
+        <FIELD NAME="timecreated" TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS><KEY NAME="primary" TYPE="primary" FIELDS="id"/></KEYS>
+      <INDEXES><INDEX NAME="idx_name" UNIQUE="true" FIELDS="name"/></INDEXES>
+    </TABLE>
+
+    <!--
+      Designation Hierarchy — NEW TABLE (replaces local_skillgap_desig)
+      Designation names are sourced DYNAMICALLY from user profile field 'designation'.
+      This table stores only the HIERARCHY MAPPING (ordering + parent-child).
+      department and designation_name are plain strings — no FK to a master table
+      because the source of truth is Moodle user profiles.
+    -->
+    <TABLE NAME="local_skillgap_desig_hierarchy" COMMENT="Designation hierarchy mapping — names from user profile field designation">
+      <FIELDS>
+        <FIELD NAME="id"                 TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="department"         TYPE="char" LENGTH="255" NOTNULL="true" COMMENT="Matches user.department value"/>
+        <FIELD NAME="designation_name"   TYPE="char" LENGTH="255" NOTNULL="true" COMMENT="Matches user profile field designation value"/>
+        <FIELD NAME="parent_designation" TYPE="char" LENGTH="255" NOTNULL="false" COMMENT="Parent designation name, NULL = top level"/>
+        <FIELD NAME="sort_order"         TYPE="int"  LENGTH="5"  NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="deleted"            TYPE="int"  LENGTH="1"  NOTNULL="true" DEFAULT="0" COMMENT="Soft delete flag"/>
+        <FIELD NAME="timecreated"        TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timemodified"       TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS><KEY NAME="primary" TYPE="primary" FIELDS="id"/></KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_dept"       UNIQUE="false" FIELDS="department"/>
+        <INDEX NAME="idx_dept_desig" UNIQUE="true"  FIELDS="department,designation_name"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- Main Competencies — desigid references local_skillgap_desig_hierarchy -->
+    <TABLE NAME="local_skillgap_comp" COMMENT="Main competencies per department and designation">
+      <FIELDS>
+        <FIELD NAME="id"           TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="deptid"       TYPE="int"  LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="desigid"      TYPE="int"  LENGTH="10" NOTNULL="true" COMMENT="FK to local_skillgap_desig_hierarchy.id"/>
+        <FIELD NAME="name"         TYPE="char" LENGTH="255" NOTNULL="true"/>
+        <FIELD NAME="description"  TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="timecreated"  TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timemodified" TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="usermodified" TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary"  TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_dept"  TYPE="foreign" FIELDS="deptid"  REFTABLE="local_skillgap_dept"             REFFIELDS="id"/>
+        <KEY NAME="fk_desig" TYPE="foreign" FIELDS="desigid" REFTABLE="local_skillgap_desig_hierarchy"  REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES><INDEX NAME="idx_dept_desig" UNIQUE="false" FIELDS="deptid,desigid"/></INDEXES>
+    </TABLE>
+
+    <!-- Sub and sub-sub competencies -->
+    <TABLE NAME="local_skillgap_subcomp" COMMENT="Sub and sub-sub competencies">
+      <FIELDS>
+        <FIELD NAME="id"          TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="compid"      TYPE="int"  LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="name"        TYPE="char" LENGTH="255" NOTNULL="true"/>
+        <FIELD NAME="parentsubid" TYPE="int"  LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="timecreated" TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_comp" TYPE="foreign" FIELDS="compid"      REFTABLE="local_skillgap_comp"    REFFIELDS="id"/>
+        <KEY NAME="fk_psub" TYPE="foreign" FIELDS="parentsubid" REFTABLE="local_skillgap_subcomp" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES><INDEX NAME="idx_compid" UNIQUE="false" FIELDS="compid"/></INDEXES>
+    </TABLE>
+
+    <!-- Competency to course mapping for auto-enrolment -->
+    <TABLE NAME="local_skillgap_comp_course" COMMENT="Competency to course mapping for auto-enrolment">
+      <FIELDS>
+        <FIELD NAME="id"       TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="compid"   TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary"   TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_comp"   TYPE="foreign" FIELDS="compid"   REFTABLE="local_skillgap_comp" REFFIELDS="id"/>
+        <KEY NAME="fk_course" TYPE="foreign" FIELDS="courseid" REFTABLE="course"              REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES><INDEX NAME="idx_comp_course" UNIQUE="true" FIELDS="compid,courseid"/></INDEXES>
+    </TABLE>
+
+    <!-- Assessment questions — now supports sub/sub-sub competency mapping via subcompid -->
+    <TABLE NAME="local_skillgap_question" COMMENT="Assessment questions per competency or sub-competency">
+      <FIELDS>
+        <FIELD NAME="id"           TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="compid"       TYPE="int"  LENGTH="10" NOTNULL="true" COMMENT="FK to main competency"/>
+        <FIELD NAME="subcompid"    TYPE="int"  LENGTH="10" NOTNULL="false" COMMENT="FK to local_skillgap_subcomp; NULL = main comp question"/>
+        <FIELD NAME="questiontext" TYPE="text" NOTNULL="true"/>
+        <FIELD NAME="source"       TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="manual"/>
+        <FIELD NAME="timecreated"  TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_comp" TYPE="foreign" FIELDS="compid" REFTABLE="local_skillgap_comp" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_compid"    UNIQUE="false" FIELDS="compid"/>
+        <INDEX NAME="idx_subcompid" UNIQUE="false" FIELDS="subcompid"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- MCQ options per question -->
+    <TABLE NAME="local_skillgap_qoption" COMMENT="MCQ answer options per question">
+      <FIELDS>
+        <FIELD NAME="id"         TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="questionid" TYPE="int"  LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="optiontext" TYPE="text" NOTNULL="true"/>
+        <FIELD NAME="iscorrect"  TYPE="int"  LENGTH="1"  NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary"     TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_question" TYPE="foreign" FIELDS="questionid" REFTABLE="local_skillgap_question" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <!-- Assessment configurations -->
+    <TABLE NAME="local_skillgap_assessment" COMMENT="Assessment configurations">
+      <FIELDS>
+        <FIELD NAME="id"           TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="deptid"       TYPE="int"  LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="desigid"      TYPE="int"  LENGTH="10" NOTNULL="true" COMMENT="FK to local_skillgap_desig_hierarchy.id"/>
+        <FIELD NAME="title"        TYPE="char" LENGTH="255" NOTNULL="true"/>
+        <FIELD NAME="frequency"    TYPE="char" LENGTH="20"  NOTNULL="true" DEFAULT="quarterly"/>
+        <FIELD NAME="startdate"    TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="enddate"      TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="status"       TYPE="char" LENGTH="20"  NOTNULL="true" DEFAULT="active"/>
+        <FIELD NAME="timecreated"  TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timemodified" TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="usermodified" TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary"  TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_dept"  TYPE="foreign" FIELDS="deptid"  REFTABLE="local_skillgap_dept"            REFFIELDS="id"/>
+        <KEY NAME="fk_desig" TYPE="foreign" FIELDS="desigid" REFTABLE="local_skillgap_desig_hierarchy" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <!-- Competencies mapped to an assessment — supports main/sub/subsub -->
+    <TABLE NAME="local_skillgap_assess_comp" COMMENT="Competencies mapped to an assessment">
+      <FIELDS>
+        <FIELD NAME="id"           TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="assessmentid" TYPE="int"  LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="compid"       TYPE="int"  LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="comp_type"    TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="main"/>
+        <FIELD NAME="subcompid"    TYPE="int"  LENGTH="10" NOTNULL="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary"       TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_assessment" TYPE="foreign" FIELDS="assessmentid" REFTABLE="local_skillgap_assessment" REFFIELDS="id"/>
+        <KEY NAME="fk_comp"       TYPE="foreign" FIELDS="compid"       REFTABLE="local_skillgap_comp"       REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES><INDEX NAME="idx_assess_comp" UNIQUE="false" FIELDS="assessmentid,compid"/></INDEXES>
+    </TABLE>
+
+    <!-- User assessment attempts -->
+    <TABLE NAME="local_skillgap_attempt" COMMENT="User assessment attempts">
+      <FIELDS>
+        <FIELD NAME="id"            TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid"        TYPE="int"  LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="assessmentid"  TYPE="int"  LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="attemptnum"    TYPE="int"  LENGTH="5"  NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="status"        TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="inprogress"/>
+        <FIELD NAME="timecreated"   TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timecompleted" TYPE="int"  LENGTH="10" NOTNULL="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary"       TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_user"       TYPE="foreign" FIELDS="userid"       REFTABLE="user"                      REFFIELDS="id"/>
+        <KEY NAME="fk_assessment" TYPE="foreign" FIELDS="assessmentid" REFTABLE="local_skillgap_assessment" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES><INDEX NAME="idx_user_assess" UNIQUE="false" FIELDS="userid,assessmentid"/></INDEXES>
+    </TABLE>
+
+    <!-- Individual question responses per attempt -->
+    <TABLE NAME="local_skillgap_response" COMMENT="User question responses per attempt">
+      <FIELDS>
+        <FIELD NAME="id"          TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="attemptid"   TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="questionid"  TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="optionid"    TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="iscorrect"   TYPE="int" LENGTH="1"  NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="compid"      TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary"     TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_attempt"  TYPE="foreign" FIELDS="attemptid"  REFTABLE="local_skillgap_attempt"  REFFIELDS="id"/>
+        <KEY NAME="fk_question" TYPE="foreign" FIELDS="questionid" REFTABLE="local_skillgap_question" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <!-- Computed competency scores per attempt -->
+    <TABLE NAME="local_skillgap_score" COMMENT="Computed competency scores per attempt">
+      <FIELDS>
+        <FIELD NAME="id"           TYPE="int"    LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid"       TYPE="int"    LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="compid"       TYPE="int"    LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="assessmentid" TYPE="int"    LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="attemptid"    TYPE="int"    LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="score"        TYPE="number" LENGTH="5" DECIMALS="2" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="maxscore"     TYPE="int"    LENGTH="3" NOTNULL="true" DEFAULT="5"/>
+        <FIELD NAME="status"       TYPE="char"   LENGTH="30" NOTNULL="true" DEFAULT="needs_improvement"/>
+        <FIELD NAME="timecreated"  TYPE="int"    LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary"       TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_user"       TYPE="foreign" FIELDS="userid"       REFTABLE="user"                      REFFIELDS="id"/>
+        <KEY NAME="fk_comp"       TYPE="foreign" FIELDS="compid"       REFTABLE="local_skillgap_comp"       REFFIELDS="id"/>
+        <KEY NAME="fk_assessment" TYPE="foreign" FIELDS="assessmentid" REFTABLE="local_skillgap_assessment" REFFIELDS="id"/>
+        <KEY NAME="fk_attempt"    TYPE="foreign" FIELDS="attemptid"    REFTABLE="local_skillgap_attempt"    REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES><INDEX NAME="idx_user_comp" UNIQUE="false" FIELDS="userid,compid"/></INDEXES>
+    </TABLE>
+
+    <!-- Competency clusters -->
+    <TABLE NAME="local_skillgap_cluster" COMMENT="Competency clusters">
+      <FIELDS>
+        <FIELD NAME="id"           TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name"         TYPE="char" LENGTH="255" NOTNULL="true"/>
+        <FIELD NAME="description"  TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="timecreated"  TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="usermodified" TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS><KEY NAME="primary" TYPE="primary" FIELDS="id"/></KEYS>
+    </TABLE>
+
+    <!-- Competencies mapped to clusters -->
+    <TABLE NAME="local_skillgap_cluster_comp" COMMENT="Competency to cluster mapping">
+      <FIELDS>
+        <FIELD NAME="id"        TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="clusterid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="compid"    TYPE="int" LENGTH="10" NOTNULL="true"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary"    TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_cluster" TYPE="foreign" FIELDS="clusterid" REFTABLE="local_skillgap_cluster" REFFIELDS="id"/>
+        <KEY NAME="fk_comp"    TYPE="foreign" FIELDS="compid"    REFTABLE="local_skillgap_comp"    REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES><INDEX NAME="idx_cluster_comp" UNIQUE="true" FIELDS="clusterid,compid"/></INDEXES>
+    </TABLE>
+
+    <!-- Promotion tracking -->
+    <TABLE NAME="local_skillgap_promotion" COMMENT="Promotion tracking records">
+      <FIELDS>
+        <FIELD NAME="id"            TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid"        TYPE="int"  LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="from_desigid"  TYPE="int"  LENGTH="10" NOTNULL="false" COMMENT="FK to local_skillgap_desig_hierarchy.id"/>
+        <FIELD NAME="to_desigid"    TYPE="int"  LENGTH="10" NOTNULL="false" COMMENT="FK to local_skillgap_desig_hierarchy.id"/>
+        <FIELD NAME="status"        TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending"/>
+        <FIELD NAME="promoted_by"   TYPE="int"  LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="timecreated"   TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timepromoted"  TYPE="int"  LENGTH="10" NOTNULL="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary"        TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_user"        TYPE="foreign" FIELDS="userid"      REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <!-- Team Analytics Visibility Mapping -->
+    <TABLE NAME="local_skillgap_analytics_vis" COMMENT="Designation-based team analytics visibility mapping">
+      <FIELDS>
+        <FIELD NAME="id"           TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="viewer_desig" TYPE="char" LENGTH="100" NOTNULL="true"/>
+        <FIELD NAME="viewer_dept"  TYPE="char" LENGTH="100" NOTNULL="true"/>
+        <FIELD NAME="target_desig" TYPE="char" LENGTH="100" NOTNULL="true"/>
+        <FIELD NAME="target_dept"  TYPE="char" LENGTH="100" NOTNULL="true"/>
+        <FIELD NAME="timecreated"  TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="createdby"    TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_viewer_dept"  UNIQUE="false" FIELDS="viewer_dept"/>
+        <INDEX NAME="idx_viewer_desig" UNIQUE="false" FIELDS="viewer_desig"/>
+        <INDEX NAME="idx_target_dept"  UNIQUE="false" FIELDS="target_dept"/>
+        <INDEX NAME="idx_target_desig" UNIQUE="false" FIELDS="target_desig"/>
+      </INDEXES>
+    </TABLE>
+
+
+    <!-- Notification log to prevent duplicate notifications -->
+    <TABLE NAME="local_skillgap_notif_log" COMMENT="Tracks sent notifications to prevent re-sending">
+      <FIELDS>
+        <FIELD NAME="id"           TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="assessmentid" TYPE="int"  LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="type"         TYPE="char" LENGTH="64" NOTNULL="true"/>
+        <FIELD NAME="timesent"     TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>

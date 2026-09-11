@@ -1,14 +1,17 @@
 /**
- * Hall of Fame v2 – main AMD entry point.
+ * Hall of Fame v3 – main AMD entry point.
  * Boots sub-modules. Handles card re-rendering after AJAX filter.
- * Updated for v2 design system and FontAwesome icons.
+ * Updated for v3: comments + certificate popup support.
+ * Updated for v4: real user pictures + edit/delete buttons after filter.
  *
  * @module local_halloffame/main
  */
 define([
     'local_halloffame/filters',
-    'local_halloffame/likes'
-], function(Filters, Likes) {
+    'local_halloffame/likes',
+    'local_halloffame/comments',
+    'local_halloffame/certpopup'
+], function(Filters, Likes, Comments, CertPopup) {
     'use strict';
 
     var _tab = 'awards';
@@ -30,6 +33,8 @@ define([
         _tab = (opts && opts.tab) ? opts.tab : 'awards';
         Filters.init({tab: _tab});
         Likes.init();
+        Comments.init();
+        CertPopup.init();
 
         document.addEventListener('halloffame:filtered', function(e) {
             renderItems(e.detail.tab, e.detail.items);
@@ -61,27 +66,74 @@ define([
     }
 
     /**
+     * Build the avatar HTML for a card.
+     * Uses the real Moodle profile picture when userpictureurl is available,
+     * falls back to an initial-letter avatar when it is not.
+     */
+    function buildAvatar(userpictureurl, fullname, size, cssClass) {
+        var initial = (fullname || '?').charAt(0).toUpperCase();
+        if (userpictureurl) {
+            return '<img src="' + esc(userpictureurl) + '"'
+                + ' class="' + cssClass + '"'
+                + ' style="width:' + size + 'px;height:' + size + 'px;'
+                + 'border-radius:50%;object-fit:cover;"'
+                + ' alt="' + esc(fullname) + '"/>';
+        }
+        // Fallback: coloured circle with initial letter.
+        return '<div style="width:' + size + 'px;height:' + size + 'px;'
+            + 'background:rgba(255,255,255,.25);border-radius:50%;'
+            + 'display:flex;align-items:center;justify-content:center;'
+            + 'font-size:' + Math.round(size * 0.4) + 'px;'
+            + 'font-weight:800;color:#fff;">'
+            + esc(initial) + '</div>';
+    }
+
+    /**
      * Build an award card as HTML string.
-     * Note: userpicture cannot be rebuilt from WS data — we use an initial avatar fallback.
+     * Uses real profile picture and renders edit/delete buttons for managers.
      */
     function buildAwardCard(a) {
-        var grad     = GRADIENTS[a.id % GRADIENTS.length];
-        var liked    = a.userliked ? ' hof-liked' : '';
-        var pressed  = a.userliked ? 'true' : 'false';
-        var initial  = (a.fullname || '?').charAt(0).toUpperCase();
-        var month    = a.month ? (MONTHS[a.month] || '') : '';
+        var grad         = GRADIENTS[a.id % GRADIENTS.length];
+        var liked        = a.userliked ? ' hof-liked' : '';
+        var pressed      = a.userliked ? 'true' : 'false';
+        var month        = a.month ? (MONTHS[a.month] || '') : '';
+        var commentCount = a.commentcount || 0;
+        var avatar       = buildAvatar(a.userpictureurl, a.fullname, 88, 'hof-avatar');
 
-        return '<div class="hof-award-card" data-id="' + a.id + '">'
+        // Edit / Delete buttons — only rendered when canmanage is true and URLs are present.
+        var manageBtns = '';
+        if (a.canmanage && a.editurl) {
+            manageBtns +=
+                '<a href="' + esc(a.editurl) + '"'
+                + ' class="hof-btn-edit-award hof-action-btn"'
+                + ' aria-label="Edit award" title="Edit award">'
+                + '<i class="fa fa-pencil" aria-hidden="true"></i></a>';
+        }
+        if (a.canmanage && a.deleteurl) {
+            manageBtns +=
+                '<a href="' + esc(a.deleteurl) + '"'
+                + ' class="hof-btn-delete-award hof-action-btn"'
+                + ' onclick="return confirm(\'Delete this award?\')"'
+                + ' aria-label="Delete award" title="Delete award">'
+                + '<i class="fa fa-trash-o" aria-hidden="true"></i></a>';
+        }
+
+        // View-certificate button (only when award has an image).
+        var certBtn = '';
+        if (a.image) {
+            certBtn = '<button class="hof-btn-view-award hof-action-btn"'
+                + ' data-image="' + esc(a.image) + '"'
+                + ' data-title="' + esc(a.title) + '"'
+                + ' data-user="' + esc(a.fullname) + '"'
+                + ' title="View Certificate">'
+                + '<i class="fa fa-eye"></i></button>';
+        }
+
+        return '<div class="hof-award-card" data-id="' + a.id + '" data-type="award">'
             + '<div class="hof-award-header" style="background:' + grad + '">'
-            + (a.image ? '<img src="' + esc(a.image) + '" class="hof-award-bg-img" alt=""/>' : '')
+            + (a.image ? '<img src="" class="hof-award-bg-img" alt=""/>' : '')
             + '<div class="hof-award-confetti" aria-hidden="true"><span>🎊</span><span>🎉</span><span>⭐</span></div>'
-            + '<div class="hof-award-avatar-wrap">'
-            + '  <div class="hof-avatar-ring">'
-            + '    <div style="width:88px;height:88px;background:rgba(255,255,255,.25);'
-            +          'display:flex;align-items:center;justify-content:center;'
-            +          'font-size:2.2rem;font-weight:800;color:#fff;">' + esc(initial) + '</div>'
-            + '  </div>'
-            + '</div>'
+            + '<div class="hof-award-avatar-wrap"><div class="hof-avatar-ring">' + avatar + '</div></div>'
             + '<div class="hof-award-header-text">'
             + '  <h3 class="hof-award-title">' + esc(a.title) + '</h3>'
             + (a.department
@@ -100,47 +152,84 @@ define([
             + ' aria-pressed="' + pressed + '">'
             + '<i class="fa fa-thumbs-up" aria-hidden="true"></i>'
             + '<span class="hof-like-count">' + (a.likecount || 0) + '</span></button>'
-            + '<button class="hof-action-btn" aria-label="Comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>'
-            + '<button class="hof-action-btn" aria-label="Share"><i class="fa fa-share-alt" aria-hidden="true"></i></button>'
-            + '</div></div>';
+            + (a.likecount ? '<button class="hof-view-likes hof-action-btn" data-id="' + a.id + '" data-type="award" title="View Likes"><i class="fa fa-users"></i></button>' : '')
+            + '<button class="hof-comment-btn hof-action-btn" data-id="' + a.id + '" data-type="award" aria-label="Comment">'
+            + '<i class="fa fa-comment-o" aria-hidden="true"></i>'
+            + '<span class="hof-comment-count">' + commentCount + '</span></button>'
+            + certBtn
+            + manageBtns
+            + '</div>'
+            + '<div class="hof-comments-section" id="hof-comments-award-' + a.id + '" style="display:none;">'
+            + '<div class="hof-comments-list" id="hof-comments-list-award-' + a.id + '">'
+            + '<div class="hof-comments-loading"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i></div>'
+            + '</div>'
+            + '<div class="hof-comment-form">'
+            + '<textarea class="hof-comment-input hof-input hof-textarea" placeholder="Write a comment..." rows="2"'
+            + ' data-id="' + a.id + '" data-type="award"></textarea>'
+            + '<button class="hof-comment-submit hof-btn hof-btn-sm hof-btn-primary" data-id="' + a.id + '" data-type="award">'
+            + '<i class="fa fa-paper-plane-o" aria-hidden="true"></i> Post</button>'
+            + '</div></div>'
+            + '</div>';
     }
 
     /**
      * Build an achievement card as HTML string.
+     * Uses real profile picture and renders edit/delete buttons for managers.
      */
     function buildAchCard(a) {
-        var liked   = a.userliked ? ' hof-liked' : '';
-        var pressed = a.userliked ? 'true' : 'false';
-        var initial = (a.fullname || '?').charAt(0).toUpperCase();
-        var heartCls = a.userliked ? 'fa-heart' : 'fa-heart-o';
-        var cert    = '';
+        var liked        = a.userliked ? ' hof-liked' : '';
+        var pressed      = a.userliked ? 'true' : 'false';
+        var heartCls     = a.userliked ? 'fa-heart' : 'fa-heart-o';
+        var commentCount = a.commentcount || 0;
+        var avatar       = buildAvatar(a.userpictureurl, a.fullname, 56, 'hof-ach-avatar');
+        var cert         = '';
 
         if (a.fileurl) {
             var ext = a.fileurl.split('.').pop().toLowerCase();
             if (['jpg','jpeg','png','gif','webp'].indexOf(ext) !== -1) {
                 cert = '<div class="hof-ach-cert-wrap">'
-                     + '<img src="' + esc(a.fileurl) + '" class="hof-ach-cert-img" alt="Certificate for ' + esc(a.title) + '"/>'
+                     + '<img src="' + esc(a.fileurl) + '" class="hof-ach-cert-img hof-cert-clickable"'
+                     + ' data-fileurl="' + esc(a.fileurl) + '" data-title="' + esc(a.title) + '" data-fileisimage="1"'
+                     + ' alt="Certificate for ' + esc(a.title) + '" title="View Certificate"/>'
                      + '</div>';
             } else {
                 cert = '<div class="hof-ach-cert-wrap">'
-                     + '<a href="' + esc(a.fileurl) + '" class="hof-ach-cert-link" target="_blank" rel="noopener noreferrer">'
+                     + '<div class="hof-ach-cert-link hof-cert-clickable"'
+                     + ' data-fileurl="' + esc(a.fileurl) + '" data-title="' + esc(a.title) + '" data-fileisimage="0"'
+                     + ' title="View Certificate" style="cursor:pointer">'
                      + '<div class="hof-cert-pdf-icon"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></div>'
                      + '<span class="hof-cert-pdf-label">Certificate</span>'
                      + '<span class="hof-cert-pdf-sub">PDF</span>'
-                     + '<i class="fa fa-download hof-cert-pdf-dl" aria-hidden="true"></i></a></div>';
+                     + '<i class="fa fa-search hof-cert-pdf-dl" aria-hidden="true"></i></div></div>';
             }
         }
 
-        return '<div class="hof-ach-card" data-id="' + a.id + '">'
+        // Edit / Delete buttons — only rendered when canmanage is true and URLs are present.
+        var manageBtns = '';
+        if (a.canmanage && a.editurl) {
+            manageBtns +=
+                '<a href="' + esc(a.editurl) + '"'
+                + ' class="hof-btn-edit-ach hof-action-btn"'
+                + ' aria-label="Edit achievement" title="Edit achievement">'
+                + '<i class="fa fa-pencil" aria-hidden="true"></i></a>';
+        }
+        if (a.canmanage && a.deleteurl) {
+            manageBtns +=
+                '<a href="' + esc(a.deleteurl) + '"'
+                + ' class="hof-btn-delete-ach hof-action-btn"'
+                + ' onclick="return confirm(\'Delete this achievement?\')"'
+                + ' aria-label="Delete achievement" title="Delete achievement">'
+                + '<i class="fa fa-trash-o" aria-hidden="true"></i></a>';
+        }
+
+        return '<div class="hof-ach-card" data-id="' + a.id + '" data-type="achievement">'
             + '<div class="hof-ach-header">'
-            + '<div class="hof-ach-avatar-ring">'
-            + '<div style="width:56px;height:56px;background:#033252;display:flex;align-items:center;'
-            +   'justify-content:center;font-size:1.5rem;font-weight:800;color:#fff;">' + esc(initial) + '</div>'
-            + '</div>'
+            + '<div class="hof-ach-avatar-ring">' + avatar + '</div>'
             + '<div class="hof-ach-header-text">'
             + '<div class="hof-ach-earner"><strong class="hof-ach-name">' + esc(a.fullname) + '</strong>'
             + '<span class="hof-ach-verb"> earned a certificate in </span></div>'
             + (a.type ? '<span class="hof-ach-type-pill"><i class="fa fa-certificate" aria-hidden="true"></i> ' + esc(a.type) + '</span>' : '')
+            + (a.department ? '<span class="hof-ach-dept-pill"><i class="fa fa-sitemap" aria-hidden="true"></i> ' + esc(a.department) + '</span>' : '')
             + '</div></div>'
             + '<div class="hof-ach-body">' + cert
             + '<div class="hof-ach-details">'
@@ -153,7 +242,22 @@ define([
             + ' aria-pressed="' + pressed + '">'
             + '<i class="fa ' + heartCls + '" aria-hidden="true"></i>'
             + '<span class="hof-like-count">' + (a.likecount || 0) + '</span></button>'
-            + '</div></div>';
+            + '<button class="hof-comment-btn hof-action-btn" data-id="' + a.id + '" data-type="achievement" aria-label="Comment">'
+            + '<i class="fa fa-comment-o" aria-hidden="true"></i>'
+            + '<span class="hof-comment-count">' + commentCount + '</span></button>'
+            + manageBtns
+            + '</div>'
+            + '<div class="hof-comments-section" id="hof-comments-achievement-' + a.id + '" style="display:none;">'
+            + '<div class="hof-comments-list" id="hof-comments-list-achievement-' + a.id + '">'
+            + '<div class="hof-comments-loading"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i></div>'
+            + '</div>'
+            + '<div class="hof-comment-form">'
+            + '<textarea class="hof-comment-input hof-input hof-textarea" placeholder="Write a comment..." rows="2"'
+            + ' data-id="' + a.id + '" data-type="achievement"></textarea>'
+            + '<button class="hof-comment-submit hof-btn hof-btn-sm hof-btn-primary" data-id="' + a.id + '" data-type="achievement">'
+            + '<i class="fa fa-paper-plane-o" aria-hidden="true"></i> Post</button>'
+            + '</div></div>'
+            + '</div>';
     }
 
     // ── Dropzone ───────────────────────────────────────────────────────────────

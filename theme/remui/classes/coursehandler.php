@@ -91,69 +91,100 @@ class theme_remui_coursehandler {
      * Get all course ids which is accessible to current user
      * @return array course ids
      */
-    private function get_course_ids() {
-        global $DB;
-        $cache = $this->get_cache();
-        $ids = $cache->get(COURSE_IDS);
-        $ids = '';
-        if (!$ids) {
-            $ids = [];
-            $where = 'c.id <> :siteid';
-            $params = array(
-                'contextcourse' => CONTEXT_COURSE,
-                'siteid' => SITEID);
-            $ctxselect = context_helper::get_preload_record_columns_sql('ctx');
-            $sql = "SELECT c.id, c.category, c.visible, $ctxselect
+private function get_course_ids() {
+    global $DB, $USER;
+    $cache = $this->get_cache();
+    $ids = $cache->get(COURSE_IDS);
+    // NOTE: Remove the original "$ids = '';" line — it broke cache reads
+
+    if (!$ids) {
+        $ids = [];
+
+        // Get user's company from IOMAD
+        $companyid = $DB->get_field('company_users', 'companyid', ['userid' => $USER->id]);
+
+        $where = 'c.id <> :siteid';
+        $params = [
+            'contextcourse' => CONTEXT_COURSE,
+            'siteid'        => SITEID,
+        ];
+
+        $iomadJoin = '';
+        if ($companyid) {
+            $params['companyid'] = $companyid;
+            // company_course is the correct IOMAD table linking companies to courses
+            $iomadJoin = "JOIN {company_course} cc ON cc.courseid = c.id AND cc.companyid = :companyid";
+        }
+
+        $ctxselect = context_helper::get_preload_record_columns_sql('ctx');
+        $sql = "SELECT c.id, c.category, c.visible, $ctxselect
                 FROM {course} c
                 JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = :contextcourse
-                WHERE ". $where;
+                $iomadJoin
+                WHERE $where";
 
-            $list = $DB->get_records_sql($sql, $params);
-            $mycourses = enrol_get_my_courses();
-            // Loop through all records and make sure we only return the courses accessible by user.
-            foreach ($list as $course) {
-                if (isset($list[$course->id]->hassummary)) {
-                    $list[$course->id]->hassummary = strlen($list[$course->id]->hassummary) > 0;
-                }
-                context_helper::preload_from_record($course);
-                // Check that course is accessible by user.
-                if (!array_key_exists($course->id, $mycourses) && !core_course_category::can_view_course_info($course)) {
-                    unset($list[$course->id]);
-                }
+        $list = $DB->get_records_sql($sql, $params);
+        $mycourses = enrol_get_my_courses();
+
+        foreach ($list as $course) {
+            context_helper::preload_from_record($course);
+            if (!array_key_exists($course->id, $mycourses) && !core_course_category::can_view_course_info($course)) {
+                unset($list[$course->id]);
             }
-            foreach ($list as $id => $value) {
-                $ids[] = (object)[
-                    'tempid' => $id
-                ];
-            }
-            $cache->set(COURSE_IDS, $ids);
         }
-        return $ids;
+
+        foreach ($list as $id => $value) {
+            $ids[] = (object)['tempid' => $id];
+        }
+
+        $cache->set(COURSE_IDS, $ids);
     }
+
+    return $ids;
+}
 
     /**
      * Get ids of enrolled course ids
      * @return array Enrolled course ids
      */
-    protected function get_my_courses() {
-        global $DB;
-        $cache = $this->get_cache();
-        $ids = $cache->get('myids');
-        if (!$ids) {
-            $mycourses = enrol_get_my_courses();
-            $ids = [];
-            if (!empty($mycourses)) {
-                foreach ($mycourses as $id => $value) {
-                    $ids[] = (object)[
-                        'tempid' => $id
-                    ];
-                }
+protected function get_my_courses() {
+    global $DB, $USER;
+    $cache = $this->get_cache();
+    $ids = $cache->get(MY_COURSE_IDS);
+
+    if (!$ids) {
+        $ids = [];
+
+        $companyid = $DB->get_field('company_users', 'companyid', ['userid' => $USER->id]);
+        $mycourses = enrol_get_my_courses();
+
+        if (!empty($mycourses) && $companyid) {
+            $courseids = array_keys($mycourses);
+            list($insql, $inparams) = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED);
+            $inparams['companyid'] = $companyid;
+
+            // Filter enrolled courses to only those in the user's company
+            $tenantcourseids = $DB->get_fieldset_sql(
+                "SELECT courseid FROM {company_course}
+                  WHERE courseid $insql AND companyid = :companyid",
+                $inparams
+            );
+
+            foreach ($tenantcourseids as $id) {
+                $ids[] = (object)['tempid' => $id];
             }
-            $cache->set(MY_COURSE_IDS, $ids);
+        } else if (!empty($mycourses)) {
+            // User has no company — fall back to all enrolled courses
+            foreach ($mycourses as $id => $value) {
+                $ids[] = (object)['tempid' => $id];
+            }
         }
-        return $ids;
+
+        $cache->set(MY_COURSE_IDS, $ids);
     }
 
+    return $ids;
+}
         /**
          * Retrieves number of records from course table
          *

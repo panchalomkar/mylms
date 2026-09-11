@@ -161,7 +161,7 @@ if ($resettenant == 1) {
     $selectedcompany = 0;
 
     // Redirect clean (IMPORTANT to avoid re-setting)
-    redirect(new moodle_url('/my/'));
+    redirect(new moodle_url('/local/mt_dashboard/index.php?company=0&tabid=&showsuspendedcompanies=/'));
 }
 // Now we can display the page.
 $output = $companyselectform = '';
@@ -567,10 +567,13 @@ foreach ($records as $u) {
                         : 'Never',
 
         // EDIT
-        'editurl' => (new moodle_url(
-            '/user/editadvanced.php',
-            ['id' => $u->id]
-        ))->out(false),
+      'editurl' => (new moodle_url(
+    '/user/editadvanced.php',
+    [
+        'id' => $u->id,
+        'returnurl' => '/local/mt_dashboard/edit.php?tabid=2'
+    ]
+))->out(false),
 
         // SUSPEND
         'suspendurl' => (new moodle_url(

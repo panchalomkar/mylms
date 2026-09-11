@@ -389,10 +389,19 @@ const centerText = {
 
 
 // DATA
-const labels = ['Login points', 'Speen Wheel', 'Leadership', 'Quiz points', 'Rewards'];
+const labels = [
+    '<?php echo get_string('loginpoints', 'local_mydashboard'); ?>',
+    '<?php echo get_string('spinwheel', 'local_mydashboard'); ?>',
+    '<?php echo get_string('leadership', 'local_mydashboard'); ?>',
+    '<?php echo get_string('quizpoints', 'local_mydashboard'); ?>',
+    '<?php echo get_string('rewards', 'local_mydashboard'); ?>'
+];
 const values = [
     <?php echo $context_data['chartdata']['login']; ?>,
-    <?php echo $context_data['chartdata']['spin']; ?>, <?php echo $context_data['chartdata']['rank']; ?>, <?php echo $context_data['chartdata']['quiz']; ?>, <?php echo $context_data['chartdata']['rewards']; ?>
+    <?php echo $context_data['chartdata']['spin']; ?>,
+    <?php echo $context_data['chartdata']['rank']; ?>,
+    <?php echo $context_data['chartdata']['quiz']; ?>,
+    <?php echo $context_data['chartdata']['rewards']; ?>
 ];
 
 const colors = ['#003152', 'rgb(36, 71, 143)', 'hsl(220 85% 25%)', 'hsl(48 96% 50%)', 'rgb(251, 212, 55)'];

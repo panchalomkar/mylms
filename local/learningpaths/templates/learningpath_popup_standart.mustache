@@ -1,18 +1,22 @@
 {{#lp_popup_standart}}
-  <div class="modal fade {{class}}" id="{{name}}" role="dialog" aria-hidden="false">
+  <div class="modal fade lp-modal lp-modal-courses {{class}}" id="{{name}}" role="dialog" aria-hidden="false" data-lp-icon="list">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">{{title}}</h4>
-            <a class="close" data-dismiss="modal">
-              <i class="wid wid-icon-close-x fa fa-close"></i>
-            </a>
+          <div class="lp-modal-title-icon" aria-hidden="true"></div>
+          <div class="lp-modal-title-group">
+            <h4 class="modal-title">{{title}}</h4>
+            <p class="lp-modal-subtitle">{{subtitle}}</p>
           </div>
+          <a class="close" data-dismiss="modal" data-bs-dismiss="modal" role="button" tabindex="0" aria-label="Close">
+            <i class="wid wid-icon-close-x fa fa-close" aria-hidden="true"></i>
+          </a>
+        </div>
 
-          <div class="" id="parent_scrollable">
-            <div class="modal-body">
+        <div class="" id="parent_scrollable">
+          <div class="modal-body">
             {{{user_popup_search}}}
-              <div id="{{name}}-content">
+            <div id="{{name}}-content">
               {{{content}}}
             </div>
           </div>
@@ -21,3 +25,400 @@
     </div>
   </div>
 {{/lp_popup_standart}}
+<style>
+:root {
+  --lp-navy: #0d2b4e;
+  --lp-orange: #f7941d;
+  --lp-orange-dark: #ef8511;
+  --lp-orange-light: #fff4e3;
+  --lp-orange-border: #f0b768;
+  --lp-blue-badge-bg: #e3edfb;
+  --lp-blue-badge-text: #1f3a5f;
+  --lp-selected-badge-bg: #fbe6c8;
+  --lp-selected-badge-text: #b56a12;
+  --lp-border-gray: #e5e8ec;
+  --lp-text-gray: #6b7280;
+  --lp-footer-bg: #f5f6f8;
+}
+
+/* ---------- Modal shell ---------- */
+.lp-modal-courses .modal-content {
+  border-radius: 20px;
+  overflow: hidden;
+  border: none;
+  box-shadow: 0 20px 50px rgba(13, 43, 78, 0.25);
+}
+
+/* ---------- Header ---------- */
+.lp-modal-courses .modal-header {
+  background: var(--lp-navy);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: none;
+}
+
+.lp-modal-courses .lp-modal-title-icon {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 12px;
+  background: var(--lp-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lp-check-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-right: 12px;
+  flex: 0 0 auto;
+}
+
+.lp-check-wrap input[type="checkbox"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* neutralize any label/pseudo-element the theme's checkbox widget adds */
+.lp-check-wrap label,
+.lp-check-wrap label::before,
+.lp-check-wrap label::after {
+  display: none !important;
+  content: none !important;
+}
+
+.lp-check-dot {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid #d5d9de;
+  background: #fff;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.lp-check-wrap:has(input:checked) .lp-check-dot {
+  background: var(--lp-orange);
+  border-color: var(--lp-orange);
+}
+
+.lp-check-wrap:has(input:checked) .lp-check-dot::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  width: 9px;
+  height: 5px;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(-45deg);
+}
+
+/* ---------- Course item row ---------- */
+.lp-course-item {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--lp-border-gray);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  background: #fff;
+}
+
+.container_popup .lp-course-item:hover {
+  background: #fafbfc;
+  border-color: #d8dce2;
+}
+
+.lp-course-item:has(.lp-check-wrap input:checked) {
+  background: var(--lp-orange-light);
+  border-color: var(--lp-orange-border);
+      border-bottom: solid 4px #EC9707 !important;
+      box-shadow: none !important;
+}
+
+
+.lp-modal-courses .lp-modal-title-group { flex: 1; }
+
+.lp-modal-courses .modal-title {
+  color: #fff;
+  font-size: 19px;
+  font-weight: 700;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.lp-modal-courses .lp-modal-subtitle {
+  color: #b9c6d6;
+  font-size: 13px;
+  margin: 2px 0 0;
+}
+
+.lp-modal-courses .modal-header .close {
+  color: #fff;
+  opacity: 0.85;
+  font-size: 18px;
+}
+.lp-modal-courses .modal-header .close:hover { opacity: 1; }
+
+/* ---------- Body ---------- */
+.lp-modal-courses .modal-body {
+  padding: 20px 24px 4px;
+}
+
+/* ---------- Search row (Total / Selected badges live in {{{content}}}) ---------- */
+.lp-modal-courses .lp-search-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.lp-modal-courses .searchbox { flex: 1; }
+
+.lp-modal-courses .add-users-search,
+.lp-modal-courses .lp-search-input {
+  border-radius: 999px;
+  border: 1px solid var(--lp-border-gray);
+  padding: 10px 16px;
+  height: 44px;
+}
+
+.lp-modal-courses .lp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.lp-modal-courses .lp-badge-total {
+  background: var(--lp-blue-badge-bg);
+  color: var(--lp-blue-badge-text);
+}
+
+.lp-modal-courses .lp-badge-selected {
+  background: var(--lp-selected-badge-bg);
+  color: var(--lp-selected-badge-text);
+}
+
+/* ---------- Select all row ---------- */
+.lp-modal-courses .lp-select-all-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px dashed var(--lp-border-gray);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  color: var(--lp-navy);
+  font-weight: 600;
+}
+
+.lp-modal-courses .lp-select-all-row .lp-chevron { margin-left: auto; color: var(--lp-text-gray); }
+
+/* ---------- Checkbox circle (shared: select-all + list items) ---------- */
+.lp-modal-courses .lp-check-circle {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  border-radius: 50%;
+  border: 2px solid #d5d9de;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .15s ease;
+}
+
+.lp-modal-courses .lp-check-circle.checked {
+  background: var(--lp-orange);
+  border-color: var(--lp-orange);
+}
+
+.lp-modal-courses .lp-check-circle.checked::after {
+  content: '';
+  width: 10px;
+  height: 6px;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(-45deg) translateY(-1px);
+}
+
+/* ---------- Course list ---------- */
+.lp-modal-courses .lp-course-list {
+  max-height: 340px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.lp-modal-courses .lp-course-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--lp-border-gray);
+  border-radius: 14px;
+  margin-bottom: 10px;
+  background: #fff;
+  cursor: pointer;
+  transition: all .15s ease;
+      box-shadow: inset #003152 0px -2px 1px 0px;
+}
+
+.lp-modal-courses .lp-course-item.selected {
+  background: var(--lp-orange-light);
+  border-color: var(--lp-orange-border);
+}
+
+.lp-modal-courses .lp-course-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  background: #eef1f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lp-modal-courses .lp-course-item.selected .lp-course-icon {
+  background: var(--lp-orange);
+}
+
+.lp-modal-courses .lp-course-icon::before {
+  content: '';
+  width: 18px;
+  height: 18px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2'%3E%3Cpath d='M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z'/%3E%3C/svg%3E") no-repeat center / contain;
+}
+
+.lp-modal-courses .lp-course-item.selected .lp-course-icon::before {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpath d='M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z'/%3E%3C/svg%3E") no-repeat center / contain;
+}
+
+.lp-modal-courses .lp-course-info { flex: 1; min-width: 0; }
+
+.lp-modal-courses .lp-course-title {
+  font-weight: 700;
+  color: var(--lp-navy);
+  font-size: 15px;
+  margin: 0 0 4px;
+}
+
+.lp-modal-courses .lp-course-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--lp-text-gray);
+  font-size: 13px;
+}
+
+.lp-modal-courses .lp-course-tag {
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--lp-border-gray);
+  color: var(--lp-text-gray);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ---------- Scrollbar ---------- */
+.lp-modal-courses .lp-course-list::-webkit-scrollbar { width: 6px; }
+.lp-modal-courses .lp-course-list::-webkit-scrollbar-thumb {
+  background: var(--lp-orange);
+  border-radius: 999px;
+}
+
+/* ---------- Footer ---------- */
+.lp-modal-courses .lp-modal-footer {
+  background: var(--lp-footer-bg);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.lp-modal-courses .lp-footer-count {
+  color: var(--lp-navy);
+  font-size: 14px;
+}
+.lp-modal-courses .lp-footer-count strong { font-weight: 700; }
+
+.lp-modal-courses .lp-footer-actions { display: flex; gap: 10px; }
+
+.lp-modal-courses .btn-lp-cancel {
+  background: #fff;
+  border: 1px solid var(--lp-border-gray);
+  color: #4b5563;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-weight: 600;
+}
+
+.lp-modal-courses .btn-lp-save {
+  background: var(--lp-orange);
+  border: none;
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
+.lp-course-item {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--lp-border-gray);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  background: #fff;
+}
+
+.lp-course-item:has(.lp-check-input:checked) {
+  background: var(--lp-orange-light);
+  border-color: var(--lp-orange-border);
+}
+
+.lp-course-item .lp-course-checkbox-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  height: 20px;
+}
+
+.lp-course-icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 10px;
+  background: #eef1f4;
+}
+
+.lp-course-item:has(.lp-check-input:checked) .lp-course-icon {
+  background: var(--lp-orange);
+}
+</style>

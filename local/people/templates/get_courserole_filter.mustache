@@ -1,69 +1,84 @@
 {{!
-    This file is part of Moodle - http://moodle.org/
-
-    Moodle is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    Moodle is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+    People Plugin - Course Role Filter
+    Updated: collapsible sub-panel, search bar, selected-course tags, Enter to apply
 }}
-{{!
-    @template local_sitesetting/customise
-
-    Note: collapse/show functionality as well as check/uncheck functionality is 
-          developed using javascript (custom.js) file. Any change in HTML DOM 
-          structure can break these functionalities, so change cautiously.
-
-    @author: 2021 Akashy Pingale (akashy.p@paradisosolution.com)
-    @paradiso
-
-}}
-<div class="filterslist">
-    <div class="panel-heading">
-        <h5 class="panel-title">
-            <a href="#collapse14" class="plms-reports-dropdown collapsed" data-toggle="collapse" data-parent="#accordion">
-                {{#str}}courserole, local_people{{/str}}
-                <i class="reports-dropdown fa fa-angle-down collapsed"></i>
-            </a>
-        </h5>
+<div class="filterslist people-subfilter">
+    {{! Sub-accordion header — "Course" heading that toggles the body }}
+    <div class="people-subfilter-header" role="button" aria-expanded="false" tabindex="0">
+        <span class="people-subfilter-title">
+            <i class="fa fa-book mr-1"></i>
+            {{#str}}courserole, local_people{{/str}}
+        </span>
+        <i class="fa fa-chevron-down people-subfilter-icon"></i>
     </div>
-    <div id="collapse14" class="panel-collapse collapse">
-        <div class="panel-body">
-            <div class="row">
-                {{#courselistvalue}}
-                    <a href="#" data-name="confirmed" class="reset">{{#str}}clear, local_people{{/str}}</a>
-                {{/courselistvalue}}
-                
-                <div class="clr_button"></div>
-                <div class="col-md-12 searchbox select-option">
-                    <form id="form-courserole" method="post" action="">
-                        <div class="form-group col-sm-12 select-some">
-                            <select class="select custom-select form-control chosen-people" multiple="multiple" id="menucourserolename" name="courserolename[]">
-                            {{#selectoropt}}
-                                <option value="{{{key}}}" {{{selected}}}>{{{value}}}</option>
-                            {{/selectoropt}}
-                        </select>
-                        </div>
-                        <div class="form-group col-sm-12">
-                            {{{select}}}
-                        </div>
-                        <div class="text-center mar-rgt"></div>
-                        {{#courselistvalue}}
-                        <input type="hidden" class="filter-true" name="filter-true" value="true">
-                        {{/courselistvalue}}
-                        <div class="form-group">
-                            <input type="hidden" name="courserole" value="courserole" class="form-control">
-                        </div>
-                    </form>
+
+    {{! Sub-accordion body — hidden by default }}
+    <div class="people-subfilter-body" style="display:none;">
+
+        {{#courselistvalue}}
+        <a href="#" data-name="courserole" class="reset people-clear-link">
+            <i class="fa fa-times-circle mr-1"></i>{{#str}}clear, local_people{{/str}}
+        </a>
+        {{/courselistvalue}}
+
+        <form id="form-courserole" method="post" action="">
+
+            {{! Selected course tags (above list) — pre-rendered from PHP on reload }}
+            <div class="people-selected-courses" id="people-selected-courses-display">
+                {{#selectedcourses}}
+                <span class="people-course-selected-tag" data-value="{{{id}}}">
+                    <span class="people-course-tag-text">{{{name}}}</span>
+                    <span class="people-course-tag-remove" title="Remove"><i class="fa fa-times"></i></span>
+                </span>
+                {{/selectedcourses}}
+            </div>
+
+            {{! Course search box }}
+            <div class="people-course-search-wrap">
+                <input type="text"
+                       id="people-course-search"
+                       class="form-control people-course-search-input"
+                       placeholder="Search courses..."
+                       autocomplete="off">
+                <i class="fa fa-search people-course-search-icon"></i>
+            </div>
+
+            {{! Hidden real <select> — used for actual form submission }}
+            <select class="select custom-select form-control chosen-people people-course-select"
+                    multiple="multiple"
+                    id="menucourserolename"
+                    name="courserolename[]"
+                    style="display:none;">
+                {{#selectoropt}}
+                    <option value="{{{key}}}"{{#selected}} selected{{/selected}}>{{{value}}}</option>
+                {{/selectoropt}}
+            </select>
+
+            {{! Visible scrollable checkbox list }}
+            <div class="people-course-list-wrap">
+                <div class="people-course-checkbox-list" id="people-course-checkbox-list">
+                    {{#selectoropt}}
+                    <label class="people-course-item" data-value="{{{key}}}" data-label="{{{value}}}">
+                        <input type="checkbox"
+                               class="people-course-checkbox"
+                               value="{{{key}}}"
+                               {{#selected}}checked{{/selected}}>
+                        <span class="people-course-item-label">{{{value}}}</span>
+                    </label>
+                    {{/selectoropt}}
                 </div>
             </div>
-        </div>
+
+            {{! Role selector }}
+            <div class="form-group mt-2">
+                {{{select}}}
+            </div>
+
+            {{#courselistvalue}}
+            <input type="hidden" class="filter-true" name="filter-true" value="true">
+            {{/courselistvalue}}
+            <input type="hidden" name="courserole" value="courserole" class="form-control">
+
+        </form>
     </div>
 </div>

@@ -15,325 +15,480 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Copyright (C) 2007-2011 Catalyst IT (http://www.catalyst.net.nz)
- * Copyright (C) 2011-2013 Totara LMS (http://www.totaralms.com)
- * Copyright (C) 2014 onwards Catalyst IT (http://www.catalyst-eu.net)
+ * ILT - Add / remove attendees (custom UI).
  *
- * @package    mod
- * @subpackage ilt
- * @author     VaibhavG
+ * Keeps the original add / remove / cancel behaviour (enrol + ilt_user_signup /
+ * ilt_user_cancel) but renders a custom card UI with per-row checkboxes,
+ * stat cards and cohort / system / participants filters.
+ *
+ * @package    mod_ilt
  */
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once('lib.php');
-require_once($CFG->libdir . '/moodlelib.php'); // ✅ Add this line
 
+$s                 = required_param('s', PARAM_INT);              // ILT session ID.
+$backtoallsessions = optional_param('backtoallsessions', 0, PARAM_INT);
+$suppressemail     = optional_param('suppressemail', false, PARAM_BOOL);
 
-/* @Author VaibhavG
- * @desc include the ilt.js file to get classroom values according to it's location
- * @date 13Dec2018
- * Start code
- */
-global $CFG, $PAGE;
-$PAGE->requires->jquery();
-//$PAGE->requires->js(new moodle_url('/mod/ilt/js/ilt.js'));
-$PAGE->requires->js_call_amd('mod_ilt/ilt', 'init');
-/* @Author VaibhavG
- * End Code
- */
+// Filters.
+$filtercohort = optional_param('filtercohort', 0, PARAM_INT);
+$filteruser   = optional_param('filteruser', 'all', PARAM_ALPHA); // 'all' | 'system'.
 
-define('MAX_USERS_PER_PAGE', 5000);
-
-$s                  = required_param('s', PARAM_INT); // ILT session ID.
-$add                = optional_param('add', 0, PARAM_BOOL);
-$remove             = optional_param('remove', 0, PARAM_BOOL);
-$showall            = optional_param('showall', 0, PARAM_BOOL);
-$searchtext         = optional_param('searchtext', '', PARAM_TEXT); // Search string.
-$suppressemail      = optional_param('suppressemail', false, PARAM_BOOL); // Send email notifications.
-$previoussearch     = optional_param('previoussearch', 0, PARAM_BOOL);
-$backtoallsessions  = optional_param('backtoallsessions', 0, PARAM_INT); // ILT activity to go back to.
-$user_type = 1; 
+// Which action was submitted. "Save" performs both remove and add.
+$dosave   = optional_param('save', false, PARAM_BOOL);
+$doadd    = optional_param('add', false, PARAM_BOOL) || $dosave;
+$doremove = optional_param('remove', false, PARAM_BOOL) || $dosave;
 
 if (!$session = ilt_get_session($s)) {
-    echo get_string('error:incorrectcoursemodulesession', 'ilt');
+    print_error('error:incorrectcoursemodulesession', 'ilt');
 }
 if (!$ilt = $DB->get_record('ilt', array('id' => $session->ilt))) {
-    echo get_string('error:incorrectiltid', 'ilt');
+    print_error('error:incorrectiltid', 'ilt');
 }
 if (!$course = $DB->get_record('course', array('id' => $ilt->course))) {
-    echo get_string('error:coursemisconfigured', 'ilt');
+    print_error('error:coursemisconfigured', 'ilt');
 }
 if (!$cm = get_coursemodule_from_instance('ilt', $ilt->id, $course->id)) {
-    echo get_string('error:incorrectcoursemodule', 'ilt');
+    print_error('error:incorrectcoursemodule', 'ilt');
 }
 
-// Check essential permissions.
 require_course_login($course);
 $context = context_course::instance($course->id);
+$contextmodule = context_module::instance($cm->id);
 require_capability('mod/ilt:viewattendees', $context);
 
-// Get some language strings.
-$strsearch = get_string('search');
-$strshowall = get_string('showall');
-$strsearchresults = get_string('searchresults');
-$strilts = get_string('modulenameplural', 'ilt');
-$strilt = get_string('modulename', 'ilt');
-
 $errors = array();
-    /*
-     * @Author VaibhavG
-     * @package ILT task
-     * @desc passed extra parameter courseid to the ilt_candidate_selector() constructor
-     * @date 11Dec2018
-     */
-// Get the user_selector we will need.
-if($user_type == 1)
-{
-    $potentialuserselector = new ilt_candidate_selector('addselect', array('sessionid' => $session->id, 'courseid' => $course->id));
-}else{
-    $potentialuserselector = new ilt_all_candidate_selector('addselect', array('sessionid' => $session->id, 'courseid' => $course->id));
-}
-$existinguserselector = new ilt_existing_selector('removeselect', array('sessionid' => $session->id));
+$added = array();        // Signed up + email sent (or email suppressed).
+$addednomail = array();  // Signed up, but the confirmation email could not be sent.
 
-// Process incoming user assignments.
-if (optional_param('add', false, PARAM_BOOL) && confirm_sesskey()) {
-    require_capability('mod/ilt:addattendees', $context);
-    $userstoassign = $potentialuserselector->get_selected_users();
-    
-    if (!empty($userstoassign)) {
-        foreach ($userstoassign as $adduser) {
-            if (!$adduser = clean_param($adduser->id, PARAM_INT)) {
-                continue; // Invalid userid.
-            }                           
-
-            // Make sure that the user is enroled in the course.
-            if (!has_capability('moodle/course:view', $context, $adduser)) {
-                $user = $DB->get_record('user', array('id' => $adduser));
-                // Make sure that the user is enroled in the course.
-                if (!is_enrolled($context, $user)) {
-                    if (!enrol_try_internal_enrol($course->id, $user->id)) {
-                        $errors[] = get_string('error:enrolmentfailed', 'ilt', fullname($user));
-                        $errors[] = get_string('error:addattendee', 'ilt', fullname($user));
-                        continue; // Don't sign the user up.
-                    }
-                }
-            }
-
-            $usernamefields = get_all_user_name_fields(true);
-            if (ilt_get_session_user($ilt->id,$session->id, $adduser)) {
-                $erruser = $DB->get_record('user', array('id' => $adduser), "id, {$usernamefields}");
-                $errors[] = get_string('error:addalreadysignedupattendee', 'ilt', fullname($erruser));
-            } else {
-                if (!ilt_session_has_capacity($session, $context)) {
-                    $errors[] = get_string('full', 'ilt');
-                    break; // No point in trying to add other people.
-                }
-                // Check if we are waitlisting or booking.
-                if ($session->datetimeknown) {
-                    $status = MDL_ILT_STATUS_BOOKED;
-                } else {
-                    $status = MDL_ILT_STATUS_WAITLISTED;
-                }
-                if (!ilt_user_signup($session, $ilt, $course, '', MDL_ILT_BOTH,
-                $status, $adduser, !$suppressemail)) {
-                    $erruser = $DB->get_record('user', array('id' => $adduser), "id, {$usernamefields}");
-                    $errors[] = get_string('error:addattendee', 'ilt', fullname($erruser));
-                }
-            }
-        }
-        $potentialuserselector->invalidate_selected_users();
-        $existinguserselector->invalidate_selected_users();
-    }
-}
-
-// Process removing user assignments from session.
-if (optional_param('remove', false, PARAM_BOOL) && confirm_sesskey()) {
+/* ---------------------------------------------------------------------------
+ * REMOVE selected attendees (same logic as before, ids read from checkboxes).
+ * ------------------------------------------------------------------------- */
+if ($doremove && confirm_sesskey()) {
     require_capability('mod/ilt:removeattendees', $context);
-    $userstoremove = $existinguserselector->get_selected_users();
-    if (!empty($userstoremove)) {
-        foreach ($userstoremove as $removeuser) {
-            if (!$removeuser = clean_param($removeuser->id, PARAM_INT)) {
-                continue; // Invalid userid.
+    $removeids = optional_param_array('removeselect', array(), PARAM_INT);
+    foreach ($removeids as $removeuser) {
+        if (!$removeuser = clean_param($removeuser, PARAM_INT)) {
+            continue;
+        }
+        if (ilt_user_cancel($session, $removeuser, true, $cancelerr)) {
+            $timenow = time();
+            if (!$suppressemail && !ilt_has_session_started($session, $timenow)) {
+                ilt_send_cancellation_notice($ilt, $session, $removeuser);
             }
+        } else {
+            $errors[] = $cancelerr;
+        }
+    }
+    ilt_update_attendees($session);
+}
 
-            if (ilt_user_cancel($session, $removeuser, true, $cancelerr)) {
+/* ---------------------------------------------------------------------------
+ * ADD selected users (enrol if needed, then sign up) — original logic.
+ * ------------------------------------------------------------------------- */
+if ($doadd && confirm_sesskey()) {
+    require_capability('mod/ilt:addattendees', $context);
+    $addids = optional_param_array('addselect', array(), PARAM_INT);
+    foreach ($addids as $adduser) {
+        if (!$adduser = clean_param($adduser, PARAM_INT)) {
+            continue;
+        }
 
-                // Notify the user of the cancellation if the session hasn't started yet.
-                $timenow = time();
-                if (!$suppressemail and !ilt_has_session_started($session, $timenow)) {
-                    ilt_send_cancellation_notice($ilt, $session, $removeuser);
+        // Make sure the user is enrolled in the course.
+        if (!has_capability('moodle/course:view', $context, $adduser)) {
+            $user = $DB->get_record('user', array('id' => $adduser));
+            if ($user && !is_enrolled($context, $user)) {
+                if (!enrol_try_internal_enrol($course->id, $user->id)) {
+                    $errors[] = get_string('error:enrolmentfailed', 'ilt', fullname($user));
+                    continue;
                 }
-            } else {
-                $errors[] = $cancelerr;
-                $usernamefields = get_all_user_name_fields(true);
-                $erruser = $DB->get_record('user', array('id' => $removeuser), "id, {$usernamefields}");
-                $errors[] = get_string('error:removeattendee', 'ilt', fullname($erruser));
             }
         }
-        $potentialuserselector->invalidate_selected_users();
-        $existinguserselector->invalidate_selected_users();
 
-        // Update attendees.
-        ilt_update_attendees($session);
+        if (ilt_get_session_user($ilt->id, $session->id, $adduser)) {
+            $erruser = $DB->get_record('user', array('id' => $adduser), '*');
+            $errors[] = get_string('error:addalreadysignedupattendee', 'ilt', fullname($erruser));
+        } else {
+            if (!ilt_session_has_capacity($session, $context) && !$session->allowoverbook) {
+                $errors[] = get_string('full', 'ilt');
+                break;
+            }
+            $status = $session->datetimeknown ? MDL_ILT_STATUS_BOOKED : MDL_ILT_STATUS_WAITLISTED;
+
+            // ilt_user_signup() echoes raw notification errors straight to the page and
+            // returns false when an email step fails (even though the signup was made).
+            // Capture that output so we can show a clean message instead.
+            ob_start();
+            $signedup = ilt_user_signup($session, $ilt, $course, '', MDL_ILT_BOTH, $status, $adduser, !$suppressemail);
+            $signupnotice = trim(ob_get_clean());
+
+            $adduserobj  = $DB->get_record('user', array('id' => $adduser), '*');
+            $isattending = (bool) ilt_get_session_user($ilt->id, $session->id, $adduser);
+
+            if ($isattending) {
+                // The user is signed up. If signup returned false or printed a notice,
+                // the booking succeeded but the confirmation email failed.
+                if (!$signedup || $signupnotice !== '') {
+                    $addednomail[] = fullname($adduserobj);
+                } else {
+                    $added[] = fullname($adduserobj);
+                }
+            } else {
+                // Genuinely not signed up.
+                $errors[] = get_string('error:addattendee', 'ilt', fullname($adduserobj));
+            }
+        }
+    }
+    ilt_update_attendees($session);
+}
+
+/* ---------------------------------------------------------------------------
+ * Data for rendering (fetched AFTER processing so the UI is up to date).
+ * ------------------------------------------------------------------------- */
+$attendees = ilt_get_attendees($session->id);
+$existingids = array();
+foreach ($attendees as $a) {
+    $existingids[$a->id] = true;
+}
+
+// Build the "potential" list depending on the active filter.
+$namefields = get_all_user_name_fields(true, 'u');
+if ($filtercohort) {
+    // Members of the chosen cohort (queried directly).
+    $potential = $DB->get_records_sql(
+        "SELECT u.id, {$namefields}, u.email, u.picture, u.imagealt
+           FROM {cohort_members} cm
+           JOIN {user} u ON u.id = cm.userid
+          WHERE cm.cohortid = ? AND u.deleted = 0 AND u.suspended = 0
+       ORDER BY u.lastname, u.firstname", array($filtercohort));
+} else if ($filteruser === 'system') {
+    // System users = all active site users (enrolled or not), same idea as cohort.
+    // Capped for performance; users already attending are removed below.
+    $potential = $DB->get_records_sql(
+        "SELECT u.id, {$namefields}, u.email, u.picture, u.imagealt
+           FROM {user} u
+          WHERE u.deleted = 0 AND u.suspended = 0 AND u.confirmed = 1 AND u.id > 2
+       ORDER BY u.lastname, u.firstname", array(), 0, 500);
+} else {
+    // All participants = users enrolled in the current course.
+    $potential = get_enrolled_users($context, '', 0, 'u.*', null, 0, 0, true);
+}
+
+// Drop anyone already an attendee.
+foreach ($potential as $k => $u) {
+    if (isset($existingids[$u->id])) {
+        unset($potential[$k]);
     }
 }
 
-// Main page.
-$pagetitle = format_string($ilt->name);
+// Cohorts for the dropdown.
+$cohorts = $DB->get_records('cohort', array('visible' => 1), 'name ASC', 'id, name');
 
+// Stats.
+$enrolled  = count($attendees);
+$seatsleft = max(0, (int)$session->capacity - $enrolled);
+
+/* ---------------------------------------------------------------------------
+ * Page setup + output.
+ * ------------------------------------------------------------------------- */
 $PAGE->set_cm($cm);
 $PAGE->set_url('/mod/ilt/editattendees.php', array('s' => $s, 'backtoallsessions' => $backtoallsessions));
-
-$PAGE->set_title($pagetitle);
+$PAGE->set_title(format_string($ilt->name));
 $PAGE->set_heading($course->fullname);
-echo $OUTPUT->header();
 
-//alert box
-echo '<div id="user_enrol_over_alert" class="alert alert-danger col-sm-12" style="display:none;">
-            <strong style="font-size:20px;"> '.get_string('capacityover','ilt').' </strong>
-        </div>';
-echo '<div id="user_enrol_already_alert" class="alert alert-info col-sm-12" style="display:none;">
-        </div>';
+$formurl = new moodle_url('/mod/ilt/editattendees.php',
+    array('s' => $s, 'backtoallsessions' => $backtoallsessions));
+$backurl = new moodle_url('/mod/ilt/attendees.php',
+    array('s' => $session->id, 'backtoallsessions' => $backtoallsessions));
 
-echo $OUTPUT->box_start();
-echo $OUTPUT->heading(get_string('addremoveattendees', 'ilt'));
-
-// Create user_selector form.
-$out = html_writer::start_tag('form', array('id' => 'assignform', 'method' => 'post', 'action' => $PAGE->url));
-$out .= html_writer::start_tag('div');
-$out .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => "previoussearch", 'value' => $previoussearch));
-$out .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => "backtoallsessions", 'value' => $backtoallsessions));
-$out .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => "sesskey", 'value' => sesskey()));
-
-$table = new html_table();
-$table->attributes['class'] = "generaltable generalbox boxaligncenter";
-$cells = array();
-$content = html_writer::start_tag('p') . html_writer::tag('label', get_string('attendees', 'ilt'),
-        array('for' => 'removeselect')) . html_writer::end_tag('p');
-$content .= $existinguserselector->display(true);
-$cell = new html_table_cell($content);
-$cell->attributes['id'] = 'existingcell';
-$cells[] = $cell;
-$content = html_writer::tag('div', html_writer::empty_tag('input',
-    array('type' => 'submit', 'id' => 'add', 'name' => 'add', 'title' => get_string('add'),
-        'value' => $OUTPUT->larrow().' '.get_string('add'))), array('id' => 'addcontrols'));
-$content .= html_writer::tag('div', html_writer::empty_tag('input',
-    array('type' => 'submit', 'id' => 'remove', 'name' => 'remove', 'title' => get_string('remove'),
-        'value' => $OUTPUT->rarrow().' '.get_string('remove'))), array('id' => 'removecontrols'));
-$content .= html_writer::empty_tag('input',
-    array('type' => 'hidden', 'id' => 'sessionid', 'name' => 'sessionid',
-        'value' => $s));
-$content .= html_writer::empty_tag('input',
-    array('type' => 'hidden', 'id' => 'courseid', 'name' => 'courseid',
-        'value' => $course->id));
-    $sql_allowoverbook = 'SELECT allowoverbook
-                        FROM
-                            mdl_ilt_sessions 
-                        WHERE
-                            id = ?  
-                        ';
-    
-    //getting allowoverbook flag and pass to JS using hidden field
-    $record_allowoverbook = $DB->get_records_sql($sql_allowoverbook, array($s));
-    foreach($record_allowoverbook as $allow)
-        $allow->allowoverbook;
-    
-$content .= html_writer::empty_tag('input',
-    array('type' => 'hidden', 'id' => 'allowoverbook', 'name' => 'allowoverbook',
-        'value' => $allow->allowoverbook));
-
-$cell = new html_table_cell($content);
-$cell->attributes['id'] = 'buttonscell';
-$cells[] = $cell;
-$content = html_writer::start_tag('p').html_writer::tag('label',
-       get_string('potentialattendees', 'ilt'), array('for' => 'addselect')) ;
-
-// $content .= html_writer::empty_tag('input', array('type' => 'radio', 'label' => get_string('iltcourseusers', 'ilt'), 'id' => 'id_courseusers', 'name' => 'users','value' => 'Course', 'checked' => 'checked'));
-// $content .= html_writer::tag('label', get_string('iltcourseusers', 'ilt'), array('for' => 'users')) ;
-// $content .= html_writer::empty_tag('input', array('type' => 'radio', 'label' => get_string('iltallusers', 'ilt'), 'id' => 'id_allusers', 'name' => 'users', 'value' => 'All')) ;
-// $content .= html_writer::tag('label', get_string('iltallusers', 'ilt'), array('for' => 'users'));
-
-$content .= $potentialuserselector->display(true);
-$cell = new html_table_cell($content);
-$cell->attributes['id'] = 'potentialcell';
-$cells[] = $cell;
-$table->data[] = new html_table_row($cells);
-$content = html_writer::checkbox('suppressemail', 1, $suppressemail, get_string('suppressemail', 'ilt'),
-    array('id' => 'suppressemail'));
-$content .= $OUTPUT->help_icon('suppressemail', 'ilt');
-$cell = new html_table_cell($content);
-$cell->attributes['id'] = 'backcell';
-$cell->attributes['colspan'] = '3';
-$table->data[] = new html_table_row(array($cell));
-
-$out .= html_writer::table($table);
-
-// Get all signed up non-attendees.
-$nonattendees = 0;
-$usernamefields = get_all_user_name_fields(true, 'u');
-$nonattendeesrs = $DB->get_recordset_sql(
-     "SELECT
-            u.id,
-            {$usernamefields},
-            u.email,
-            ss.statuscode
-        FROM
-            {ilt_sessions} s
-        JOIN
-            {ilt_signups} su
-         ON s.id = su.sessionid
-        JOIN
-            {ilt_signups_status} ss
-         ON su.id = ss.signupid
-        JOIN
-            {user} u
-         ON u.id = su.userid
-        WHERE
-            s.id = ?
-        AND ss.superceded != 1
-        AND ss.statuscode = ?
-        ORDER BY
-            u.lastname, u.firstname", array($session->id, MDL_ILT_STATUS_REQUESTED)
-);
-
-$table = new html_table();
-$table->head = array(get_string('name'), get_string('email'), get_string('status'));
-
-foreach ($nonattendeesrs as $user) {
-    $data = array();
-    $data[] = new html_table_cell(fullname($user));
-    $data[] = new html_table_cell($user->email);
-    $data[] = new html_table_cell(get_string('status_' . ilt_get_status($user->statuscode), 'ilt'));
-    $row = new html_table_row($data);
-    $table->data[] = $row;
-    $nonattendees++;
-}
-
-$nonattendeesrs->close();
-if ($nonattendees) {
-    $out .= html_writer::empty_tag('br');
-    $out .= $OUTPUT->heading(get_string('unapprovedrequests', 'ilt') . ' (' . $nonattendees . ')');
-    $out .= html_writer::table($table);
-}
-
-$out .= html_writer::end_tag('div') . html_writer::end_tag('form');
-echo $out;
-
-if (!empty($errors)) {
-    $msg = html_writer::start_tag('p');
-    foreach ($errors as $e) {
-        $msg .= $e . html_writer::empty_tag('br');
+// Small helper to render one user row.
+$renderrow = function($u, $name) use ($OUTPUT) {
+    $initials = strtoupper(mb_substr($u->firstname, 0, 1) . mb_substr($u->lastname, 0, 1));
+    $full = fullname($u);
+    $email = isset($u->email) ? $u->email : '';
+    $row  = html_writer::start_tag('label', array('class' => 'ilt-ea-row'));
+    $row .= html_writer::div($initials, 'ilt-ea-ava');
+    $meta  = html_writer::div(s($full), 'ilt-ea-name');
+    if ($email !== '') {
+        $meta .= html_writer::div(s($email), 'ilt-ea-mail');
     }
-    $msg .= html_writer::end_tag('p');
-    echo $OUTPUT->box_start('center');
-    echo $OUTPUT->notification($msg);
-    echo $OUTPUT->box_end();
-}
+    $row .= html_writer::div($meta, 'ilt-ea-meta');
+    $row .= html_writer::empty_tag('input', array(
+        'type' => 'checkbox', 'name' => $name . '[]', 'value' => $u->id, 'class' => 'ilt-ea-cb'));
+    $row .= html_writer::tag('span', '', array('class' => 'ilt-ea-box'));
+    $row .= html_writer::end_tag('label');
+    return $row;
+};
 
-// Bottom of the page links.
-echo html_writer::start_tag('p');
-$url = new moodle_url('/mod/ilt/attendees.php', array('s' => $session->id, 'backtoallsessions' => $backtoallsessions));
-echo html_writer::link($url, get_string('goback', 'ilt'));
-echo html_writer::end_tag('p');
-echo $OUTPUT->box_end();
+echo $OUTPUT->header();
+?>
+<style>
+.ilt-ea{--nv:#0e2340;--or:#f5a623;--bd:#e9edf2;--mut:#6b7a8d;--ink:#1f2d3d;}
+.ilt-ea *{box-sizing:border-box;}
+
+/* stat cards */
+.ilt-ea-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:0 0 18px;}
+.ilt-ea-stat{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--bd);border-radius:14px;padding:16px 18px;box-shadow:0 1px 3px rgba(15,23,42,.05);}
+.ilt-ea-stat .ic{width:42px;height:42px;border-radius:10px;background:var(--nv);display:flex;align-items:center;justify-content:center;flex:0 0 42px;}
+.ilt-ea-stat .ic svg{width:22px;height:22px;stroke:var(--or);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.ilt-ea-stat .n{font-size:22px;font-weight:700;color:var(--ink);line-height:1;}
+.ilt-ea-stat .l{font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);margin-top:4px;}
+
+/* filter bar */
+.ilt-ea-filters{display:flex;flex-wrap:wrap;gap:26px;background:#fff;border:1px solid var(--bd);border-radius:14px;padding:16px 20px;margin:0 0 18px;box-shadow:0 1px 3px rgba(15,23,42,.05);}
+.ilt-ea-filters .ff{display:flex;flex-direction:column;gap:8px;min-width:230px;flex:1;}
+.ilt-ea-filters .lbl{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--nv);}
+.ilt-ea-filters .lbl svg{width:15px;height:15px;stroke:var(--or);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.ilt-ea-filters select{border:1px solid var(--bd);border-radius:999px;padding:11px 16px;color:var(--ink);background:#fff;font-weight:500;width:100%;}
+.ilt-ea-filters select:focus{border-color:var(--or);box-shadow:0 0 0 3px rgba(245,166,35,.18);outline:none;}
+.ilt-ea-filters select:disabled{background:#f4f6f9;color:var(--mut);}
+
+/* main card */
+.ilt-ea-card{background:#fff;border:1px solid var(--bd);border-radius:16px;box-shadow:0 1px 3px rgba(15,23,42,.06);overflow:hidden;}
+.ilt-ea-bar{background:var(--nv);color:#fff;font-size:16px;font-weight:700;padding:16px 22px;}
+.ilt-ea-body{display:grid;grid-template-columns:1fr auto 1fr;gap:22px;padding:22px;}
+.ilt-ea-panel{background:#f7f9fb;border:1px solid var(--bd);border-radius:14px;padding:16px;}
+.ilt-ea-phead{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--nv);margin-bottom:12px;}
+.ilt-ea-badge{background:var(--or);color:var(--nv);border-radius:999px;font-size:12px;font-weight:700;padding:3px 10px;text-transform:none;letter-spacing:0;}
+.ilt-ea-list{background:#fff;border:1px solid var(--bd);border-radius:12px;max-height:340px;overflow-y:auto;}
+
+/* rows */
+.ilt-ea-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid #f1f4f7;cursor:pointer;margin:0;position:relative;}
+.ilt-ea-row:last-child{border-bottom:0;}
+.ilt-ea-ava{width:36px;height:36px;border-radius:50%;background:var(--nv);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 36px;}
+.ilt-ea-meta{flex:1;min-width:0;}
+.ilt-ea-name{font-weight:700;color:var(--ink);font-size:14px;}
+.ilt-ea-mail{font-size:12px;color:var(--mut);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ilt-ea-cb{position:absolute;opacity:0;pointer-events:none;}
+.ilt-ea-box{width:20px;height:20px;border:2px solid #cdd7e2;border-radius:6px;flex:0 0 20px;position:relative;}
+.ilt-ea-cb:checked ~ .ilt-ea-box{background:var(--or);border-color:var(--or);}
+.ilt-ea-cb:checked ~ .ilt-ea-box::after{content:"";position:absolute;left:6px;top:2px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);}
+.ilt-ea-row:has(.ilt-ea-cb:checked){background:#fdf1dd;border-radius:10px;box-shadow:inset 0 0 0 1px var(--or);}
+
+/* search + clear */
+.ilt-ea-search{display:flex;gap:10px;margin-top:12px;}
+.ilt-ea-search .box{flex:1;display:flex;align-items:center;gap:8px;border:1px solid var(--bd);border-radius:999px;padding:9px 14px;background:#fff;}
+.ilt-ea-search .box svg{width:15px;height:15px;stroke:var(--mut);fill:none;stroke-width:2;}
+.ilt-ea-search input{border:0;outline:0;flex:1;font-size:14px;background:transparent;}
+.ilt-ea-search .box:focus-within{border-color:var(--or);box-shadow:0 0 0 3px rgba(245,166,35,.18);}
+.ilt-ea-clear{background:#fff;color:var(--or);border:1px solid var(--or);border-radius:999px;font-weight:600;padding:8px 16px;cursor:pointer;white-space:nowrap;}
+
+/* mid buttons */
+.ilt-ea-mid{display:flex;flex-direction:column;justify-content:center;gap:12px;}
+.ilt-ea-mid button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:130px;border-radius:999px;font-weight:600;padding:11px 20px;cursor:pointer;border:1px solid var(--bd);background:#fff;color:var(--mut);}
+.ilt-ea-mid button.add{background:var(--nv);border-color:var(--nv);color:#fff;}
+
+/* footer */
+.ilt-ea-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--bd);padding:16px 22px;}
+.ilt-ea-foot label{display:inline-flex;align-items:center;gap:9px;color:var(--ink);font-weight:500;}
+.ilt-ea-foot .right{display:flex;align-items:center;gap:18px;}
+.ilt-ea-save{display:inline-flex;align-items:center;gap:8px;background:var(--nv);color:#fff;border:0;border-radius:10px;font-weight:600;padding:11px 22px;cursor:pointer;}
+.ilt-ea-save svg{width:16px;height:16px;stroke:var(--or);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.ilt-ea-back{color:var(--or);font-weight:600;text-decoration:none;}
+.ilt-ea .errbox{background:#fbe9e9;color:#b3261e;border:1px solid #f3c9c5;border-radius:12px;padding:12px 16px;margin-bottom:16px;}
+.ilt-ea .okbox{background:#e4f5ea;color:#1c7a48;border:1px solid #bfe6ce;border-radius:12px;padding:12px 16px;margin-bottom:12px;font-weight:500;}
+.ilt-ea .warnbox{background:#fdf1dd;color:#9a6a12;border:1px solid #f3d9a6;border-radius:12px;padding:12px 16px;margin-bottom:12px;font-weight:500;}
+
+/* search options */
+.ilt-ea-opts{border:1px dashed #f0c98a;border-radius:12px;padding:12px 14px;margin-top:12px;}
+.ilt-ea-opts .ttl{display:flex;align-items:center;gap:8px;color:var(--or);font-weight:600;font-size:13px;margin-bottom:8px;}
+.ilt-ea-opts .ttl svg{width:15px;height:15px;stroke:var(--or);fill:none;stroke-width:2;stroke-linecap:round;}
+.ilt-ea-opts label{display:flex;align-items:center;gap:8px;color:var(--ink);font-size:13px;margin:5px 0;font-weight:500;cursor:pointer;}
+.ilt-ea-opts input[type=checkbox]{accent-color:var(--or);width:16px;height:16px;flex:0 0 16px;}
+.ilt-ea-opts .match{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:8px;}
+.ilt-ea-opts .match .lbl{font-weight:700;color:var(--nv);font-size:13px;}
+.ilt-ea-opts .match label{border:1px solid var(--bd);border-radius:999px;padding:5px 12px;margin:0;}
+.ilt-ea-opts .match input[type=radio]{accent-color:var(--or);}
+
+/* suppress bell */
+.ilt-ea-foot .bell{width:16px;height:16px;stroke:var(--or);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+@media (max-width:900px){.ilt-ea-stats{grid-template-columns:1fr;}.ilt-ea-body{grid-template-columns:1fr;}.ilt-ea-mid{flex-direction:row;}}
+</style>
+
+<?php echo html_writer::start_div('ilt-ea'); ?>
+
+<?php
+if (!empty($added)) {
+    echo html_writer::div('Added successfully: ' . s(implode(', ', $added)), 'okbox');
+}
+if (!empty($addednomail)) {
+    echo html_writer::div('Added successfully, but the confirmation email could not be sent (check the site email configuration): ' . s(implode(', ', $addednomail)), 'warnbox');
+}
+if (!empty($errors)) {
+    echo html_writer::start_div('errbox');
+    foreach ($errors as $e) { echo html_writer::div($e); }
+    echo html_writer::end_div();
+} ?>
+
+  <!-- Stat cards -->
+  <div class="ilt-ea-stats">
+    <div class="ilt-ea-stat">
+      <span class="ic"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+      <span><span class="n"><?php echo $enrolled; ?></span><span class="l"> Enrolled</span></span>
+    </div>
+    <div class="ilt-ea-stat">
+      <span class="ic"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg></span>
+      <span><span class="n"><?php echo $seatsleft; ?></span><span class="l"> Seats left</span></span>
+    </div>
+    <div class="ilt-ea-stat">
+      <span class="ic"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+      <span><span class="n" id="ilt-ea-selcount">0</span><span class="l"> Selected</span></span>
+    </div>
+  </div>
+
+  <form id="assignform" method="post" action="<?php echo $formurl->out(false); ?>">
+    <input type="hidden" name="sesskey" value="<?php echo sesskey(); ?>">
+    <input type="hidden" name="s" value="<?php echo $s; ?>">
+    <input type="hidden" name="backtoallsessions" value="<?php echo $backtoallsessions; ?>">
+
+    <!-- Filters -->
+    <div class="ilt-ea-filters">
+      <div class="ff">
+        <div class="lbl"><svg viewBox="0 0 24 24"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>Select cohort</div>
+        <select name="filtercohort" onchange="this.form.submit()">
+          <option value="0">All cohorts</option>
+          <?php foreach ($cohorts as $co) {
+              $sel = ($co->id == $filtercohort) ? ' selected' : '';
+              echo '<option value="'.$co->id.'"'.$sel.'>'.s($co->name).'</option>';
+          } ?>
+        </select>
+      </div>
+      <div class="ff">
+        <div class="lbl"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Select users</div>
+        <select name="filteruser" onchange="this.form.submit()" <?php echo $filtercohort ? 'disabled' : ''; ?>>
+          <option value="all"<?php echo $filteruser === 'all' ? ' selected' : ''; ?>>All Participants</option>
+          <option value="system"<?php echo $filteruser === 'system' ? ' selected' : ''; ?>>System users</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="ilt-ea-card">
+      <div class="ilt-ea-bar">Attendees</div>
+      <div class="ilt-ea-body">
+
+        <!-- Existing attendees -->
+        <div class="ilt-ea-panel">
+          <div class="ilt-ea-phead"><span><?php echo $enrolled; ?> existing user<?php echo $enrolled == 1 ? '' : 's'; ?></span></div>
+          <div class="ilt-ea-list" data-list="existing">
+            <?php foreach ($attendees as $u) { echo $renderrow($u, 'removeselect'); } ?>
+          </div>
+          <div class="ilt-ea-search">
+            <span class="box"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input type="text" placeholder="Search" data-search="existing"></span>
+            <button type="button" class="ilt-ea-clear" data-clear="existing">&times; Clear</button>
+          </div>
+          <div class="ilt-ea-opts">
+            <div class="ttl"><svg viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>Search options</div>
+            <label><input type="checkbox" id="opt-keep" checked> Keep selected users, even if they no longer match the search</label>
+            <label><input type="checkbox" id="opt-auto"> If only one user matches the search, select them automatically</label>
+            <div class="match"><span class="lbl">Matching:</span>
+              <label><input type="radio" name="opt-mode" value="exact"> exact matches only</label>
+              <label><input type="radio" name="opt-mode" value="start"> from start</label>
+              <label><input type="radio" name="opt-mode" value="anywhere" checked> anywhere</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Middle buttons -->
+        <div class="ilt-ea-mid">
+          <button type="submit" name="add" value="1" class="add">&laquo; Add</button>
+          <button type="submit" name="remove" value="1">Remove &raquo;</button>
+        </div>
+
+        <!-- Potential attendees -->
+        <div class="ilt-ea-panel">
+          <div class="ilt-ea-phead"><span>Potential attendees</span><span class="ilt-ea-badge" id="ilt-ea-potbadge" style="display:none;"></span></div>
+          <div class="ilt-ea-list" data-list="potential">
+            <?php foreach ($potential as $u) { echo $renderrow($u, 'addselect'); } ?>
+          </div>
+          <div class="ilt-ea-search">
+            <span class="box"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input type="text" placeholder="Search" data-search="potential"></span>
+            <button type="button" class="ilt-ea-clear" data-clear="potential">&times; Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="ilt-ea-foot">
+        <label><input type="checkbox" name="suppressemail" value="1" <?php echo $suppressemail ? 'checked' : ''; ?>> <svg class="bell" viewBox="0 0 24 24"><path d="M13.73 21a2 2 0 0 1-3.46 0"/><path d="M18.63 13A17.9 17.9 0 0 1 18 8"/><path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"/><path d="M18 8a6 6 0 0 0-9.33-5"/><line x1="1" y1="1" x2="23" y2="23"/></svg> Suppress email notification</label>
+        <div class="right">
+          <button type="submit" name="save" value="1" class="ilt-ea-save">
+            <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save attendees
+          </button>
+          <a class="ilt-ea-back" href="<?php echo $backurl->out(false); ?>">Go back</a>
+        </div>
+      </div>
+    </div>
+  </form>
+<?php echo html_writer::end_div(); ?>
+
+<script>
+(function(){
+  var root = document.querySelector('.ilt-ea');
+  if (!root) return;
+
+  function refresh(){
+    document.getElementById('ilt-ea-selcount').textContent = root.querySelectorAll('.ilt-ea-cb:checked').length;
+    var pot = root.querySelectorAll('[data-list="potential"] .ilt-ea-cb:checked').length;
+    var b = document.getElementById('ilt-ea-potbadge');
+    if (pot > 0){ b.style.display=''; b.textContent = pot + ' selected'; } else { b.style.display='none'; }
+  }
+  root.addEventListener('change', function(e){ if (e.target.classList.contains('ilt-ea-cb')) refresh(); });
+
+  // --- Existing-panel search, driven by the Search options ---
+  var eInput = root.querySelector('[data-search="existing"]');
+  var optKeep = document.getElementById('opt-keep');
+  var optAuto = document.getElementById('opt-auto');
+  function mode(){ var r = root.querySelector('input[name="opt-mode"]:checked'); return r ? r.value : 'anywhere'; }
+  function filterExisting(){
+    var q = (eInput.value||'').toLowerCase(), m = mode();
+    var rows = root.querySelectorAll('[data-list="existing"] .ilt-ea-row'), visible = [];
+    rows.forEach(function(r){
+      var cb = r.querySelector('.ilt-ea-cb');
+      var name = (r.querySelector('.ilt-ea-name')||{}).textContent || '';
+      name = name.toLowerCase();
+      var text = r.textContent.toLowerCase();
+      var ok;
+      if (!q) ok = true;
+      else if (m === 'exact') ok = (name === q);
+      else if (m === 'start') ok = (name.indexOf(q) === 0 || text.indexOf(q) === 0);
+      else ok = (text.indexOf(q) > -1);
+      if (optKeep.checked && cb.checked) ok = true;
+      r.style.display = ok ? '' : 'none';
+      if (ok) visible.push(r);
+    });
+    if (optAuto.checked && q && visible.length === 1){
+      var cb = visible[0].querySelector('.ilt-ea-cb');
+      if (!cb.checked){ cb.checked = true; refresh(); }
+    }
+  }
+  if (eInput){
+    eInput.addEventListener('input', filterExisting);
+    [optKeep, optAuto].forEach(function(o){ o && o.addEventListener('change', filterExisting); });
+    root.querySelectorAll('input[name="opt-mode"]').forEach(function(o){ o.addEventListener('change', filterExisting); });
+  }
+
+  // --- Potential-panel search (plain "anywhere") ---
+  var pInput = root.querySelector('[data-search="potential"]');
+  if (pInput){
+    pInput.addEventListener('input', function(){
+      var q = pInput.value.toLowerCase();
+      root.querySelectorAll('[data-list="potential"] .ilt-ea-row').forEach(function(r){
+        r.style.display = r.textContent.toLowerCase().indexOf(q) > -1 ? '' : 'none';
+      });
+    });
+  }
+
+  // Clear buttons.
+  root.querySelectorAll('[data-clear]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var inp = root.querySelector('[data-search="'+btn.getAttribute('data-clear')+'"]');
+      inp.value=''; inp.dispatchEvent(new Event('input'));
+    });
+  });
+  refresh();
+})();
+</script>
+<?php
 echo $OUTPUT->footer($course);

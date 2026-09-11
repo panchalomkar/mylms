@@ -57,9 +57,7 @@ class main implements renderable, templatable {
       
          $jsonString = "$keyalue->description";
 
-         // Decode the JSON string into a PHP associative array
         $data = json_decode($jsonString, true);
-         // Access the "text" value
         $textValue = $data['text'];
         $startDateString = DATE('Y-m-d', $keyalue->startdate);
         $endDateString = DATE('Y-m-d', $keyalue->enddate);
@@ -70,26 +68,49 @@ class main implements renderable, templatable {
 
       
         $course = $DB->get_record('course', ['id' => $noofcoursess->courseid]);
-        // $completion = new completion_info($course);
-        // $completed = ($completion->is_course_complete($USER->id));
-        // $percentage = COUNT($completed) / COUNT($noofcourse) * 100;
         define("MAX_LP_PAGE", 10);
         $offset = MAX_LP_PAGE * $page;
 
-        //kkkkkkkkkk
        $learningpaths = $DB->get_record('learningpaths', ['id' => $keyalue->id]);
        $result = getCoursesInfo($learningpaths->id, false, $USER->id, MAX_LP_PAGE, $offset,null);
-    //    $percentage = 0;
-    //    foreach ($result as $key => $course) {
-    //     $percentage .= $course->progress;
-    //    }  
-       $lpprogress = newLpprogress($learningpaths->id,$learningpaths->credits,$USER->id);  
-       //print_r($result);
-      // exit();
+     $totalcourses = 0;
+$completedcourses = 0;
 
-       $progress = '<div class="progress" style="width:100px">
-        <div class="progress-bar bg-success" role="progressbar" style="width: '.$lpprogress.'%" aria-valuenow="'.$lpprogress.'" aria-valuemin="0" aria-valuemax="100">'.round($lpprogress).'%</div>
-        </div>';
+$courses = $DB->get_records('learningpath_courses', [
+    'learningpathid' => $learningpaths->id
+]);
+
+foreach ($courses as $c) {
+    $course = $DB->get_record('course', ['id' => $c->courseid]);
+    if (!$course) continue;
+
+    $progress = \core_completion\progress::get_course_progress_percentage($course, $USER->id);
+    $progress = floor($progress ?? 0);
+
+    $totalcourses++;
+
+    if ($progress >= 100) {
+        $completedcourses++;
+    }
+}
+
+$progressRounded = ($totalcourses > 0) 
+    ? round(($completedcourses / $totalcourses) * 100) 
+    : 0;
+
+       if ($progressRounded >= 100) {
+           $statuslabel = 'Completed';
+           $statusclass = 'lp-status-completed';
+           $buttontext = 'Review';
+       } else if ($progressRounded > 0) {
+           $statuslabel = 'In Progress';
+           $statusclass = 'lp-status-inprogress';
+           $buttontext = 'Continue Learning';
+       } else {
+           $statuslabel = 'Not Started';
+           $statusclass = 'lp-status-notstarted';
+           $buttontext = 'Start Learning';
+       }
 
        $imagepathurl = $CFG->wwwroot."/local/learningpaths/pluginfile.php?learningpathid={$keyalue->id}&t=";
 
@@ -99,7 +120,10 @@ class main implements renderable, templatable {
                 'discriotion' => $textValue,
                 'nocourses' => COUNT($noofcourse),
                 'duration' => $duration,
-                'progress' => $progress,
+                'progresspercent' => $progressRounded,
+                'statuslabel' => $statuslabel,
+                'statusclass' => $statusclass,
+                'buttontext' => $buttontext,
                 'urllink' => $CFG->wwwroot."/blocks/learningpathview/lp_view_course.php?id=$keyalue->id",
             );
         }
@@ -112,22 +136,17 @@ class main implements renderable, templatable {
         $secondsInAnHour = 60 * $secondsInAMinute;
         $secondsInADay = 24 * $secondsInAnHour;
     
-        // Extract days
         $days = floor($inputSeconds / $secondsInADay);
     
-        // Extract hours
         $hourSeconds = $inputSeconds % $secondsInADay;
         $hours = floor($hourSeconds / $secondsInAnHour);
     
-        // Extract minutes
         $minuteSeconds = $hourSeconds % $secondsInAnHour;
         $minutes = floor($minuteSeconds / $secondsInAMinute);
     
-        // Extract the remaining seconds
         $remainingSeconds = $minuteSeconds % $secondsInAMinute;
         $seconds = ceil($remainingSeconds);
     
-        // Format and return
         $timeParts = [];
         $sections = [
             'day' => (int)$days,
@@ -145,59 +164,3 @@ class main implements renderable, templatable {
         return implode(', ', $timeParts);
     }
 }
-
-
-//            // Load completion data.
-//            $info = new completion_info($course);
-//            // Is course complete?
-//        $coursecomplete = $info->is_course_complete($USER->id);
-
-//        // Has this user completed any criteria?
-//        $criteriacomplete = $info->count_course_user_data($USER->id);
-
-//        // Load course completion.
-//        $params = array(
-//            'userid' => $USER->id,
-//            'course' => $noofcoursess->courseid,
-//        );
-
-//        $ccompletion = new completion_completion($params);
-
-//        // Save row data.
-//        $rows = array();
-
-//        // Flag to set if current completion data is inconsistent with what is stored in the database.
-//        $pendingupdate = false;
-
-//        // Load criteria to display.
-//        $completions = $info->get_completions($noofcoursess->courseid);
-
-//        foreach ($completions as $completion) {
-//        $criteria = $completion->get_criteria();
-//        if (!$pendingupdate && $criteria->is_pending($completion)) {
-//            $pendingupdate = true;
-//        }
-   
-//        $row = array();
-//        $row['type'] = $criteria->criteriatype;
-//        $row['title'] = $criteria->get_title();
-//        $row['status'] = $completion->get_status();
-//        $row['complete'] = $completion->is_complete();
-//        $row['timecompleted'] = $completion->timecompleted;
-//        $row['details'] = $criteria->get_details($completion);
-//        $rows[] = $row;
-//    }
-
-//    if ($pendingupdate) {
-//        $pending++;
-//        } else if ($coursecomplete) {
-//        $completioned++;
-//        } else if (!$criteriacomplete && !$ccompletion->timestarted) {
-//        $totalnotstarted++;
-//        } else {
-//        $inprogress++;
-//        }
-//      if ($noofcourse) {
-//         $percentage = $completioned / COUNT($noofcourse) * 100;
-//      }
-       

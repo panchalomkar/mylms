@@ -3,7 +3,10 @@
     display: block;
     font-size: 0.7em;
 }
-
+#page-mod-quiz-review .question-custom-d .formulation .ablock tr[role="presentation"] {
+    width: 100% !important;
+    display: inline-flex !important;
+}
 /** Attempt and review pages **/
 #page-mod-quiz-attempt #page .controls,
 #page-mod-quiz-summary #page .controls,
@@ -11,7 +14,6 @@
     text-align: center;
     margin: 8px auto;
 }
-
 #page-mod-quiz-attempt .submitbtns,
 #page-mod-quiz-review .submitbtns {
     display: flex;

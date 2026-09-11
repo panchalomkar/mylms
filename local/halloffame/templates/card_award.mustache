@@ -1,14 +1,14 @@
-{{! local_halloffame/card_award — v2 }}
-<div class="hof-award-card" data-id="{{id}}">
+{{! local_halloffame/card_award — v3 with comments + edit/delete }}
+
+<div class="hof-award-card" data-id="{{id}}" data-type="award">
 
   {{! Gradient header }}
-  <div class="hof-award-header" style="background:{{gradient}}">
-    {{#image}}<img src="{{{image}}}" class="hof-award-bg-img" alt="" aria-hidden="true"/>{{/image}}
+  <div class="hof-award-header" style="background:#003152;">
+    {{#image}}<img src="{{{imag}}}" class="hof-award-bg-img" alt="" aria-hidden="true"/>{{/image}}
     <div class="hof-award-confetti" aria-hidden="true">
       <span>🎊</span><span>🎉</span><span>⭐</span>
     </div>
 
-    {{! Profile image — rendered via $OUTPUT->user_picture() in PHP, circular }}
     <div class="hof-award-avatar-wrap">
       <div class="hof-avatar-ring">
         {{{userpicture}}}
@@ -44,6 +44,12 @@
       {{fullname}}
     </div>
 
+    {{#category}}
+    <div class="hof-award-category">
+      <i class="fa fa-tag" aria-hidden="true"></i> {{category}}
+    </div>
+    {{/category}}
+
     {{#message}}
     <p class="hof-award-message">"{{message}}"</p>
     {{/message}}
@@ -51,29 +57,71 @@
 
   {{! Actions }}
   <div class="hof-card-actions">
-    <button class="hof-like-btn{{#userliked}} hof-liked{{/userliked}}"
+<button class="hof-like-btn{{#userliked}} hof-liked{{/userliked}}"
+        data-id="{{id}}" data-type="award">
+  <i class="fa fa-thumbs-up"></i>
+  <span class="hof-like-count">{{likecount}}</span>
+</button>
+
+{{#likecount}}
+<button class="hof-view-likes hof-action-btn"
+        data-id="{{id}}" data-type="award"
+        title="View Likes">
+  <i class="fa fa-users"></i>
+</button>
+{{/likecount}}
+
+    <button class="hof-comment-btn hof-action-btn"
             data-id="{{id}}" data-type="award"
-            aria-label="{{#str}}like,local_halloffame{{/str}}"
-            aria-pressed="{{#userliked}}true{{/userliked}}{{^userliked}}false{{/userliked}}">
-      <i class="fa fa-thumbs-up" aria-hidden="true"></i>
-      <span class="hof-like-count">{{likecounts}}</span>
-    </button>
-
-    <button class="hof-action-btn" aria-label="Comment">
+            data-commentcount="{{commentcount}}"
+            aria-label="{{#str}}comments,local_halloffame{{/str}}">
       <i class="fa fa-comment-o" aria-hidden="true"></i>
+      <span class="hof-comment-count">{{commentcount}}</span>
     </button>
-    <button class="hof-action-btn" aria-label="Share">
-      <i class="fa fa-share-alt" aria-hidden="true"></i>
-    </button>
-
+    <button class="hof-btn-view-award">
+</button>
+{{#image}}
+<button class="hof-btn-view-award hof-action-btn"
+        data-image="{{{image}}}"
+        data-title="{{title}}"
+        data-user="{{fullname}}"
+        title="View Certificate">
+  <i class="fa fa-eye"></i>
+</button>
+{{/image}}
     {{#canmanage}}
+    <a href="{{editurl}}"
+       class="hof-btn-edit-award"
+       aria-label="Edit award"
+       title="Edit award">
+      <i class="fa fa-pencil" aria-hidden="true"></i>
+    </a>
     <a href="{{deleteurl}}"
        class="hof-btn-delete-award"
        onclick="return confirm('Delete this award?')"
-       aria-label="Delete award">
+       aria-label="Delete award"
+       title="Delete award">
       <i class="fa fa-trash-o" aria-hidden="true"></i>
     </a>
     {{/canmanage}}
+  </div>
+
+  {{! Comments section (hidden by default, toggled by JS) }}
+  <div class="hof-comments-section" id="hof-comments-award-{{id}}" style="display:none;">
+    <div class="hof-comments-list" id="hof-comments-list-award-{{id}}">
+      {{! intentionally empty — AJAX-populated on toggle }}
+    </div>
+    <div class="hof-comment-form">
+      <textarea class="hof-comment-input hof-input hof-textarea"
+                placeholder="{{#str}}writeacomment,local_halloffame{{/str}}"
+                rows="2"
+                data-id="{{id}}" data-type="award"></textarea>
+      <button class="hof-comment-submit hof-btn hof-btn-sm hof-btn-primary"
+              data-id="{{id}}" data-type="award">
+        <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
+        {{#str}}postcomment,local_halloffame{{/str}}
+      </button>
+    </div>
   </div>
 
 </div>

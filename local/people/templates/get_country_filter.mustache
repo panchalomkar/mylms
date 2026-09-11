@@ -1,62 +1,64 @@
-{{!
-    This file is part of Moodle - http://moodle.org/
-
-    Moodle is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    Moodle is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-}}
-{{!
-    @template local_sitesetting/customise
-
-    Note: collapse/show functionality as well as check/uncheck functionality is 
-          developed using javascript (custom.js) file. Any change in HTML DOM 
-          structure can break these functionalities, so change cautiously.
-
-    @author: 2021 Akashy Pingale (akashy.p@paradisosolution.com)
-    @paradiso
-
-}}
-<div class="filterslist">
-    <div class="panel-heading">
-        <h5 class="panel-title">
-            <a href="#collapse10" class="plms-reports-dropdown collapsed" data-toggle="collapse" data-parent="#accordion">
-                {{#str}}country, local_people{{/str}}
-                <i class="reports-dropdown fa fa-angle-down collapsed"></i>
-            </a>
-        </h5>
+{{! People Plugin - Country Filter — search + tag selection like Course filter }}
+<div class="filterslist people-subfilter" data-filter-name="country">
+    <div class="people-subfilter-header" role="button" aria-expanded="false" tabindex="0">
+        <span class="people-subfilter-title">
+            <i class="fa fa-globe mr-1"></i>
+            {{#str}}country, local_people{{/str}}
+        </span>
+        <i class="fa fa-chevron-down people-subfilter-icon"></i>
     </div>
-    <div id="collapse10" class="panel-collapse collapse">
-        <div class="panel-body">
-            <div class="row">
-                {{#country}}
-                    <a href="#" data-name="country" class="reset">{{#str}}clear, local_people{{/str}}</a>
-                {{/country}}
-                <div class="clr_button"></div>
-                <div class="col-md-12 searchbox select-option">
-                    <form id="form-country" method="post" action="">
-                        {{#country}}
-                            <input type="hidden" name="filter-true" class="filter-true" value="true">
-                        {{/country}}
-                        <div class="form-group">
-                            <select class="select custom-select form-control chosen-people" multiple="multiple" id="menucountryop" name="countryop[]">
-                            {{#countryopt}}
-                                <option value="{{{key}}}" {{{selected}}}>{{{value}}}</option>
-                            {{/countryopt}}
-                        </select>
-                        </div>
-                        <input type="hidden" name="multipleselectfilter" value="country">
-                    </form>
+    <div class="people-subfilter-body" style="display:none;">
+        {{#country}}
+        <a href="#" data-name="country" class="reset people-clear-link">
+            <i class="fa fa-times-circle mr-1"></i>{{#str}}clear, local_people{{/str}}
+        </a>
+        {{/country}}
+        <form id="form-country" method="post" action="">
+            {{#country}}
+            <input type="hidden" name="filter-true" class="filter-true" value="true">
+            {{/country}}
+
+            {{! Selected country tags }}
+            <div class="people-selected-courses" id="people-selected-country-display">
+                {{#countryopt}}{{#selected}}
+                <span class="people-course-selected-tag" data-value="{{{key}}}">
+                    <span class="people-course-tag-text">{{{value}}}</span>
+                    <span class="people-course-tag-remove" title="Remove"><i class="fa fa-times"></i></span>
+                </span>
+                {{/selected}}{{/countryopt}}
+            </div>
+
+            {{! Search box }}
+            <div class="people-course-search-wrap">
+                <input type="text" class="form-control people-course-search-input people-select-search"
+                       data-target="people-country-checkbox-list"
+                       placeholder="Search countries..." autocomplete="off">
+                <i class="fa fa-search people-course-search-icon"></i>
+            </div>
+
+            {{! Hidden real select }}
+            <select class="people-hidden-select" multiple="multiple" id="menucountryop" name="countryop[]" style="display:none;">
+                {{#countryopt}}
+                    <option value="{{{key}}}" {{{selected}}}>{{{value}}}</option>
+                {{/countryopt}}
+            </select>
+
+            {{! Checkbox list }}
+            <div class="people-course-list-wrap">
+                <div class="people-course-checkbox-list people-generic-checkbox-list" id="people-country-checkbox-list"
+                     data-tags-container="people-selected-country-display"
+                     data-hidden-select="menucountryop">
+                    {{#countryopt}}
+                    <label class="people-course-item" data-value="{{{key}}}" data-label="{{{value}}}">
+                        <input type="checkbox" class="people-generic-checkbox" value="{{{key}}}"
+                               {{#selected}}checked{{/selected}}>
+                        <span class="people-course-item-label">{{{value}}}</span>
+                    </label>
+                    {{/countryopt}}
                 </div>
             </div>
-        </div>
+
+            <input type="hidden" name="multipleselectfilter" value="country">
+        </form>
     </div>
 </div>

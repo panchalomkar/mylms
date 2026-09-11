@@ -28,7 +28,23 @@ $PAGE->set_url($CFG->wwwroot . '/local/competency/spiderdiagram.php');
 $PAGE->set_heading(get_string('spiderdiagram', 'local_competency'));
 $PAGE->navbar->add(get_string('spiderdiagram', 'local_competency'));
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/competency/competency_pro.css'));
+?>
+<style>
+.radar-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 650px;   /* ✅ medium width */
+    height: 450px;      /* ✅ medium height */
+    margin: 0 auto;
+    overflow: visible !important;
+}
 
+#comp-spider-chart {
+    width: 100% !important;
+    height: 100% !important;
+}
+    </style>
+<?php
 // Determine role access
 $isManager     = has_capability('local/competency:managerrating', $context);
 $isLandD       = has_capability('local/competency:landdreport', $context);
@@ -89,6 +105,30 @@ $radarSelf    = [];
 $radarManager = [];
 $radarLandD   = [];
 
+function wrap_label($text, $maxlen = 12) {
+    $text = strip_tags($text);
+    $words = explode(' ', $text);
+
+    $lines = [];
+    $current = '';
+
+    foreach ($words as $word) {
+        if (strlen($current . ' ' . $word) > $maxlen) {
+            if (!empty($current)) {
+                $lines[] = trim($current);
+            }
+            $current = $word;
+        } else {
+            $current .= ' ' . $word;
+        }
+    }
+
+    if (!empty($current)) {
+        $lines[] = trim($current);
+    }
+
+    return array_values($lines);
+}
 foreach ($mainCompetencies as $ct) {
     // Get sub-competencies under this main competency
     $subComps = $DB->get_records_sql(
@@ -121,7 +161,8 @@ foreach ($mainCompetencies as $ct) {
                     WHERE cu.userid = ? AND cu.ctid = ? AND lr.tearms = ? AND lr.landdstatus = 1";
     $landDAvg = $DB->get_record_sql($landDAvgSql, [$selectedUserId, $ct->id, $selectedTerms]);
 
-    $radarLabels[]  = addslashes($ct->title);
+   $radarLabels[] = implode("\n", wrap_label($ct->title));
+    
     $radarSelf[]    = $selfAvg    ? round((float)$selfAvg->avg_rating, 2)    : 0;
     $radarManager[] = $managerAvg ? round((float)$managerAvg->avg_rating, 2) : 0;
     $radarLandD[]   = $landDAvg   ? round((float)$landDAvg->avg_rating, 2)   : 0;
@@ -268,9 +309,9 @@ $jsLandD    = json_encode(array_values($radarLandD));
     <?php else: ?>
 
     <!-- Spider Chart Canvas -->
-    <div style="position:relative;width:100%;max-width:600px;margin:0 auto;">
-        <canvas id="comp-spider-chart" height="460"></canvas>
-    </div>
+   <div class="radar-wrapper">
+    <canvas id="comp-spider-chart"></canvas>
+</div>
 
     <!-- Legend -->
     <div class="comp-spider-legend">
@@ -375,7 +416,6 @@ $jsLandD    = json_encode(array_values($radarLandD));
     var ctx = document.getElementById('comp-spider-chart');
     if (!ctx) return;
 
-    // Determine zone background bands for radar (as annotation in canvas)
     new Chart(ctx, {
         type: 'radar',
         data: {
@@ -390,7 +430,6 @@ $jsLandD    = json_encode(array_values($radarLandD));
                     pointBorderColor: '#fff',
                     pointBorderWidth: 2,
                     pointRadius: 5,
-                    pointHoverRadius: 7,
                     borderWidth: 2.5,
                     fill: true,
                 },
@@ -403,7 +442,6 @@ $jsLandD    = json_encode(array_values($radarLandD));
                     pointBorderColor: '#fff',
                     pointBorderWidth: 2,
                     pointRadius: 5,
-                    pointHoverRadius: 7,
                     borderWidth: 2.5,
                     fill: true,
                 },
@@ -416,7 +454,6 @@ $jsLandD    = json_encode(array_values($radarLandD));
                     pointBorderColor: '#fff',
                     pointBorderWidth: 2,
                     pointRadius: 5,
-                    pointHoverRadius: 7,
                     borderWidth: 2.5,
                     fill: true,
                 }
@@ -424,18 +461,32 @@ $jsLandD    = json_encode(array_values($radarLandD));
         },
         options: {
             responsive: true,
-            maintainAspectRatio: true,
+
+            // 🔥 KEY FIX
+            maintainAspectRatio: false,
+
+            // ⚠️ Reduce padding (THIS WAS SHRINKING CHART)
+           layout: {
+    padding: {
+        top: 20,
+        bottom: 20,
+        left: 20,
+        right: 20
+    }
+},
+
             scales: {
                 r: {
                     min: 0,
                     max: 10,
+
                     ticks: {
                         stepSize: 2,
-                        font: { family: 'Inter, sans-serif', size: 10 },
+                        font: { size: 11 },
                         color: '#94A3B8',
-                        backdropColor: 'transparent',
-                        callback: function(value) { return value; }
+                        backdropColor: 'transparent'
                     },
+
                     grid: {
                         color: function(context) {
                             var v = context.tick ? context.tick.value : 0;
@@ -443,47 +494,50 @@ $jsLandD    = json_encode(array_values($radarLandD));
                             if (v === 7) return 'rgba(217, 119, 6, 0.35)';
                             if (v === 10) return 'rgba(5, 150, 105, 0.4)';
                             return 'rgba(226, 232, 240, 0.5)';
-                        },
-                        lineWidth: function(context) {
-                            var v = context.tick ? context.tick.value : 0;
-                            return (v === 4 || v === 7 || v === 10) ? 2 : 1;
                         }
                     },
-                    pointLabels: {
-                        font: { family: 'DM Sans, sans-serif', size: 12, weight: '600' },
-                        color: '#1E293B',
-                        padding: 12,
-                    },
+
                     angleLines: {
-                        color: 'rgba(203, 213, 225, 0.5)',
-                        lineWidth: 1,
-                    }
+                        color: 'rgba(203, 213, 225, 0.5)'
+                    },
+
+                   pointLabels: {
+    display: true,
+    padding: 12,   // was 15 → now tighter
+
+    font: function(context) {
+        let count = context.chart.data.labels.length;
+        return {
+            size: count > 8 ? 9 : 12,   // slightly smaller
+            weight: '500'
+        };
+    },
+
+    color: '#0f172a',
+
+    callback: function(label) {
+        return label.split("\n");
+    }
+}
                 }
             },
+
             plugins: {
-                legend: {
-                    display: false // We use custom legend
-                },
+                legend: { display: false },
+
                 tooltip: {
-                    backgroundColor: '#0D1B2A',
-                    titleFont: { family: 'DM Sans, sans-serif', size: 13, weight: '600' },
-                    bodyFont: { family: 'Inter, sans-serif', size: 12 },
-                    padding: 12,
-                    cornerRadius: 8,
-                    borderColor: 'rgba(0,180,216,0.3)',
-                    borderWidth: 1,
                     callbacks: {
                         label: function(context) {
                             var val = context.raw;
-                            var zone = val >= 8 ? '🟢 Green Zone' : val >= 5 ? '🟡 Yellow Zone' : val > 0 ? '🔴 Red Zone' : '—';
-                            return ' ' + context.dataset.label + ': ' + val + '/10  (' + zone + ')';
+                            var zone =
+                                val >= 8 ? '🟢 Green' :
+                                val >= 5 ? '🟡 Yellow' :
+                                val > 0 ? '🔴 Red' : '—';
+
+                            return context.dataset.label + ': ' + val + '/10 (' + zone + ')';
                         }
                     }
                 }
-            },
-            animation: {
-                duration: 900,
-                easing: 'easeInOutQuart'
             }
         }
     });

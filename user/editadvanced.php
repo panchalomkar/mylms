@@ -38,7 +38,7 @@ $returnto = optional_param('returnto', null, PARAM_ALPHA);  // Code determining 
 $PAGE->set_url('/user/editadvanced.php', array('course' => $course, 'id' => $id));
 
 $course = $DB->get_record('course', array('id' => $course), '*', MUST_EXIST);
-
+$returnurlparam = optional_param('returnurl', '', PARAM_LOCALURL);
 if (!empty($USER->newadminuser)) {
     // Ignore double clicks, we must finish all operations before cancelling request.
     ignore_user_abort(true);
@@ -152,14 +152,25 @@ $filemanageroptions = array('maxbytes'       => $CFG->maxbytes,
 file_prepare_draft_area($draftitemid, $filemanagercontext->id, 'user', 'newicon', 0, $filemanageroptions);
 $user->imagefile = $draftitemid;
 // Create form.
-$userform = new user_editadvanced_form(new moodle_url($PAGE->url, array('returnto' => $returnto)), array(
-    'editoroptions' => $editoroptions,
-    'filemanageroptions' => $filemanageroptions,
-    'user' => $user));
+$userform = new user_editadvanced_form(
+    new moodle_url($PAGE->url, [
+        'returnto' => $returnto,
+        'returnurl' => $returnurlparam   // ✅ THIS LINE WAS MISSING
+    ]),
+    [
+        'editoroptions' => $editoroptions,
+        'filemanageroptions' => $filemanageroptions,
+        'user' => $user
+    ]
+);
 
 
 // Deciding where to send the user back in most cases.
-if ($returnto === 'profile') {
+if (!empty($returnurlparam)) {
+    // ✅ Return back to tenant dashboard
+    $returnurl = new moodle_url($returnurlparam);
+
+} else if ($returnto === 'profile') {
     if ($course->id != SITEID) {
         $returnurl = new moodle_url('/user/view.php', array('id' => $user->id, 'course' => $course->id));
     } else {
@@ -317,10 +328,10 @@ if ($userform->is_cancelled()) {
     } else if ($returnto === 'profile') {
         \core\session\manager::gc(); // Remove stale sessions.
         redirect($returnurl, get_string('changessaved'), null, \core\output\notification::NOTIFY_SUCCESS);
-    } else {
-        \core\session\manager::gc(); // Remove stale sessions.
-        redirect("$CFG->wwwroot/$CFG->admin/user.php", get_string('changessaved'), null, \core\output\notification::NOTIFY_SUCCESS);
-    }
+} else {
+    \core\session\manager::gc();
+    redirect($returnurl, get_string('changessaved'), null, \core\output\notification::NOTIFY_SUCCESS);
+}
     // Never reached..
 }
 

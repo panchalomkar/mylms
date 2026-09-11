@@ -422,10 +422,25 @@ function reloadSiteOverview() {
             var au = document.querySelector('[data-so="activeusers"]');
             var en = document.querySelector('[data-so="enrollments"]');
             var co = document.querySelector('[data-so="completions"]');
-
+ 
             if (au) au.textContent = data.activeusers;
             if (en) en.textContent = data.enrollments;
             if (co) co.textContent = data.completions;
+ 
+            // 📊 Update trend badges (arrow + %) to match the newly selected
+            // filter/cohort window. Requires siteoverview.php's AJAX JSON
+            // to include the same trend fields helper.php now returns.
+            function updateTrendBadge(key, trendValue, trendClass, arrow) {
+                var el = document.querySelector('[data-so="' + key + '"]');
+                if (!el) return;
+                el.textContent = (arrow || '') + ' ' + (trendValue || '0%');
+                el.classList.remove('text-success', 'text-danger', 'text-muted');
+                el.classList.add(trendClass || 'text-muted');
+            }
+ 
+            updateTrendBadge('activeuserstrend', data.activeuserstrend, data.activeuserstrendclass, data.activeuserstrendarrow);
+            updateTrendBadge('enrollmentstrend', data.enrollmentstrend, data.enrollmentstrendclass, data.enrollmentstrendarrow);
+            updateTrendBadge('completionstrend', data.completionstrend, data.completionstrendclass, data.completionstrendarrow);
 
             // 📈 Update chart
             overviewChart.data.labels = getLabels(data.trendDates || []);

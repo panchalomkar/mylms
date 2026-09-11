@@ -1,0 +1,234 @@
+{{!
+    Per-user detailed report.
+    @template mod_airoleplay/user_report
+    @copyright 2024 Enterprise AI Learning Platform
+}}
+
+<div class="air-platform">
+<div class="air-results-page">
+
+  {{! Header }}
+  <div class="air-results-header" style="text-align:left">
+    <div style="font-size:0.875rem;color:#64748b;margin-bottom:0.5rem">
+      <a href="{{back_url}}" style="color:#6366f1;text-decoration:none">← Back to Reports</a>
+    </div>
+    <h1 style="font-size:1.75rem;font-weight:800;letter-spacing:-0.02em;margin-bottom:0.25rem">
+      {{learner_name}}
+    </h1>
+    <p style="color:#64748b;margin-bottom:0.25rem">{{learner_email}}</p>
+    <p style="color:#94a3b8;font-size:0.875rem">{{scenario_name}}</p>
+  </div>
+
+  {{! Summary strip }}
+  <div class="air-results-grid" style="margin-bottom:1.5rem">
+
+    {{! Overall rating }}
+    <div class="air-results-card">
+      <div class="air-results-card__title">⭐ Overall Rating</div>
+      <div style="text-align:center;padding:0.5rem 0">
+        <div style="font-size:2rem;letter-spacing:2px">
+          {{#stars_full}}<span style="color:#f59e0b">★</span>{{/stars_full}}{{#has_half_star}}<span style="color:#f59e0b">⯨</span>{{/has_half_star}}{{#stars_empty}}<span style="color:#e2e8f0">★</span>{{/stars_empty}}
+        </div>
+        <div style="font-size:1.5rem;font-weight:800;margin-top:0.5rem">{{rating}} / 5</div>
+        {{#passed_ever}}
+          <span class="air-badge" style="background:#d1fae5;color:#065f46;margin-top:0.5rem;display:inline-block">✓ Passed</span>
+        {{/passed_ever}}
+        {{^passed_ever}}
+          <span class="air-badge" style="background:#fee2e2;color:#991b1b;margin-top:0.5rem;display:inline-block">Not yet passed</span>
+        {{/passed_ever}}
+      </div>
+    </div>
+
+    {{! Key numbers }}
+    <div class="air-results-card">
+      <div class="air-results-card__title">📊 Performance</div>
+      <div class="row g-2" style="text-align:center">
+        <div class="col-4" style="border-right:1px solid #f1f5f9">
+          <div style="font-size:1.5rem;font-weight:800">{{num_attempts}}</div>
+          <div style="font-size:0.7rem;color:#94a3b8">Attempts</div>
+        </div>
+        <div class="col-4" style="border-right:1px solid #f1f5f9">
+          <div style="font-size:1.5rem;font-weight:800">{{#has_scores}}{{best_score}}{{/has_scores}}{{^has_scores}}—{{/has_scores}}</div>
+          <div style="font-size:0.7rem;color:#94a3b8">Best Score</div>
+        </div>
+        <div class="col-4">
+          <div style="font-size:1.5rem;font-weight:800">{{#has_scores}}{{avg_score}}{{/has_scores}}{{^has_scores}}—{{/has_scores}}</div>
+          <div style="font-size:0.7rem;color:#94a3b8">Avg Score</div>
+        </div>
+      </div>
+      <p style="font-size:0.75rem;color:#94a3b8;text-align:center;margin-top:0.75rem">
+        Pass mark: {{pass_score}}/100
+      </p>
+    </div>
+
+  </div>
+
+  {{! Competency profile }}
+  {{#has_competencies}}
+    <div class="air-results-grid" style="margin-bottom:1.5rem">
+      <div class="air-results-card">
+        <div class="air-results-card__title">🎯 Competency Profile (best attempt)</div>
+        <canvas id="air-user-radar" height="260"></canvas>
+      </div>
+      <div class="air-results-card">
+        <div class="air-results-card__title">📈 Competency Scores</div>
+        {{#competencies}}
+          <div class="air-comp-bar mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="air-comp-label">{{label}}</span>
+              <span class="air-comp-score fw-bold" data-score="{{score}}">{{score}}/100</span>
+            </div>
+            <div class="air-progress-track">
+              <div class="air-progress-fill" style="width:{{score}}%"></div>
+            </div>
+          </div>
+        {{/competencies}}
+      </div>
+    </div>
+  {{/has_competencies}}
+
+  {{! Strengths + improvements }}
+  <div class="row g-4" style="margin-bottom:1.5rem">
+    <div class="col-md-6">
+      <div class="air-results-card h-100">
+        <div class="air-results-card__title">✅ Strengths</div>
+        {{#has_strengths}}
+          <ul class="list-unstyled mb-0">
+            {{#strengths}}
+              <li class="air-list-item air-list-item--success">
+                <span class="air-list-icon">✓</span><span>{{.}}</span>
+              </li>
+            {{/strengths}}
+          </ul>
+        {{/has_strengths}}
+        {{^has_strengths}}
+          <p class="text-muted">No strengths recorded yet.</p>
+        {{/has_strengths}}
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="air-results-card h-100">
+        <div class="air-results-card__title">⚡ Areas to Improve</div>
+        {{#has_improvements}}
+          <div>
+            {{#improvements}}
+              <div class="air-improvement-card">
+                <div class="air-improvement-area">{{area}}</div>
+                {{#suggestion}}<p class="air-improvement-tip">💡 {{suggestion}}</p>{{/suggestion}}
+              </div>
+            {{/improvements}}
+          </div>
+        {{/has_improvements}}
+        {{^has_improvements}}
+          <p class="text-muted">No improvement areas recorded yet.</p>
+        {{/has_improvements}}
+      </div>
+    </div>
+  </div>
+
+  {{! Attempt history with recordings }}
+  <div class="air-results-card mb-4">
+    <div class="air-results-card__title">📋 Attempt History &amp; Recordings</div>
+    {{#has_attempts}}
+      <div class="air-sessions-table">
+        <table style="width:100%">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Score</th>
+              <th>Result</th>
+              <th>Mood</th>
+              <th>Turns</th>
+              <th>Duration</th>
+              <th>Date</th>
+              <th>Recording</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#attempts}}
+              <tr>
+                <td><strong>{{attempt}}</strong></td>
+                <td>
+                  {{#score}}<strong>{{score}}/100</strong>{{/score}}
+                  {{^score}}<span class="text-muted">—</span>{{/score}}
+                </td>
+                <td>
+                  {{#passed}}<span class="badge bg-success">✓ Passed</span>{{/passed}}
+                  {{^passed}}
+                    {{#score}}<span class="badge bg-danger">✗ Failed</span>{{/score}}
+                    {{^score}}<span class="badge bg-secondary">{{status_label}}</span>{{/score}}
+                  {{/passed}}
+                </td>
+                <td>{{#mood_emoji}}<span title="{{mood_band}}" style="font-size:1.25rem">{{mood_emoji}}</span>{{/mood_emoji}}{{^mood_emoji}}—{{/mood_emoji}}</td>
+                <td>{{turns}}</td>
+                <td>{{duration}}</td>
+                <td>{{date}}</td>
+                <td style="min-width:200px">
+                  {{#has_recording}}
+                    <audio controls preload="none" style="width:200px;height:32px" src="{{audio_url}}"></audio>
+                  {{/has_recording}}
+                  {{^has_recording}}
+                    <span class="text-muted" style="font-size:0.8rem">No recording</span>
+                  {{/has_recording}}
+                </td>
+                <td>
+                  <a href="{{results_url}}" class="btn btn-sm btn-outline-primary">View Feedback</a>
+                </td>
+              </tr>
+            {{/attempts}}
+          </tbody>
+        </table>
+      </div>
+    {{/has_attempts}}
+    {{^has_attempts}}
+      <p class="text-muted py-3 text-center">This learner has no completed attempts yet.</p>
+    {{/has_attempts}}
+  </div>
+
+</div>{{! .air-results-page }}
+</div>{{! .air-platform }}
+
+<script>
+(function () {
+  function boot() {
+    // Colour competency score labels.
+    document.querySelectorAll('[data-score]').forEach(function (el) {
+      var s = parseFloat(el.dataset.score);
+      if (isNaN(s)) return;
+      el.style.color = s >= 80 ? '#22c55e' : s >= 60 ? '#f59e0b' : '#ef4444';
+    });
+    // Colour the progress fills.
+    document.querySelectorAll('.air-progress-fill').forEach(function (bar) {
+      var w = parseFloat(bar.style.width);
+      if (isNaN(w)) return;
+      bar.style.background = w >= 80 ? '#22c55e' : w >= 60 ? '#f59e0b' : '#ef4444';
+    });
+    // Radar chart.
+    var canvas = document.getElementById('air-user-radar');
+    var data = {{{competency_json}}};
+    if (canvas && window.Chart && data && data.length) {
+      new window.Chart(canvas, {
+        type: 'radar',
+        data: {
+          labels: data.map(function (d) { return d.label; }),
+          datasets: [{
+            label: 'Competency',
+            data:  data.map(function (d) { return d.score; }),
+            backgroundColor: 'rgba(99,102,241,0.15)',
+            borderColor:     'rgba(99,102,241,0.8)',
+            borderWidth: 2,
+            pointBackgroundColor: 'rgba(99,102,241,1)',
+          }],
+        },
+        options: {
+          scales:  { r: { min: 0, max: 100, ticks: { stepSize: 25 } } },
+          plugins: { legend: { display: false } },
+        },
+      });
+    }
+  }
+  if (document.readyState !== 'loading') { boot(); }
+  else { document.addEventListener('DOMContentLoaded', boot); }
+})();
+</script>

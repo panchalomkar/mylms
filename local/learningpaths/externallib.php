@@ -98,10 +98,10 @@ class local_learningpath_external extends external_api {
         global $CFG, $USER,$DB;
         require_once("../../config.php");
         
-        $users = explode(',', $users);
-        $order = explode(',', $order);
-        $prerequisites = explode(',', $prerequisites);
-        $cohorts = explode(',', $cohorts);
+       $users = ($users !== '' && $users !== null) ? array_filter(explode(',', $users), function($v) { return $v !== ''; }) : [];
+$order = ($order !== '' && $order !== null) ? array_filter(explode(',', $order), function($v) { return $v !== ''; }) : [];
+$prerequisites = ($prerequisites !== '' && $prerequisites !== null) ? array_filter(explode(',', $prerequisites), function($v) { return $v !== ''; }) : [];
+$cohorts = ($cohorts !== '' && $cohorts !== null) ? array_filter(explode(',', $cohorts), function($v) { return $v !== ''; }) : [];
 
       // Security Validations: Login, capability and sesskey.
       require_login();

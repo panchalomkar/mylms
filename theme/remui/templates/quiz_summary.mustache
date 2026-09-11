@@ -1,0 +1,449 @@
+<style>
+.btn-return {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 10px;
+    background: #f3f4f6;
+    color: #374151;
+    font-weight: 500;
+    text-decoration: none;
+    border: 1px solid #ddd;
+}
+.btn-return:hover { background: #e5e7eb; }
+.btn-submit button {
+    background: #003152 !important;
+    color: #fff !important;
+    padding: 10px 25px;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+}
+
+/* ── Modal ── */
+#resultModal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+#resultModal.hidden { display: none; }
+
+.qr-card {
+    background: #f0faf6;
+    border: 1.5px solid #c6edd9;
+    border-radius: 20px;
+    padding: 40px 36px 36px;
+    max-width: 50%;
+    width: 94%;
+    text-align: center;
+    font-family: inherit;
+}
+
+/* checkmark circle */
+.qr-check {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 3px solid #22c55e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 18px;
+}
+.qr-check svg { width: 30px; height: 30px; }
+
+.qr-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #0d2e4e;
+    margin: 0 0 6px;
+}
+.qr-subtitle {
+    font-size: 15px;
+    color: #64748b;
+    margin: 0 0 28px;
+}
+
+/* stat cards */
+.qr-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+}
+.qr-stat {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 20px 12px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+.qr-stat-icon { width: 32px; height: 32px; }
+.qr-stat-label {
+    font-size: 13px;
+    color: #94a3b8;
+    font-weight: 500;
+}
+.qr-stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.1;
+}
+.qr-stat-value.blue  { color: #1e3a8a; }
+.qr-stat-value.green { color: #16a34a; }
+.qr-stat-value.amber { color: #d97706; }
+
+/* meta rows */
+.qr-meta {
+    text-align: left;
+    border-top: 1px solid #d1fae5;
+    padding-top: 18px;
+    margin-bottom: 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.qr-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #374151;
+}
+.qr-meta-row svg { width: 18px; height: 18px; flex-shrink: 0; }
+.qr-meta-label { font-weight: 600; color: #374151; }
+
+/* buttons */
+.qr-btns {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+.qr-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #0d2e4e;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+}
+.qr-btn-primary:hover { background: #1a4a72; color: #fff; }
+.qr-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    color: #374151;
+    border: 1.5px solid #d1d5db;
+    border-radius: 10px;
+    padding: 12px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+}
+.qr-btn-secondary:hover { background: #f9fafb; }
+
+/* loading spinner */
+.qr-spinner {
+    width: 36px; height: 36px;
+    border: 4px solid #bbf7d0;
+    border-top-color: #22c55e;
+    border-radius: 50%;
+    animation: qr-spin .8s linear infinite;
+    margin: 0 auto 12px;
+}
+@keyframes qr-spin { to { transform: rotate(360deg); } }
+</style>
+
+<div class="max-w-5xl mx-auto p-4">
+
+    <h2 class="text-2xl font-bold mb-5 text-gray-800">{{summarytitle}}</h2>
+
+    <!-- STATS -->
+    <div class="grid grid-cols-3 gap-4 mb-6">
+        <div class="p-5 rounded-xl text-center border bg-green-50">
+            <div class="text-sm text-gray-500">Answered</div>
+            <div class="text-3xl font-bold text-green-500">{{answered}}</div>
+        </div>
+        <div class="p-5 rounded-xl text-center border bg-[#fdf2e3]">
+            <div class="text-sm text-gray-500">Unanswered</div>
+            <div class="text-3xl font-bold text-yellow-500">{{unanswered}}</div>
+        </div>
+        <div class="p-5 rounded-xl text-center border bg-[#e5e9ef]">
+            <div class="text-sm text-gray-500">Flagged</div>
+            <div class="text-3xl font-bold text-gray-600">{{flagged}}</div>
+        </div>
+    </div>
+
+    <!-- QUESTION LIST -->
+    <div class="space-y-4">
+        {{#questions}}
+        <div class="flex items-center justify-between p-4 bg-white rounded-xl border hover:shadow-sm transition">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-gray-200 font-semibold">
+                    {{number}}
+                </div>
+                <div>
+                    <div class="font-semibold text-gray-800">Question {{number}}</div>
+                    <div class="text-sm text-gray-500">{{status}}</div>
+                </div>
+            </div>
+            <a href="{{url}}" class="px-4 py-1.5 border rounded-lg text-sm text-gray-700 hover:bg-gray-100">Review</a>
+        </div>
+        {{/questions}}
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="flex justify-between mt-6 gap-4">
+        <div>{{{returnbtn}}}</div>
+        <div>{{{submitbtn}}}</div>
+    </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════
+     RESULT MODAL
+══════════════════════════════════════════ -->
+<div id="resultModal" class="hidden">
+<div class="qr-card">
+
+    <!-- LOADING STATE -->
+    <div id="qr-loading">
+        <div class="qr-spinner"></div>
+        <p style="color:#64748b;font-size:15px;margin:0;">Grading your quiz…</p>
+    </div>
+
+    <!-- RESULT STATE -->
+    <div id="qr-result" class="hidden">
+
+        <!-- Checkmark -->
+        <div class="qr-check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+            </svg>
+        </div>
+
+        <h2 class="qr-title">Congratulations!</h2>
+        <p class="qr-subtitle" id="qr-subtitle-text">You have successfully submitted the quiz.</p>
+
+        <!-- Stat cards -->
+        <div class="qr-stats">
+
+            <!-- Score -->
+            <div class="qr-stat">
+                <!-- trending-up icon -->
+                <svg class="qr-stat-icon" viewBox="0 0 24 24" fill="none" stroke="#1e3a8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                    <polyline points="17 6 23 6 23 12"/>
+                </svg>
+                <span class="qr-stat-label">Your Score</span>
+                <span class="qr-stat-value blue" data-result="score">--</span>
+            </div>
+
+            <!-- Marks -->
+            <div class="qr-stat">
+                <!-- ribbon / award icon -->
+              <svg  class="qr-stat-icon" stroke="#16a34a" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-award w-8 h-8 text-success mx-auto mb-2"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"></path><circle cx="12" cy="8" r="6"></circle></svg>
+                <span class="qr-stat-label">Marks</span>
+                <span class="qr-stat-value green">
+                    <span data-result="marks">--</span> / <span data-result="totalmarks">--</span>
+                </span>
+            </div>
+
+            <!-- Time -->
+            <div class="qr-stat">
+                <!-- clock icon -->
+                <svg class="qr-stat-icon" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                <span class="qr-stat-label">Time Taken</span>
+                <span class="qr-stat-value amber" data-result="timetaken">--</span>
+            </div>
+
+        </div>
+
+        <!-- Meta rows -->
+        <div class="qr-meta">
+
+            <!-- State -->
+            <div class="qr-meta-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                <span class="qr-meta-label">State:</span>
+                <span>Finished</span>
+            </div>
+
+            <!-- Started on -->
+            <div class="qr-meta-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polygon points="10 8 16 12 10 16 10 8" fill="#16a34a" stroke="none"/>
+                </svg>
+                <span class="qr-meta-label">Started On:</span>
+                <span data-result="timestart">--</span>
+            </div>
+
+            <!-- Submitted on -->
+            <div class="qr-meta-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                <span class="qr-meta-label">Submitted On:</span>
+                <span data-result="timefinish">--</span>
+            </div>
+
+        </div>
+
+        <!-- Action buttons -->
+        <div class="qr-btns">
+            <a id="qr-review-btn" href="#" class="qr-btn-primary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                Review Attempt
+            </a>
+            <a id="qr-reattempt-btn" href="#" class="qr-btn-secondary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 4 23 10 17 10"/>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                </svg>
+                Re-attempt Quiz
+            </a>
+        </div>
+
+    </div><!-- /qr-result -->
+
+    <!-- ERROR STATE -->
+    <div id="qr-error" class="hidden">
+        <div style="font-size:36px;margin-bottom:12px;">⚠️</div>
+        <p style="font-weight:600;color:#374151;margin:0 0 6px;">Quiz submitted successfully.</p>
+        <p style="color:#64748b;font-size:14px;margin:0 0 20px;">Could not load score details. Please view your results below.</p>
+        <a id="qr-error-review" href="{{reviewurl}}" class="qr-btn-primary" style="display:inline-flex;">View Results</a>
+    </div>
+
+</div><!-- /qr-card -->
+</div><!-- /resultModal -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    var submitBtn = document.querySelector('.btn-submit button');
+    var modal     = document.getElementById('resultModal');
+    var elLoad    = document.getElementById('qr-loading');
+    var elResult  = document.getElementById('qr-result');
+    var elError   = document.getElementById('qr-error');
+
+    if (!submitBtn || !modal) return;
+
+    submitBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        var form = submitBtn.closest('form');
+        if (!form) return;
+
+        var formData  = new FormData(form);
+        var attemptId = formData.get('attempt');
+        var cmid      = formData.get('cmid');
+
+        // Show modal – loading state
+        modal.classList.remove('hidden');
+        show(elLoad); hide(elResult); hide(elError);
+
+        // STEP 1 — submit the quiz
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin',
+            redirect: 'follow'
+        })
+        .then(function (r) {
+            if (!r.ok) throw new Error('submit_failed');
+        })
+        // STEP 2 — short wait for Moodle to finish writing grades
+        .then(function () {
+            return new Promise(function (res) { setTimeout(res, 900); });
+        })
+        // STEP 3 — fetch real graded result
+        .then(function () {
+            var url = M.cfg.wwwroot + '/theme/remui/quiz_result.php'
+                    + '?attempt=' + encodeURIComponent(attemptId)
+                    + '&cmid='    + encodeURIComponent(cmid)
+                    + '&sesskey=' + encodeURIComponent(M.cfg.sesskey);
+
+            return fetch(url, { credentials: 'same-origin' });
+        })
+        .then(function (r) {
+            if (!r.ok) throw new Error('result_failed');
+            return r.json();
+        })
+        .then(function (d) {
+
+            // Subtitle — pass/fail message
+            var passed = d.score >= (d.passmark || 0);
+            set('qr-subtitle-text', passed
+                ? 'You have successfully passed this quiz.'
+                : 'You have successfully submitted the quiz.');
+
+            // Stat cards
+            setEl('score',      d.score + '%');
+            setEl('marks',      d.marks);
+            setEl('totalmarks', d.totalmarks);
+            setEl('timetaken',  d.timetaken);
+
+            // Meta rows
+            setEl('timestart',  d.timestart  || '--');
+            setEl('timefinish', d.timefinish || '--');
+
+            // Review link
+            var reviewBtn = document.getElementById('qr-review-btn');
+            if (reviewBtn && d.reviewurl) reviewBtn.href = d.reviewurl;
+
+            // Re-attempt link
+            var reattemptBtn = document.getElementById('qr-reattempt-btn');
+            if (reattemptBtn && d.reattempturl) reattemptBtn.href = d.reattempturl;
+
+            hide(elLoad); show(elResult);
+        })
+        .catch(function (err) {
+            console.error('Quiz result error:', err);
+            hide(elLoad); show(elError);
+        });
+    });
+
+    // Close on backdrop click
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) modal.classList.add('hidden');
+    });
+
+    function show(el) { el && el.classList.remove('hidden'); }
+    function hide(el) { el && el.classList.add('hidden'); }
+
+    function setEl(key, val) {
+        var el = modal.querySelector('[data-result="' + key + '"]');
+        if (el && val !== undefined && val !== null) el.textContent = val;
+    }
+    function set(id, val) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = val;
+    }
+});
+</script>

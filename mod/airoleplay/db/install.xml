@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/airoleplay/db" VERSION="20241201" COMMENT="XMLDB file for mod_airoleplay"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
+  <TABLES>
+
+    <TABLE NAME="airoleplay" COMMENT="AI Roleplay activity instances">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT=""/>
+        <FIELD NAME="intro" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="scenario_type" TYPE="char" LENGTH="50" NOTNULL="true" DEFAULT="chat"/>
+        <FIELD NAME="industry" TYPE="char" LENGTH="100" NOTNULL="false"/>
+        <FIELD NAME="difficulty" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="medium"/>
+        <FIELD NAME="language" TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="en"/>
+        <FIELD NAME="ai_provider" TYPE="char" LENGTH="50" NOTNULL="false"/>
+        <FIELD NAME="ai_model" TYPE="char" LENGTH="100" NOTNULL="false"/>
+        <FIELD NAME="persona_id" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="max_attempts" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="3"/>
+        <FIELD NAME="pass_score" TYPE="number" LENGTH="5" DECIMALS="2" NOTNULL="true" DEFAULT="70"/>
+        <FIELD NAME="max_duration" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="max_turns" TYPE="int" LENGTH="6" NOTNULL="false"/>
+        <FIELD NAME="learning_objective" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="mandatory_phrases" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="forbidden_phrases" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="system_instructions" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="evaluation_criteria" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="enable_voice" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="enable_avatar" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="enable_transcript" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="enable_coaching" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="enable_hints" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="grademax" TYPE="number" LENGTH="10" DECIMALS="5" NOTNULL="true" DEFAULT="100"/>
+        <FIELD NAME="gradepass" TYPE="number" LENGTH="10" DECIMALS="5" NOTNULL="true" DEFAULT="70"/>
+        <FIELD NAME="grademethod" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="completionsubmit" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timeopen" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="timeclose" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_course" UNIQUE="false" FIELDS="course"/>
+      </INDEXES>
+    </TABLE>
+
+    <TABLE NAME="airoleplay_persona" COMMENT="AI persona definitions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT=""/>
+        <FIELD NAME="persona_type" TYPE="char" LENGTH="100" NOTNULL="true" DEFAULT="customer"/>
+        <FIELD NAME="industry" TYPE="char" LENGTH="100" NOTNULL="false"/>
+        <FIELD NAME="tone" TYPE="char" LENGTH="50" NOTNULL="true" DEFAULT="neutral"/>
+        <FIELD NAME="aggression" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="50"/>
+        <FIELD NAME="empathy" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="50"/>
+        <FIELD NAME="verbosity" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="50"/>
+        <FIELD NAME="objection_freq" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="50"/>
+        <FIELD NAME="system_prompt" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="background" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="goals" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="objections" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="avatar_url" TYPE="char" LENGTH="500" NOTNULL="false"/>
+        <FIELD NAME="voice_id" TYPE="char" LENGTH="100" NOTNULL="false"/>
+        <FIELD NAME="language" TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="en"/>
+        <FIELD NAME="is_template" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="createdby" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_type" UNIQUE="false" FIELDS="persona_type"/>
+        <INDEX NAME="idx_template" UNIQUE="false" FIELDS="is_template"/>
+      </INDEXES>
+    </TABLE>
+
+    <TABLE NAME="airoleplay_session" COMMENT="Learner roleplay attempt sessions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="airoleplay" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="attempt" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="session_token" TYPE="char" LENGTH="64" NOTNULL="true" DEFAULT=""/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending"/>
+        <FIELD NAME="scenario_type" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="chat"/>
+        <FIELD NAME="language" TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="en"/>
+        <FIELD NAME="turn_count" TYPE="int" LENGTH="6" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="duration_secs" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="score_overall" TYPE="number" LENGTH="6" DECIMALS="2" NOTNULL="false"/>
+        <FIELD NAME="score_communication" TYPE="number" LENGTH="6" DECIMALS="2" NOTNULL="false"/>
+        <FIELD NAME="score_empathy" TYPE="number" LENGTH="6" DECIMALS="2" NOTNULL="false"/>
+        <FIELD NAME="score_confidence" TYPE="number" LENGTH="6" DECIMALS="2" NOTNULL="false"/>
+        <FIELD NAME="score_clarity" TYPE="number" LENGTH="6" DECIMALS="2" NOTNULL="false"/>
+        <FIELD NAME="score_professionalism" TYPE="number" LENGTH="6" DECIMALS="2" NOTNULL="false"/>
+        <FIELD NAME="score_compliance" TYPE="number" LENGTH="6" DECIMALS="2" NOTNULL="false"/>
+        <FIELD NAME="score_product_knowledge" TYPE="number" LENGTH="6" DECIMALS="2" NOTNULL="false"/>
+        <FIELD NAME="score_objection_handling" TYPE="number" LENGTH="6" DECIMALS="2" NOTNULL="false"/>
+        <FIELD NAME="scores_detail" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="ai_summary" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="ai_strengths" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="ai_improvements" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="ai_recommendations" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="ai_ideal_responses" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="mandatory_phrases_found" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="sentiment_trend" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="mood_score" TYPE="int" LENGTH="4" NOTNULL="false" COMMENT="Mood-o-meter score -100 to 100"/>
+        <FIELD NAME="mood_label" TYPE="char" LENGTH="50" NOTNULL="false" COMMENT="Human-readable mood label"/>
+        <FIELD NAME="session_audio_url" TYPE="text" NOTNULL="false" COMMENT="Pluginfile URL of merged conversation recording"/>
+        <FIELD NAME="voice_analytics" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="pronunciation_score" TYPE="number" LENGTH="6" DECIMALS="2" NOTNULL="false"/>
+        <FIELD NAME="avg_response_time" TYPE="number" LENGTH="8" DECIMALS="3" NOTNULL="false"/>
+        <FIELD NAME="grade" TYPE="number" LENGTH="10" DECIMALS="5" NOTNULL="false"/>
+        <FIELD NAME="passed" TYPE="int" LENGTH="1" NOTNULL="false"/>
+        <FIELD NAME="evaluated_by_ai" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="evaluation_time" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="user_dept" TYPE="char" LENGTH="255" NOTNULL="false"/>
+        <FIELD NAME="user_designation" TYPE="char" LENGTH="255" NOTNULL="false"/>
+        <FIELD NAME="user_region" TYPE="char" LENGTH="255" NOTNULL="false"/>
+        <FIELD NAME="timestarted" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timecompleted" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="uk_token" TYPE="unique" FIELDS="session_token"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_user_roleplay" UNIQUE="false" FIELDS="userid,airoleplay"/>
+        <INDEX NAME="idx_status" UNIQUE="false" FIELDS="status"/>
+        <INDEX NAME="idx_timecompleted" UNIQUE="false" FIELDS="timecompleted"/>
+        <INDEX NAME="idx_dept" UNIQUE="false" FIELDS="user_dept"/>
+      </INDEXES>
+    </TABLE>
+
+    <TABLE NAME="airoleplay_message" COMMENT="Individual conversation messages per session">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="session" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="turn" TYPE="int" LENGTH="6" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="role" TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="user"/>
+        <FIELD NAME="content" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="content_type" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="text"/>
+        <FIELD NAME="audio_fileref" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="transcript" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="language" TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="en"/>
+        <FIELD NAME="sentiment" TYPE="char" LENGTH="20" NOTNULL="false"/>
+        <FIELD NAME="sentiment_score" TYPE="number" LENGTH="5" DECIMALS="4" NOTNULL="false"/>
+        <FIELD NAME="confidence_score" TYPE="number" LENGTH="5" DECIMALS="4" NOTNULL="false"/>
+        <FIELD NAME="keywords_used" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="ai_note" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="tokens_used" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="response_time" TYPE="number" LENGTH="8" DECIMALS="3" NOTNULL="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_session_turn" UNIQUE="false" FIELDS="session,turn"/>
+      </INDEXES>
+    </TABLE>
+
+    <TABLE NAME="airoleplay_competency_result" COMMENT="Competency evaluation results per session">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="session" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="competency_key" TYPE="char" LENGTH="100" NOTNULL="true" DEFAULT=""/>
+        <FIELD NAME="competency_label" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT=""/>
+        <FIELD NAME="score" TYPE="number" LENGTH="6" DECIMALS="2" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="max_score" TYPE="number" LENGTH="6" DECIMALS="2" NOTNULL="true" DEFAULT="100"/>
+        <FIELD NAME="evidence" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="ai_rationale" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="moodle_competency_id" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_session_comp" UNIQUE="false" FIELDS="session,competency_key"/>
+      </INDEXES>
+    </TABLE>
+
+    <TABLE NAME="airoleplay_assignment" COMMENT="Roleplay assignments to users/groups">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="airoleplay" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT=""/>
+        <FIELD NAME="target_type" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="user"/>
+        <FIELD NAME="target_value" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="due_date" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="open_date" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="is_mandatory" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="is_recurring" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="recurrence_rule" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="reminder_schedule" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="compliance_required" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="notes" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="createdby" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_target" UNIQUE="false" FIELDS="target_type"/>
+        <INDEX NAME="idx_due_date" UNIQUE="false" FIELDS="due_date"/>
+      </INDEXES>
+    </TABLE>
+
+    <TABLE NAME="airoleplay_assignment_user" COMMENT="Per-user assignment tracking">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="assignment" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="assigned"/>
+        <FIELD NAME="best_score" TYPE="number" LENGTH="6" DECIMALS="2" NOTNULL="false"/>
+        <FIELD NAME="attempts_used" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="ai_remediation_triggered" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timeassigned" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timestarted" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="timecompleted" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="uk_assign_user" TYPE="unique" FIELDS="assignment,userid"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_userid_status" UNIQUE="false" FIELDS="userid,status"/>
+      </INDEXES>
+    </TABLE>
+
+    <TABLE NAME="airoleplay_ai_usage" COMMENT="AI provider usage and cost tracking">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="session" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="provider" TYPE="char" LENGTH="50" NOTNULL="true" DEFAULT=""/>
+        <FIELD NAME="model" TYPE="char" LENGTH="100" NOTNULL="true" DEFAULT=""/>
+        <FIELD NAME="call_type" TYPE="char" LENGTH="50" NOTNULL="true" DEFAULT=""/>
+        <FIELD NAME="prompt_tokens" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="completion_tokens" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="total_tokens" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="cost_usd" TYPE="number" LENGTH="12" DECIMALS="8" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="latency_ms" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="cached" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_session" UNIQUE="false" FIELDS="session"/>
+        <INDEX NAME="idx_provider" UNIQUE="false" FIELDS="provider"/>
+        <INDEX NAME="idx_date" UNIQUE="false" FIELDS="timecreated"/>
+        <INDEX NAME="idx_user" UNIQUE="false" FIELDS="userid"/>
+      </INDEXES>
+    </TABLE>
+
+    <TABLE NAME="airoleplay_profile_map" COMMENT="Maps Moodle custom profile fields to platform roles">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="field_purpose" TYPE="char" LENGTH="50" NOTNULL="true" DEFAULT=""/>
+        <FIELD NAME="profile_field_shortname" TYPE="char" LENGTH="100" NOTNULL="true" DEFAULT=""/>
+        <FIELD NAME="is_active" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="uk_field_purpose" TYPE="unique" FIELDS="field_purpose"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="airoleplay_notification_log" COMMENT="Notification delivery log">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="notification_type" TYPE="char" LENGTH="50" NOTNULL="true" DEFAULT=""/>
+        <FIELD NAME="reference_id" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="channel" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="moodle"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="sent"/>
+        <FIELD NAME="message_preview" TYPE="char" LENGTH="500" NOTNULL="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_user_type" UNIQUE="false" FIELDS="userid,notification_type"/>
+        <INDEX NAME="idx_date" UNIQUE="false" FIELDS="timecreated"/>
+      </INDEXES>
+    </TABLE>
+
+  </TABLES>
+</XMLDB>

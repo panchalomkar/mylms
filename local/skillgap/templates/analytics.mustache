@@ -1,0 +1,246 @@
+{{!
+  @template local_skillgap/analytics
+  Competency Analytics Dashboard — modern UI matching design spec.
+}}
+<div class="local-skillgap sg-analytics-wrap" style="background:#f5f7fa;min-height:100vh;padding:24px;">
+
+  {{! ── Page header ── }}
+  <div class="d-flex align-items-start justify-content-between flex-wrap mb-4">
+    <div>
+      <h2 class="mb-1 font-weight-bold" style="color:#1a2b4a;">
+        {{#str}} pluginname, local_skillgap {{/str}}
+      </h2>
+      <p class="text-muted mb-0" style="font-size:14px;">
+        {{#str}} analytics_subtitle, local_skillgap {{/str}}
+      </p>
+    </div>
+    <a href="{{{wwwroot}}}/local/skillgap/admin/index.php"
+       class="btn btn-outline-secondary btn-sm mt-2 mt-md-0" style="border-radius:8px;">
+      <i class="fa fa-arrow-left mr-1"></i>{{#str}} back_to_dashboard, local_skillgap {{/str}}
+    </a>
+  </div>
+
+  {{! ── Stat Cards ── }}
+  <div class="row mb-4">
+    <div class="col-6 col-md-3 mb-3">
+      <div class="bg-white rounded p-3" style="box-shadow:0 1px 4px rgba(0,0,0,.08);">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="small text-uppercase font-weight-bold" style="color:#8492a6;letter-spacing:.6px;font-size:11px;">
+            {{#str}} total_competencies, local_skillgap {{/str}}
+          </span>
+          <span class="rounded-circle d-flex align-items-center justify-content-center"
+                style="width:36px;height:36px;background:#eef0ff;">
+            <i class="fa fa-list-ul" style="color:#5c67f2;font-size:15px;"></i>
+          </span>
+        </div>
+        <div class="font-weight-bold mb-0" style="font-size:28px;color:#1a2b4a;">{{total_comps_count}}</div>
+        <div class="small text-muted">{{#str}} across_all_categories, local_skillgap {{/str}}</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <div class="bg-white rounded p-3" style="box-shadow:0 1px 4px rgba(0,0,0,.08);">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="small text-uppercase font-weight-bold" style="color:#8492a6;letter-spacing:.6px;font-size:11px;">
+            {{#str}} ready, local_skillgap {{/str}}
+          </span>
+          <span class="rounded-circle d-flex align-items-center justify-content-center"
+                style="width:36px;height:36px;background:#e6f9f0;">
+            <i class="fa fa-bar-chart" style="color:#34c97a;font-size:15px;"></i>
+          </span>
+        </div>
+        <div class="font-weight-bold mb-0" style="font-size:28px;color:#1a2b4a;">{{ready_count}}</div>
+        <div class="small text-muted">{{#str}} published_live, local_skillgap {{/str}}</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <div class="bg-white rounded p-3" style="box-shadow:0 1px 4px rgba(0,0,0,.08);">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="small text-uppercase font-weight-bold" style="color:#8492a6;letter-spacing:.6px;font-size:11px;">
+            {{#str}} active_users, local_skillgap {{/str}}
+          </span>
+          <span class="rounded-circle d-flex align-items-center justify-content-center"
+                style="width:36px;height:36px;background:#eaf0ff;">
+            <i class="fa fa-users" style="color:#4a78f5;font-size:15px;"></i>
+          </span>
+        </div>
+        <div class="font-weight-bold mb-0" style="font-size:28px;color:#1a2b4a;">{{active_users_count}}</div>
+        <div class="small text-muted">{{#str}} across_all_competencies, local_skillgap {{/str}}</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <div class="bg-white rounded p-3" style="box-shadow:0 1px 4px rgba(0,0,0,.08);">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="small text-uppercase font-weight-bold" style="color:#8492a6;letter-spacing:.6px;font-size:11px;">
+            {{#str}} avg_score, local_skillgap {{/str}}
+          </span>
+          <span class="rounded-circle d-flex align-items-center justify-content-center"
+                style="width:36px;height:36px;background:#fff7e6;">
+            <i class="fa fa-bar-chart" style="color:#f0a500;font-size:15px;"></i>
+          </span>
+        </div>
+        <div class="font-weight-bold mb-0" style="font-size:28px;color:#1a2b4a;">{{site_avg_pct}}%</div>
+        <div class="small text-muted">{{#str}} overall_performance, local_skillgap {{/str}}</div>
+      </div>
+    </div>
+  </div>
+
+  {{! ── Competency Analytics Table ── }}
+  <div class="bg-white rounded mb-4" style="box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden;">
+    <div class="d-flex align-items-center justify-content-between flex-wrap px-4 py-3"
+         style="border-bottom:1px solid #f0f0f0;">
+      <div class="d-flex align-items-center">
+        <span class="rounded-circle d-flex align-items-center justify-content-center mr-3"
+              style="width:38px;height:38px;background:#eef0ff;">
+          <i class="fa fa-bar-chart" style="color:#5c67f2;font-size:16px;"></i>
+        </span>
+        <div>
+          <div class="font-weight-bold" style="color:#1a2b4a;font-size:16px;">
+            {{#str}} competency_analytics, local_skillgap {{/str}}
+          </div>
+          <div class="small text-muted">{{#str}} analytics_subtitle, local_skillgap {{/str}}</div>
+        </div>
+      </div>
+      <div class="d-flex align-items-center mt-2 mt-md-0" style="gap:8px;">
+        <div class="input-group input-group-sm" style="width:200px;">
+          <div class="input-group-prepend">
+            <span class="input-group-text" style="background:#f5f7fa;border-right:0;">
+              <i class="fa fa-search" style="color:#8492a6;font-size:12px;"></i>
+            </span>
+          </div>
+          <input type="text" id="sg-comp-search" class="form-control form-control-sm"
+                 placeholder="{{#str}} search_competencies, local_skillgap {{/str}}"
+                 style="border-left:0;background:#f5f7fa;">
+        </div>
+        <select id="sg-status-filter" class="form-control form-control-sm" style="width:130px;background:#f5f7fa;">
+          <option value="">{{#str}} all_status, local_skillgap {{/str}}</option>
+          <option value="Ready">{{#str}} ready, local_skillgap {{/str}}</option>
+          <option value="Incomplete">{{#str}} status_incomplete, local_skillgap {{/str}}</option>
+        </select>
+        <a href="{{{wwwroot}}}/local/skillgap/admin/analytics.php?export=csv"
+           class="btn btn-sm btn-outline-secondary" style="border-radius:6px;">
+          <i class="fa fa-download mr-1"></i>{{#str}} export, local_skillgap {{/str}}
+        </a>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover mb-0" id="sg-analytics-table" style="font-size:14px;">
+        <thead>
+          <tr style="border-bottom:2px solid #f0f0f0;">
+            <th class="px-4 py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;">
+              {{#str}} competency, local_skillgap {{/str}}
+            </th>
+            <th class="text-center py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;width:70px;">
+              {{#str}} type, local_skillgap {{/str}}
+            </th>
+            <th class="text-center py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;width:110px;">
+              {{#str}} status, local_skillgap {{/str}}
+            </th>
+            <th class="text-center py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;width:90px;">
+              {{#str}} questions, local_skillgap {{/str}}
+            </th>
+            <th class="text-center py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;width:80px;">
+              {{#str}} sub_comps_col, local_skillgap {{/str}}
+            </th>
+            <th class="text-center py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;width:100px;">
+              {{#str}} assessments, local_skillgap {{/str}}
+            </th>
+            <th class="text-center py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;width:70px;">
+              {{#str}} users, local_skillgap {{/str}}
+            </th>
+            <th class="py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;width:160px;">
+              {{#str}} avg_score, local_skillgap {{/str}}
+            </th>
+            <th class="text-right px-4 py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;">
+              {{#str}} actions, local_skillgap {{/str}}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#comp_rows}}
+          <tr class="sg-comp-row" data-name="{{name}}" data-status="{{status}}"
+              style="border-bottom:1px solid #f5f7fa;">
+            <td class="px-4 py-3 font-weight-bold align-middle" style="color:#1a2b4a;">{{name}}</td>
+            <td class="text-center align-middle">
+              <span class="badge" style="background:#f0f2ff;color:#5c67f2;border-radius:20px;padding:4px 10px;font-size:12px;">
+                {{type}}
+              </span>
+            </td>
+            <td class="text-center align-middle">
+              {{#is_ready}}
+              <span style="display:inline-flex;align-items:center;background:#e6f9f0;color:#1a9e5c;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;">
+                <span style="width:7px;height:7px;background:#1a9e5c;border-radius:50%;margin-right:5px;"></span>
+                {{#str}} ready, local_skillgap {{/str}}
+              </span>
+              {{/is_ready}}
+              {{^is_ready}}
+              <span style="display:inline-flex;align-items:center;background:#fff8e6;color:#d48a00;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;">
+                <span style="width:7px;height:7px;background:#d48a00;border-radius:50%;margin-right:5px;"></span>
+                {{#str}} status_incomplete, local_skillgap {{/str}}
+              </span>
+              {{/is_ready}}
+            </td>
+            <td class="text-center align-middle">
+              <span class="badge badge-secondary" style="border-radius:20px;padding:4px 10px;">{{q_total}}</span>
+            </td>
+            <td class="text-center align-middle text-muted">{{sub_count}}</td>
+            <td class="text-center align-middle text-muted">{{assess_count}}</td>
+            <td class="text-center align-middle text-muted">{{user_count}}</td>
+            <td class="align-middle">
+              <div class="d-flex align-items-center">
+                <div class="progress flex-grow-1 mr-2" style="height:7px;border-radius:4px;background:#eef0f5;">
+                  <div class="progress-bar" style="width:{{avg_pct}}%;background:{{#score_green}}#34c97a{{/score_green}}{{#score_yellow}}#f0a500{{/score_yellow}}{{#score_red}}#e94e4e{{/score_red}};border-radius:4px;"></div>
+                </div>
+                <span class="font-weight-bold" style="font-size:13px;color:{{#score_green}}#34c97a{{/score_green}}{{#score_yellow}}#f0a500{{/score_yellow}}{{#score_red}}#e94e4e{{/score_red}};min-width:38px;">
+                  {{avg_pct}}%
+                </span>
+              </div>
+            </td>
+            <td class="text-right px-4 align-middle">
+              <div class="d-flex justify-content-end align-items-center" style="gap:6px;">
+                <a href="{{{wwwroot}}}/local/skillgap/admin/analytics.php?compid={{id}}&export=csv"
+                   class="btn btn-sm btn-outline-secondary" style="border-radius:6px;padding:4px 10px;font-size:12px;">
+                  <i class="fa fa-download mr-1"></i>{{#str}} csv, local_skillgap {{/str}}
+                </a>
+                <a href="{{{wwwroot}}}/local/skillgap/admin/questions.php?compid={{id}}"
+                   class="btn btn-sm btn-outline-secondary" style="border-radius:6px;padding:4px 10px;font-size:12px;">
+                  <i class="fa fa-pencil mr-1"></i>{{#str}} edit, local_skillgap {{/str}}
+                </a>
+                <a href="{{{wwwroot}}}/local/skillgap/admin/analytics_report.php?compid={{id}}"
+                   class="btn btn-sm font-weight-bold text-white"
+                   style="border-radius:6px;padding:4px 12px;font-size:12px;background:#4a78f5;border:none;">
+                  <i class="fa fa-bar-chart mr-1"></i>{{#str}} reports, local_skillgap {{/str}}
+                </a>
+              </div>
+            </td>
+          </tr>
+          {{/comp_rows}}
+          {{^has_comps}}
+          <tr><td colspan="9" class="text-center text-muted py-4">{{#str}} no_data, local_skillgap {{/str}}</td></tr>
+          {{/has_comps}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  // Search + status filter.
+  var searchInput  = document.getElementById('sg-comp-search');
+  var statusFilter = document.getElementById('sg-status-filter');
+  function filterTable() {
+    var q  = searchInput  ? searchInput.value.toLowerCase()  : '';
+    var st = statusFilter ? statusFilter.value.toLowerCase() : '';
+    document.querySelectorAll('.sg-comp-row').forEach(function(row) {
+      var name   = (row.getAttribute('data-name')   || '').toLowerCase();
+      var status = (row.getAttribute('data-status') || '').toLowerCase();
+      var show   = (!q || name.includes(q)) && (!st || status === st.toLowerCase());
+      row.style.display = show ? '' : 'none';
+    });
+  }
+  if (searchInput)  { searchInput.addEventListener('input',  filterTable); }
+  if (statusFilter) { statusFilter.addEventListener('change', filterTable); }
+})();
+</script>

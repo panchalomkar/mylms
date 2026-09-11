@@ -78,28 +78,118 @@ $theme = \theme_config::load('remui');
 // END
 //Other page background  css
 // $theme->setting_file_url("tenant_loginimage_$company_id", "tenant_loginimage_$company_id");
-function get_tenant_login_image_url($company_id) {
-    global $CFG;
-
-    if (empty($company_id)) {
+function get_tenant_slide_image_url($company_id, $slide_num) {
+ 
+    // FIX: use === null check, NOT empty() — empty(0) is true and breaks main tenant
+    if ($company_id === null) {
         return null;
     }
-
+ 
     $context = context_system::instance();
-    $fs = get_file_storage();
-
+    $fs      = get_file_storage();
+ 
+    // For company_id = 0 (main tenant), filearea is just 'slide1image_0'
+    // or possibly 'slide1image' with itemid=0 — we try both.
+    $filearea = 'slide' . $slide_num . 'image_' . $company_id;
+ 
     $files = $fs->get_area_files(
-        $context->id,
-        'theme_remui',
-        'tenant_loginimage_'.$company_id,
-        0,
-        'itemid, filepath, filename',
-        false
+        $context->id, 'theme_remui', $filearea, 0,
+        'itemid, filepath, filename', false
     );
-
-    if ($files) {
+ 
+    // Fallback: try without company suffix (main tenant RemUI default)
+    if (empty($files)) {
+        $filearea_plain = 'slide' . $slide_num . 'image';
+        $files = $fs->get_area_files(
+            $context->id, 'theme_remui', $filearea_plain, 0,
+            'itemid, filepath, filename', false
+        );
+    }
+ 
+    if (!empty($files)) {
         $file = reset($files);
-
+        return moodle_url::make_pluginfile_url(
+            $file->get_contextid(), $file->get_component(),
+            $file->get_filearea(), $file->get_itemid(),
+            $file->get_filepath(), $file->get_filename()
+        )->out(false);
+    }
+ 
+    return null;
+}
+ 
+/**
+ * FIX 2 — get_tenant_slider_css()
+ * Use === null instead of empty() so company_id=0 (main tenant) works.
+ */
+function get_tenant_slider_css($company_id, $max_slides = 5) {
+ 
+    // FIX: was empty($company_id) which returns true for 0
+    if ($company_id === null) {
+        return '';
+    }
+ 
+    $css        = '';
+    $has_images = false;
+ 
+    for ($i = 1; $i <= $max_slides; $i++) {
+        $url = get_tenant_slide_image_url($company_id, $i);
+ 
+        if (!empty($url)) {
+            $has_images = true;
+ 
+            if ($company_id == 0) {
+                // Main tenant — no .companyN scoping needed
+                $css .= "
+.carousel-item:nth-child({$i}) #banner-img-slider,
+#banner-img-slider.slide-{$i} {
+    background-image: url({$url}) !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    min-height: 290px;
+}";
+            } else {
+                // Specific company tenant — scoped with .companyN
+                $css .= "
+.company{$company_id} .carousel-item:nth-child({$i}) #banner-img-slider,
+.company{$company_id} #banner-img-slider.slide-{$i} {
+    background-image: url({$url}) !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    min-height: 290px;
+}";
+            }
+        }
+    }
+ 
+    return $css;
+}
+ 
+/**
+ * FIX 3 — get_tenant_login_image_url()
+ * Same empty() bug exists here too — fix for consistency.
+ */
+function get_tenant_login_image_url($company_id) {
+ 
+    // FIX: was empty($company_id) — breaks main tenant login bg
+    if ($company_id === null) {
+        return null;
+    }
+ 
+    $context = context_system::instance();
+    $fs      = get_file_storage();
+ 
+    $filearea = 'tenant_loginimage_' . $company_id;
+ 
+    $files = $fs->get_area_files(
+        $context->id, 'theme_remui', $filearea, 0,
+        'itemid, filepath, filename', false
+    );
+ 
+    if (!empty($files)) {
+        $file = reset($files);
         return moodle_url::make_pluginfile_url(
             $file->get_contextid(),
             $file->get_component(),
@@ -109,10 +199,12 @@ function get_tenant_login_image_url($company_id) {
             $file->get_filename()
         );
     }
-
+ 
     return null;
 }
-$loginbg = get_tenant_login_image_url($company_id);
+ 
+
+ $loginbg = $theme->setting_file_url("tenant_loginimage_$company_id", "tenant_loginimage_$company_id");
 /*Body background secondary(otherpage)*/
 $css .= "#page-local-learningpaths-index.company$company_id, 
                 .company$company_id.path-local, 
@@ -146,13 +238,12 @@ $css .= ".navbar{
 
         }";
 
-$css .= ".company$company_id.pagelayout-login #page{
-                    background-image: url($loginbg) !important; 
-                    background-size:cover; 
-                    background-position:center;
-                    background-color: $brandcolor !important;
-                } ";
+$hostnameclass = str_replace(['.', '/'], ['-', '--'], $_SERVER['HTTP_HOST'] . '/lms5');
 
+$css .= "
+body.{$hostnameclass} #login-custom {
+    background-image: url('{$loginbg}') !important;
+}";
 
 $css .= "#page-login-signup.company$company_id form.mform fieldset.collapsible:not(.collapsed) legend.ftoggler{
                     border: none !important;  
@@ -164,8 +255,11 @@ $css .= ".company$company_id.pagelayout-signup #page{
                     background-position:center;
                     background-color: $brandcolor !important;
                 } ";
-$css .= "#banner-img-slider {
-    background-image: url(" . $loginbg . ") !important; }";
+$css .= ".company{$company_id}.pagelayout-login #banner-img-slider,
+         .company{$company_id}.pagelayout-signup #banner-img-slider {
+    background-image: url({$loginbg}) !important; }";
+
+$css .= get_tenant_slider_css($company_id);
 $css .= "#page-login-signup.company$company_id form.mform fieldset.collapsible:not(.collapsed) legend.ftoggler{
                     border: none !important;  
                 } ";

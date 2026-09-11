@@ -25,6 +25,9 @@ $PAGE->set_heading(get_string('pluginname', 'local_learningpaths'));
 $PAGE->requires->js_call_amd('local_learningpaths/save_botton', 'init');
 // Require additional resources.
 $PAGE->requires->css('/local/learningpaths/css/styles.css');
+// Load the visual redesign layer (Moodle 5.0 UI refresh - presentation only, see custom-ui/README.md).
+$PAGE->requires->css(new moodle_url("/local/learningpaths/custom-ui/css/learningpaths-redesign.css"));
+$PAGE->requires->js(new moodle_url("/local/learningpaths/custom-ui/js/learningpaths-enhance.js"), true);
 $PAGE->navbar->add(get_string('pluginname', 'local_learningpaths'), '/local/learningpaths/index.php');
 //load lp properties
 // Print header.

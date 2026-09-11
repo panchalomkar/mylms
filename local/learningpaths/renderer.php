@@ -425,6 +425,7 @@ $active_courses = $DB->count_records_sql(
               // Action buttons for edit prerequisites and remove course
               $edit_icon = html_writer::tag('i', '', array('class' => 'fa fa-pencil string_class', 'data-placement' => 'bottom',  'title' => get_string('settings_lpcourse','local_learningpaths'),'aria-hidden' => 'true'));
               $delete_icon = html_writer::tag('i', '', array('class' => 'wid wid-deleteicon fa fa-trash', 'data-placement' => 'bottom',  'title' => get_string('delete','local_learningpaths'),'aria-hidden' => 'true','data-item' => $learningpath->id));
+              
               $attrs = ['class' => 'edit-course', 'data-toggle' => 'modal', 'data-toggle' => 'modal', 'data-target' => "#prerequisites-popup-{$course->data->id}"];
               
               if (has_capability('local/learningpaths:delete_courses_learning_path', context_system::instance())) {

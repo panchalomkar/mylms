@@ -2,8 +2,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 // Core
-$string['pluginname']  = 'Hall of Fame';
-$string['halloffame']  = 'Hall of Fame';
+$string['pluginname']  = 'Wall of Fame';
+$string['halloffame']  = 'Wall of Fame';
 
 // Navigation / headings
 $string['awards']            = 'Awards';
@@ -72,6 +72,15 @@ $string['likeadded']     = 'Like added';
 $string['likeremoved']   = 'Like removed';
 $string['duplicatelike'] = 'You have already liked this item.';
 
+// Comments (new v3)
+$string['comments']         = 'Comments';
+$string['writeacomment']    = 'Write a comment…';
+$string['postcomment']      = 'Post';
+$string['nocomments']       = 'No comments yet. Be the first!';
+$string['commentadded']     = 'Comment added.';
+$string['commentdeleted']   = 'Comment deleted.';
+$string['deletecomment']    = 'Delete comment';
+
 // Months
 $string['january']   = 'January';
 $string['february']  = 'February';
@@ -129,15 +138,16 @@ $string['notify_user_on_award']        = 'Notify User When Awarded';
 $string['notify_user_on_award_desc']   = 'Email the recipient when an admin creates an award for them.';
 $string['settings_display']            = 'Display';
 $string['show_in_nav']                 = 'Show in Navigation';
-$string['show_in_nav_desc']            = 'Display a Hall of Fame link in the primary navigation menu.';
+$string['show_in_nav_desc']            = 'Display a Wall of Fame link in the primary navigation menu.';
 $string['nav_label']                   = 'Navigation Label';
 $string['nav_label_desc']              = 'Custom navigation label. Leave blank to use the plugin default.';
-
+$string['editachievement']        = 'Edit achievement';
 // Privacy
 $string['privacy:metadata:halloffame_awards']       = 'Information about awards given to users.';
 $string['privacy:metadata:halloffame_achievements'] = 'Information about approved user achievements.';
 $string['privacy:metadata:halloffame_submissions']  = 'Certificate submissions made by users.';
 $string['privacy:metadata:halloffame_likes']        = 'Likes placed by users on awards and achievements.';
+$string['privacy:metadata:halloffame_comments']     = 'Comments left by users on awards and achievements.';
 
 // IOMAD / multi-tenancy
 $string['companycontext']            = 'Viewing: {$a}';
@@ -155,3 +165,19 @@ $string['noachievements']            = 'No achievements to display yet.';
 $string['filterresults']             = 'Filter results';
 $string['viewcertificate']           = 'View Certificate';
 $string['downloadcertificate']       = 'Download Certificate';
+
+$string['editaward']                 = 'Edit Award';
+$string['deleteaward']               = 'Delete Award'; 
+$string['savechanges']               = 'Save Changes';
+$string['cancel']                    = 'Cancel';
+$string['dashboard']                 = 'Back to Dashboard';
+
+$string['submissiondeleted']      = 'Submission deleted.';
+$string['submissionupdated']      = 'Submission updated.';
+$string['confirmdelete']          = 'Are you sure you want to delete this item? This action cannot be undone.';
+$string['edit']                   = 'Edit';
+$string['delete']                 = 'Delete';
+$string['editsubmission']         = 'Edit submission';
+$string['editachievement']        = 'Edit achievement';
+$string['deleteachievement']      = 'Delete achievement';
+$string['deletesubmission']       = 'Delete submission';

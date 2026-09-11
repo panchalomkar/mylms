@@ -1,43 +1,206 @@
-<!-- learining path starts-->
+<style>
+.lp-block-wrapper * { box-sizing: border-box; }
+.lp-block-wrapper { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 1200px; margin: 0 auto; }
+.lp-header { background: linear-gradient(135deg, #1a1f36 0%, #252b48 100%); border-radius: 16px 16px 0 0; padding: 32px 36px 28px; margin-bottom: 24px; }
+.lp-header h2 { color: #fff; font-size: 28px; font-weight: 700; margin: 0 0 6px; }
+.lp-header p { color: #9ca3af; font-size: 15px; margin: 0; }
+.lp-toolbar { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-bottom: 28px; padding: 0 4px; }
+.lp-search-box { flex: 1; min-width: 200px; max-width: 420px; position: relative; }
+.lp-search-box input { width: 100%; padding: 10px 14px 10px 40px; border: 1px solid #e5e7eb; border-radius: 24px; font-size: 14px; outline: none; background: #fff; transition: border-color 0.2s; }
+.lp-search-box input:focus { border-color: #f59e0b; }
+.lp-search-box .lp-search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 14px; }
+.lp-filter-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+.lp-filter-tab { padding: 8px 18px; border-radius: 20px; border: 1px solid #e5e7eb; background: #fff; font-size: 13px; font-weight: 500; color: #374151; cursor: pointer; transition: all 0.2s; }
+.lp-filter-tab:hover { border-color: #f59e0b; color: #f59e0b; }
+.lp-filter-tab.active { background: #f59e0b; border-color: #f59e0b; color: #fff; }
+.lp-cards-grid { display: grid;  grid-template-columns: repeat(3, 1fr); gap: 24px; padding: 0 4px; }
+.lp-card { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; }
+.lp-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+.lp-card-image { position: relative; height: 180px; overflow: hidden; }
+.lp-card-image img { width: 100%; height: 100%; object-fit: cover; }
+.lp-card-badge { position: absolute; top: 12px; right: 12px; padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.lp-status-inprogress .lp-card-badge { background: #f59e0b; color: #fff; }
+.lp-status-notstarted .lp-card-badge { background: #6b7280; color: #fff; }
+.lp-status-completed .lp-card-badge { background: #2bb700 !important; color: #fff; }
+.lp-card-body { padding: 20px; flex: 1; display: flex; flex-direction: column;background:#003152; }
+.lp-card-body h3 { font-size: 17px; font-weight: 700; color: #1a1f36; margin: 0 0 8px; line-height: 1.3; }
+.lp-card-body .lp-card-desc { display:none; font-size: 13px; color: #6b7280; line-height: 1.5; margin: 0 0 14px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.lp-card-body {h3,p{color:#fff !important;margin: 2px;}}
+.lp-card-meta { display: flex; gap: 16px; align-items: center; font-size: 12px; color: #9ca3af; margin-bottom: 14px; }
+.lp-card-meta i { margin-right: 4px; }
+.lp-card-progress { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; margin-top: auto; }
+.lp-card-progress-bar { flex: 1; height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden; }
+.lp-card-progress-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+.lp-status-inprogress .lp-card-progress-fill { background: #f59e0b; }
+.lp-status-notstarted .lp-card-progress-fill { background: #6b7280; }
+.lp-status-completed .lp-card-progress-fill { background: #ec9707; }
+.lp-card-progress-pct { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
 
-<div class=" mT20 learningpathsec">
+.lp-status-notstarted .lp-card-progress-pct { border: 3px solid #fff; color: #fff; border:none; }
+.lp-status-completed .lp-card-progress-pct { color: #10b981; border:none; }
+.lp-card-btn { display: block; width: 100%; padding: 12px; text-align: center; border: 2px solid #1a1f36; border-radius: 10px; font-size: 14px; font-weight: 600; color: #1a1f36; text-decoration: none; transition: all 0.2s; background: #fff; cursor: pointer; }
+.lp-card-btn:hover { background: #ec9707; color: #fff; text-decoration: none; }
+.lp-empty-state { text-align: center; padding: 48px 24px; background: #003152; border-radius: 12px; color: #f59e0b; font-size: 16px; }
+.lp-card-progress-pct {
+    position: relative;
+    width: 44px;
+    height: 44px;
+}
 
-<div class="course-overview">
-<div class="overview-inn">
-{{#isempty}}
-<div style="    height: 100%;
-    justify-content: center;
-    align-items: center;
-    display: flex;">
-    <div class="alert alert-info text-center py-4" style="background:#003152;color:#ec9707;border-radius:8px;">
-    You are not enrolled in any learning path.
-</div>
-</div>
-{{/isempty}}
-{{^isempty}}
- {{#totallearningpath}}
+.lp-card-progress-pct svg {
+    transform: rotate(-90deg);
+}
 
-<div class="pathinner">
+.lp-card-progress-pct .ring-bg {
+    fill: none;
+    stroke: #e5e7eb;
+    stroke-width: 4;
+}
 
-<div class="ler-img">
- <img class="card-img-top" src="{{learningpathimage}}" alt="" style="width:200px;height:150px">
+.lp-card-progress-pct .ring-fg {
+    fill: none;
+    stroke: #f59e0b;
+    stroke-width: 4;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.4s ease;
+}
+
+.lp-circle-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+}
+</style>
+
+<div class="lp-block-wrapper pt-2">
+
+
+    {{#isempty}}
+    <div class="lp-empty-state">
+        You are not enrolled in any learning path.
+    </div>
+    {{/isempty}}
+
+    {{^isempty}}
+    <div class="lp-toolbar">
+        <div class="lp-search-box">
+            <i class="fa fa-search lp-search-icon"></i>
+            <input type="text" id="lp-search-input" placeholder="Search learning paths...">
+        </div>
+        <div class="lp-filter-tabs">
+            <span class="lp-filter-tab active" data-filter="all">All</span>
+            <span class="lp-filter-tab" data-filter="Not Started">Not Started</span>
+            <span class="lp-filter-tab" data-filter="In Progress">In Progress</span>
+            <span class="lp-filter-tab" data-filter="Completed">Completed</span>
+        </div>
+    </div>
+
+    <div class="lp-cards-grid" id="lp-cards-container">
+        {{#totallearningpath}}
+        <div class="lp-card {{statusclass}}" data-status="{{statuslabel}}" data-name="{{learningpathname}}">
+            <div class="lp-card-image">
+                <img src="{{learningpathimage}}" alt="{{learningpathname}}">
+                <span class="lp-card-badge">{{statuslabel}}</span>
+            </div>
+            <div class="lp-card-body">
+                <h3>{{learningpathname}}</h3>
+                <p class="lp-card-desc">{{{discriotion}}}</p>
+                <div class="lp-card-meta">
+                    <span><i class="fa fa-clock-o"></i> {{duration}}</span>
+                    <span><i class="fa fa-book"></i> {{nocourses}} courses</span>
+                </div>
+                <div class="lp-card-progress">
+                    <div class="lp-card-progress-bar">
+                        <div class="lp-card-progress-fill" style="width: {{progresspercent}}%"></div>
+                    </div>
+                   <div class="lp-card-progress-pct">
+    <svg width="44" height="44" viewBox="0 0 44 44">
+        <circle class="ring-bg" cx="22" cy="22" r="18"/>
+        <circle class="ring-fg" cx="22" cy="22" r="18"
+            stroke-dasharray="113.1"
+            stroke-dashoffset="0"
+            data-pct="{{progresspercent}}"/>
+    </svg>
+    <span class="lp-circle-text">{{progresspercent}}%</span>
 </div>
-<div class="card-body">
-<h5 class="card-title">{{learningpathname}}</h5>
-<p class="card-text">{{{discriotion}}}</p>
-<ul class="cred-btm">
-<li><span class="icon"><i class="fa fa-clock-o" aria-hidden="true"></i> </span> 
-<span>Duration : {{duration}}</span></li>
-<li><span class="icon"><i class="fa fa-file-text" aria-hidden="true"></i></span> <span>No of courses : {{nocourses}}</span></li>
-<li>{{{progress}}}</li>
-</ul>
-<a href="{{urllink}}" class="btn btn-primary">Continue</a>
-</div>
+                </div>
+                <a href="{{urllink}}" class="lp-card-btn">{{buttontext}}</a>
+            </div>
+        </div>
+        {{/totallearningpath}}
+    </div>
+    {{/isempty}}
 </div>
 
- {{/totallearningpath}}
-{{/isempty}}
-</div>
-</div>
-</div>
-<!-- learning path ends here-->
+<script>
+(function() {
+    var searchInput = document.getElementById('lp-search-input');
+    var filterTabs = document.querySelectorAll('.lp-filter-tab');
+    var cards = document.querySelectorAll('.lp-card');
+    var currentFilter = 'all';
+
+    function filterCards() {
+        var searchTerm = (searchInput ? searchInput.value : '').toLowerCase();
+        cards.forEach(function(card) {
+            var name = (card.getAttribute('data-name') || '').toLowerCase();
+            var status = card.getAttribute('data-status') || '';
+            var matchSearch = !searchTerm || name.indexOf(searchTerm) !== -1;
+            var matchFilter = currentFilter === 'all' || status === currentFilter;
+            card.style.display = (matchSearch && matchFilter) ? '' : 'none';
+        });
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', filterCards);
+    }
+
+    filterTabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            filterTabs.forEach(function(t) { t.classList.remove('active'); });
+            tab.classList.add('active');
+            currentFilter = tab.getAttribute('data-filter');
+            filterCards();
+        });
+    });
+})();
+document.addEventListener("DOMContentLoaded", function () {
+
+    var circles = document.querySelectorAll('.ring-fg');
+
+    circles.forEach(function(circle) {
+        var pct = parseFloat(circle.getAttribute('data-pct')) || 0;
+
+        var radius = 18;
+        var circumference = 2 * Math.PI * radius; // ~113.1
+
+        // Calculate offset
+        var offset = circumference - (pct / 100) * circumference;
+
+        circle.style.strokeDasharray = circumference;
+        circle.style.strokeDashoffset = offset;
+    });
+
+});
+document.addEventListener("DOMContentLoaded", function () {
+
+    var circles = document.querySelectorAll('.ring-fg');
+
+    circles.forEach(function(circle) {
+        var pct = parseFloat(circle.getAttribute('data-pct')) || 0;
+
+        var radius = 18;
+        var circumference = 2 * Math.PI * radius; // ~113.1
+
+        // Calculate offset
+        var offset = circumference - (pct / 100) * circumference;
+
+        circle.style.strokeDasharray = circumference;
+        circle.style.strokeDashoffset = offset;
+    });
+
+});
+</script>

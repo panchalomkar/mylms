@@ -117,7 +117,12 @@ echo $OUTPUT->header();
 
             require_once($CFG->libdir . '/completionlib.php');
             $completion = new \completion_info($course);
-            $progress = (int) round(\core_completion\progress::get_course_progress_percentage($course, $USER->id));
+   $progress = (int) (
+    \core_completion\progress::get_course_progress_percentage(
+        $course,
+        $USER->id
+    ) ?? 0
+);
             $progresscolor = '#ec9707';
             ?>
             <img src="<?php echo $courseimage; ?>" class="w-full h-48 object-cover rounded-tr-2xl" alt="Course banner" style="max-height: 145px;">
@@ -317,118 +322,255 @@ $PAGE->requires->js(new moodle_url('/local/incourse/js/main.js'));?>
 var coursecontextid = <?= $context->id ?>;
 var savedActiveCmid = <?= (int)$saved_cmid ?>;
 
-document.addEventListener('DOMContentLoaded', function () {
 
-    let selectedStar = 0;
-
-    const modal = document.getElementById('reviewModal');
-    const openBtn = document.getElementById('openReviewModal');
-    const closeBtn = document.getElementById('closeReviewModal');
-    const stars = document.querySelectorAll('#rating-stars span');
-    const submitBtn = document.getElementById('submitrating');
-
-    // ✅ Open Modal
-    openBtn.addEventListener('click', function () {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-    });
-
-    // ✅ Close Modal
-    closeBtn.addEventListener('click', function () {
-        modal.classList.add('hidden');
-    });
-
-    // ✅ Close when clicking outside
-    modal.addEventListener('click', function (e) {
-        if (e.target === modal) {
-            modal.classList.add('hidden');
-        }
-    });
-
-    // ⭐ Star selection
-    stars.forEach(function (star, index) {
-        star.addEventListener('click', function () {
-            selectedStar = parseInt(this.dataset.star);
-
-            stars.forEach(function (s) {
-                s.innerHTML = 'star_border';
-            });
-
-            for (let i = 0; i < selectedStar; i++) {
-                stars[i].innerHTML = 'star';
-            }
-        });
-    });
-
-    // 🚀 Submit Rating
-    submitBtn.addEventListener('click', function () {
-
-        const review = document.getElementById('reviewtext').value;
-
-        if (selectedStar === 0) {
-            alert('Please select rating');
-            return;
-        }
-
-        fetch(M.cfg.wwwroot + '/lib/ajax/service.php?sesskey=' + M.cfg.sesskey, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify([{
-                index: 0,
-                methodname: 'block_edwiserratingreview_store_userfeedback',
-                args: {
-                    starcount: selectedStar,
-                    contextid: coursecontextid,
-                    feedbackreview: review,
-                    fortype: 'course'
-                }
-            }])
-        })
-        .then(response => response.json())
-        .then(data => {
-
-            if (data[0].data.status) {
-
-    // Close rating modal
-    modal.classList.add('hidden');
-
-    // Reset form
-    selectedStar = 0;
-    document.getElementById('reviewtext').value = '';
-    stars.forEach(s => s.innerHTML = 'star_border');
-
-    // Show success popup
-    const successPopup = document.getElementById('successPopup');
-    successPopup.classList.remove('hidden');
-    successPopup.classList.add('flex');
-
-}
- else {
-                alert('Something went wrong');
-            }
-
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-
-    });
-
-    const successPopup = document.getElementById('successPopup');
-    const closeSuccessBtn = document.getElementById('closeSuccessPopup');
-
-    closeSuccessBtn.addEventListener('click', function () {
-    successPopup.classList.add('hidden');
-    window.location.reload();
-});
-
-});
 // ----  REQUIRED FOR ARROWS TO WORK ----
 let activityOrder = [];
 let activityIndexMap = {};
+// ============================================================
+// ✅ COMPLETION WATCHER — polls after activity loads
+// ============================================================
+let completionPollTimer = null;
+let completionWatchCmid = null;
+let lastKnownState = 0;
 
+function startCompletionWatcher(cmid) {
+    stopCompletionWatcher();
+    completionWatchCmid = cmid;
+    lastKnownState = 0;
+
+    const base = (typeof M !== "undefined" && M.cfg) ? M.cfg.wwwroot : window.location.origin;
+
+    completionPollTimer = setInterval(async () => {
+        try {
+            const res = await fetch(`${base}/local/incourse/check_completion.php?cmid=${cmid}`, {
+                credentials: 'same-origin'
+            });
+            const data = await res.json();
+
+            // Newly completed (1=complete, 2=passed)
+            if (data.completed >= 1 && lastKnownState === 0) {
+                lastKnownState = data.completed;
+                stopCompletionWatcher();
+                onActivityCompleted(cmid, data.progress);
+            }
+        } catch (err) {
+            console.warn('Completion poll failed:', err);
+        }
+    }, 5000); // poll every 5 seconds
+}
+
+function stopCompletionWatcher() {
+    if (completionPollTimer) {
+        clearInterval(completionPollTimer);
+        completionPollTimer = null;
+    }
+}
+
+async function onActivityCompleted(cmid, newProgress) {
+    // 1. Show toast
+    showCompletionToast();
+
+    // 2. Refresh sidebar (checkmarks + section progress)
+    await refreshSidebar(cmid, newProgress);
+}
+
+async function refreshSidebar(activeCmid, newProgress) {
+
+    // ✅ 1. Update TOP progress bar
+    updateProgressBar(newProgress);
+
+    if (activeCmid) {
+        const activeLink = document.querySelector(`.activity-link[data-cmid="${activeCmid}"]`);
+        
+        if (activeLink) {
+
+            // ✅ Update activity icon
+            const icon = activeLink.querySelector('.material-icons:last-child');
+            if (icon) {
+                icon.textContent = 'check_circle';
+                icon.classList.remove('text-gray-500');
+                icon.classList.add('text-green-400');
+            }
+
+            // ✅ UPDATE SECTION PROGRESS
+            const section = activeLink.closest('.accordion-content');
+            if (section) {
+
+                const header = section.previousElementSibling; // button header
+                if (header) {
+
+                    // 👉 Count total + completed activities in this section
+                    const allActivities = section.querySelectorAll('.activity-link');
+                    const completedActivities = section.querySelectorAll('.material-icons.text-green-400');
+
+                    const total = allActivities.length;
+                    const completed = completedActivities.length;
+
+                    const percent = total > 0 
+                        ? Math.round((completed / total) * 100) 
+                        : 0;
+
+                    // ✅ Update % text
+                    const percentText = header.querySelector('.text-xs');
+                    if (percentText) percentText.textContent = percent + '%';
+
+                    // ✅ Update progress bar width
+                    const bar = header.querySelector('.h-1\\.5.rounded-full');
+                    if (bar) bar.style.width = percent + '%';
+                }
+            }
+        }
+    }
+}
+function updateProgressBar(newProgress) {
+    // Update the text percentage
+    const percentText = document.querySelector('.flex.justify-between .text-xs');
+    if (percentText) percentText.textContent = newProgress + '%';
+
+    // Update the bar width
+    const bar = document.querySelector('.h-2.rounded[style*="width"]');
+    if (bar) bar.style.width = newProgress + '%';
+}
+
+function rebindActivityLinks() {
+    // Re-bind click on newly injected sidebar links
+    document.querySelectorAll('.activity-link').forEach(link => {
+        // Remove old duplicate listeners by checking flag
+        if (link.dataset.bound === '1') return;
+        link.dataset.bound = '1';
+
+        link.addEventListener('click', async e => {
+            e.preventDefault();
+
+            document.querySelectorAll('.courseindex-active')
+                .forEach(el => el.classList.remove('courseindex-active'));
+            link.classList.add('courseindex-active');
+
+            fetch('<?= $CFG->wwwroot ?>/local/incourse/set_active_cmid.php?courseid=<?= $courseid ?>&cmid=' + link.dataset.cmid, {
+                credentials: 'same-origin'
+            });
+
+            // Re-trigger accordion highlight
+            const section = link.closest('.accordion-content');
+            if (section) {
+                section.classList.remove('hidden');
+                const icon = section.previousElementSibling?.querySelector('.material-icons');
+                if (icon) icon.style.transform = 'rotate(90deg)';
+            }
+
+            // 🔁 Restart watcher for newly clicked activity
+            startCompletionWatcher(link.dataset.cmid);
+        });
+    });
+}
+
+// ============================================================
+// ✅ GLOBAL: Hide .lang-switcher-widget inside ANY iframe injected into content-area
+// ============================================================
+function hideLangSwitcherInIframe(iframe) {
+    const tryHide = () => {
+        try {
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
+            if (!doc) return;
+
+            // Inject CSS once
+            if (!doc.getElementById('hide-lang-switcher-style')) {
+                const style = doc.createElement('style');
+                style.id = 'hide-lang-switcher-style';
+                style.textContent = `.lang-switcher-widget { display: none !important; }`;
+                doc.head.appendChild(style);
+            }
+        } catch (e) {
+            // Cross-origin iframe — can't touch it, safely ignore
+        }
+    };
+
+    // Try on load
+    iframe.addEventListener('load', tryHide);
+    // Also try immediately in case it's already loaded
+    tryHide();
+}
+
+// Watch #content-area for any iframe getting added, from ANY modname block
+const contentAreaObserver = new MutationObserver((mutations) => {
+    mutations.forEach(mutation => {
+        mutation.addedNodes.forEach(node => {
+            if (node.nodeType !== 1) return; // only elements
+
+            // If the added node itself is an iframe
+            if (node.tagName === 'IFRAME') {
+                hideLangSwitcherInIframe(node);
+            }
+
+            // Or if it contains iframes nested inside (e.g. wrapped in a div)
+            if (node.querySelectorAll) {
+                node.querySelectorAll('iframe').forEach(hideLangSwitcherInIframe);
+            }
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const contentArea = document.getElementById('content-area');
+    if (contentArea) {
+        contentAreaObserver.observe(contentArea, { childList: true, subtree: true });
+    }
+});
+
+function showCompletionToast() {
+    const existing = document.getElementById('completion-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'completion-toast';
+    toast.innerHTML = `
+        <div class="flex items-center gap-3">
+            <span class="material-icons text-green-400 text-2xl">check_circle</span>
+            <div>
+                <p class="font-semibold text-white text-sm">Activity Completed!</p>
+                <p class="text-xs text-gray-300">Progress updated in sidebar.</p>
+            </div>
+            <button onclick="this.closest('#completion-toast').remove()"
+                class="ml-4 text-gray-400 hover:text-white">
+                <span class="material-icons text-sm">close</span>
+            </button>
+        </div>
+    `;
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: #1e293b;
+        border: 1px solid #2ac48e;
+        border-radius: 12px;
+        padding: 14px 18px;
+        z-index: 9999;
+        min-width: 280px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        animation: slideInToast 0.4s ease;
+    `;
+
+    if (!document.getElementById('toast-style')) {
+        const style = document.createElement('style');
+        style.id = 'toast-style';
+        style.textContent = `
+            @keyframes slideInToast {
+                from { transform: translateY(40px); opacity: 0; }
+                to   { transform: translateY(0);    opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    document.body.appendChild(toast);
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.4s ease';
+            setTimeout(() => toast.remove(), 400);
+        }
+    }, 5000);
+}
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".activity-link").forEach((a, index) => {
         let cmid = a.dataset.cmid;
@@ -475,7 +617,38 @@ document.addEventListener("click", function(e) {
     if (!target) return;
 
     const nextLink = document.querySelector(`.activity-link[data-cmid="${target}"]`);
-    if (nextLink) nextLink.click();
+    if (!nextLink) return;
+
+    // ✅ Don't .click() — that triggers page reload
+    // Instead: update URL, highlight sidebar, load content inline
+    const url = new URL(window.location.href);
+    url.searchParams.set('cmid', target);
+    window.history.replaceState({}, '', url.toString()); // update URL bar without reload
+
+    // Highlight sidebar
+    document.querySelectorAll(".courseindex-active")
+        .forEach(el => el.classList.remove("courseindex-active"));
+    nextLink.classList.add("courseindex-active");
+
+    const section = nextLink.closest(".accordion-content");
+    if (section) {
+        section.classList.remove("hidden");
+        const icon = section.previousElementSibling?.querySelector(".material-icons");
+        if (icon) icon.style.transform = "rotate(90deg)";
+        const header = section.previousElementSibling;
+        if (header) {
+            document.querySelectorAll(".accordion-header-active")
+                .forEach(h => h.classList.remove("accordion-header-active"));
+            header.classList.add("accordion-header-active");
+        }
+    }
+
+    setTimeout(() => safeScroll(nextLink), 80);
+
+    // ✅ Load content inline
+    if (nextLink._loadContent) {
+        nextLink._loadContent();
+    }
 });
 
 
@@ -530,21 +703,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 });
-let currentCmid = null;
 
-document.addEventListener('click', function(e) {
-    const link = e.target.closest('.activity-link');
-    if (!link) return;
-
-    const newCmid = link.dataset.cmid;
-
-    if (currentCmid && currentCmid !== newCmid) {
-        console.log('Activity changed → refreshing');
-        window.location.reload();
-    }
-
-    currentCmid = newCmid;
-});
 document.addEventListener('DOMContentLoaded', () => {
 
     // 📜 Inline module content loader
@@ -555,9 +714,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const area = document.getElementById('content-area');
             const area1 = document.getElementById('content-area1');
             const modname = link.dataset.modname;
-            const cmid = link.dataset.cmid;
+           const cmid = link.dataset.cmid;
 
-            area.innerHTML = ` <div class="text-gray-400 p-8">Loading Content...</div> `;
+// ✅ Start completion watcher for this activity
+startCompletionWatcher(cmid);
+
+area.innerHTML = ` <div class="text-gray-400 p-8">Loading Content...</div> `;
              area1.innerHTML = ` ${getNavigationHTML(cmid)} `;
              
             try {
@@ -601,6 +763,184 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>`;
                     return;
                 }
+// attendance module
+if (modname === 'attendance') {
+    const params = new URLSearchParams(link.href.split('?')[1]);
+    const cmid = params.get('id');
+    const base = (typeof M !== "undefined" && M.cfg) ? M.cfg.wwwroot : window.location.origin;
+
+    area.innerHTML = `
+        <div class="text-gray-400 p-8 text-center animate-pulse">
+            <span class="material-icons text-4xl mb-2 text-[#003152]">event_available</span>
+            <p>Loading attendance record...</p>
+        </div>
+    `;
+
+    try {
+        const response = await fetch(`${base}/local/incourse/fetch_attendance.php?id=${cmid}`);
+        const data = await response.json();
+
+        if (data.status !== 'success') {
+            area.innerHTML = `
+                <div class="text-center text-red-500 p-8">
+                    <p>${data.message || 'Unable to load attendance record.'}</p>
+                </div>`;
+            return;
+        }
+
+        // Teachers: keep old/native behaviour, don't render the student dashboard
+        if (data.role === 'teacher') {
+            area.innerHTML = `
+                <div class="text-center text-gray-500 p-8">
+                    <span class="material-icons text-4xl mb-2 text-[#003152]">event_available</span>
+                    <p class="mb-4">Attendance management isn't available in this view yet.</p>
+                    <a href="${base}/mod/attendance/view.php?id=${cmid}"
+                       class="inline-block px-4 py-2 rounded-lg bg-[#003152] text-white text-sm font-medium hover:opacity-90">
+                        Open Attendance
+                    </a>
+                </div>`;
+            return;
+        }
+
+        // Circle color based on percentage
+        let ringColor = '#2ac48e'; // green
+        if (data.percentage < 75 && data.percentage >= 50) ringColor = '#fd9602'; // orange
+        if (data.percentage < 50) ringColor = '#ef4444'; // red
+
+        let rowsHtml = '';
+        if (data.sessions.length === 0) {
+            rowsHtml = `<tr><td colspan="4" class="text-center text-gray-400 py-6">No sessions found.</td></tr>`;
+        } else {
+            data.sessions.forEach(s => {
+                let badgeClass = 'bg-gray-100 text-gray-600';
+                const lower = s.acronym.toLowerCase();
+                if (lower.startsWith('p')) badgeClass = 'bg-green-100 text-green-700';
+                else if (lower.startsWith('l')) badgeClass = 'bg-yellow-100 text-yellow-700';
+                else if (lower.startsWith('e')) badgeClass = 'bg-blue-100 text-blue-700';
+                else if (lower.startsWith('a')) badgeClass = 'bg-red-100 text-red-700';
+
+                rowsHtml += `
+                    <tr class="hover:bg-gray-50 border-b border-gray-100">
+                        <td class="py-3 px-4">
+                            <p class="font-medium text-gray-800">${s.description}</p>
+                            <p class="text-xs text-gray-400">${s.date} &middot; ${s.time}</p>
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold ${badgeClass}">
+                                ${s.status}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-center text-sm text-gray-600">
+                            ${s.points} / ${s.maxpoints}
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        area.innerHTML = `
+        <div class="p-3 md:p-6">
+
+            <div class="flex items-center gap-3 mb-6">
+                <span class="material-icons text-[#003152] text-3xl">event_available</span>
+                <h2 class="text-xl font-semibold text-[#003152]">${data.attendancename}</h2>
+            </div>
+
+            <!-- Top summary: circular % + stat cards -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-1 mb-8 items-center">
+
+                <!-- Percentage ring -->
+               <div class="bg-[#faf0ff] p-2 rounded-xl shadow flex items-center gap-1 border">
+     <div class="relative w-12 h-12 flex items-center justify-center flex-shrink-0">
+        <svg class="w-12 h-12 -rotate-90">
+            <circle cx="24" cy="24" r="19" stroke="#e5e7eb" stroke-width="5" fill="none"/>
+            <circle cx="24" cy="24" r="19" stroke="${ringColor}" stroke-width="5" fill="none"
+                stroke-dasharray="${2 * Math.PI * 19}"
+                stroke-dashoffset="${2 * Math.PI * 19 * (1 - data.percentage / 100)}"
+                stroke-linecap="round"/>
+        </svg>
+        <span class="absolute text-[11px] font-bold text-gray-800">${data.percentage}%</span>
+     </div>
+     <div>
+        <p class="text-gray-500 text-sm" style="font-size: 12px;">Overall Attendance</p>
+        <p class="text-xl font-bold">${data.percentage}%</p>
+        </div>
+        </div>
+
+                <!-- Total Sessions -->
+                <div class="bg-[#f0f8ff] p-2 rounded-xl shadow flex items-center gap-3 border">
+                    <div class="w-12 h-12 rounded-xl bg-[#003152] flex items-center justify-center">
+                        <span class="material-symbols-outlined text-white text-3xl">calendar_month</span>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Total Sessions</p>
+                        <p class="text-xl font-bold">${data.totalsessions}</p>
+                    </div>
+                </div>
+
+                <!-- Present -->
+                <div class="bg-[#ebfaf4] p-2 rounded-xl shadow flex items-center gap-3 border">
+                    <div class="w-12 h-12 rounded-xl bg-[#2ac48e] flex items-center justify-center">
+                        <span class="material-symbols-outlined text-white text-3xl">check_circle</span>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Present</p>
+                        <p class="text-xl font-bold">${data.present}</p>
+                    </div>
+                </div>
+
+                <!-- Late -->
+                <div class="bg-[#fff5e8] p-2 rounded-xl shadow flex items-center gap-3 border">
+                    <div class="w-12 h-12 rounded-xl bg-[#fd9602] flex items-center justify-center">
+                        <span class="material-symbols-outlined text-white text-3xl">schedule</span>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Late</p>
+                        <p class="text-xl font-bold">${data.late}</p>
+                    </div>
+                </div>
+
+                <!-- Absent -->
+                <div class="bg-[#fdecec] p-2 rounded-xl shadow flex items-center gap-3 border">
+                    <div class="w-12 h-12 rounded-xl bg-[#ef4444] flex items-center justify-center">
+                        <span class="material-symbols-outlined text-white text-3xl">cancel</span>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Absent</p>
+                        <p class="text-xl font-bold">${data.absent}</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Session list -->
+            <div class="bg-white rounded-xl shadow border overflow-hidden">
+                <div class="grid grid-cols-[2fr_1fr_1fr] gap-4 p-3" style="background:#003152">
+                    <div class="text-sm font-semibold text-white px-4" style="text-align: left;">Session</div>
+                    <div class="text-sm font-semibold text-white text-center">Status</div>
+                    <div class="text-sm font-semibold text-white text-center">Points</div>
+                </div>
+                <table class="w-full text-left border-collapse">
+                    <tbody>
+                        ${rowsHtml}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        `;
+
+    } catch (err) {
+        console.error('Attendance load error:', err);
+        area.innerHTML = `
+            <div class="text-center text-red-500 p-8">
+                <p>Failed to load attendance record.</p>
+            </div>
+        `;
+    }
+
+    return;
+}
 if (modname === 'resource') {
 
     try {
@@ -1839,8 +2179,29 @@ if (modname === 'ilt') {
     const mainBox = doc.querySelector('div[role="main"]');
     if (!mainBox) throw new Error("No ILT session details found.");
 
-    const tables = mainBox.querySelectorAll("table");
-    const titles = mainBox.querySelectorAll("h2.prev_session");
+    const titles = [...mainBox.querySelectorAll("h2.prev_session")];
+
+    // ✅ Match each table to its real section heading instead of assuming position,
+    // since Moodle omits the table entirely (renders a <p> instead) when a
+    // section has zero sessions.
+    let upcomingTable = null;
+    let pastTable = null;
+
+    titles.forEach(h2 => {
+        const label = h2.innerText.toLowerCase();
+        let el = h2.nextElementSibling;
+        while (el && el.tagName !== 'H2') {
+            // Table may be a direct sibling OR nested inside a wrapper
+            // (e.g. <div class="table-responsive"><table>...</table></div>)
+            const found = el.tagName === 'TABLE' ? el : el.querySelector?.('table');
+            if (found) {
+                if (label.includes('upcoming')) upcomingTable = found;
+                else if (label.includes('previous')) pastTable = found;
+                break;
+            }
+            el = el.nextElementSibling;
+        }
+    });
 
     const extractSessions = (table) => {
         if (!table) return [];
@@ -1861,8 +2222,28 @@ if (modname === 'ilt') {
         });
     };
 
-    const upcoming = extractSessions(tables[0]);
-    const past = extractSessions(tables[1]);
+const upcoming = extractSessions(upcomingTable);
+    const past = extractSessions(pastTable);
+
+    // ✅ Get real booking status from DB (HTML table is unreliable)
+    let signupStatus = {};
+    try {
+        const statusRes = await fetch(`${base}/local/incourse/fetch_ilt.php?id=${cmid}`);
+        const statusData = await statusRes.json();
+        if (statusData.status === 'success') signupStatus = statusData.signups;
+    } catch (e) {
+        console.warn('Could not fetch ILT signup status', e);
+    }
+
+    // Mark each session as booked/not based on DB truth
+    const markBooked = (sessions) => sessions.map(s => {
+        const params = new URLSearchParams(s.signup.split('?')[1] || '');
+        const sid = params.get('s');
+        return { ...s, sessionId: sid, isBooked: sid ? !!signupStatus[sid] : false };
+    });
+
+    const upcomingMarked = markBooked(upcoming);
+    const pastMarked = markBooked(past);
 
     area.innerHTML = `
         <div class="p-3 bg-white rounded-2xl shadow-lg border border-gray-100 w-100">
@@ -1879,7 +2260,7 @@ if (modname === 'ilt') {
                 </h3>
                 ${upcoming.length ? `
                     <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-                        ${upcoming.map(s => `
+                        ${upcomingMarked.map(s => `
                             <div class="flex flex-col items-start justify-between gap-4 border rounded-2xl p-4 bg-white shadow-sm hover:shadow-md transition hover:-translate-y-1">
                                 <div class="flex items-center gap-4 flex-1">
                                     <div>
@@ -1904,7 +2285,14 @@ if (modname === 'ilt') {
                                 </div>
                                 <div class="flex flex-col items-end gap-2 w-full">
                                     <span class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full self-start">${s.status}</span>
-                                    ${s.signup ? `
+                                    ${s.isBooked ? `
+                                        <button 
+                                            data-signupurl="${s.signup}"
+                                            data-sessionid="${s.sessionId}"
+                                            class="cancelBookingBtn flex items-center justify-center gap-1 bg-[#f4645c] hover:bg-[#e5544c] text-white px-4 py-2 rounded-md text-sm font-medium transition duration-300 w-full">
+                                            <span class="material-icons text-sm">event_busy</span> Cancel Booking
+                                        </button>`
+                                    : s.signup ? `
                                         <button 
                                             data-url="${s.signup}"
                                             class="signupBtn  flex items-center justify-center gap-1 bg-[#003152] hover:bg-[#ec9707] text-white px-4 py-2 rounded-md text-sm font-medium transition duration-300 w-full">
@@ -1925,7 +2313,7 @@ if (modname === 'ilt') {
                 </h3>
                 ${past.length ? `
                     <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-                        ${past.map(s => `
+                       ${pastMarked.map(s => `
                             <div class="flex flex-col justify-between border rounded-2xl p-4 bg-gray-50 shadow-sm">
                                 <div>
                                     <h4 class="text-gray-700 mb-3 gap-2 flex font-semibold items-center">
@@ -1962,9 +2350,31 @@ if (modname === 'ilt') {
                 </div>
             </div>
         </div>
+        <!-- Cancel Confirmation Modal -->
+<div id="iltCancelModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] hidden">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-[#f4645c] px-2 py-2 flex items-center gap-3">
+            <span class="material-icons text-white text-2xl">event_busy</span>
+            <h3 class="text-white text-xl font-bold">Cancel booking?</h3>
+        </div>
+        <div class="p-6">
+            <p class="text-gray-600 mb-6">Are you sure you want to cancel your booking for this session?</p>
+            <div class="flex gap-3">
+                <button id="iltCancelStayBtn"
+                    class="flex-1 border-2 border-[#003152] text-[#003152] font-semibold py-3 rounded-lg hover:bg-gray-50 transition">
+                    Stay
+                </button>
+                <button id="iltCancelConfirmBtn"
+                    class="flex-1 bg-[#f4645c] text-white font-semibold py-3 rounded-lg hover:bg-[#e5544c] transition">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
     `;
 
-    // 🎬 Modal logic
+  // 🎬 Modal logic
     const modal = document.getElementById("iltModal");
     const modalBody = document.getElementById("iltModalBody");
     const modalBox = modal.querySelector("div.bg-white");
@@ -1973,8 +2383,60 @@ if (modname === 'ilt') {
         modalBox.classList.add("scale-95");
     });
 
- document.querySelectorAll(".signupBtn").forEach(btn => {
-    btn.addEventListener("click", async () => {
+    // ✅ Cancel confirmation modal wiring
+    const cancelModal = document.getElementById("iltCancelModal");
+    let cancelTargetBtn = null;
+
+    document.addEventListener("click", (e) => {
+        const cbtn = e.target.closest(".cancelBookingBtn");
+        if (cbtn) {
+            cancelTargetBtn = cbtn;
+            cancelModal.classList.remove("hidden");
+        }
+    });
+
+    document.getElementById("iltCancelStayBtn")?.addEventListener("click", () => {
+        cancelModal.classList.add("hidden");
+    });
+
+ document.getElementById("iltCancelConfirmBtn")?.addEventListener("click", async () => {
+        if (!cancelTargetBtn) return;
+        const signupUrl = cancelTargetBtn.dataset.signupurl;
+        const sessionId = cancelTargetBtn.dataset.sessionid;
+
+        cancelModal.classList.add("hidden");
+        cancelTargetBtn.disabled = true;
+        cancelTargetBtn.innerHTML = `<span class="material-icons animate-spin text-sm">sync</span> Cancelling...`;
+
+        try {
+          const response = await fetch(
+                `${base}/local/incourse/fetch_ilt.php?action=cancel&sessionid=${sessionId}&sesskey=${M.cfg.sesskey}`,
+                { credentials: "same-origin" }
+            );
+            const data = await response.json();
+
+            if (data.status === "success") {
+                cancelTargetBtn.outerHTML = `
+                    <button data-url="${signupUrl}"
+                        class="signupBtn flex items-center justify-center gap-1 bg-[#003152] hover:bg-[#ec9707] text-white px-4 py-2 rounded-md text-sm font-medium transition duration-300 w-full">
+                        <span class="material-icons text-sm">how_to_reg</span> Sign Up
+                    </button>`;
+            } else {
+                throw new Error(data.message || "Cancel failed");
+            }
+        } catch (err) {
+            console.error(err);
+            cancelTargetBtn.disabled = false;
+            cancelTargetBtn.innerHTML = `<span class="material-icons text-sm">event_busy</span> Cancel Booking`;
+            alert("Failed to cancel booking. Please try again.");
+        }
+    });
+
+    // Delegated signup click (works for buttons created now or later, e.g. after a cancel)
+    document.addEventListener("click", async (e) => {
+        const btn = e.target.closest(".signupBtn");
+        if (!btn) return;
+
         modal.classList.remove("hidden");
         modalBox.classList.remove("scale-95");
         modalBody.innerHTML = `
@@ -2029,11 +2491,17 @@ if (modname === 'ilt') {
                             `;
 
                             // Change button to "Booked"
-                            btn.outerHTML = `
-                                <span class="flex items-center justify-center gap-1 bg-green-100 text-green-700 px-4 py-2 rounded-md text-sm font-semibold w-full">
-                                    <span class="material-icons text-base">event_available</span> Booked
-                                </span>
-                            `;
+{
+                                const suParams = new URLSearchParams(btn.dataset.url.split('?')[1] || '');
+                                const suSessionId = suParams.get('s');
+                                btn.outerHTML = `
+    <button data-signupurl="${btn.dataset.url}"
+        data-sessionid="${suSessionId}"
+        class="cancelBookingBtn flex items-center justify-center gap-1 bg-[#f4645c] hover:bg-[#e5544c] text-white px-4 py-2 rounded-md text-sm font-medium transition duration-300 w-full">
+        <span class="material-icons text-sm">event_busy</span> Cancel Booking
+    </button>
+`;
+                            }
 
                             // Auto close modal
                             setTimeout(() => {
@@ -2057,11 +2525,12 @@ if (modname === 'ilt') {
                                     </div>
                                 `;
 
-                                btn.outerHTML = `
-                                    <span class="flex items-center justify-center gap-1 bg-green-100 text-green-700 px-4 py-2 rounded-md text-sm font-semibold w-full">
-                                        <span class="material-icons text-base">event_available</span> Booked
-                                    </span>
-                                `;
+                               btn.outerHTML = `
+    <button data-signupurl="${btn.dataset.url}"
+        class="cancelBookingBtn flex items-center justify-center gap-1 bg-[#f4645c] hover:bg-[#e5544c] text-white px-4 py-2 rounded-md text-sm font-medium transition duration-300 w-full">
+        <span class="material-icons text-sm">event_busy</span> Cancel Booking
+    </button>
+   `;
 
                                 setTimeout(() => {
                                     modal.classList.add("hidden");
@@ -2084,7 +2553,7 @@ if (modname === 'ilt') {
                 });
             }
 
-        } catch (e) {
+       } catch (e) {
             console.error(e);
             modalBody.innerHTML = `
                 <div class="text-center text-red-500 p-6">
@@ -2093,7 +2562,6 @@ if (modname === 'ilt') {
                 </div>
             `;
         }
-    });
 });
 
 

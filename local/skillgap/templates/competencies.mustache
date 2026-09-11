@@ -1,0 +1,515 @@
+{{!
+  @template local_skillgap/competencies
+  Competency management: add/edit main competencies, sub-competencies with full hierarchy tree, course mapping, CSV upload.
+  Fixed: Point 9 (hierarchy tree), Point 11 (edit sub/sub-sub, CSV download).
+}}
+<div class="local-skillgap">
+  <h3 class="mb-4"><i class="fa fa-star mr-2 text-primary"></i>{{#str}} competencies, local_skillgap {{/str}}</h3>
+
+  {{! Filters }}
+  <div class="card mb-4">
+    <div class="card-body">
+      <form method="get" action="{{{wwwroot}}}/local/skillgap/admin/competencies.php" class="form-inline flex-wrap gap-2">
+        <label class="mr-2 font-weight-bold">{{#str}} department, local_skillgap {{/str}}:</label>
+        <select name="deptid" class="form-control mr-3 mb-2" onchange="this.form.submit()">
+          {{#dept_options}}<option value="{{id}}" {{#selected}}selected{{/selected}}>{{name}}</option>{{/dept_options}}
+        </select>
+        <label class="mr-2 font-weight-bold">{{#str}} designation, local_skillgap {{/str}}:</label>
+        <select name="desigid" class="form-control mr-3 mb-2" onchange="this.form.submit()">
+          {{#desig_options}}<option value="{{id}}" {{#selected}}selected{{/selected}}>{{name}}</option>{{/desig_options}}
+        </select>
+        <button type="submit" class="btn btn-primary mb-2">Load</button>
+      </form>
+    </div>
+  </div>
+
+  {{#has_filter}}
+  <div class="row mb-4">
+    {{! Add competency form }}
+    <div class="col-md-4 mb-4">
+      <div class="card">
+        <div class="card-header bg-white"><h6 class="mb-0"><i class="fa fa-plus-circle mr-1 text-primary"></i>Add Main Competency</h6></div>
+        <div class="card-body">
+          <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/competencies.php?deptid={{selected_deptid}}&desigid={{selected_desigid}}">
+            <input type="hidden" name="action"   value="save_comp">
+            <input type="hidden" name="sesskey"  value="{{sesskey}}">
+            <div class="form-group">
+              <label class="font-weight-bold">{{#str}} competency_name, local_skillgap {{/str}} <span class="text-danger">*</span></label>
+              <input type="text" name="name" class="form-control" required placeholder="e.g. Leadership">
+            </div>
+            <div class="form-group">
+              <label class="font-weight-bold">{{#str}} description, local_skillgap {{/str}}</label>
+              <textarea name="description" class="form-control" rows="3" placeholder="Brief description..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">
+              <i class="fa fa-save mr-1"></i>{{#str}} save, local_skillgap {{/str}}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    {{! Competency list }}
+    <div class="col-md-8 mb-4">
+      {{#comp_rows}}
+      <div class="card mb-4" data-load-subcomp-counts="{{id}}">
+        {{! ── Main Competency Header ── }}
+        <div class="card-header bg-white d-flex align-items-center justify-content-between flex-wrap gap-2" style="border-left:4px solid #033252;">
+          <div>
+            <strong style="color:#033252;">{{name}}</strong>
+            <span class="badge badge-{{#has_5_questions}}success{{/has_5_questions}}{{^has_5_questions}}warning{{/has_5_questions}} ml-2">
+              {{q_count}}/5 questions
+            </span>
+            <span class="badge badge-info ml-1">{{sub_count}} sub-comps</span>
+          </div>
+          <div class="d-flex gap-1 flex-wrap">
+            <a href="{{{wwwroot}}}/local/skillgap/admin/questions.php?compid={{id}}" class="btn btn-sm btn-outline-primary">
+              <i class="fa fa-question-circle mr-1"></i>Questions
+            </a>
+            {{! Edit main competency }}
+            <button type="button" class="btn btn-sm btn-outline-secondary sg-edit-comp-btn"
+                    data-id="{{id}}" data-name="{{name}}" data-description="{{description}}"
+                    data-deptid="{{selected_deptid}}" data-desigid="{{selected_desigid}}"
+                    data-sesskey="{{sesskey}}" data-wwwroot="{{{wwwroot}}}">
+              <i class="fa fa-pencil"></i>
+            </button>
+            <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/competencies.php?deptid={{selected_deptid}}&desigid={{selected_desigid}}"
+                  class="d-inline" onsubmit="return confirm('Delete competency and all its sub-competencies?');">
+              <input type="hidden" name="action"  value="delete_comp">
+              <input type="hidden" name="id"      value="{{id}}">
+              <input type="hidden" name="sesskey" value="{{sesskey}}">
+              <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa fa-trash"></i></button>
+            </form>
+          </div>
+        </div>
+
+        <div class="card-body py-2">
+          {{#description}}<p class="small text-muted mb-2">{{description}}</p>{{/description}}
+
+          {{! Mapped courses }}
+          <div class="mb-2">
+            <strong class="small">{{#str}} mapped_courses, local_skillgap {{/str}}:</strong>
+            {{#mapped_courses}}
+            <span class="badge badge-secondary mr-1">
+              {{coursename}}
+              <a href="{{{wwwroot}}}/local/skillgap/admin/competencies.php?deptid={{selected_deptid}}&desigid={{selected_desigid}}&action=unmap_course&compid={{compid_val}}&courseid={{courseid}}&sesskey={{sesskey_val}}"
+                 class="text-white ml-1" title="Remove" style="text-decoration:none;">&times;</a>
+            </span>
+            {{/mapped_courses}}
+            {{^has_courses}}<span class="text-muted small">None</span>{{/has_courses}}
+          </div>
+
+          {{! Map course form }}
+          <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/competencies.php?deptid={{selected_deptid}}&desigid={{selected_desigid}}" class="form-inline mt-1 mb-3">
+            <input type="hidden" name="action"  value="map_course">
+            <input type="hidden" name="compid"  value="{{id}}">
+            <input type="hidden" name="sesskey" value="{{sesskey}}">
+            <select name="courseid" class="form-control form-control-sm mr-2">
+              {{#course_options}}<option value="{{id}}">{{name}}</option>{{/course_options}}
+            </select>
+            <button type="submit" class="btn btn-sm btn-outline-success">
+              <i class="fa fa-link mr-1"></i>{{#str}} map_courses, local_skillgap {{/str}}
+            </button>
+          </form>
+
+          <hr class="mt-1 mb-3">
+
+          {{! ── HIERARCHY TREE ── }}
+          <div class="sg-comp-hierarchy">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <strong class="small text-uppercase text-muted" style="letter-spacing:.5px;">Sub-Competency Hierarchy</strong>
+              <div class="d-flex gap-1">
+                {{! CSV Upload button }}
+                <button type="button" class="btn btn-sm btn-outline-warning sg-show-csv-upload"
+                        data-compid="{{id}}" data-compname="{{name}}">
+                  <i class="fa fa-upload mr-1"></i>CSV Upload
+                </button>
+                {{! Download sample CSV }}
+                <a href="{{{wwwroot}}}/local/skillgap/admin/download_sample.php?type=subcomps"
+                   class="btn btn-sm btn-outline-secondary">
+                  <i class="fa fa-download mr-1"></i>Sample CSV
+                </a>
+              </div>
+            </div>
+
+            {{! CSV Upload panel (hidden by default) }}
+            <div class="sg-csv-upload-panel mb-3" id="sg-csv-panel-{{id}}" style="display:none;">
+              <div class="card border-warning">
+                <div class="card-body py-2">
+                  <p class="small text-muted mb-2">
+                    CSV format: <strong>Sub-Competency, Sub-Sub-Competency</strong> (header row required)
+                  </p>
+                  <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/competencies.php?deptid={{selected_deptid}}&desigid={{selected_desigid}}" enctype="multipart/form-data" class="form-inline">
+                    <input type="hidden" name="action"  value="upload_csv_sub">
+                    <input type="hidden" name="compid"  value="{{id}}">
+                    <input type="hidden" name="sesskey" value="{{sesskey}}">
+                    <input type="file" name="csvfile" class="form-control-file form-control-sm mr-2" accept=".csv" required>
+                    <button type="submit" class="btn btn-sm btn-warning">
+                      <i class="fa fa-upload mr-1"></i>Import
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            {{! Sub-competency tree }}
+            {{#sub_trees}}
+            <div class="sg-sub-tree mb-2">
+              {{! Sub-competency row }}
+              <div class="d-flex align-items-center justify-content-between p-2 rounded"
+                   style="background:#f0f4f8; border-left:3px solid #eb980d;">
+                <div class="d-flex align-items-center">
+                  <i class="fa fa-caret-right mr-2 text-muted"></i>
+                  <span class="font-weight-medium small">{{sub_name}}</span>
+                  <span class="badge badge-pill badge-secondary ml-2 small" id="sg-sqc-{{sub_id}}">
+                    0/5 Q
+                  </span>
+                </div>
+                <div class="d-flex gap-1">
+                  {{! Questions for this sub-competency }}
+                  <a href="{{{wwwroot}}}/local/skillgap/admin/subcomp_questions.php?subcompid={{sub_id}}&compid={{comp_id}}&deptid={{deptid}}&desigid={{desigid}}"
+                     class="btn btn-xs btn-outline-primary" style="padding:1px 7px;font-size:11px;" title="Manage questions">
+                    <i class="fa fa-question-circle mr-1"></i>Questions
+                  </a>
+                  <button type="button" class="btn btn-xs btn-outline-secondary sg-edit-subcomp-btn"
+                          style="padding:1px 7px;font-size:11px;"
+                          data-id="{{sub_id}}" data-name="{{sub_name}}"
+                          data-compid="{{comp_id}}" data-parentsubid=""
+                          data-deptid="{{deptid}}" data-desigid="{{desigid}}"
+                          data-sesskey="{{sesskey}}" data-wwwroot="{{{wwwroot}}}">
+                    <i class="fa fa-pencil"></i>
+                  </button>
+                  {{! Add sub-sub under this sub }}
+                  <button type="button" class="btn btn-xs btn-outline-primary sg-add-subsub-btn"
+                          style="padding:1px 7px;font-size:11px;"
+                          data-parentsubid="{{sub_id}}" data-compid="{{comp_id}}"
+                          data-deptid="{{deptid}}" data-desigid="{{desigid}}"
+                          data-sesskey="{{sesskey}}" data-wwwroot="{{{wwwroot}}}">
+                    <i class="fa fa-plus"></i>
+                  </button>
+                  {{! Delete sub-competency }}
+                  <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/competencies.php?deptid={{deptid}}&desigid={{desigid}}"
+                        class="d-inline" onsubmit="return confirm('Delete this sub-competency?');">
+                    <input type="hidden" name="action"   value="delete_sub">
+                    <input type="hidden" name="subid"    value="{{sub_id}}">
+                    <input type="hidden" name="sesskey"  value="{{sesskey}}">
+                    <button type="submit" class="btn btn-xs btn-outline-danger" style="padding:1px 7px;font-size:11px;">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              </div>
+
+              {{! Course mapping for sub-competency }}
+              <div class="mt-1 ml-2 px-2 py-1" style="background:#f8f9fa;border-left:3px solid #17a2b8;">
+                <div class="d-flex align-items-center flex-wrap" style="gap:4px;">
+                  <span class="small text-muted mr-1"><i class="fa fa-link mr-1"></i>Courses:</span>
+                  {{#sub_mapped_courses}}
+                  <span class="badge badge-info mr-1" style="font-size:11px;background:#17a2b8;">
+                    {{coursename}}
+                    <a href="{{{wwwroot}}}/local/skillgap/admin/competencies.php?deptid={{selected_deptid}}&desigid={{selected_desigid}}&action=unmap_subcomp_course&subcompid={{subcompid_val}}&courseid={{courseid}}&sesskey={{sesskey_val}}"
+                       class="text-white ml-1" style="text-decoration:none;" title="Remove">&times;</a>
+                  </span>
+                  {{/sub_mapped_courses}}
+                  {{^sub_has_courses}}<span class="small text-muted">None mapped</span>{{/sub_has_courses}}
+                </div>
+                <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/competencies.php?deptid={{deptid}}&desigid={{desigid}}"
+                      class="form-inline mt-1">
+                  <input type="hidden" name="action"   value="map_subcomp_course">
+                  <input type="hidden" name="subcompid" value="{{sub_id}}">
+                  <input type="hidden" name="sesskey"  value="{{sesskey}}">
+                  <select name="courseid" class="form-control form-control-sm mr-1" style="max-width:200px;font-size:11px;">
+                    <option value="">-- Map a course --</option>
+                    {{#course_options}}<option value="{{id}}">{{name}}</option>{{/course_options}}
+                  </select>
+                  <button type="submit" class="btn btn-sm" style="background:#17a2b8;color:#fff;padding:2px 8px;font-size:11px;">
+                    <i class="fa fa-link mr-1"></i>Map
+                  </button>
+                </form>
+              </div>
+
+              {{! Inline edit form for sub (hidden) }}
+              <div class="sg-edit-sub-form mt-1 ml-4" id="sg-edit-sub-form-{{sub_id}}" style="display:none;">
+                <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/competencies.php?deptid={{deptid}}&desigid={{desigid}}" class="form-inline">
+                  <input type="hidden" name="action"   value="update_sub">
+                  <input type="hidden" name="subid"    value="{{sub_id}}">
+                  <input type="hidden" name="sesskey"  value="{{sesskey}}">
+                  <input type="text" name="subname" class="form-control form-control-sm mr-2"
+                         value="{{sub_name}}" required style="min-width:160px;">
+                  <button type="submit" class="btn btn-sm btn-primary mr-1">
+                    <i class="fa fa-save mr-1"></i>Save
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary sg-cancel-edit-sub"
+                          data-target="sg-edit-sub-form-{{sub_id}}">Cancel</button>
+                </form>
+              </div>
+
+              {{! Inline add-sub-sub form (hidden) }}
+              <div class="sg-add-subsub-form mt-1 ml-4" id="sg-add-subsub-form-{{sub_id}}" style="display:none;">
+                <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/competencies.php?deptid={{deptid}}&desigid={{desigid}}" class="form-inline">
+                  <input type="hidden" name="action"      value="save_sub">
+                  <input type="hidden" name="compid"      value="{{comp_id}}">
+                  <input type="hidden" name="parentsubid" value="{{sub_id}}">
+                  <input type="hidden" name="sesskey"     value="{{sesskey}}">
+                  <input type="text" name="subname" class="form-control form-control-sm mr-2"
+                         placeholder="Sub-sub competency name..." required style="min-width:180px;">
+                  <button type="submit" class="btn btn-sm btn-primary mr-1">
+                    <i class="fa fa-plus mr-1"></i>Add
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary sg-cancel-add-subsub"
+                          data-target="sg-add-subsub-form-{{sub_id}}">Cancel</button>
+                </form>
+              </div>
+
+              {{! Sub-sub-competencies }}
+              {{#sub_subs}}
+              <div class="d-flex align-items-center justify-content-between p-2 mt-1 ml-4 rounded"
+                   style="background:#fdf8f0; border-left:3px solid #ffc107;">
+                <div class="d-flex align-items-center">
+                  <i class="fa fa-caret-right mr-2" style="color:#ffc107;"></i>
+                  <span class="small text-muted mr-1">↳</span>
+                  <span class="small">{{subsub_name}}</span>
+                  <span class="badge badge-pill badge-secondary ml-2" style="font-size:10px;" id="sg-sqc-{{subsub_id}}">
+                    0/5 Q
+                  </span>
+                </div>
+                <div class="d-flex gap-1">
+                  {{! Questions for sub-sub-competency }}
+                  <a href="{{{wwwroot}}}/local/skillgap/admin/subcomp_questions.php?subcompid={{subsub_id}}&compid={{comp_id}}&deptid={{deptid}}&desigid={{desigid}}"
+                     class="btn btn-xs btn-outline-primary" style="padding:1px 7px;font-size:11px;" title="Manage questions">
+                    <i class="fa fa-question-circle mr-1"></i>Q
+                  </a>
+                  <button type="button" class="btn btn-xs btn-outline-secondary sg-edit-subcomp-btn"
+                          style="padding:1px 7px;font-size:11px;"
+                          data-id="{{subsub_id}}" data-name="{{subsub_name}}"
+                          data-compid="{{comp_id}}" data-parentsubid="{{parent_sub_id}}"
+                          data-deptid="{{deptid}}" data-desigid="{{desigid}}"
+                          data-sesskey="{{sesskey}}" data-wwwroot="{{{wwwroot}}}">
+                    <i class="fa fa-pencil"></i>
+                  </button>
+                  {{! Delete sub-sub-competency }}
+                  <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/competencies.php?deptid={{deptid}}&desigid={{desigid}}"
+                        class="d-inline" onsubmit="return confirm('Delete this sub-sub-competency?');">
+                    <input type="hidden" name="action"   value="delete_sub">
+                    <input type="hidden" name="subid"    value="{{subsub_id}}">
+                    <input type="hidden" name="sesskey"  value="{{sesskey}}">
+                    <button type="submit" class="btn btn-xs btn-outline-danger" style="padding:1px 7px;font-size:11px;">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              </div>
+
+              {{! Course mapping for sub-sub-competency }}
+              <div class="mt-1 ml-6 px-2 py-1" style="background:#fff9e6;border-left:3px solid #ffc107;margin-left:2rem;">
+                <div class="d-flex align-items-center flex-wrap" style="gap:4px;">
+                  <span class="small text-muted mr-1"><i class="fa fa-link mr-1"></i>Courses:</span>
+                  {{#subsub_mapped_courses}}
+                  <span class="badge mr-1" style="font-size:11px;background:#ffc107;color:#212529;">
+                    {{coursename}}
+                    <a href="{{{wwwroot}}}/local/skillgap/admin/competencies.php?deptid={{selected_deptid}}&desigid={{selected_desigid}}&action=unmap_subcomp_course&subcompid={{subcompid_val}}&courseid={{courseid}}&sesskey={{sesskey_val}}"
+                       class="ml-1" style="text-decoration:none;color:#212529;" title="Remove">&times;</a>
+                  </span>
+                  {{/subsub_mapped_courses}}
+                  {{^subsub_has_courses}}<span class="small text-muted">None mapped</span>{{/subsub_has_courses}}
+                </div>
+                <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/competencies.php?deptid={{deptid}}&desigid={{desigid}}"
+                      class="form-inline mt-1">
+                  <input type="hidden" name="action"    value="map_subcomp_course">
+                  <input type="hidden" name="subcompid" value="{{subsub_id}}">
+                  <input type="hidden" name="sesskey"   value="{{sesskey}}">
+                  <select name="courseid" class="form-control form-control-sm mr-1" style="max-width:200px;font-size:11px;">
+                    <option value="">-- Map a course --</option>
+                    {{#course_options}}<option value="{{id}}">{{name}}</option>{{/course_options}}
+                  </select>
+                  <button type="submit" class="btn btn-sm" style="background:#ffc107;color:#212529;padding:2px 8px;font-size:11px;">
+                    <i class="fa fa-link mr-1"></i>Map
+                  </button>
+                </form>
+              </div>
+
+              {{! Inline edit form for sub-sub (hidden) }}
+              <div class="sg-edit-sub-form mt-1 ml-4" id="sg-edit-sub-form-{{subsub_id}}" style="display:none;">
+                <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/competencies.php?deptid={{deptid}}&desigid={{desigid}}" class="form-inline">
+                  <input type="hidden" name="action"   value="update_sub">
+                  <input type="hidden" name="subid"    value="{{subsub_id}}">
+                  <input type="hidden" name="sesskey"  value="{{sesskey}}">
+                  <input type="text" name="subname" class="form-control form-control-sm mr-2"
+                         value="{{subsub_name}}" required style="min-width:160px;">
+                  <button type="submit" class="btn btn-sm btn-primary mr-1">
+                    <i class="fa fa-save mr-1"></i>Save
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary sg-cancel-edit-sub"
+                          data-target="sg-edit-sub-form-{{subsub_id}}">Cancel</button>
+                </form>
+              </div>
+              {{/sub_subs}}
+
+            </div>
+            {{/sub_trees}}
+
+            {{^sub_trees}}
+            <p class="text-muted small mb-2"><i class="fa fa-info-circle mr-1"></i>No sub-competencies yet.</p>
+            {{/sub_trees}}
+
+            {{! Add sub-competency inline form }}
+            <div class="mt-2">
+              <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/competencies.php?deptid={{selected_deptid}}&desigid={{selected_desigid}}" class="form-inline">
+                <input type="hidden" name="action"  value="save_sub">
+                <input type="hidden" name="compid"  value="{{id}}">
+                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                <input type="text" name="subname" class="form-control form-control-sm mr-2"
+                       placeholder="Add sub-competency..." style="min-width:200px;">
+                <button type="submit" class="btn btn-sm btn-outline-primary">
+                  <i class="fa fa-plus mr-1"></i>Add Sub
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {{/comp_rows}}
+      {{^comp_rows}}
+      <div class="alert alert-info">No competencies yet. Add one on the left.</div>
+      {{/comp_rows}}
+    </div>
+  </div>
+  {{/has_filter}}
+  {{^has_filter}}
+  <div class="alert alert-warning">
+    <i class="fa fa-arrow-up mr-1"></i>Select a Department and Designation above to manage competencies.
+  </div>
+  {{/has_filter}}
+
+  {{! ── Edit Main Competency Modal ── }}
+  <div class="modal fade" id="sg-edit-comp-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header" style="background:#033252;color:#fff;">
+          <h5 class="modal-title"><i class="fa fa-pencil mr-2" style="color:#eb980d;"></i>Edit Competency</h5>
+          <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form method="post" id="sg-edit-comp-form">
+            <input type="hidden" name="action"   value="save_comp">
+            <input type="hidden" name="editid"   id="sg-edit-comp-editid">
+            <input type="hidden" name="sesskey"  id="sg-edit-comp-sesskey">
+            <div class="form-group">
+              <label class="font-weight-bold">Name <span class="text-danger">*</span></label>
+              <input type="text" name="name" id="sg-edit-comp-name" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="font-weight-bold">Description</label>
+              <textarea name="description" id="sg-edit-comp-description" class="form-control" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">
+              <i class="fa fa-save mr-1"></i>Save Changes
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<style>
+.sg-sub-tree + .sg-sub-tree { margin-top: 6px; }
+.btn-xs { font-size: 11px; padding: 2px 7px; line-height: 1.4; border-radius: 3px; }
+</style>
+
+<script>
+(function() {
+  var wwwroot = window.M && M.cfg ? M.cfg.wwwroot : '';
+  var sesskey = window.M && M.cfg ? M.cfg.sesskey  : '';
+
+  // Load question counts for all sub-competencies via AJAX.
+  document.querySelectorAll('[data-load-subcomp-counts]').forEach(function(el) {
+    var compid = el.getAttribute('data-load-subcomp-counts');
+    fetch(wwwroot + '/local/skillgap/admin/ajax_helper.php?action=subcomp_question_counts&compid=' + compid + '&sesskey=' + sesskey)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data && data.status === 'ok') {
+          Object.keys(data.counts).forEach(function(subcompid) {
+            var badge = document.getElementById('sg-sqc-' + subcompid);
+            if (badge) {
+              var count = data.counts[subcompid];
+              badge.textContent = count + '/5 Q';
+              badge.className = badge.className.replace(/badge-\w+/, count >= 5 ? 'badge-success' : (count > 0 ? 'badge-warning' : 'badge-secondary'));
+            }
+          });
+        }
+      })
+      .catch(function() {});
+  });
+
+  // Toggle CSV upload panel
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.sg-show-csv-upload');
+    if (btn) {
+      var compid = btn.getAttribute('data-compid');
+      var panel  = document.getElementById('sg-csv-panel-' + compid);
+      if (panel) {
+        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+      }
+    }
+  });
+
+  // Toggle inline edit form for sub/sub-sub
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.sg-edit-subcomp-btn');
+    if (btn) {
+      var id     = btn.getAttribute('data-id');
+      var form   = document.getElementById('sg-edit-sub-form-' + id);
+      if (form) {
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+      }
+    }
+  });
+
+  // Toggle inline add-sub-sub form
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.sg-add-subsub-btn');
+    if (btn) {
+      var parentsubid = btn.getAttribute('data-parentsubid');
+      var form = document.getElementById('sg-add-subsub-form-' + parentsubid);
+      if (form) {
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+      }
+    }
+  });
+
+  // Cancel edit buttons
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.sg-cancel-edit-sub, .sg-cancel-add-subsub');
+    if (btn) {
+      var target = btn.getAttribute('data-target');
+      var el = document.getElementById(target);
+      if (el) { el.style.display = 'none'; }
+    }
+  });
+
+  // Edit main competency modal
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.sg-edit-comp-btn');
+    if (btn) {
+      var id       = btn.getAttribute('data-id');
+      var name     = btn.getAttribute('data-name');
+      var desc     = btn.getAttribute('data-description') || '';
+      var deptid   = btn.getAttribute('data-deptid');
+      var desigid  = btn.getAttribute('data-desigid');
+      var sesskey  = btn.getAttribute('data-sesskey');
+      var wwwroot  = btn.getAttribute('data-wwwroot');
+
+      document.getElementById('sg-edit-comp-editid').value      = id;
+      document.getElementById('sg-edit-comp-sesskey').value     = sesskey;
+      document.getElementById('sg-edit-comp-name').value        = name;
+      document.getElementById('sg-edit-comp-description').value = desc;
+      document.getElementById('sg-edit-comp-form').action       =
+        wwwroot + '/local/skillgap/admin/competencies.php?deptid=' + deptid + '&desigid=' + desigid;
+
+      $('#sg-edit-comp-modal').modal('show');
+    }
+  });
+})();
+</script>

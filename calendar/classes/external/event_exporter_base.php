@@ -314,6 +314,7 @@ class event_exporter_base extends exporter {
         $context = $this->related['context'];
         $course = $this->related['course'];
         $values['isactionevent'] = false;
+        $values['allowredirect'] = !is_siteadmin();
         $values['iscourseevent'] = false;
         $values['iscategoryevent'] = false;
         $values['normalisedeventtype'] = $event->get_type();

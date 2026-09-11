@@ -37,7 +37,7 @@
 
 /* ── Page header ────────────────────────────────────────────────────────────── */
 .hof-page-header {
-    background: linear-gradient(135deg, var(--hof-primary) 0%, var(--hof-primary-light) 60%, #0a8fd1 100%);
+    background:#003152;
     border-radius: var(--hof-radius-lg);
     padding: 28px 32px;
     margin-bottom: 24px;
@@ -208,10 +208,10 @@
 
 .hof-filter-group {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 5px;
 }
-
+.path-local-halloffame .secondary-navigation{display: none !important;}
 .hof-filter-label {
     font-size: .75rem;
     font-weight: 700;
@@ -621,7 +621,24 @@
 
 .hof-btn-delete-award {
     margin-left: auto;
-    display: inline-flex;
+    display: contents;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1.5px solid transparent;
+    background: transparent;
+    color: var(--hof-text-muted);
+    cursor: pointer;
+    font-size: .85rem;
+    text-decoration: none !important;
+    transition: all var(--hof-transition);
+}
+.hof-btn-edit-award{
+    font-size: 13px;
+    margin-left: auto;
+    display: contents;
     align-items: center;
     justify-content: center;
     width: 30px;
@@ -846,5 +863,643 @@
     .hof-btn-delete-award { display: none !important; }
     .hof-award-card, .hof-ach-card { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
     .hof-awards-grid { grid-template-columns: 1fr 1fr; }
-    .hof-page-header { background: var(--hof-primary) !important; -webkit-print-color-adjust: exact; }
+    .hof-page-header { background: #003152 !important; -webkit-print-color-adjust: exact; }
+}
+
+/* ── Comments ─────────────────────────────────────────────────────────────── */
+.hof-comments-section {
+    border-top: 1px solid var(--hof-border);
+    background: var(--hof-surface-alt);
+    padding: 14px 16px 16px;
+}
+
+.hof-comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+    max-height: 340px;
+    overflow-y: auto;
+}
+
+.hof-comments-loading {
+    text-align: center;
+    color: var(--hof-text-muted);
+    padding: 16px 0;
+}
+
+.hof-comments-empty {
+    text-align: center;
+    color: var(--hof-text-muted);
+    font-size: .85rem;
+    padding: 8px 0;
+    margin: 0;
+}
+
+.hof-comments-error {
+    color: var(--hof-danger);
+    font-size: .85rem;
+    text-align: center;
+    margin: 0;
+}
+
+/* Single comment bubble */
+.hof-comment-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    transition: opacity .3s;
+}
+
+.hof-comment-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid var(--hof-border);
+}
+
+.hof-comment-bubble {
+    flex: 1;
+    background: var(--hof-surface);
+    border: 1px solid var(--hof-border);
+    border-radius: var(--hof-radius);
+    padding: 8px 12px;
+}
+
+.hof-comment-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+}
+
+.hof-comment-author {
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--hof-primary);
+}
+
+.hof-comment-time {
+    font-size: .75rem;
+    color: var(--hof-text-muted);
+}
+
+.hof-comment-delete-btn {
+    margin-left: auto;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--hof-text-muted);
+    font-size: .78rem;
+    padding: 2px 5px;
+    border-radius: 4px;
+    transition: all var(--hof-transition);
+    line-height: 1;
+}
+.hof-comment-delete-btn:hover {
+    color: var(--hof-danger);
+    background: rgba(192,57,43,.08);
+}
+
+.hof-comment-message {
+    margin: 0;
+    font-size: .86rem;
+    color: var(--hof-text);
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+/* Comment input form */
+.hof-comment-form {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+}
+
+.hof-comment-input {
+    flex: 1;
+    min-height: 60px;
+    resize: vertical;
+}
+
+.hof-comment-input.hof-input-error {
+    border-color: var(--hof-danger) !important;
+    box-shadow: 0 0 0 3px rgba(192,57,43,.12) !important;
+}
+
+/* Comment count on button */
+.hof-comment-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.hof-comment-count {
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--hof-text-muted);
+}
+
+/* Admin review comment thread */
+.hof-review-comments {
+    padding: 16px 24px 4px;
+    border-top: 1px solid var(--hof-border);
+    background: var(--hof-surface-alt);
+}
+
+.hof-review-comments-title {
+    font-size: .95rem;
+    font-weight: 700;
+    color: var(--hof-primary);
+    margin: 0 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ── Certificate popup overlay ────────────────────────────────────────────── */
+.hof-cert-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.72);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    backdrop-filter: blur(4px);
+}
+
+.hof-cert-overlay.hof-cert-overlay-open {
+    display: flex;
+}
+
+.hof-body-modal-open {
+    overflow: hidden;
+}
+
+.hof-cert-popup {
+    background: var(--hof-surface);
+    border-radius: var(--hof-radius-lg);
+    box-shadow: var(--hof-shadow-lg);
+    max-width: 860px;
+    width: 100%;
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: hofPopIn .22s cubic-bezier(.22,.68,0,1.2);
+}
+
+@keyframes hofPopIn {
+    from { opacity: 0; transform: scale(.92) translateY(12px); }
+    to   { opacity: 1; transform: scale(1)   translateY(0); }
+}
+
+.hof-cert-popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1.5px solid var(--hof-border);
+    background: linear-gradient(to right, rgba(3,50,82,.04), transparent);
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.hof-cert-popup-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--hof-primary);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.hof-cert-popup-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.hof-cert-popup-close {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1.5px solid var(--hof-border);
+    background: transparent;
+    color: var(--hof-text-muted);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all var(--hof-transition);
+}
+.hof-cert-popup-close:hover {
+    border-color: var(--hof-danger);
+    color: var(--hof-danger);
+    background: rgba(192,57,43,.07);
+}
+
+.hof-cert-popup-body {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    min-height: 200px;
+}
+
+.hof-cert-popup-img {
+    max-width: 100%;
+    max-height: 72vh;
+    border-radius: var(--hof-radius);
+    box-shadow: var(--hof-shadow);
+    display: block;
+    object-fit: contain;
+}
+
+.hof-cert-popup-pdf-wrap {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.hof-cert-popup-iframe {
+    width: 100%;
+    height: 65vh;
+    border: none;
+    border-radius: var(--hof-radius-sm);
+    background: var(--hof-surface-alt);
+}
+
+.hof-cert-popup-pdf-fallback {
+    text-align: center;
+    font-size: .8rem;
+    color: var(--hof-text-muted);
+    margin: 0;
+}
+.hof-cert-popup-pdf-fallback a {
+    color: var(--hof-primary);
+    font-weight: 600;
+}
+
+/* Make cert preview clickable */
+.hof-cert-clickable {
+    cursor: pointer;
+    position: relative;
+}
+.hof-cert-clickable::after {
+    content: "\f002";  /* fa-search */
+    font-family: FontAwesome;
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    background: rgba(3,50,82,.72);
+    color: #fff;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .7rem;
+    opacity: 0;
+    transition: opacity var(--hof-transition);
+}
+.hof-cert-clickable:hover::after {
+    opacity: 1;
+}
+.hof-ach-cert-wrap {
+    position: relative;
+}
+
+#page-local-halloffame-pages-manage_categories{
+    /* WRAPPER */
+.hof-admin-wrap {
+  padding: 30px;
+  background: #f4f7fb;
+  min-height: 100vh;
+}
+
+/* HEADER */
+.hof-admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.hof-admin-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #003152;
+}
+
+/* CARD */
+.hof-admin-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 25px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+/* FORM GRID */
+.hof-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 20px;
+  align-items: end;
+}
+
+.hof-form-action {
+  display: flex;
+  align-items: flex-end;
+}
+
+/* INPUT */
+.hof-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  transition: 0.3s;
+}
+
+.hof-input:focus {
+  border-color: #ec9707;
+  box-shadow: 0 0 0 2px rgba(236,151,7,0.2);
+}
+
+/* BUTTONS */
+.hof-btn-primary {
+  background: #003152;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+}
+
+.hof-btn-secondary {
+  background: #ec9707;
+  padding: 8px 14px;
+  border-radius: 8px;
+  color: #fff;
+}
+.hof-btn-secondary:hover {
+  background: #003152;
+}
+.hof-btn-danger {
+  background: #ff4d4f;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+/* TABLE */
+.hof-table-wrapper {
+  overflow-x: auto;
+}
+
+.hof-manage-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.hof-manage-table th {
+  background: #003152;
+  color: #fff;
+  padding: 12px;
+  text-align: left;
+}
+
+.hof-manage-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.hof-manage-table tr:hover {
+  background: #f9f9f9;
+}
+
+/* INLINE EDIT */
+.hof-inline-edit {
+  display: flex;
+  gap: 8px;
+}
+
+.hof-btn-icon {
+  background: #ec9707;
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+/* BADGE */
+.hof-count-badge {
+  background: #ec9707;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+/* 🔥 OVERRIDE MOODLE CONTAINER */
+#page.drawers .main-inner,
+#page-wrapper .container,
+#page-wrapper .container-fluid {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+}
+
+/* REMOVE SIDE GAPS */
+#region-main {
+    padding: 0 !important;
+}
+
+/* FULL WIDTH WRAP */
+.hof-admin-wrap {
+    width: 100%;
+    max-width: 100%;
+    padding: 30px 40px;
+    box-sizing: border-box;
+}
+.hof-admin-wrap {
+    background: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+/* Card spacing */
+.hof-admin-card {
+    margin-bottom: 30px;
+}
+
+/* Table header sticky */
+.hof-manage-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+/* EMPTY */
+.hof-empty {
+  text-align: center;
+  padding: 20px;
+  color: #999;
+}
+}
+#page-local-halloffame-pages-index{
+    .hof-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.hof-btn-view-award{
+font-size: 13px;
+    margin-left: auto;
+    display: flex-inline;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1.5px solid transparent;
+    background: transparent;
+    color: var(--hof-text-muted);
+    cursor: pointer;
+    font-size: .85rem;
+    text-decoration: none !important;
+    transition: all var(--hof-transition);
+}
+.hof-btn-view-award{border: none;
+    background: transparent;}
+.hof-modal-box {
+  background: #fff;
+  width: 800px;
+  max-width: 95%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+
+/* HEADER */
+.hof-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.hof-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #003152;
+}
+
+.hof-modal-header p {
+  margin: 0;
+  font-size: 13px;
+  color: #777;
+}
+
+/* CLOSE BUTTON */
+.hof-modal-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: #999;
+}
+
+.hof-modal-close:hover {
+  color: #ff4d4f;
+}
+
+/* BODY */
+.hof-modal-body {
+  padding: 20px;
+  text-align: center;
+}
+
+.hof-modal-body img {
+  max-width: 100%;
+  max-height: 70vh;
+  border-radius: 8px;
+}
+}
+
+/* ── Comment edit form (inline) ──────────────────────────────────────────── */
+.hof-comment-edit-form {
+    margin-top: 6px;
+}
+
+.hof-comment-edit-form .hof-comment-edit-input {
+    width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+    min-height: 56px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1.5px solid #0a8fd1;
+    font-size: 0.93rem;
+    background: #f8fafc;
+    color: #1a2330;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.hof-comment-edit-form .hof-comment-edit-input:focus {
+    border-color: #033252;
+    background: #fff;
+}
+
+.hof-comment-edit-form .hof-comment-edit-input.hof-input-error {
+    border-color: #e74c3c;
+    animation: hof-shake 0.3s ease;
+}
+
+.hof-comment-edit-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 5px;
+    justify-content: flex-end;
+}
+
+/* Edit (pencil) button in comment meta row */
+.hof-comment-edit-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #0a8fd1;
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-size: 0.82rem;
+    transition: color 0.15s, background 0.15s;
+    line-height: 1;
+}
+
+.hof-comment-edit-btn:hover {
+    color: #033252;
+    background: rgba(10, 143, 209, 0.08);
+}
+
+.hof-comment-edit-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
 }

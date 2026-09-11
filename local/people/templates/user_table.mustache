@@ -1,98 +1,188 @@
 {{!
-    This file is part of Moodle - http://moodle.org/
-
-    Moodle is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    Moodle is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+    People Plugin - User Table Template (Redesigned)
+    Moodle 5.0.2 + REMUI Theme 5
+    Brand: #003152, #ec9707
 }}
-{{!
-    @template local_sitesetting/customise
+<table class="mt-table table-people">
+    <thead>
+        <tr>
+            {{#head}}
+            <th class="people-check-col" scope="col">
+                <input type="checkbox" id="bulk-select-all" title="Select all" style="accent-color:#003152;">
+            </th>
+            <th scope="col" data-sort="firstname" data-order="{{{sortorder}}}">
+                {{#str}}fullname, local_people{{/str}}
+                {{#phsortingup}}<i class="fa fa-sort-asc sort-icon"></i>{{/phsortingup}}
+                {{#phsortingdown}}<i class="fa fa-sort-desc sort-icon"></i>{{/phsortingdown}}
+                {{#phsorting}}<i class="fa fa-sort sort-icon"></i>{{/phsorting}}
+            </th>
+            <th scope="col">{{#str}}email, local_people{{/str}}</th>
+            <th scope="col">{{#str}}dept, local_people{{/str}}</th>
+            <th scope="col">{{#str}}courseenrolled, local_people{{/str}}</th>
+            <th scope="col">{{#str}}coursecompleted, local_people{{/str}}</th>
+            {{#tenant}}
+            <th scope="col" class="tenant-col">{{#str}}multitenant, local_people{{/str}}</th>
+            {{/tenant}}
+            <th scope="col" data-sort="lastaccess" data-order="{{{sortorder}}}">
+                {{#str}}lastaccess, local_people{{/str}}
+                {{#phsortingup}}<i class="fa fa-sort-asc sort-icon"></i>{{/phsortingup}}
+                {{#phsortingdown}}<i class="fa fa-sort-desc sort-icon"></i>{{/phsortingdown}}
+                {{#phsorting}}<i class="fa fa-sort sort-icon"></i>{{/phsorting}}
+            </th>
+            <th scope="col">{{#str}}status, local_people{{/str}}</th>
+            <th scope="col">{{#str}}actions, local_people{{/str}}</th>
+            {{/head}}
+        </tr>
+    </thead>
+    <tbody>
+        {{#istablerows}}
+        <tr class="{{#issuspenduser}}people-row--suspended{{/issuspenduser}}">
 
-    Note: collapse/show functionality as well as check/uncheck functionality is 
-          developed using javascript (custom.js) file. Any change in HTML DOM 
-          structure can break these functionalities, so change cautiously.
+            {{! Checkbox }}
+            <td class="people-check-col">
+                {{#issuspenduser}}
+                <span class="usersuspended">{{{checkbox}}}</span>
+                {{/issuspenduser}}
+                {{^issuspenduser}}
+                {{{checkbox}}}
+                {{/issuspenduser}}
+            </td>
 
-    @author: 2021 Akashy Pingale (akashy.p@paradisosolution.com)
-    @paradiso
+            {{! Full Name + Avatar }}
+            <td>
+                <div class="people-user-cell">
+                    {{#userimage}}
+                    <img src="{{{userimage}}}" alt="{{{fullname}}}" class="people-user-avatar"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                    <div class="people-user-avatar-placeholder" style="display:none;">{{{initials}}}</div>
+                    {{/userimage}}
+                    {{^userimage}}
+                    <div class="people-user-avatar-placeholder">{{{initials}}}</div>
+                    {{/userimage}}
+                    <div class="people-user-name">
+                        {{#isupdateuser}}
+                        <a href="{{{isupdateuserurl}}}">
+                            {{#issuspenduser}}<span class="usersuspended">{{{fullname}}}</span>{{/issuspenduser}}
+                            {{^issuspenduser}}{{{fullname}}}{{/issuspenduser}}
+                        </a>
+                        {{/isupdateuser}}
+                        {{^isupdateuser}}
+                        {{#issuspenduser}}<span class="usersuspended">{{{fullname}}}</span>{{/issuspenduser}}
+                        {{^issuspenduser}}{{{fullname}}}{{/issuspenduser}}
+                        {{/isupdateuser}}
+                        {{#username}}<div class="people-user-username">@{{{username}}}</div>{{/username}}
+                    </div>
+                </div>
+            </td>
 
-}}
-<table class="table card-box table-people">
-  <thead>
-    <tr>
-    {{#head}}
-      <th class="header c0" scope="col">{{{checkbox}}}</th>
-      <th class="header c1" scope="col"><a href="{{{firstnameurl}}}" class="sorting">{{#str}}fullname, local_people{{/str}}{{#phsortingup}}<i class="men men-icon-phsortingup pl-1"></i>{{/phsortingup}}{{#phsortingdown}}<i class="men men-icon-phsortingdown pl-1"></i>{{/phsortingdown}}{{#phsorting}}<i class="men men-icon-phsorting pl-1"></i>{{/phsorting}}</a></th>
-      <th class="header c2" scope="col">{{#str}}email, local_people{{/str}}</th>
-      <th class="header c3" scope="col">{{#str}}dept, local_people{{/str}}</th>
-      <th class="header c7" scope="col">{{#str}}courseenrolled, local_people{{/str}}</th>
-      <th class="header c8" scope="col">{{#str}}coursecompleted, local_people{{/str}}</th>
-      {{#tenant}}
-      <th class="header c9" scope="col">{{#str}}multitenant, local_people{{/str}}</th>
-      {{/tenant}}
-      <th class="header c10" scope="col"><a href="{{{lastaccessurl}}}" class="sorting">{{#str}}lastaccess, local_people{{/str}}{{#phsortingup}}<i class="men men-icon-phsortingup pl-1"></i>{{/phsortingup}}{{#phsortingdown}}<i class="men men-icon-phsortingdown pl-1"></i>{{/phsortingdown}}{{#phsorting}}<i class="men men-icon-phsorting pl-1"></i>{{/phsorting}}</a></th>
-      <th class="header c11 lastcol" scope="col">{{#str}}status, local_people{{/str}}</th>
+            {{! Email }}
+            <td>
+                {{#issuspenduser}}<span class="usersuspended">{{{email}}}</span>{{/issuspenduser}}
+                {{^issuspenduser}}{{{email}}}{{/issuspenduser}}
+            </td>
 
-      {{/head}}
-      <!--th class="header c12 lastcol" scope="col"></th-->
-    </tr>
-  </thead>
-  <tbody>
-  {{#istablerows}}
-    <tr>
-      {{#issuspenduser}}
-      <td><span class="usersuspended">{{{checkbox}}}</span></td>
-      <td><span class="usersuspended">{{{fullname}}}</span></td>
-      <td><span class="usersuspended">{{{email}}}</span></td>
-      <td><span class="usersuspended">{{{dept}}}</span></td>
-      <td><span class="usersuspended">{{{enroll}}}</span></td>
-      <td><span class="usersuspended">{{{complete}}}</span></td>
-      {{#istenant}}<td><span class="usersuspended">{{{tenant_comp}}}</span></td>{{/istenant}}
-      <td><span class="usersuspended">{{{skill}}}</span></td>
-      <td><span class="usersuspended">{{{position}}}</span></td>
-      <td><span class="usersuspended">{{{level}}}</span></td>
-      <td><span class="usersuspended">{{{strlastaccess}}}</span></td>
-      <td class="lastcol"><span class="usersuspended">{{#suspended}}<i class="fa fa-minus-circle icon_suspend"></i>{{/suspended}}{{^suspended}}<i class="fa fa-check-circle icon_active"></i>{{/suspended}}</span>
-      {{#istenant}}
-      <span class="usersuspended"><div class="dropdown options-table">
-      <a href="#" class="btn dropdown-toggle" data-toggle="dropdown">
-          <i class="fa fa-ellipsis-v fa-fw"></i></a><div class="dropdown-menu">{{#loginasbtn}}<a href="{{{urlloginas}}}" title="" class="dropdown-item">{{#str}}loginas,local_people{{/str}}</a>{{/loginasbtn}}{{#hasloginasbtn}}<a href="{{{hasurlloginas}}}" title="{{#str}}loginas,local_people{{/str}}" class="dropdown-item">{{#str}}loginas,local_people{{/str}}</a>{{/hasloginasbtn}}{{#iseditbtn}}<a href="{{{urledit}}}" title="{{#str}}edit{{/str}}" class="dropdown-item">{{#str}}edit,local_people{{/str}}</a>{{/iseditbtn}}{{#issuspendbtn}}<a href="{{{urlsus}}}" class="dropdown-item" title="">{{{suspendstring}}}</a> {{/issuspendbtn}}{{#hasconfirmbtn}}<a href="{{{hasconfirmurl}}}" title="{{#str}}confirm{{/str}}">{{#str}}confirm{{/str}}</a>{{/hasconfirmbtn}}{{#isconfirmbtn}}
-            <a href="#" title="{{#str}}info_confirm_user,local_people{{/str}}"><i alt="{{#str}}info_confirm_user,local_people{{/str}}" class="iconsmall men men-icon-helpdesk"></i></a>{{/isconfirmbtn}}{{#isconfirmbtn}}
-            <a href="{{{confirmurl}}}" title="{{#str}}send_email_confirmation_again,local_people{{/str}}"><i alt="{{#str}}send_email_confirmation_again,local_people{{/str}}" class="iconsmall wid wid-icon-email"></i></a>{{/isconfirmbtn}}{{#isconfirmbuttn}}<a href="{{{confirmurlbtn}}}" title="{{#str}}confirm{{/str}}">{{#str}}confirm{{/str}}</a>{{/isconfirmbuttn}}{{#isconfirmbutton}}
-            <a class="dimmed_text"><i class="iconsmall fa fa-check-circle"></i></a>{{/isconfirmbutton}}</div></div>
-      </span></td>{{/istenant}}
-      
-      {{/issuspenduser}}
-      {{^issuspenduser}}
-      <td>{{{checkbox}}}</td>
-      <td>{{#isupdateuser}}<a href="{{{isupdateuserurl}}}" class="td-click">{{{fullname}}}</a>{{/isupdateuser}}{{^isupdateuser}}{{{fullname}}}{{/isupdateuser}}</td>
-      <td>{{{email}}}</td>
-      <td>{{{dept}}}</td>
-      <td>{{{enroll}}}</td>
-      <td>{{{complete}}}</td>
-      {{#istenant}}<td>{{{tenant_comp}}}</td>{{/istenant}}
-      <td>{{{strlastaccess}}}</td>
-      <td class="lastcol">{{#suspended}}<i class="fa fa-minus-circle icon_suspend"></i>{{/suspended}}{{^suspended}}<i class="fa fa-check-circle icon_active"></i>{{/suspended}}{{#istenant}}
-      
-      <div class="dropdown options-table">
-      <a href="#" class="btn dropdown-toggle" data-toggle="dropdown">
-          <i class="fa fa-ellipsis-v fa-fw "></i></a><div class="dropdown-menu">{{#loginasbtn}}<a href="{{{urlloginas}}}" title="" class="dropdown-item">{{#str}}loginas,local_people{{/str}}</a>{{/loginasbtn}}{{#hasloginasbtn}}<a href="{{{hasurlloginas}}}" title="{{#str}}loginas,local_people{{/str}}" class="dropdown-item">{{#str}}loginas,local_people{{/str}}</a>{{/hasloginasbtn}}{{#iseditbtn}}<a href="{{{urledit}}}" title="{{#str}}edit{{/str}}" class="dropdown-item">{{#str}}edit,local_people{{/str}}</a>{{/iseditbtn}}{{#issuspendbtn}}<a href="{{{urlsus}}}" class="dropdown-item" title="">{{{suspendstring}}}</a> {{/issuspendbtn}}{{#hasconfirmbtn}}<a href="{{{hasconfirmurl}}}" title="{{#str}}confirm{{/str}}">{{#str}}confirm{{/str}}</a>{{/hasconfirmbtn}}{{#isconfirmbtn}}
-            <a href="#" title="{{#str}}info_confirm_user,local_people{{/str}}"><i alt="{{#str}}info_confirm_user,local_people{{/str}}" class="iconsmall men men-icon-helpdesk"></i></a>{{/isconfirmbtn}}{{#isconfirmbtn}}
-            <a href="{{{confirmurl}}}" title="{{#str}}send_email_confirmation_again,local_people{{/str}}"><i alt="{{#str}}send_email_confirmation_again,local_people{{/str}}" class="iconsmall wid wid-icon-email"></i></a>{{/isconfirmbtn}}{{#isconfirmbuttn}}<a href="{{{confirmurlbtn}}}" title="{{#str}}confirm{{/str}}">{{#str}}confirm{{/str}}</a>{{/isconfirmbuttn}}{{#isconfirmbutton}}
-            <a class="dimmed_text"><i class="iconsmall fa fa-check-circle"></i></a>{{/isconfirmbutton}}</div></div>
-      </td>{{/istenant}}
-      
-      {{/issuspenduser}}
-      
-    </tr>
-    {{/istablerows}}
-  </tbody>
+            {{! Dept }}
+            <td>
+                {{#issuspenduser}}<span class="usersuspended">{{{dept}}}</span>{{/issuspenduser}}
+                {{^issuspenduser}}{{{dept}}}{{/issuspenduser}}
+            </td>
+
+            {{! Enrolled courses }}
+            <td>
+                {{#issuspenduser}}<span class="usersuspended">{{{enroll}}}</span>{{/issuspenduser}}
+                {{^issuspenduser}}{{{enroll}}}{{/issuspenduser}}
+            </td>
+
+            {{! Completed courses }}
+            <td>
+                {{#issuspenduser}}<span class="usersuspended">{{{complete}}}</span>{{/issuspenduser}}
+                {{^issuspenduser}}{{{complete}}}{{/issuspenduser}}
+            </td>
+
+            {{! Tenant column (optional) }}
+            {{#istenant}}
+            <td class="tenant-col">
+                {{#issuspenduser}}<span class="usersuspended">{{{tenant_comp}}}</span>{{/issuspenduser}}
+                {{^issuspenduser}}{{{tenant_comp}}}{{/issuspenduser}}
+            </td>
+            {{/istenant}}
+
+            {{! Last access }}
+            <td>
+                {{#issuspenduser}}<span class="usersuspended">{{{strlastaccess}}}</span>{{/issuspenduser}}
+                {{^issuspenduser}}{{{strlastaccess}}}{{/issuspenduser}}
+            </td>
+
+            {{! Status badge }}
+            <td>
+                {{#issuspenduser}}
+                    <span class="people-badge people-badge--suspended">
+                        <i class="fa fa-ban mr-1"></i>{{#str}}suspended, local_people{{/str}}
+                    </span>
+                {{/issuspenduser}}
+                {{^issuspenduser}}
+                    {{#suspended}}
+                    <span class="people-badge people-badge--suspended">
+                        <i class="fa fa-ban mr-1"></i>{{#str}}suspended, local_people{{/str}}
+                    </span>
+                    {{/suspended}}
+                    {{^suspended}}
+                    {{#isconfirmbtn}}
+                    <span class="people-badge people-badge--unconfirmed">
+                        <i class="fa fa-clock-o mr-1"></i>{{#str}}unconfirmed, local_people{{/str}}
+                    </span>
+                    {{/isconfirmbtn}}
+                    {{^isconfirmbtn}}
+                    <span class="people-badge people-badge--active">
+                        <i class="fa fa-check mr-1"></i>{{#str}}active, local_people{{/str}}
+                    </span>
+                    {{/isconfirmbtn}}
+                    {{/suspended}}
+                {{/issuspenduser}}
+            </td>
+
+            {{! Row actions }}
+            <td>
+                <div class="people-row-actions">
+                    {{#loginasbtn}}
+                    <a href="{{{urlloginas}}}" title="{{#str}}loginas, local_people{{/str}}" class="action-info">
+                        <i class="fa fa-sign-in"></i>
+                    </a>
+                    {{/loginasbtn}}
+                    {{#hasloginasbtn}}
+                    <a href="{{{hasurlloginas}}}" title="{{#str}}loginas, local_people{{/str}}" class="action-info">
+                        <i class="fa fa-sign-in"></i>
+                    </a>
+                    {{/hasloginasbtn}}
+                    {{#iseditbtn}}
+                    <a href="{{{urledit}}}" title="{{#str}}edit, local_people{{/str}}" class="action-primary">
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                    {{/iseditbtn}}
+                    {{#issuspendbtn}}
+                    <a href="{{{urlsus}}}" title="{{{suspendstring}}}" class="action-warning">
+                        <i class="fa fa-{{#suspended}}play{{/suspended}}{{^suspended}}pause{{/suspended}}"></i>
+                    </a>
+                    {{/issuspendbtn}}
+                    {{#isconfirmbtn}}
+                    <a href="{{{confirmurl}}}" title="{{#str}}send_email_confirmation_again, local_people{{/str}}" class="action-success">
+                        <i class="fa fa-envelope"></i>
+                    </a>
+                    {{/isconfirmbtn}}
+                    {{#hasconfirmbtn}}
+                    <a href="{{{hasconfirmurl}}}" title="{{#str}}confirm, local_people{{/str}}" class="action-success">
+                        <i class="fa fa-check"></i>
+                    </a>
+                    {{/hasconfirmbtn}}
+                    {{#isconfirmbuttn}}
+                    <a href="{{{confirmurlbtn}}}" title="{{#str}}confirm, local_people{{/str}}" class="action-success">
+                        <i class="fa fa-check-circle"></i>
+                    </a>
+                    {{/isconfirmbuttn}}
+                </div>
+            </td>
+
+        </tr>
+        {{/istablerows}}
+    </tbody>
 </table>

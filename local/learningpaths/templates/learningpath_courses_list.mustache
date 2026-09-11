@@ -1,17 +1,18 @@
+
 {{#learningpath_course_list}}
   {{#course}}
     <ul class="header lpd-courses">
-      <li class="header course-description ui-sortable-handle row">
-        <div class="col-8 col-sm-8 col-md-4 course_name">
+      <li class="header course-description ui-sortable-handle row " style="background:#003152 !important;">
+        <div class="col-8 col-sm-8 col-md-4 course_name text-light">
           <span>{{#str}}course_name, local_learningpaths{{/str}}</span>
         </div>
-          <div class="col-sm-3 credits">
+          <div class="col-sm-3 credits text-light">
             <span>{{#str}}credits, local_learningpaths{{/str}}</span>
           </div>
-            <div class="col-4 col-sm-4 col-md-3 required">
+            <div class="col-4 col-sm-4 col-md-3 required text-light">
               <span>{{#str}}required, local_learningpaths{{/str}}</span>
             </div>
-              <div class="col-sm-2 actions">
+              <div class="col-sm-2 actions text-light">
                 <span>{{#str}}actions, local_learningpaths{{/str}}</span>
               </div>
         </li>
@@ -27,13 +28,15 @@
             {{credits}}
           </div>
             <div class="col-4 col-sm-4 col-md-3 required">
-              <div class="togglebutton">
+              <div class="togglebutton" style="margin-left: 25px;">
                 {{#has_add_course_lp}}
-                <label class="switch">
-                  <input class="course-switch" type="checkbox" data-courseid="{{dataid}}" {{checked}}>
-                    <span class="slider round">
-                    </span>
-                </label>
+              <label class="switch">
+  <input class="course-switch" type="checkbox" role="switch"
+         aria-label="{{#str}}required, local_learningpaths{{/str}} - {{coursename}}"
+         data-courseid="{{dataid}}" {{checked}}>
+    <span class="slider round">
+    </span>
+</label>
                 {{/has_add_course_lp}}
               </div>
             </div>
@@ -74,4 +77,96 @@
       {{#str}}no_records, local_learningpaths{{/str}}
     </div>
   {{/course}}
+  
 {{/learningpath_course_list}}
+<style>
+/* ---------------------------------------------------------
+       Toggle switch v3 - FINAL FIX.
+       Your plugin's own css/styles.css (line ~1599) has a legacy
+       rule: body#page-local-learningpaths-view .switch { height:
+       4px !important; } - that !important cannot be beaten by
+       selector specificity, only by another !important, so every
+       declaration that rule touches must be re-asserted here with
+       !important too. Same for "display:none" on the input.
+       --------------------------------------------------------- */
+    .lp-courses-wrap #learningpath-courses-list .switch{
+      position:relative !important;
+      display:inline-block !important;
+      width:46px !important;
+      height:26px !important;   /* overrides legacy height:4px !important */
+      margin:0 !important;
+      vertical-align:middle;
+    }
+    .lp-courses-wrap #learningpath-courses-list .switch .course-switch{
+      position:absolute !important;
+      display:block !important;  /* overrides legacy display:none */
+      inset:0;
+      margin:0 !important;
+      width:100% !important;
+      height:100% !important;
+      opacity:0;
+      cursor:pointer;
+      z-index:2; /* real, focusable, clickable input - just invisible */
+    }
+    .lp-courses-wrap #learningpath-courses-list .switch .slider{
+      position:absolute !important;
+      inset:0 !important;
+      top:0 !important; left:0 !important; right:0 !important; bottom:0 !important;
+      pointer-events:none;
+      background-color:#d7dee6 !important;
+      transition:background-color .25s cubic-bezier(.4,0,.2,1);
+    }
+    .lp-courses-wrap #learningpath-courses-list .switch .slider::before{
+      content:"" !important;
+      position:absolute !important;
+      height:20px !important;
+      width:20px !important;
+      left:3px !important;
+      top:3px !important;
+      bottom:auto !important;
+      background-color:#fff !important;
+      box-shadow:0 1px 3px rgba(0,0,0,.25);
+      /* spring easing - slight overshoot then settle, like iOS/Android switches */
+      transition:transform .32s cubic-bezier(.34,1.56,.64,1),
+                 box-shadow .2s ease;
+    }
+    .lp-courses-wrap #learningpath-courses-list .switch .slider.round{border-radius:999px !important;}
+    .lp-courses-wrap #learningpath-courses-list .switch .slider.round::before{border-radius:50% !important;}
+
+    .lp-courses-wrap #learningpath-courses-list .switch .course-switch:checked ~ .slider{
+      background-color:var(--lp-orange) !important;
+    }
+    .lp-courses-wrap #learningpath-courses-list .switch .course-switch:checked ~ .slider::before{
+      transform:translateX(20px) !important;
+      box-shadow:0 2px 6px rgba(236,151,7,.45);
+    }
+
+    /* Visible, accessible focus ring (keyboard users tabbing through the table) */
+    .lp-courses-wrap #learningpath-courses-list .switch .course-switch:focus-visible ~ .slider{
+      box-shadow:0 0 0 3px rgba(236,151,7,.35) !important;
+    }
+
+    /* Pressed state - small "squeeze" so it feels tactile without a JS listener */
+    .lp-courses-wrap #learningpath-courses-list .switch .course-switch:active ~ .slider::before{
+      width:24px !important;
+    }
+    .lp-courses-wrap #learningpath-courses-list .switch .course-switch:checked:active ~ .slider::before{
+      transform:translateX(16px) !important;
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .lp-courses-wrap #learningpath-courses-list .switch .slider,
+      .lp-courses-wrap #learningpath-courses-list .switch .slider::before{
+        transition:none !important;
+      }
+    }
+    .lp-courses-wrap #learningpath-courses-list .switch .slider.round::before {
+    border-radius: 50% !important;
+    font-size: 10px !important;
+    width: 10px !important;
+    height: 10px !important;
+}
+#page-local-learningpaths-view ul#list-course {
+    margin-top: 10px;
+}
+</style>

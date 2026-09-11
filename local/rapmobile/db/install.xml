@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/rapmobile/db" VERSION="20240603"
+       COMMENT="RAP Mobile — FCM tables">
+  <TABLES>
+
+    <TABLE NAME="rapmobile_devices" COMMENT="FCM device token registry — one row per (userid, device)">
+      <FIELDS>
+        <FIELD NAME="id"          TYPE="int"  LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"/>
+        <FIELD NAME="userid"      TYPE="int"  LENGTH="10" NOTNULL="true" UNSIGNED="true"/>
+        <FIELD NAME="fcm_token"   TYPE="char" LENGTH="255" NOTNULL="true"/>
+        <FIELD NAME="platform"    TYPE="char" LENGTH="10"  NOTNULL="true" DEFAULT="android"/>
+        <FIELD NAME="app_version" TYPE="char" LENGTH="20"  NOTNULL="false"/>
+        <FIELD NAME="active"      TYPE="int"  LENGTH="1"   NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="created"     TYPE="int"  LENGTH="10"  NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="lastupdated" TYPE="int"  LENGTH="10"  NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary"   TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="uq_userid_token"   UNIQUE="true"  FIELDS="userid, fcm_token"/>
+        <INDEX NAME="idx_userid_active" UNIQUE="false" FIELDS="userid, active"/>
+      </INDEXES>
+    </TABLE>
+
+    <TABLE NAME="rapmobile_push_sent"
+           COMMENT="Tracks which notification_ids were already pushed via FCM — prevents duplicate pushes">
+      <FIELDS>
+        <FIELD NAME="id"                TYPE="int"  LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"/>
+        <FIELD NAME="userid"            TYPE="int"  LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="notification_id"   TYPE="char" LENGTH="64" NOTNULL="true"
+               COMMENT="md5 hash — matches notification_id from rapmobile_build_notification()"/>
+        <FIELD NAME="notification_type" TYPE="char" LENGTH="60" NOTNULL="false"/>
+        <FIELD NAME="timesent"          TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="uq_userid_notifid" UNIQUE="true"  FIELDS="userid, notification_id"/>
+        <INDEX NAME="idx_timesent"      UNIQUE="false" FIELDS="timesent"/>
+      </INDEXES>
+    </TABLE>
+
+  </TABLES>
+</XMLDB>

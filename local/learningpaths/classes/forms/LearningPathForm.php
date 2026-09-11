@@ -12,9 +12,7 @@ class LearningPathForm extends moodleform
         global $PAGE;
         $maxbytes='';
         $mform = $this->_form;
-       if ($mform->elementExists('general_info')) {
-    $mform->setExpanded('general_info');
-}
+        // $mform->setExpanded('general_info');
 
         // Following hidden field is important to know which form is being submit.
         $mform->addElement('hidden', 'form', "LearningPathForm");
@@ -39,7 +37,7 @@ class LearningPathForm extends moodleform
             $mform->addElement('html', html_writer::start_tag('div', array('class' => 'contentlabel col-sm-12 col-md-4 col-lg-4 col-xl-4')));
                 $mform->addElement('html', html_writer::label(get_string('startdate', 'local_learningpaths'),'id_startdate' ,array('class' => 'col-form-label  d-inline-block')));
                 $mform->addElement('html', html_writer::start_tag('div', array('class' => 'options d-inline float-right')));
-                    $mform->addElement('html', html_writer::start_tag('div', array('class' => 'btn btn-secondary p-a-0 buttonhelp',"data-container"=>"body", "data-toggle"=>"popover", "data-placement"=>"right", "data-content"=>"<div class=&quot;no-overflow&quot;><p>".get_string('startdatehelpicon', 'local_learningpaths')."</p></div> ", "data-html"=>"true", "tabindex"=>"0", "data-trigger"=>"focus")));
+                    $mform->addElement('html', html_writer::start_tag('div', array('class' => 'btn btn-secondary p-a-0 buttonhelp',"data-container"=>"body", "data-bs-container"=>"body", "data-toggle"=>"popover", "data-bs-toggle"=>"popover", "data-placement"=>"right", "data-bs-placement"=>"right", "data-content"=>"<div class=&quot;no-overflow&quot;><p>".get_string('startdatehelpicon', 'local_learningpaths')."</p></div> ", "data-bs-content"=>"<div class=&quot;no-overflow&quot;><p>".get_string('startdatehelpicon', 'local_learningpaths')."</p></div> ", "data-html"=>"true", "data-bs-html"=>"true", "tabindex"=>"0", "data-trigger"=>"focus", "data-bs-trigger"=>"focus")));
                         $mform->addElement('html', html_writer::tag('i','', array("class"=>"fa edw-icon edw-icon-Help text-info fa-fw", "aria-hidden"=>"true")));
                     $mform->addElement('html', html_writer::end_tag('div'));
  
@@ -68,7 +66,7 @@ class LearningPathForm extends moodleform
             $mform->addElement('html', html_writer::start_tag('div', array('class' => 'contentlabel col-sm-12 col-md-4 col-lg-4 col-xl-4')));
                 $mform->addElement('html', html_writer::label(get_string('enddate', 'local_learningpaths'),'id_startdate' ,array('class' => 'col-form-label  d-inline-block')));
                 $mform->addElement('html', html_writer::start_tag('div', array('class' => 'options d-inline float-right')));
-                $mform->addElement('html', html_writer::start_tag('div', array('class' => 'btn btn-secondary p-a-0 buttonhelp',"data-container"=>"body", "data-toggle"=>"popover", "data-placement"=>"right", "data-content"=>"<div class=&quot;no-overflow&quot;><p>".get_string('enddatehelpicon', 'local_learningpaths')."</p></div> ", "data-html"=>"true", "tabindex"=>"0", "data-trigger"=>"focus")));
+                $mform->addElement('html', html_writer::start_tag('div', array('class' => 'btn btn-secondary p-a-0 buttonhelp',"data-container"=>"body", "data-bs-container"=>"body", "data-toggle"=>"popover", "data-bs-toggle"=>"popover", "data-placement"=>"right", "data-bs-placement"=>"right", "data-content"=>"<div class=&quot;no-overflow&quot;><p>".get_string('enddatehelpicon', 'local_learningpaths')."</p></div> ", "data-bs-content"=>"<div class=&quot;no-overflow&quot;><p>".get_string('enddatehelpicon', 'local_learningpaths')."</p></div> ", "data-html"=>"true", "data-bs-html"=>"true", "tabindex"=>"0", "data-trigger"=>"focus", "data-bs-trigger"=>"focus")));
                         $mform->addElement('html', html_writer::tag('i','', array("class"=>"fa edw-icon edw-icon-Help text-info fa-fw", "aria-hidden"=>"true")));
                     $mform->addElement('html', html_writer::end_tag('div'));
                 $mform->addElement('html', html_writer::end_tag('div'));

@@ -1,0 +1,297 @@
+{{!
+    @template local_mydashboard/attendance
+
+    Attendance details page. Renders 5 summary cards + a sessions table.
+
+    Context variables:
+    * overall       Overall attendance percentage (int)
+    * totalsessions Number of marked sessions (int)
+    * attended      Present + self-marked (int)
+    * latepartial   Late / partial count (int)
+    * notattended   Absent count (int)
+    * hasrows       Whether there are any rows
+    * rows          [ { name, datetime, type, statuslabel, statusclass, pointsearned, pointsmax } ]
+}}
+<div class="mydash-attendance">
+
+    <div class="mda-head">
+        <h2 class="mda-title">Attendance</h2>
+        <div class="mda-crumb">My Profile &middot; Attendance</div>
+    </div>
+
+    <div class="mda-cards">
+        <div class="mda-card mda-card--green">
+            <span class="mda-ico">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+            </span>
+            <div class="mda-card__body">
+                <div class="mda-card__label">Overall Attendance</div>
+                <div class="mda-card__value">{{overall}}%</div>
+            </div>
+        </div>
+
+        <div class="mda-card mda-card--blue">
+            <span class="mda-ico">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2"/>
+                    <path d="M16 2v4M8 2v4M3 10h18"/>
+                </svg>
+            </span>
+            <div class="mda-card__body">
+                <div class="mda-card__label">Total Sessions</div>
+                <div class="mda-card__value">{{totalsessions}}</div>
+            </div>
+        </div>
+
+        <div class="mda-card mda-card--green">
+            <span class="mda-ico">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <path d="M22 4 12 14.01l-3-3"/>
+                </svg>
+            </span>
+            <div class="mda-card__body">
+                <div class="mda-card__label">Sessions Attended</div>
+                <div class="mda-card__value">{{attended}}</div>
+            </div>
+        </div>
+
+        <div class="mda-card mda-card--amber">
+            <span class="mda-ico">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 6v6l4 2"/>
+                </svg>
+            </span>
+            <div class="mda-card__body">
+                <div class="mda-card__label">Late / Partial</div>
+                <div class="mda-card__value">{{latepartial}}</div>
+            </div>
+        </div>
+
+        <div class="mda-card mda-card--red">
+            <span class="mda-ico">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M15 9l-6 6M9 9l6 6"/>
+                </svg>
+            </span>
+            <div class="mda-card__body">
+                <div class="mda-card__label">Not Attended</div>
+                <div class="mda-card__value">{{notattended}}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mda-tablewrap">
+        <table class="mda-table">
+            <thead>
+                <tr>
+                    <th class="mda-col-session">Session</th>
+                    <th class="mda-col-type">Type</th>
+                    <th class="mda-col-status">Status</th>
+                    <th class="mda-col-points mda-right">Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#rows}}
+                <tr>
+                    <td class="mda-col-session">
+                        <div class="mda-sname">{{name}}</div>
+                        <div class="mda-sdate">{{{datetime}}}</div>
+                    </td>
+                    <td class="mda-col-type mda-muted">{{type}}</td>
+                    <td class="mda-col-status">
+                        <span class="mda-badge mda-badge--{{statusclass}}">{{statuslabel}}</span>
+                    </td>
+                    <td class="mda-col-points mda-right mda-points">{{pointsearned}} / {{pointsmax}}</td>
+                </tr>
+                {{/rows}}
+                {{^hasrows}}
+                <tr>
+                    <td colspan="4" class="mda-empty">No attendance records yet.</td>
+                </tr>
+                {{/hasrows}}
+            </tbody>
+        </table>
+
+        {{#showpaging}}
+        <div class="mda-pager">
+            <div class="mda-pager__info">{{pager.summary}}</div>
+            <div class="mda-pager__ctrls">
+                {{#pager.prevdisabled}}
+                    <span class="mda-pg mda-pg--nav mda-pg--disabled">&lsaquo; Previous</span>
+                {{/pager.prevdisabled}}
+                {{^pager.prevdisabled}}
+                    <a class="mda-pg mda-pg--nav" href="{{pager.prevurl}}">&lsaquo; Previous</a>
+                {{/pager.prevdisabled}}
+
+                {{#pager.pages}}
+                    {{#active}}
+                        <span class="mda-pg mda-pg--active">{{num}}</span>
+                    {{/active}}
+                    {{^active}}
+                        <a class="mda-pg" href="{{url}}">{{num}}</a>
+                    {{/active}}
+                {{/pager.pages}}
+
+                {{#pager.nextdisabled}}
+                    <span class="mda-pg mda-pg--nav mda-pg--disabled">Next &rsaquo;</span>
+                {{/pager.nextdisabled}}
+                {{^pager.nextdisabled}}
+                    <a class="mda-pg mda-pg--nav" href="{{pager.nexturl}}">Next &rsaquo;</a>
+                {{/pager.nextdisabled}}
+            </div>
+        </div>
+        {{/showpaging}}
+    </div>
+</div>
+
+<style>
+#page-content{margin-top:20px;}
+#page-header{display:none;}
+.mydash-attendance {
+    --mda-navy:   #10243f;
+    --mda-text:   #1f2937;
+    --mda-muted:  #64748b;
+    --mda-border: #e6eaf0;
+    font-family: inherit;
+    color: var(--mda-text);
+    padding: 4px 2px 24px;
+}
+.mydash-attendance .mda-head { margin-bottom: 18px; }
+.mydash-attendance .mda-title {
+    font-size: 26px; font-weight: 700; margin: 0 0 4px; color: #0f172a;
+}
+.mydash-attendance .mda-crumb { font-size: 14px; color: var(--mda-muted); }
+
+/* ---- summary cards ---- */
+.mydash-attendance .mda-cards {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-bottom: 22px;
+}
+.mydash-attendance .mda-card {
+  display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 10px;
+    border-radius: 14px;
+    min-height: 70px;
+}
+.mydash-attendance .mda-ico {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex: 0 0 44px;
+}
+.mydash-attendance .mda-ico svg { width: 22px; height: 22px; }
+.mydash-attendance .mda-card__label { font-size: 13px; color: var(--mda-muted); margin-bottom: 4px; }
+.mydash-attendance .mda-card__value { font-size: 15px; font-weight: 700; line-height: 1; }
+
+.mydash-attendance .mda-card--green  { background: #e6f6ec; }
+.mydash-attendance .mda-card--green  .mda-ico { background: #cdeed9; color: #1f9254; }
+.mydash-attendance .mda-card--green  .mda-card__value { color: #1f9254; }
+
+.mydash-attendance .mda-card--blue   { background: #e8eefb; }
+.mydash-attendance .mda-card--blue   .mda-ico { background: #d5e0f9; color: #2f6fed; }
+.mydash-attendance .mda-card--blue   .mda-card__value { color: #2f6fed; }
+
+.mydash-attendance .mda-card--amber  { background: #fdf1dd; }
+.mydash-attendance .mda-card--amber  .mda-ico { background: #f9e4bf; color: #c77f1a; }
+.mydash-attendance .mda-card--amber  .mda-card__value { color: #c77f1a; }
+
+.mydash-attendance .mda-card--red    { background: #fbe9e9; }
+.mydash-attendance .mda-card--red    .mda-ico { background: #f6d5d5; color: #d64545; }
+.mydash-attendance .mda-card--red    .mda-card__value { color: #d64545; }
+
+/* ---- table ---- */
+.mydash-attendance .mda-tablewrap {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, .06);
+    overflow: hidden;
+}
+.mydash-attendance .mda-table { width: 100%; border-collapse: collapse; }
+.mydash-attendance .mda-table thead th {
+    background: var(--mda-navy);
+    color: #fff;
+    font-size: 14px; font-weight: 600;
+    text-align: left;
+    padding: 16px 22px;
+}
+.mydash-attendance .mda-table tbody td {
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--mda-border);
+    font-size: 15px;
+    vertical-align: middle;
+}
+.mydash-attendance .mda-table tbody tr:last-child td { border-bottom: none; }
+.mydash-attendance .mda-right { text-align: right; }
+.mydash-attendance .mda-sname { font-weight: 600; color: #0f172a; }
+.mydash-attendance .mda-sdate { font-size: 13px; color: var(--mda-muted); margin-top: 3px; }
+.mydash-attendance .mda-muted { color: var(--mda-muted); }
+.mydash-attendance .mda-points { font-weight: 700; color: #0f172a; }
+.mydash-attendance .mda-empty { text-align: center; color: var(--mda-muted); padding: 32px; }
+
+/* ---- custom pager ---- */
+.mydash-attendance .mda-pager {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap;
+    padding: 16px 22px;
+    border-top: 1px solid var(--mda-border);
+}
+.mydash-attendance .mda-pager__info { font-size: 14px; color: var(--mda-muted); }
+.mydash-attendance .mda-pager__ctrls { display: flex; align-items: center; gap: 8px; }
+.mydash-attendance .mda-pg {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 40px; height: 40px; padding: 0 12px;
+    border: 1px solid var(--mda-border); border-radius: 10px;
+    background: #fff; color: #334155;
+    font-size: 14px; font-weight: 600; text-decoration: none;
+    transition: background .15s, border-color .15s, color .15s;
+}
+.mydash-attendance a.mda-pg:hover { background: #f1f5f9; border-color: #cbd5e1; color: #0f172a; }
+.mydash-attendance .mda-pg--active {
+    background: var(--mda-navy); border-color: var(--mda-navy); color: #fff;
+}
+.mydash-attendance .mda-pg--nav { color: #64748b; }
+.mydash-attendance .mda-pg--disabled {
+    color: #cbd5e1; background: #f8fafc; cursor: default; border-color: var(--mda-border);
+}
+
+/* ---- status badges ---- */
+.mydash-attendance .mda-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 13px; font-weight: 600;
+    line-height: 1;
+}
+.mydash-attendance .mda-badge--present    { background: #e4f5ea; color: #1f9254; }
+.mydash-attendance .mda-badge--selfmarked { background: #e7eefb; color: #2f6fed; }
+.mydash-attendance .mda-badge--late       { background: #fdf1dd; color: #c77f1a; }
+.mydash-attendance .mda-badge--absent     { background: #fbe9e9; color: #d64545; }
+.mydash-attendance .mda-badge--nottaken   { background: #eef1f4; color: #64748b; }
+
+/* ---- responsive ---- */
+@media (max-width: 1100px) {
+    .mydash-attendance .mda-cards { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+    .mydash-attendance .mda-cards { grid-template-columns: 1fr; }
+    .mydash-attendance .mda-table thead { display: none; }
+    .mydash-attendance .mda-table tbody td { padding: 10px 16px; border: none; }
+    .mydash-attendance .mda-table tbody tr {
+        display: block; padding: 8px 0; border-bottom: 1px solid var(--mda-border);
+    }
+    .mydash-attendance .mda-right { text-align: left; }
+}
+</style>

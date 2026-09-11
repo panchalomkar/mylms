@@ -1,0 +1,98 @@
+{{!
+  @template local_skillgap/clusters
+  Competency clustering management and score overview.
+}}
+<div class="local-skillgap">
+  <h3 class="mb-4"><i class="fa fa-object-group mr-2 text-primary"></i>{{#str}} clusters, local_skillgap {{/str}}</h3>
+  <div class="row">
+    <div class="col-md-4 mb-4">
+      <div class="card">
+        <div class="card-header bg-white"><h6 class="mb-0"><i class="fa fa-plus-circle mr-1 text-primary"></i>{{#str}} add_cluster, local_skillgap {{/str}}</h6></div>
+        <div class="card-body">
+          <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/clusters.php" id="sg-cluster-form">
+            <input type="hidden" name="action"  value="save">
+            <input type="hidden" name="sesskey" value="{{sesskey}}">
+            <div class="form-group">
+              <label class="font-weight-bold">{{#str}} cluster_name, local_skillgap {{/str}} <span class="text-danger">*</span></label>
+              <input type="text" name="name" class="form-control" required placeholder="e.g. Core Engineering">
+            </div>
+            <div class="form-group">
+              <label class="font-weight-bold">{{#str}} description, local_skillgap {{/str}}</label>
+              <textarea name="description" class="form-control" rows="2" placeholder="Cluster description..."></textarea>
+            </div>
+            <div class="form-group">
+              <label class="font-weight-bold">{{#str}} select_competencies, local_skillgap {{/str}} <span class="text-danger">*</span></label>
+              <div class="border rounded p-2" style="max-height:200px;overflow-y:auto;">
+                {{#comp_checkboxes}}
+                <div class="form-check">
+                  <input type="checkbox" class="form-check-input sg-cluster-comp-cb" value="{{id}}" id="cc_{{id}}">
+                  <label class="form-check-label" for="cc_{{id}}">{{name}}</label>
+                </div>
+                {{/comp_checkboxes}}
+                {{^comp_checkboxes}}
+                <p class="text-muted small mb-0">No competencies found. Add competencies first.</p>
+                {{/comp_checkboxes}}
+              </div>
+              <input type="hidden" name="compids" id="sg-cluster-compids">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">
+              <i class="fa fa-save mr-1"></i>{{#str}} save, local_skillgap {{/str}}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-8 mb-4">
+      <div class="card">
+        <div class="card-header bg-white"><h6 class="mb-0">Cluster Scores</h6></div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="thead-light">
+                <tr>
+                  <th>{{#str}} cluster_name, local_skillgap {{/str}}</th>
+                  <th>Competencies</th>
+                  <th>Avg Score</th>
+                  <th>Status</th>
+                  <th>{{#str}} action, local_skillgap {{/str}}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#clusters}}
+                <tr>
+                  <td>
+                    <strong>{{name}}</strong>
+                    {{#description}}<br><small class="text-muted">{{description}}</small>{{/description}}
+                  </td>
+                  <td>
+                    <span class="badge badge-info mr-1">{{comp_count}}</span>
+                    <small class="text-muted">{{comp_names}}</small>
+                  </td>
+                  <td>
+                    <div class="progress mb-1" style="height:6px;min-width:60px;">
+                      <div class="progress-bar bg-{{cluster_badge}}" style="width:{{cluster_score}}%;"></div>
+                    </div>
+                    <span class="small font-weight-bold">{{cluster_score}}%</span>
+                  </td>
+                  <td><span class="badge badge-{{cluster_badge}}">{{cluster_status}}</span></td>
+                  <td>
+                    <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/clusters.php" class="d-inline"
+                          onsubmit="return confirm('Delete cluster?');">
+                      <input type="hidden" name="action"  value="delete">
+                      <input type="hidden" name="id"      value="{{id}}">
+                      <input type="hidden" name="sesskey" value="{{sesskey}}">
+                      <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa fa-trash"></i></button>
+                    </form>
+                  </td>
+                </tr>
+                {{/clusters}}
+                {{^clusters}}<tr><td colspan="5" class="text-center text-muted py-3">{{#str}} no_clusters, local_skillgap {{/str}}</td></tr>{{/clusters}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -324,7 +324,7 @@ if ($fromform = $mform->get_data()) { // Form submitted.\
     $DB->set_field('ilt_sessions', 'details', $data->details, array('id' => $session->id));
 
     redirect($returnurl);
-} else if ($session != null) { // Edit mode.
+}  else if ($session != null) { // Edit mode.
 
     // Set values for the form.
     $toform = new stdClass();
@@ -336,13 +336,17 @@ if ($fromform = $mform->get_data()) { // Form submitted.\
     $toform->duration = $session->duration;
     $toform->normalcost = $session->normalcost;
     $toform->discountcost = $session->discountcost;
-   if (has_capability('mod/ilt:configurecancellation', $context)) {
-    $todb->allowcancellations = isset($fromform->allowcancellations)
-        ? $fromform->allowcancellations
-        : 0;
-} else {
-    $todb->allowcancellations = 0;
-}
+
+    $todb = new stdClass();   // ✅ ADD THIS LINE — fixes the null assignment
+    $todb->id = $session->id; // good practice: carry the id along for the update
+
+    if (has_capability('mod/ilt:configurecancellation', $context)) {
+        $todb->allowcancellations = isset($fromform->allowcancellations)
+            ? $fromform->allowcancellations
+            : 0;
+    } else {
+        $todb->allowcancellations = 0;
+    }
 
     /*
     * @Author VaibhavG
@@ -351,7 +355,9 @@ if ($fromform = $mform->get_data()) { // Form submitted.\
     * @date 13Dec2018
     * @start code
     */
-        $toform->sessioninstructor = implode(',',$session->sessioninstructor);
+       $toform->sessioninstructor = is_array($session->sessioninstructor)
+    ? implode(',', $session->sessioninstructor)
+    : $session->sessioninstructor;
         $toform->sessionlocation = $session->sessionlocation;
         $toform->classroom = $session->classroom;
         $toform->bu = $session->sessioncostcenter;

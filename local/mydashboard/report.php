@@ -2,7 +2,7 @@
 require_once('../../config.php');
 require_once('lib.php');
 
-global $DB, $CFG, $USER;
+global $DB, $CFG, $USER, $PAGE, $OUTPUT;
 
 require_login();
 
@@ -39,10 +39,229 @@ $points_redeem = get_user_points_redeem();
 <!-- Theme style -->
 <link rel="stylesheet" href="external/dist/css/adminlte.min.css">
 
+<div class="gam-report-wrap">
 
+<style>
+    .gam-report-wrap {
+        --gam-primary: #003152;
+        --gam-primary-light: #0a4a78;
+        --gam-accent: #ec9707;
+        --gam-accent-light: #ffb545;
+        --gam-border: #e2e8f0;
+        --gam-bg: #f7f9fb;
+        --gam-text: #1f2d3d;
+        --gam-text-muted: #6b7a8d;
+        --gam-radius: 10px;
+
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        color: var(--gam-text);
+    }
+
+    .gam-report-wrap * { box-sizing: border-box; }
+
+    /* ---------- PAGE HEADER ---------- */
+    .gam-report-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        background: linear-gradient(135deg, var(--gam-primary) 0%, var(--gam-primary-light) 100%);
+        padding: 20px 24px;
+        border-radius: var(--gam-radius);
+        margin-bottom: 20px;
+        box-shadow: 0 4px 14px rgba(0, 49, 82, 0.18);
+    }
+
+    .gam-report-header h2 {
+        color: #ffffff;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .gam-report-header h2::before {
+        content: "";
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--gam-accent);
+        box-shadow: 0 0 0 4px rgba(236, 151, 7, 0.25);
+    }
+
+    .gam-report-header .btn-primary {
+        background: var(--gam-accent) !important;
+        border: none !important;
+        color: #ffffff !important;
+        padding: 10px 20px !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        font-size: 0.88rem !important;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 6px rgba(236, 151, 7, 0.35);
+    }
+
+    .gam-report-header .btn-primary:hover {
+        background: var(--gam-accent-light) !important;
+        transform: translateY(-1px);
+    }
+
+    /* hide the default <hr/> divider, spacing is handled by header now */
+    .gam-report-wrap hr { display: none; }
+
+    /* ---------- OUTER CONTAINER CARD ---------- */
+    .gam-report-wrap > .card.bg-white {
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+
+    /* ---------- SECTION CARDS ---------- */
+    .gam-report-wrap .card {
+        border: 1px solid var(--gam-border);
+        border-radius: var(--gam-radius) !important;
+        box-shadow: 0 2px 8px rgba(0, 49, 82, 0.06);
+        margin-bottom: 22px;
+        overflow: hidden;
+    }
+
+    .gam-report-wrap .card-header {
+        background: var(--gam-primary) !important;
+        border-bottom: none;
+        padding: 14px 20px;
+    }
+
+    .gam-report-wrap .card-header .card-title {
+        color: #ffffff !important;
+        font-size: 1rem;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .gam-report-wrap .card-header .card-title::before {
+        content: "";
+        width: 4px;
+        height: 15px;
+        background: var(--gam-accent);
+        border-radius: 2px;
+        display: inline-block;
+    }
+
+    .gam-report-wrap .card-body {
+        padding: 18px 20px;
+        background: #ffffff;
+    }
+
+    /* ---------- TABLE STYLING (kept table-bordered/table-striped classes for DataTables) ---------- */
+    .gam-report-wrap table.dataTable {
+        border-collapse: collapse !important;
+        width: 100% !important;
+        font-size: 0.86rem;
+    }
+
+    .gam-report-wrap table.dataTable thead th {
+        background: var(--gam-bg);
+        color: var(--gam-primary);
+        font-weight: 700;
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        border-bottom: 2px solid var(--gam-border) !important;
+        padding: 11px 12px !important;
+        white-space: nowrap;
+    }
+
+    .gam-report-wrap table.dataTable tbody td {
+        padding: 10px 12px !important;
+        vertical-align: middle;
+        color: var(--gam-text);
+        border-color: var(--gam-border) !important;
+    }
+
+    .gam-report-wrap table.dataTable.table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 49, 82, 0.025);
+    }
+
+    .gam-report-wrap table.dataTable tbody tr:hover {
+        background-color: rgba(236, 151, 7, 0.07) !important;
+    }
+
+    /* ---------- DATATABLES CONTROLS (search box, buttons, pagination) ---------- */
+    .gam-report-wrap .dataTables_wrapper .dataTables_filter input {
+        border: 1.5px solid var(--gam-border);
+        border-radius: 7px;
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+
+    .gam-report-wrap .dataTables_wrapper .dataTables_filter input:focus {
+        outline: none;
+        border-color: var(--gam-accent);
+        box-shadow: 0 0 0 3px rgba(236, 151, 7, 0.15);
+    }
+
+    .gam-report-wrap .dt-buttons .btn,
+    .gam-report-wrap .dataTables_wrapper .btn-secondary {
+        background: var(--gam-primary) !important;
+        border: none !important;
+        color: #ffffff !important;
+        font-size: 0.78rem !important;
+        font-weight: 600 !important;
+        border-radius: 6px !important;
+        padding: 6px 12px !important;
+        margin-right: 5px !important;
+        transition: all 0.2s ease;
+    }
+
+    .gam-report-wrap .dt-buttons .btn:hover {
+        background: var(--gam-accent) !important;
+    }
+
+    .gam-report-wrap .dataTables_wrapper .pagination .page-item.active .page-link {
+        background-color: var(--gam-accent) !important;
+        border-color: var(--gam-accent) !important;
+        color: #ffffff !important;
+    }
+
+    .gam-report-wrap .dataTables_wrapper .pagination .page-link {
+        color: var(--gam-primary);
+        border-radius: 6px;
+        margin: 0 2px;
+        border: 1px solid var(--gam-border);
+    }
+
+    .gam-report-wrap .dataTables_wrapper .pagination .page-link:hover {
+        background-color: rgba(236, 151, 7, 0.12);
+    }
+
+    /* horizontal scroll safety on small screens even with DataTables responsive extension */
+    .gam-report-wrap .table-responsive-wrap {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    /* ---------- RESPONSIVE ---------- */
+    @media (max-width: 768px) {
+        .gam-report-header {
+            padding: 16px 18px;
+        }
+        .gam-report-header h2 { font-size: 1.1rem; }
+
+        .gam-report-wrap .card-body { padding: 14px; }
+    }
+</style>
 
     <!-- Content Wrapper. Contains page content -->
-  
+
 
         <!-- Main content -->
         <div class="card bg-white p-3 card-body">
@@ -50,7 +269,13 @@ $points_redeem = get_user_points_redeem();
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-12">
-                        <a href="level/index.php" class="btn btn-primary">Point Matrix</a>
+
+                        <div class="gam-report-header">
+                            <h2>Reports</h2>
+                            <a href="level/index.php" class="btn btn-primary">Point Matrix</a>
+                        </div>
+
+                        <a href="level/index.php" class="btn btn-primary" style="display:none;">Point Matrix</a>
                         <hr/>
 
                         <div class="card">
@@ -59,6 +284,7 @@ $points_redeem = get_user_points_redeem();
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
+                                <div class="table-responsive-wrap">
                                 <table id="example1" class="table table-bordered table-striped">
                                     <thead>
                                         <tr>
@@ -82,6 +308,7 @@ $points_redeem = get_user_points_redeem();
                                     </tbody>
 
                                 </table>
+                                </div>
                             </div>
                             <!-- /.card-body -->
                         </div>
@@ -94,6 +321,7 @@ $points_redeem = get_user_points_redeem();
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
+                                <div class="table-responsive-wrap">
                                 <table id="example2" class="table table-bordered table-striped">
                                     <thead>
                                         <tr>
@@ -125,6 +353,7 @@ $points_redeem = get_user_points_redeem();
                                     </tbody>
 
                                 </table>
+                                </div>
                             </div>
                             <!-- /.card-body -->
                         </div>
@@ -137,6 +366,7 @@ $points_redeem = get_user_points_redeem();
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
+                                <div class="table-responsive-wrap">
                                 <table id="example3" class="table table-bordered table-striped">
                                     <thead>
                                         <tr>
@@ -160,6 +390,7 @@ $points_redeem = get_user_points_redeem();
                                     </tbody>
 
                                 </table>
+                                </div>
                             </div>
                             <!-- /.card-body -->
                         </div>
@@ -171,6 +402,7 @@ $points_redeem = get_user_points_redeem();
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
+                                <div class="table-responsive-wrap">
                                 <table id="example3" class="table table-bordered table-striped">
                                     <thead>
                                         <tr>
@@ -196,6 +428,7 @@ $points_redeem = get_user_points_redeem();
                                     </tbody>
 
                                 </table>
+                                </div>
                             </div>
                             <!-- /.card-body -->
                         </div>
@@ -210,9 +443,8 @@ $points_redeem = get_user_points_redeem();
         </section>
         <!-- /.content -->
         </div>
- 
 
-
+</div>
 
 <!-- ./wrapper -->
 

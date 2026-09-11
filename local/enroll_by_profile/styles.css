@@ -1,166 +1,915 @@
-#enroll_by_profile_modal .modal-header{padding: 10px;
-    background: #003152;
-h4{color: #fff;}
+/* ==========================================================================
+   Automation Hub (local_enroll_by_profile) - Theme refresh
+   Theme colours : #003152 (navy - primary) / #ec9705 (orange - accent)
+   Built for Moodle 5.0.
+
+   IMPORTANT: This file only restyles existing markup. No id/class consumed
+   by amd/src/script.js has been renamed or removed - see enrollbyprofile.mustache
+   and rules_form.mustache header comments for the full list that was checked.
+   ========================================================================== */
+
+:root {
+  --ep-navy: #003152;
+  --ep-navy-dark: #001f34;
+  --ep-navy-light: #e7edf1;
+  --ep-orange: #ec9705;
+  --ep-orange-dark: #cf8400;
+  --ep-orange-light: #fdf1dc;
+  --ep-grey-bg: #f5f7f9;
+  --ep-border: #e3e8ee;
+  --ep-text: #1f2d3a;
+  --ep-text-muted: #6b7a89;
+  --ep-radius: 14px;
+  --ep-radius-sm: 8px;
+}
+#page-local-enroll_by_profile-index .profile-field [value="moodlenetprofile"]{display: none !important;}
+#page-local-enroll_by_profile-index #page{display:  block !important;}
+#page-local-enroll_by_profile-index {
+  background: var(--ep-grey-bg);
 }
 
-#enroll_by_profile_modal .modal-header [data-dismiss="modal"]{
-color: #fff;
-font-size: 20px;
-}
-.bootbox-confirm  .bootbox-close-button {display:none;}
-.bootbox-confirm .modal-content {box-shadow: 2px 4px 20px 0px #003152;}
-#enroll_by_profile_modal .modal-header [data-dismiss="modal"]:hover{color: #fff !important;
-font-size: 20px;}
-
-#id_elements_content {
-  padding: 15px;
-  text-align: left !important;
-  max-height: 340px;
-  overflow: auto;
+/* --------------------------------------------------------------------
+   Page header / toolbar
+   -------------------------------------------------------------------- */
+#page-local-enroll_by_profile-index div.titleenrollbyprofile.row {
+  width: 100% !important;
+  background: #fff;
+  border: 1px solid var(--ep-border);
+  border-radius: var(--ep-radius);
+  padding: 18px 20px;
+  margin-bottom: 16px;
+  align-items: center;
+  box-shadow: 0 1px 2px rgba(0, 49, 82, 0.05);
 }
 
-#page-local-enroll_by_profile-index .row #rules_form .modal-dialog {
-  z-index: 999999;
-  /* width: 960px; */
-  width: 95%;
-  max-width: 772px;
+.hub-title-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
-#page-local-enroll_by_profile-index i.men-icon-add,
-#page-local-enroll_by_profile-index table i.fa {
+.hub-title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--ep-navy);
+  color: #fff;
+  font-size: 18px;
+  flex: 0 0 auto;
+}
+
+div.titleenrollbyprofile h2 {
+  display: inline-block;
+  margin-bottom: 2px;
+  margin-right: 15px;
+  color: var(--ep-navy);
+  font-weight: 700;
+  font-size: 22px;
+}
+
+.hub-subtitle {
+  margin: 0;
+  color: var(--ep-text-muted);
+  font-size: 13px;
+}
+
+#page-local-enroll_by_profile-index .titleenrollbyprofile .rules_buttons {
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.selected-count-badge {
+  color: var(--ep-navy);
+  background: var(--ep-navy-light);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 20px;
+  margin-right: 4px;
+  white-space: nowrap;
+}
+
+#page-local-enroll_by_profile-index a.rules_btn {
+  width: auto;
+  height: auto;
+  opacity: 1;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 0;
+  margin-left: 0;
+  text-align: center;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  transition: opacity .15s ease, box-shadow .15s ease;
+}
+
+#page-local-enroll_by_profile-index a.rules_btn:hover {
+  opacity: .88;
+  text-decoration: none;
+}
+
+/* Primary "+ Add Rule" button = solid navy pill */
+#page-local-enroll_by_profile-index a.add.rules_btn:not(.delete_rule_all):not(.disable_rule_all) {
+  background: var(--ep-navy);
+  color: #fff;
+}
+#page-local-enroll_by_profile-index a.add.rules_btn:not(.delete_rule_all):not(.disable_rule_all) span.text_local_enroll,
+#page-local-enroll_by_profile-index a.add.rules_btn:not(.delete_rule_all):not(.disable_rule_all) i {
+  color: #fff !important;
+}
+
+/* Secondary bulk actions (Enable/Disable, Delete) = quiet outline buttons */
+#page-local-enroll_by_profile-index a.add.delete_rule_all,
+#page-local-enroll_by_profile-index a.add.rules_btn.disable_rule_all {
+  background: #fff;
+  border: 1px solid var(--ep-border);
+}
+#page-local-enroll_by_profile-index a.add.delete_rule_all span.text_local_enroll,
+#page-local-enroll_by_profile-index a.add.rules_btn.disable_rule_all span.text_local_enroll {
+  color: var(--ep-text) !important;
+}
+#page-local-enroll_by_profile-index a.delete_rule_all span,
+#page-local-enroll_by_profile-index a.disable_rule_all span {
+  color: var(--ep-text) !important;
+}
+#page-local-enroll_by_profile-index a.add.delete_rule_all i,
+#page-local-enroll_by_profile-index a.add.rules_btn.disable_rule_all i {
+  color: var(--ep-navy) !important;
+}
+#page-local-enroll_by_profile-index a.add.delete_rule_all:hover,
+#page-local-enroll_by_profile-index a.add.rules_btn.disable_rule_all:hover {
+  border-color: var(--ep-orange);
+  background: var(--ep-orange-light);
+}
+
+#page-local-enroll_by_profile-index a.add i {
+  color: inherit !important;
+  margin-right: 6px !important;
+}
+
+/* --------------------------------------------------------------------
+   Legend banner - Keep Enrollment enabled/disabled explanation
+   -------------------------------------------------------------------- */
+.keepenroll-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.keepenroll-legend .legend-item {
+  flex: 1 1 320px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid var(--ep-border);
+  border-radius: var(--ep-radius-sm);
+  padding: 12px 14px;
+  font-size: 12.5px;
+  color: var(--ep-text-muted);
+  line-height: 1.4;
+}
+.keepenroll-legend .legend-item strong {
+  color: var(--ep-text);
+  display: inline;
+}
+.keepenroll-legend .legend-enabled i {
+  color: #1e9e5a;
+  font-size: 16px;
+  margin-top: 1px;
+}
+.keepenroll-legend .legend-disabled i {
+  color: #d64545;
+  font-size: 16px;
+  margin-top: 1px;
+}
+
+.error_notification:not(:empty) {
+  margin-bottom: 12px;
+}
+
+/* --------------------------------------------------------------------
+   Search box
+   -------------------------------------------------------------------- */
+#page-local-enroll_by_profile-index .search_rule_box {
+  position: relative;
+  margin-bottom: 16px;
+}
+#page-local-enroll_by_profile-index input#search {
+  margin-left: 0;
+  margin-bottom: 0 !important;
+  color: var(--ep-text) !important;
+  border-radius: 24px;
+  width: 100% !important;
+  text-align: left;
+  margin-top: 0 !important;
+  padding: 10px 16px;
+  border: 1px solid var(--ep-border);
+  background: #fff;
+}
+#page-local-enroll_by_profile-index input#search:focus {
+  -webkit-box-shadow: 0 0 0 3px rgba(236, 151, 5, .18);
+  box-shadow: 0 0 0 3px rgba(236, 151, 5, .18);
+  outline: none;
+  border-color: var(--ep-orange);
+}
+#page-local-enroll_by_profile-index input#search::placeholder {
+  color: #a7b3bd;
+}
+#page-local-enroll_by_profile-index i.fa.fa-search.header-txtmen.men.men-search-phx,
+#page-local-enroll_by_profile-index div.card-block i.men-search-phx {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  left: unset;
+  transform: translateY(-50%);
+  color: var(--ep-text-muted);
+  padding: 0;
+  border-radius: 0;
+}
+
+/* --------------------------------------------------------------------
+   Rule "cards" - built on top of the existing table/tr/td markup so that
+   every selector amd/src/script.js relies on keeps working untouched.
+   -------------------------------------------------------------------- */
+#page-local-enroll_by_profile-index div#rules_table div.table-responsive {
+  padding-left: 0;
+  padding-right: 0;
+  overflow: visible;
+}
+
+#mortalEngines {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Toolbar row (select-all / bulk keep-enrollment) built from the thead. */
+#mortalEngines thead tr {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: transparent;
+  border: none;
+  padding: 2px 4px 14px;
+}
+#mortalEngines thead th {
+  border: none !important;
+  padding: 0 !important;
+  background: transparent !important;
+  font-size: 12.5px;
+}
+#page-local-enroll_by_profile-index table#mortalEngines thead th {
+  border-bottom: none;
+  border-top: none;
+}
+#mortalEngines thead th.c1,
+#mortalEngines thead th.c2,
+#mortalEngines thead th.c3,
+#mortalEngines thead th.c4,
+#mortalEngines thead th.c6 {
+  display: none;
+}
+#mortalEngines thead .bulk-select-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-weight: 600;
+  color: var(--ep-text-muted);
+  cursor: pointer;
+}
+#mortalEngines thead th.rule-bulk-keepenroll {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+#mortalEngines thead th.rule-bulk-keepenroll .fa-info-circle {
+  color: var(--ep-navy);
+  cursor: help;
+}
+
+/* Card grid. */
+#mortalEngines tbody {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  width: 100%;
+}
+@media (max-width: 1100px) {
+  #mortalEngines tbody { grid-template-columns: 1fr; }
+}
+
+#mortalEngines tbody tr.lastrow {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  grid-template-areas:
+    "select header"
+    "select statement"
+    "select category"
+    "select footer";
+  background: #fff;
+  border: 1px solid var(--ep-border);
+  border-left: 4px solid var(--ep-orange);
+  border-radius: var(--ep-radius);
+  padding: 16px 18px;
+  box-shadow: 0 1px 3px rgba(0, 49, 82, .06);
+  position: relative;
+  row-gap: 10px;
+  column-gap: 12px;
+}
+#mortalEngines tbody tr.lastrow.rule-is-disabled {
+  border-left-color: #c7cdd3;
+  background: #fbfbfc;
+}
+
+#mortalEngines td {
+  display: block;
+  border: none !important;
+  padding: 0 !important;
+  vertical-align: top;
+}
+
+.rule-select-cell { grid-area: select; padding-top: 2px !important; }
+.rule-select-cell input.selectall {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--ep-navy);
   cursor: pointer;
 }
 
-#page-local-enroll_by_profile-index .row .form-control {
-  display: inline;
-  width: 100% !important;
+.rule-header-cell { grid-area: header; }
+.rule-header-top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-#page-local-enroll_by_profile-index .add-content-link i.fa {
-  font-size: 30px;
+.rule-chip {
+  display: inline-block;
+  background: var(--ep-orange-light);
+  color: var(--ep-navy);
+  font-weight: 700;
+  font-size: 13.5px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  text-transform: none;
 }
 
-#page-local-enroll_by_profile-index #rules_table i.fa {
-  font-size: 14px;
-  margin-left: 5px;
+span.ruledisable.rule-badge-disabled {
+  position: static;
+  margin-left: 0;
+  display: inline-block;
+  background: #f3d9d9;
+  color: #a12727;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  padding: 4px 10px;
+  border-radius: 20px;
 }
 
-#page-local-enroll_by_profile-index .row .modal-backdrop.fade {
-  display: none !important;
+.rule-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
 }
 
-#id_profile_field {
-  text-transform: capitalize;
+/* Enable / Disable toggle switch (kept as <a class="enable_rule|disable_rule">
+   so the existing delegated click handlers in script.js still fire). */
+a.rule-toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 21px;
+  border-radius: 21px;
+  background: #ccd3da;
+  vertical-align: middle;
+  transition: background-color .18s ease;
+  flex: 0 0 auto;
+}
+a.rule-toggle-switch:hover { text-decoration: none; }
+a.rule-toggle-switch::before {
+  content: "";
+  position: absolute;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #fff;
+  top: 2px;
+  left: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .25);
+  transition: left .18s ease;
+}
+a.rule-toggle-switch.is-on {
+  background: var(--ep-navy);
+}
+a.rule-toggle-switch.is-on::before {
+  left: 19px;
+}
+a.rule-toggle-switch.is-off {
+  background: #ccd3da;
+}
+
+.rule-kebab {
+  color: var(--ep-text-muted);
+  font-size: 15px;
+  padding: 2px 4px;
+}
+.rule-kebab:hover { color: var(--ep-navy); }
+
+.rule-collapse-toggle {
+  color: var(--ep-text-muted);
+  font-size: 12px;
+}
+
+#page-local-enroll_by_profile-index #mortalEngines .cell.c6.lastcol .dropdown-menu.show .dropdown-item,
+#page-local-enroll_by_profile-index .dropdown-menu .dropdown-item {
+  padding: 8px 16px 8px 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+}
+.dropdown-menu {
+  border-radius: 10px;
+  border: 1px solid var(--ep-border);
+  box-shadow: 0 6px 18px rgba(0, 49, 82, .12);
+  padding: 6px;
+}
+.dropdown-menu .dropdown-item.delete_rule {
+  color: #b3261e;
+}
+.dropdown-menu .dropdown-item:hover {
+  background: var(--ep-navy-light);
+  border-radius: 6px;
+}
+
+/* Rule statement box. */
+.rule-statement-cell { grid-area: statement; }
+.card-label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  color: var(--ep-text-muted);
+  margin-bottom: 4px;
+}
+.rule-statement-box {
+  background: var(--ep-navy-light);
+  color: var(--ep-navy);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.rule-category-cell { grid-area: category; }
+.rule-category-value {
+  display: inline-block;
+  font-size: 12.5px;
+  color: var(--ep-text);
+  background: #eef1f4;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+/* Footer: Selected Elements | Keep Enrollment side by side. */
+.rule-elements-cell,
+.rule-keepenroll-cell {
+  padding-top: 10px !important;
+  border-top: 1px solid var(--ep-border);
+  margin-top: 2px;
+}
+.rule-elements-cell { grid-area: footer; display: inline-block; width: 48%; vertical-align: top; }
+.rule-keepenroll-cell { grid-area: footer; display: inline-block; width: 48%; margin-left: 52%; vertical-align: top; }
+
+.rule-elements-link {
+  color: var(--ep-navy);
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+}
+.rule-elements-link:hover { text-decoration: underline; }
+
+/* Keep-enrollment toggle switch (real checkbox kept, only visually skinned). */
+.ep-toggle {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 21px;
+  margin: 0;
+  cursor: pointer;
+  vertical-align: middle;
+}
+.ep-toggle input.keepunenroll {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+.ep-toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: #ccd3da;
+  border-radius: 21px;
+  transition: background-color .18s ease;
+}
+.ep-toggle-slider::before {
+  content: "";
+  position: absolute;
+  width: 17px;
+  height: 17px;
+  left: 2px;
+  top: 2px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .25);
+  transition: left .18s ease;
+}
+.ep-toggle input.keepunenroll:checked + .ep-toggle-slider {
+  background: var(--ep-navy);
+}
+.ep-toggle input.keepunenroll:checked + .ep-toggle-slider::before {
+  left: 19px;
+}
+.ep-toggle input.keepunenroll:focus + .ep-toggle-slider {
+  box-shadow: 0 0 0 3px rgba(236, 151, 5, .3);
+}
+
+#page-local-enroll_by_profile-index .lastcol { display: none !important; }
+
+#rules_table .pagination {
+  justify-content: center;
+  margin-top: 20px;
+}
+#rules_table .pagination .page-link {
+  color: var(--ep-navy);
+  border-radius: 8px;
+  margin: 0 3px;
+  border: 1px solid var(--ep-border);
+}
+#rules_table .pagination .page-item.active .page-link {
+  background: var(--ep-navy);
+  border-color: var(--ep-navy);
+  color: #fff;
+}
+
+div#rules_table div.alert-mtlms {
+  padding: 14px 18px !important;
+  background: #fff;
+  border: 1px dashed var(--ep-border);
+  border-radius: var(--ep-radius-sm);
+  color: var(--ep-text-muted);
+}
+
+/* ==========================================================================
+   Modal - "Add A Rule" popup
+   ========================================================================== */
+div.container-fluid div#enroll_by_profile_modal .modal-dialog {
+  top: 0 !important;
+}
+#page-local-enroll_by_profile-index .row #rules_form .modal-dialog {
+  z-index: 999999;
+  width: 95%;
+  max-width: 780px;
+}
+#page-local-enroll_by_profile-index #enroll_by_profile_modal .modal-content {
+  padding: 0 !important;
+  border-radius: var(--ep-radius);
+  overflow: hidden;
+  border: none;
+  box-shadow: 0 20px 50px rgba(0, 31, 52, .25);
+}
+#enroll_by_profile_modal .modal-header {
+  padding: 18px 22px;
+  background: var(--ep-navy);
+  border-radius: 0 !important;
+  border-bottom: none;
+}
+#enroll_by_profile_modal .modal-header h4 {
+  color: #fff;
+  font-weight: 700;
+}
+#page-local-enroll_by_profile-index .modal-header .modal-title {
+  font-size: 17px;
+  font-weight: 700;
+  text-transform: none;
+  float: left;
+  color: #fff;
+}
+#enroll_by_profile_modal .modal-header [data-dismiss="modal"] {
+  color: #fff;
+  opacity: .85;
+  font-size: 20px;
+}
+#enroll_by_profile_modal .modal-header [data-dismiss="modal"]:hover {
+  color: #fff !important;
+  opacity: 1;
+  font-size: 20px;
+}
+#page-local-enroll_by_profile-index #enroll_by_profile_modal .modal-header .close {
+  top: 0;
+  opacity: .85;
+}
+#page-local-enroll_by_profile-index #enroll_by_profile_modal .modal-header .close:hover {
+  opacity: 1;
 }
 
 #page-local-enroll_by_profile-index .row #rules_form .modal-body {
   display: inline-block;
   font-size: 14px;
+  padding: 22px;
+  background: #fbfcfd;
+  width: 100%;
 }
 
-#page-local-enroll_by_profile-index #content_input_element #dp-component input {
-  font-size: 12px;
-  border-radius: 0;
-  box-shadow: none;
-  border: 1px solid #e9e9e9;
-  transition-duration: .5s;
-  display: inline !important;
-  width: 100% !important;
-  color: #000;
-  height: 31px !important;
-  padding: 10px !important;
-}
-
-#content_input_element {
-  margin-top: 0px;
-}
-
-#id_content_title {
+#enroll_by_profile_modal .alert-danger {
   display: none;
+  border-radius: 10px;
 }
 
-#rules_table table td:first-child {
-  text-transform: capitalize;
+#id_conditions_content {
+  padding: 4px 2px;
+  text-align: left !important;
+  max-height: 320px;
+  overflow-y: auto;
+  border-bottom: none;
+}
+#page-local-enroll_by_profile-index #enroll_by_profile_modal #id_conditions_content {
+  margin: 0;
 }
 
-#page-local-enroll_by_profile-index a.add i.men-icon-add {
-  margin-top: 4px;
-  font-size: 18px !important;
+#page-local-enroll_by_profile-index #enroll_by_profile_modal .row.condition-item {
+  margin: 0 0 14px;
+  border: 1px solid var(--ep-border) !important;
+  border-radius: var(--ep-radius-sm);
+  background: #fff;
+  padding: 4px 0;
+  box-shadow: 0 1px 2px rgba(0, 49, 82, .04);
 }
-
-#page-local-enroll_by_profile-index a.add div.tooltip.left {
-  top: 2px !important;
+#page-local-enroll_by_profile-index #enroll_by_profile_modal .row.boolop {
+  margin: 6px 0;
+  text-align: center;
 }
-
-#page-local-enroll_by_profile-index a.add div.tooltip.left div.tooltip-arrow {
-  top: 38% !important;
-}
-
-#page-local-enroll_by_profile-index a.close i.wid-icon-close-x {
-  font-size: 10px;
-  font-weight: 900;
-}
-
-#page-local-enroll_by_profile-index #region-main {
-  padding-top: 0 !important;
-}
-
-#page-local-enroll_by_profile-index div#rules_table div.table-responsive {
-  padding-left: 15px;
-  padding-right: 15px;
+#page-local-enroll_by_profile-index #enroll_by_profile_modal .row.boolop .label.boolopstch {
+  display: inline-block;
+  background: var(--ep-orange-light);
+  color: var(--ep-orange-dark);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: .04em;
+  padding: 3px 12px;
+  border-radius: 12px;
 }
 
 #page-local-enroll_by_profile-index label.contant-contains {
-  margin-bottom: 0px;
-  padding-bottom: 0px;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
-
+#page-local-enroll_by_profile-index .row.condition-item label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ep-text-muted);
+  text-transform: none;
+}
 #page-local-enroll_by_profile-index label.category_type span {
   margin-right: 0 !important;
   width: 100%;
   display: block;
+  margin-bottom: 4px;
 }
 
-#page-local-enroll_by_profile-index button#saveelements {
-  margin-left: 5px;
-  border-radius: 5px !important;
+#page-local-enroll_by_profile-index .row .form-control,
+#page-local-enroll_by_profile-index #enroll_by_profile_modal select,
+#page-local-enroll_by_profile-index #enroll_by_profile_modal input[type="text"] {
+  display: inline;
+  width: 100% !important;
+  border: 1px solid var(--ep-border);
+  border-radius: 8px;
+  font-size: 13.5px;
+  color: var(--ep-text);
+  height: 38px;
+  box-shadow: none;
+}
+#page-local-enroll_by_profile-index .row .form-control:focus {
+  border-color: var(--ep-orange);
+  box-shadow: 0 0 0 3px rgba(236, 151, 5, .18);
+  outline: none;
 }
 
-#page-local-enroll_by_profile-index #content_input_element .input-group{
-    flex-wrap: initial !important;
-}
-#page-local-enroll_by_profile-index .ui-widget.ui-widget-content{
-    z-index: 9999  !important;
-}
-#page-local-enroll_by_profile-index #content_input_element div label{
-    display: flex;
-}
-
-#page-local-enroll_by_profile-index #enroll_by_profile_modal .modal-footer{
-  display: block !important;
+#page-local-enroll_by_profile-index #content_input_element #dp-component input {
+  font-size: 12px;
+  border-radius: 8px;
+  box-shadow: none;
+  border: 1px solid var(--ep-border);
+  transition-duration: .2s;
+  display: inline !important;
+  width: 100% !important;
+  color: var(--ep-text);
+  height: 38px !important;
   padding: 10px !important;
+}
+#content_input_element { margin-top: 0; }
+#id_content_title { display: none; }
+
+#page-local-enroll_by_profile-index a.btn.btn-sm.btn-primary.btn-add-cond,
+#page-local-enroll_by_profile-index #enroll_by_profile_modal .btn-add-cond {
+  border-radius: 20px !important;
+  background: var(--ep-navy);
+  border-color: var(--ep-navy);
+  color: #fff;
+  font-weight: 600;
+  padding: 8px 18px;
+}
+#page-local-enroll_by_profile-index #enroll_by_profile_modal .btn-add-cond:hover {
+  background: var(--ep-navy-dark);
+  border-color: var(--ep-navy-dark);
+}
+#page-local-enroll_by_profile-index #enroll_by_profile_modal .btn-add-cond span.title {
+  font-size: 12.5px !important;
+  line-height: 2 !important;
+}
+#page-local-enroll_by_profile-index #enroll_by_profile_modal .add_condition_button {
+  width: 100%;
+  margin: 4px 0 18px;
   text-align: center;
+  justify-content: center;
+}
+#page-local-enroll_by_profile-index #enroll_by_profile_modal .add_condition_button .btn-add-cond {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
 }
 
-#page-local-enroll_by_profile-index #enroll_by_profile_modal .modal-footer label{
+#page-local-enroll_by_profile-index .rule_statement { margin: 4px 2px 16px !important; }
+#page-local-enroll_by_profile-index #enroll_by_profile_modal .rule_statement { margin: 4px 0 16px; }
+div#rules_table div.rule_statement,
+.rule_statement .muted-text {
+  background: var(--ep-navy-light);
+  color: var(--ep-navy);
+  border-radius: 8px;
+  padding: 6px 10px;
+  display: inline-block;
+  font-size: 12.5px;
+  margin: 2px 4px 2px 0 !important;
+}
+
+#page-local-enroll_by_profile-index #enroll_by_profile_modal #category-type-div {
+  margin: 4px 0 0;
+  background: #fff;
+  border: 1px solid var(--ep-border);
+  border-radius: var(--ep-radius-sm);
+  padding: 12px 14px;
+}
+#page-local-enroll_by_profile-index #enroll_by_profile_modal #category-type-div label.category_type span:nth-of-type(1) {
+  margin-right: 0;
+  color: var(--ep-text);
+  font-weight: 700;
+  text-transform: none;
+  font-size: 13px;
+}
+
+div.rulelist#id_elements_content {
+  padding: 14px 16px;
+  text-align: left !important;
+  max-height: 500px !important;
+  overflow: auto;
+  border-left: 1px solid var(--ep-border);
+  font-size: 14px;
+  background: #fff;
+  border-radius: var(--ep-radius-sm);
+}
+#id_elements_content h3 { margin-bottom: 20px !important; font-size: 15px; color: var(--ep-navy); }
+
+#page-local-enroll_by_profile-index .modal-body .rulelist #search_cat {
+  float: none;
+  width: 100% !important;
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  height: 36px;
+  border-radius: 20px;
+  border: 1px solid var(--ep-border);
+  padding: 6px 14px;
+}
+#page-local-enroll_by_profile-index input#search_cat {
+  position: relative !important;
+  margin: 0 0 12px !important;
+  max-width: 100% !important;
+  z-index: 9;
+  top: 0 !important;
+}
+
+#page-local-enroll_by_profile-index .modal-body .conditional-html { padding: 5px; }
+#page-local-enroll_by_profile-index .modal-body .conditional-html span:nth-of-type(1) { margin-right: 20px; }
+#page-local-enroll_by_profile-index div.modal-body div.contant-contains span#id_content_title { padding-left: 15px; }
+
+#page-local-enroll_by_profile-index div.conditional_actions,
+#page-local-enroll_by_profile-index #enroll_by_profile_modal div[id^="conditional_actions"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+#page-local-enroll_by_profile-index .btn.btn-lg.btn-white.btn-delete.pull-right {
+  margin-top: 0;
+  color: #b3261e;
+  border: none;
+  background: transparent;
+}
+#page-local-enroll_by_profile-index div.conditional_actions a.btn-delete {
+  margin-top: 0 !important;
+  padding-left: 6px !important;
+}
+#page-local-enroll_by_profile-index #enroll_by_profile_modal .form-checkbox {
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  padding-top: 0;
+  max-width: 100% !important;
+}
+#page-local-enroll_by_profile-index #enroll_by_profile_modal .form-checkbox input {
+  margin-left: 5px;
+  margin-top: 0;
+  float: none;
+  accent-color: var(--ep-navy);
+}
+#page-local-enroll_by_profile-index input[name="negated"] {
+  float: none !important;
+  accent-color: var(--ep-navy);
+}
+#page-local-enroll_by_profile-index label.form-checkbox span.mar_left_display {
+  width: auto !important;
+  color: var(--ep-text-muted);
+  font-size: 12px;
+}
+#page-local-enroll_by_profile-index .contant-contains .form-checkbox.form-normal.form-icon-text.form-plms.col-md-6.pull-right.pl-0 {
+  margin-top: 0;
+}
+#page-local-enroll_by_profile-index .row.condition-item label.category_type span#id_input_role_shortname_label {
+  display: none !important;
+}
+
+/* Modal footer / buttons */
+#page-local-enroll_by_profile-index #enroll_by_profile_modal .modal-footer {
+  display: flex !important;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 22px !important;
+  background: #fff;
+  border-top: 1px solid var(--ep-border);
+  text-align: right;
+}
+#page-local-enroll_by_profile-index #enroll_by_profile_modal .modal-footer label {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-
-#id_elements_content h3{
-  margin-bottom: 39px !important;
+#page-local-enroll_by_profile-index button#saveelements {
+  margin-left: 0;
+  border-radius: 22px !important;
+  background: var(--ep-navy);
+  border-color: var(--ep-navy);
+  padding: 10px 26px;
+  font-weight: 700;
+}
+#page-local-enroll_by_profile-index button#saveelements:hover {
+  background: var(--ep-navy-dark);
+  border-color: var(--ep-navy-dark);
+}
+#page-local-enroll_by_profile-index .modal-footer button.close_lms_mod {
+  border: 1px solid var(--ep-border);
+  border-radius: 22px !important;
+  background: #fff;
+  color: var(--ep-text);
+  padding: 10px 22px;
+  font-weight: 600;
+}
+#page-local-enroll_by_profile-index .modal-footer button.close_lms_mod:hover {
+  border-color: var(--ep-orange);
+  color: var(--ep-orange-dark);
 }
 
-#id_conditions_content {
-  padding: 15px;
-  text-align: left !important;
-  max-height: 280px;
-  overflow-y: scroll;
-}
-
-
-#page-local-enroll_by_profile-index .card-block div.loader{
+/* Loader overlay inside modal */
+#page-local-enroll_by_profile-index .card-block div.loader {
   z-index: 1111;
   display: none;
   width: 69px;
@@ -170,344 +919,85 @@ font-size: 20px;}
   left: 55%;
   padding: 2px;
 }
-
-#page-local-enroll_by_profile-index .card-block div.loader i{
-  font-size: 30px;
-}
-
-#page-local-enroll_by_profile-index .titleenrollbyprofile > .col-sm-12 {
-  display: inline-flex;
-}
-
-#page-local-enroll_by_profile-index input#search {
-  margin-left: 0;
-  margin-bottom: 25px !important;
-  color: #465b65 !important;
-  border-radius: 25px;
-  width: 100% !important;
-  text-align: left;
-  margin-top: 0 !important;
-}
-#page-local-enroll_by_profile-index a.add {
-  margin-left: 10px;
-}
-#page-local-enroll_by_profile-index input#search:focus 
-{
-  -webkit-box-shadow: 0 1px 5px 0 rgba(27,162,221,.9);
-  box-shadow: 0 1px 5px 0 rgba(27,162,221,.9);
-  outline: none;
-  border-color: #87d0f0;
-}
-#page-local-enroll_by_profile-index input#search::placeholder {
-  color: #ced4da;
-}
-#page-local-enroll_by_profile-index table#mortalEngines thead  th{
-    font-size: 13px !important;
-    font-weight: 600 !important;
-    vertical-align: middle !important;
-    border-bottom: 1px solid #D5D5D5;
-    border-top: 1px solid #d5d5d5;
-}
-
-#page-local-enroll_by_profile-index div#id_conditions_content {
-  border-bottom: 1px solid #f5f5f5;
-}
-
-#page-local-enroll_by_profile-index #enroll_by_profile_modal .modal-body .row.condition-item {
-  border: none !important;
-}
-#page-local-enroll_by_profile-index div.conditional_actions {
-  display: inline-flex;
-}
-#page-local-enroll_by_profile-index #enroll_by_profile_modal .form-checkbox{
-  margin-top: 5px;/*20px*/
-  display: flex;
-  padding-top: 5px;/*15px*/
-  max-width: 100% !important;
-}
-#page-local-enroll_by_profile-index #enroll_by_profile_modal .form-checkbox input{ 
-  margin-left: 5px;
-  margin-top: 2px;
-  float: right;
-}
-
-#page-local-enroll_by_profile-index #enroll_by_profile_modal .btn-add-cond span.title{
-  font-size: 12px !important;
-  line-height: 2 !important; 
-}
-#page-local-enroll_by_profile-index div.conditional_actions a.btn-delete{
-  margin-top: 22px !important;
-  padding-left: 6px !important;;
-}
-#page-local-enroll_by_profile-index .rule_statement{
-  margin-left: 25px !important;
-  margin-top: 10px !important;
-}
-#page-local-enroll_by_profile-index a.rules_btn {
-    /*top: 123px;
-    left: 1230px;
-    width: 115px;*/
-    width: auto;
-    height: 34px;
-    opacity: 1;
-    padding: 8px 18px;
-    font-size: 13px;
-    cursor: pointer;
-    display: inline-block;
-    margin-bottom: 10px;
-    text-align: center;
-}
-#page-local-enroll_by_profile-index span.text_local_enroll{
-       color: #fff;
-/*       padding: 8px 14px 1px 1px;*/
-     }
-#page-local-enroll_by_profile-index a.add i{
-       color: #fff !important;
-        margin-right: 8px !important;
-/*       margin: 12px 0px 7px 17px;*/
-     }
-#page-local-enroll_by_profile-index div.card-block i.men-search-phx{
-         position: absolute;
-         top: 5px;
-         right: 21px;
-         color: #fff;
-         border-radius: 14px;
-         padding: 7px;
-         left: unset;
-        }
-
-#page-local-enroll_by_profile-index .generaltable tbody tr{
-        background-color: #fff !important;
-      }
-
-#page-local-enroll_by_profile-index .generaltable thead th.header.c0 {
-    width: 10px !important;
-}
-
-#page-local-enroll_by_profile-index .generaltable tbody tr td.lastcol {
-    display: flex !important;
-}
-#page-local-enroll_by_profile-index  a.delete_rule_all span,a.disable_rule_all span{
-      color : #000 !important;
-     }
-#page-local-enroll_by_profile-index #page{display:  block !important;}
- #page-local-enroll_by_profile-index label.form-checkbox span.mar_left_display {
-    width: 100% !important;
-}
-#page-local-enroll_by_profile-index input#search_cat {
-    position: relative !important;
-    margin-left: 103px;
-    max-width: 179px !important;
-    z-index: 9;
-    margin-right: 0px !important;
-    top: 35px !important;
-}
-
-#page-local-enroll_by_profile-index div.modal-body div#conditional_actions1{
-  width: 96px !important;
-}
-#page-local-enroll_by_profile-index a.btn.btn-sm.btn-primary.btn-add-cond {
-    border-radius: 5px !important;
-}
-
-#page-local-enroll_by_profile-index .modal-footer button.close_lms_mod {
-    border: none;
-    border-radius: 5px !important;
-}
-#page-local-enroll_by_profile-index div.rulelist {
-  max-height: 500px !important;
-  border-left: 1px solid #dee2e6;
-  font-size: 14px;
-}
-#page-local-enroll_by_profile-index .modal-header .modal-title {
-    font-size: 14px;
-    font-weight: 600;
-    text-transform: none;
-    float: left;
-}
-#page-local-enroll_by_profile-index select#selected_tenant{
-    margin-left: 100px;
-    margin-top: -44px;
-    position: absolute;
-    width: 196px !important;
-  }
-#page-local-enroll_by_profile-index .titleenrollbyprofile .rules_buttons {
-    text-align: right;
-}
-#page-local-enroll_by_profile-index #enroll_by_profile_modal .modal-header .close {
-    top: 0px;
-    opacity: 0.8;
-}
-#page-local-enroll_by_profile-index #enroll_by_profile_modal .modal-header .close:hover{
-    opacity: 0.5;
-}
-#page-local-enroll_by_profile-index a.close i.wid-icon-close-x {
-    font-size: 12px;
-    font-weight: 900;
-    opacity: 1;
-}
-
-#page-local-enroll_by_profile-index table#mortalEngines span.ruledisable {
-    position: absolute;
-    margin-left: -59px;
-}
-
-
-#page-local-enroll_by_profile-index div.titleenrollbyprofile.row{
-  width: 99% !important;
-}
-
-#page-local-enroll_by_profile-index .Get_title{
-  font-size: 16px;
-  left: -30px;
-  position: relative;
-  top: 8px;
-}
-.showicon{
-  display: block;
-}
-.hideicon{
+#page-local-enroll_by_profile-index .card-block div.loader i { font-size: 30px; color: var(--ep-navy); }
+#enroll_by_profile_modal .add-rule-loader-modal {
   display: none;
 }
-
-div.container-fluid div#enroll_by_profile_modal .modal-dialog {
-  top: 0 !important;
+#enroll_by_profile_modal .add-rule-loader-modal .loader-box {
+  text-align: center;
+  padding: 30px;
+  color: var(--ep-navy);
 }
 
-/*moved from scss to here*/
-div.titleenrollbyprofile{
-  margin-bottom: 10px;
+.bootbox-confirm .bootbox-close-button { display: none; }
+.bootbox-confirm .modal-content { box-shadow: 2px 4px 20px 0 rgba(0, 49, 82, .35); border-radius: var(--ep-radius); }
+.bootbox-confirm .modal-header { background: var(--ep-navy); }
+.bootbox-confirm .modal-header .modal-title { color: #fff; }
+.bootbox-confirm .btn-primary {
+  background: var(--ep-navy);
+  border-color: var(--ep-navy);
 }
 
-div.titleenrollbyprofile h2{
-  display: inline-block;
-  margin-bottom: 0px;
-  margin-right: 15px;
+/* --------------------------------------------------------------------
+   Misc / carried over from the original stylesheet
+   -------------------------------------------------------------------- */
+#page-local-enroll_by_profile-index i.men-icon-add,
+#page-local-enroll_by_profile-index table i.fa {
+  cursor: pointer;
 }
-
-div#rules_table div.alert-mtlms{
-  
-    padding-left: 0px !important;
-    padding-top: 3px !important;
-  
+#page-local-enroll_by_profile-index .add-content-link i.fa {
+  font-size: 30px;
+  color: var(--ep-navy);
 }
-
-#page-local-enroll_by_profile-index div.modal-body div.contant-contains span#id_content_title{
- 
-  padding-left: 15px;
-
-}
-  
-#page-local-enroll_by_profile-index  div#rules_table table tbody i.wid-editicon{
-
-  margin-right: 4px;
-
-}
-/*scss end*/
-#page-local-enroll_by_profile-index .btn.btn-lg.btn-white.btn-delete.pull-right{
-  margin-top:-11px;
-}
-#page-local-enroll_by_profile-index input[name="negated"]{
-  float: left !important;
-}
-#page-local-enroll_by_profile-index .row.condition-item label.category_type span#id_input_role_shortname_label{
+#page-local-enroll_by_profile-index .row .modal-backdrop.fade {
   display: none !important;
 }
-#page-local-enroll_by_profile-index .search_rule_box #search{
-  width: 100% !important; padding: 10px;
+#id_profile_field {
+  text-transform: capitalize;
 }
-#page-local-enroll_by_profile-index #done_alert{
+#page-local-enroll_by_profile-index a.add i.men-icon-add {
+  margin-top: 4px;
+  font-size: 18px !important;
+}
+#page-local-enroll_by_profile-index a.add div.tooltip.left { top: 2px !important; }
+#page-local-enroll_by_profile-index a.add div.tooltip.left div.tooltip-arrow { top: 38% !important; }
+#page-local-enroll_by_profile-index a.close i.wid-icon-close-x {
+  font-size: 12px;
+  font-weight: 900;
+  opacity: 1;
+}
+#page-local-enroll_by_profile-index #region-main { padding-top: 0 !important; }
+#page-local-enroll_by_profile-index button#saveelements { margin-left: 5px; }
+#page-local-enroll_by_profile-index #content_input_element .input-group { flex-wrap: initial !important; }
+#page-local-enroll_by_profile-index .ui-widget.ui-widget-content { z-index: 9999 !important; }
+#page-local-enroll_by_profile-index #content_input_element div label { display: flex; }
+#page-local-enroll_by_profile-index select#selected_tenant {
+  margin-left: 100px;
+  margin-top: -44px;
+  position: absolute;
+  width: 196px !important;
+}
+.showicon { display: block; }
+.hideicon { display: none; }
+#page-local-enroll_by_profile-index #rules_table i.fa.hideicon { display: block; }
+div#rules_table div.alert-mtlms {
+  padding-left: 14px !important;
+  padding-top: 3px !important;
+}
+#page-local-enroll_by_profile-index div#rules_table table tbody i.wid-editicon { margin-right: 4px; }
+#page-local-enroll_by_profile-index .search_rule_box #search { width: 100% !important; padding: 10px; }
+#page-local-enroll_by_profile-index #done_alert {
   display: none;
+  border-radius: var(--ep-radius-sm);
 }
-#page-local-enroll_by_profile-index #done_alert #label_notify{
-  color:black;
-  font-size:20px;
+#page-local-enroll_by_profile-index #done_alert #label_notify {
+  color: var(--ep-text);
+  font-size: 16px;
 }
-#page-local-enroll_by_profile-index .add-content-link{
-  margin-left: -15px;
-  width: 750px;
+#page-local-enroll_by_profile-index .add-content-link {
+  margin-left: 0;
+  width: 100%;
   margin: auto;
-}
-#page-local-enroll_by_profile-index .modal-body .rulelist #search_cat{
-  float:right;
-  margin-right: 300px;
-  font-size: 14px;
-  height: 36px;
-}
-#page-local-enroll_by_profile-index .modal-body .conditional-html{
-  padding: 5px;
-}
-#page-local-enroll_by_profile-index .modal-body .conditional-html span:nth-of-type(1){
-  margin-right: 30px;
-}
-#page-local-enroll_by_profile-index #enroll_by_profile_modal .alert-danger{
-  display: none;
-}
-#page-local-enroll_by_profile-index #enroll_by_profile_modal #id_conditions_content{
-  margin: 0;
-}
-#page-local-enroll_by_profile-index #enroll_by_profile_modal .add_condition_button{
-  width: 50%;
-  margin: 5px 0;
-}
-#page-local-enroll_by_profile-index #enroll_by_profile_modal .modal-content {padding: 0px !important;}
-#enroll_by_profile_modal .modal-header {
-    border-radius: 7px !important;
-}
-#page-local-enroll_by_profile-index #enroll_by_profile_modal .add_condition_button .btn-add-cond{
-  margin-left: 81px; 
-  margin-top:25px;
-}
-#page-local-enroll_by_profile-index #enroll_by_profile_modal .rule_statement{
-  margin: 5px 0;
-}
-#page-local-enroll_by_profile-index #enroll_by_profile_modal #category-type-div{
-  margin: 20px 0;
-}
-#page-local-enroll_by_profile-index #enroll_by_profile_modal #category-type-div label.category_type span:nth-of-type(1){
-  margin-right: 30px;
-}
-#page-local-enroll_by_profile-index #enroll_by_profile_modal .row.boolop{
-  margin: 5px 20px 5px;
-}
-#page-local-enroll_by_profile-index #enroll_by_profile_modal .row.condition-item{
-  margin: 0; 
-  border: solid 1px #ccc; 
-  border-radius: 19px;
-}
-#page-local-enroll_by_profile-index #enroll_by_profile_modal .row.condition-item div.col-md-12.contant-contains:nth-of-type(1),
-#page-local-enroll_by_profile-index #enroll_by_profile_modal .row.condition-item div.col-md-12.contant-contains:nth-of-type(2){
-  padding: 8px;
-}
-#page-local-enroll_by_profile-index #enroll_by_profile_modal .row.condition-item div.col-md-12.contant-contains:nth-of-type(3){
-  padding: 0px;
-}
-#page-local-enroll_by_profile-index .row.condition-item div.col-md-12.contant-contains:nth-of-type(1) label,
-#page-local-enroll_by_profile-index .row.condition-item div.col-md-12.contant-contains:nth-of-type(2) label{
-  padding: 5px;
-}
-#page-local-enroll_by_profile-index .row.condition-item div.col-md-12.contant-contains:nth-of-type(2) label.col-md-12.category_type span{
-  margin-right: 30px;
-}
-#page-local-enroll_by_profile-index .contant-contains .form-checkbox.form-normal.form-icon-text.form-plms.col-md-6.pull-right.pl-0{
-  margin-top:0px;
-}
-#page-local-enroll_by_profile-index a.add.delete_rule_all, #page-local-enroll_by_profile-index a.add.rules_btn.disable_rule_all{
-  background: #F0F2F5;
-  
-}
-#page-local-enroll_by_profile-index a.add.delete_rule_all i, #page-local-enroll_by_profile-index a.add.rules_btn.disable_rule_all i{
-color: #000 !important;
-}
-div#id_elements_content {
-  padding-left: 45px;
-}
-#page-local-enroll_by_profile-index i.fa.fa-search.header-txtmen.men.men-search-phx {
-    position: absolute;
-    top: 7px;
-    right: 21px;
-    padding: 7px;
-    left: unset;
 }
 .men {
   display: inline-block;
@@ -521,12 +1011,9 @@ div#id_elements_content {
   display: flex;
   position: relative;
 }
-#page-local-enroll_by_profile-index #mortalEngines .cell.c6.lastcol .dropdown-menu.show .dropdown-item {
-  padding: 0.5rem 1.5rem 0.5rem 0.5rem;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-#page-local-enroll_by_profile-index #rules_table i.fa.hideicon {
-  display: block;
+#page-local-enroll_by_profile-index .Get_title {
+  font-size: 16px;
+  /* left: -30px; */
+  position: relative;
+  top: 8px;
 }

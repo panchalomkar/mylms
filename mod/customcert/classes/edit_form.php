@@ -242,6 +242,11 @@ class edit_form extends \moodleform {
 
         // Check if there are elements to add.
         if ($elements = $DB->get_records('customcert_elements', array('pageid' => $page->id), 'sequence ASC')) {
+                        echo '<style>
+.generaltable.elementstable .lastcol{
+    display: block !important;
+}
+</style>';
             // Get the total number of elements.
             $numelements = count($elements);
             // Create a table to display these elements.

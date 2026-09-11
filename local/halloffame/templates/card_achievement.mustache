@@ -1,10 +1,9 @@
-{{! local_halloffame/card_achievement — v2 social feed }}
-<div class="hof-ach-card" data-id="{{id}}">
+{{! local_halloffame/card_achievement — v3 with comments + cert popup }}
+<div class="hof-ach-card" data-id="{{id}}" data-type="achievement">
 
   {{! Header: avatar + earned message }}
   <div class="hof-ach-header">
     <div class="hof-ach-avatar-ring">
-      {{! PROFILE IMAGE FIX: rendered from $OUTPUT->user_picture() in PHP }}
       {{{userpicture}}}
     </div>
     <div class="hof-ach-header-text">
@@ -30,17 +29,27 @@
     {{#fileurl}}
     <div class="hof-ach-cert-wrap">
       {{#fileisimage}}
-      <img src="{{{fileurl}}}" class="hof-ach-cert-img" alt="Certificate for {{title}}"/>
+     <img src="{{{fileurl}}}"
+     class="hof-ach-cert-img hof-cert-clickable"
+     data-fileurl="{{{fileurl}}}"
+     data-title="{{title}}"
+     data-fileisimage="1"
+     data-canmanage="{{#canmanage}}1{{/canmanage}}{{^canmanage}}0{{/canmanage}}"
+/>
       {{/fileisimage}}
       {{^fileisimage}}
-      <a href="{{{fileurl}}}" class="hof-ach-cert-link" target="_blank" rel="noopener noreferrer">
+     <div class="hof-ach-cert-link hof-cert-clickable"
+     data-fileurl="{{{fileurl}}}"
+     data-title="{{title}}"
+     data-fileisimage="0"
+     data-canmanage="{{#canmanage}}1{{/canmanage}}{{^canmanage}}0{{/canmanage}}">
         <div class="hof-cert-pdf-icon">
           <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
         </div>
         <span class="hof-cert-pdf-label">Certificate</span>
         <span class="hof-cert-pdf-sub">PDF</span>
-        <i class="fa fa-download hof-cert-pdf-dl" aria-hidden="true"></i>
-      </a>
+        <i class="fa fa-search hof-cert-pdf-dl" aria-hidden="true"></i>
+      </div>
       {{/fileisimage}}
     </div>
     {{/fileurl}}
@@ -68,7 +77,7 @@
   </div>
   {{/notes}}
 
-  {{! Like action }}
+  {{! Like + comment actions }}
   <div class="hof-card-actions">
     <button class="hof-like-btn{{#userliked}} hof-liked{{/userliked}}"
             data-id="{{id}}" data-type="achievement"
@@ -77,6 +86,42 @@
       <i class="fa fa-heart{{^userliked}}-o{{/userliked}}" aria-hidden="true"></i>
       <span class="hof-like-count">{{likecount}}</span>
     </button>
+
+    <button class="hof-comment-btn hof-action-btn"
+            data-id="{{id}}" data-type="achievement"
+            data-commentcount="{{commentcount}}"
+            aria-label="{{#str}}comments,local_halloffame{{/str}}">
+      <i class="fa fa-comment-o" aria-hidden="true"></i>
+      <span class="hof-comment-count">{{commentcount}}</span>
+    </button>
+      {{#canmanage}}
+ 
+    <a href="{{deleteurl}}"
+       class="hof-btn-delete-ach hof-action-btn"
+       onclick="return confirm('Delete this achievement?');"
+       title="{{#str}}delete,local_halloffame{{/str}}"
+       aria-label="{{#str}}deleteachievement,local_halloffame{{/str}}">
+      <i class="fa fa-trash-o" aria-hidden="true"></i>
+    </a>
+    {{/canmanage}}
+  </div>
+
+  {{! Comments section (hidden by default, toggled by JS) }}
+  <div class="hof-comments-section" id="hof-comments-achievement-{{id}}" style="display:none;">
+    <div class="hof-comments-list" id="hof-comments-list-achievement-{{id}}">
+      {{! intentionally empty — AJAX-populated on toggle }}
+    </div>
+    <div class="hof-comment-form">
+      <textarea class="hof-comment-input hof-input hof-textarea"
+                placeholder="{{#str}}writeacomment,local_halloffame{{/str}}"
+                rows="2"
+                data-id="{{id}}" data-type="achievement"></textarea>
+      <button class="hof-comment-submit hof-btn hof-btn-sm hof-btn-primary"
+              data-id="{{id}}" data-type="achievement">
+        <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
+        {{#str}}postcomment,local_halloffame{{/str}}
+      </button>
+    </div>
   </div>
 
 </div>

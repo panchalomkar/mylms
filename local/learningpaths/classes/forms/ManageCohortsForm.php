@@ -15,8 +15,8 @@ class ManageCohortsForm extends moodleform
         $mform->addElement('hidden', 'form', "ManageCohortsForm");
 
         // Form definition.
-        $cohorts = $this->_customdata['cohorts'];
-$cohorts = is_array($cohorts) ? $cohorts : [];
+        $cohorts = $this->_customdata['cohorts'] ?? [];
+
         $mform->addElement('html', html_writer::start_tag('div', array('class' => 'content-search')));
             $mform->addElement('html', html_writer::start_tag('div', array('class' => 'row searchbox-add')));
                 $mform->addElement('html', html_writer::start_tag('div', array('class' => 'col-sm-12')));
@@ -128,7 +128,7 @@ $cohorts = is_array($cohorts) ? $cohorts : [];
      * @since  26-11-2019
      * @paradiso
     */
-    public function get_companyname_label_lp($cohortid ,$lpid){
+   public function get_companyname_label_lp($cohortid ,$lpid){
         global $DB;
 
         $mform = $this->_form;
@@ -138,7 +138,10 @@ $cohorts = is_array($cohorts) ? $cohorts : [];
         if($lp->companyid > 0){
             return false;
         }else{
-           
+            if (!$DB->get_manager()->table_exists('company_cohorts')) {
+                return $companylabel;
+            }
+
             $record = $DB->get_record('company_cohorts', ['cohortid' => $cohortid]);
             if($record){ 
                 $companyname = $DB->get_record('company', ['id' => $record->companyid]);

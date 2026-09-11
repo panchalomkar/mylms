@@ -464,7 +464,7 @@ function local_incourse_render_forum_discussion($id) {
     $discussion = $DB->get_record('forum_discussions', ['id' => $id], '*', MUST_EXIST);
     $forum = $DB->get_record('forum', ['id' => $discussion->forum], '*', MUST_EXIST);
     $course = $DB->get_record('course', ['id' => $forum->course], '*', MUST_EXIST);
-
+ $cm = get_coursemodule_from_instance('forum', $forum->id, $forum->course, false, MUST_EXIST);
     $context = context_module::instance($discussion->forum);
     $PAGE->set_context($context);
     $PAGE->set_url('/local/incourse/fetch_discussion.php', ['id' => $id]);

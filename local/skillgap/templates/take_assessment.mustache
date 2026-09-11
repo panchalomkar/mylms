@@ -1,0 +1,92 @@
+{{!
+  @template local_skillgap/take_assessment
+  Assessment-taking page. Questions grouped by competency.
+  Each answer radio saves via AJAX (skillgap.js save_response).
+  Submit button POSTs to page controller which calls compute_scores().
+}}
+<div class="local-skillgap">
+
+  <div class="card mb-3 bg-primary text-white">
+    <div class="card-body py-3 d-flex align-items-center justify-content-between flex-wrap">
+      <div>
+        <h4 class="mb-1 text-white">{{assessment_title}}</h4>
+        {{#is_adaptive}}
+        <span class="badge badge-warning"><i class="fa fa-magic mr-1"></i>Adaptive mode — weak competencies only</span>
+        {{/is_adaptive}}
+      </div>
+      <div class="text-white-50 small">{{total_q}} questions total</div>
+    </div>
+  </div>
+
+  <div class="progress mb-4" style="height:8px;">
+    <div class="progress-bar bg-warning" id="sg-progress-bar" style="width:0%;transition:width .3s;"></div>
+  </div>
+
+  <form method="post" action="{{{wwwroot}}}/local/skillgap/user/assessment.php?id={{assessmentid}}" id="sg-take-assessment-form">
+    <input type="hidden" name="action"    value="submit">
+    <input type="hidden" name="attemptid" value="{{attemptid}}">
+    <input type="hidden" name="sesskey"   value="{{sesskey}}">
+
+    {{#comp_blocks}}
+    <div class="card mb-4">
+      <div class="card-header" style="background:#033252;color:#fff;">
+        <div class="d-flex align-items-center justify-content-between flex-wrap">
+          <h5 class="mb-0 text-white">
+            <i class="fa fa-star mr-2" style="color:#eb980d;"></i>{{compname}}
+          </h5>
+          <span class="badge badge-light text-dark small">
+            {{#is_sub_level}}<i class="fa fa-sitemap mr-1"></i>{{comp_type_label}}{{/is_sub_level}}
+            {{^is_sub_level}}<i class="fa fa-circle mr-1" style="color:#eb980d;"></i>Main Competency{{/is_sub_level}}
+          </span>
+        </div>
+      </div>
+      <div class="card-body">
+        {{#questions}}
+        <div class="mb-4 pb-3 border-bottom sg-question-block" id="sg-q-{{id}}">
+          {{! Competency metadata tag per question }}
+          <div class="mb-2">
+            <span class="badge badge-light border small mr-1" style="color:#033252;">
+              <i class="fa fa-tag mr-1"></i>{{comp_name}}
+            </span>
+            {{#has_comp_type}}<span class="badge badge-light border small" style="color:#6c757d;">{{comp_type}}</span>{{/has_comp_type}}
+          </div>
+          <p class="font-weight-medium mb-3">
+            <span class="badge badge-secondary mr-2">Q</span>{{text}}
+          </p>
+          <div class="sg-options">
+            {{#options}}
+            <div class="mb-2">
+              <label class="d-flex align-items-start p-3 border rounded sg-option-label" style="cursor:pointer;" for="opt-{{id}}">
+                <input type="radio"
+                       id="opt-{{id}}"
+                       name="sg_q{{questionid}}"
+                       value="{{id}}"
+                       class="sg-answer-radio mr-3 mt-1"
+                       data-attemptid="{{attemptid}}"
+                       data-questionid="{{questionid}}"
+                       style="flex-shrink:0;">
+                <span><strong class="mr-2">{{letter}}.</strong>{{text}}</span>
+              </label>
+            </div>
+            {{/options}}
+          </div>
+        </div>
+        {{/questions}}
+      </div>
+    </div>
+    {{/comp_blocks}}
+
+    {{^comp_blocks}}
+    <div class="alert alert-warning">
+      <i class="fa fa-info-circle mr-2"></i>No questions found for this assessment. Please contact your administrator.
+    </div>
+    {{/comp_blocks}}
+
+
+    <div class="d-flex justify-content-end mt-2 mb-4">
+  <button type="submit" class="btn btn-success btn-lg" id="sg-submit-btn">
+    <i class="fa fa-check-circle mr-2"></i>Submit Assessment
+  </button>
+</div>
+  </form>
+</div>

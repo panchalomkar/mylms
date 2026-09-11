@@ -1,0 +1,591 @@
+/**
+ * Learning Paths - Visual Redesign Layer (Moodle 5.0)
+ * ----------------------------------------------------
+ * This stylesheet does NOT change any plugin logic or functionality.
+ * It is a pure, additive presentation layer loaded on top of the
+ * existing /css/styles.css. It is scoped under html.lp-ui-v2 (a class
+ * added by custom-ui/js/learningpaths-enhance.js) so it can never leak
+ * onto other Moodle pages and can be disabled instantly by removing
+ * that class or by not loading this file.
+ *
+ * Brand palette:
+ *   --lp-primary : #003152  (deep navy)
+ *   --lp-accent  : #ec9707  (amber)
+ */
+
+html.lp-ui-v2 {
+  --lp-primary:        #003152;
+  --lp-primary-600:     #063f68;
+  --lp-primary-500:     #0a5c8f;
+  --lp-primary-400:     #0e6d9e;
+  --lp-primary-100:     #e7eef3;
+  --lp-primary-050:     #f3f7fa;
+
+  --lp-accent:          #ec9707;
+  --lp-accent-600:      #d78a06;
+  --lp-accent-500:      #ffab24;
+  --lp-accent-100:      #fff1d6;
+  --lp-accent-050:      #fff8ea;
+
+  --lp-success:         #1f9d63;
+  --lp-success-100:     #e2f6ec;
+  --lp-danger:          #e0473f;
+  --lp-danger-100:      #fdeceb;
+
+  --lp-ink:             #14232f;
+  --lp-ink-soft:        #4c6273;
+  --lp-border:          #e3e9ee;
+  --lp-surface:         #ffffff;
+  --lp-bg:              #f4f7fa;
+
+  --lp-radius-sm:       8px;
+  --lp-radius-md:       14px;
+  --lp-radius-lg:       20px;
+  --lp-radius-pill:     999px;
+
+  --lp-shadow-sm:  0 1px 2px rgba(0, 49, 82, 0.06), 0 1px 1px rgba(0, 49, 82, 0.04);
+  --lp-shadow-md:  0 8px 24px rgba(0, 49, 82, 0.10), 0 2px 6px rgba(0, 49, 82, 0.06);
+  --lp-shadow-lg:  0 24px 60px rgba(0, 49, 82, 0.22), 0 6px 18px rgba(0, 49, 82, 0.10);
+
+  --lp-ease:       cubic-bezier(.22, 1, .36, 1);
+  --lp-ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.lp-ui-v2 * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
+/* ============================================================
+   0. Global page canvas
+   ============================================================ */
+html.lp-ui-v2 body.path-local-learningpaths,
+html.lp-ui-v2 .plms-learningpaths {
+  background: var(--lp-bg);
+  padding: 10px;
+    border-radius: 10px;
+}
+
+html.lp-ui-v2 .lpt-name a,
+html.lp-ui-v2 a.settings-learning-path,
+html.lp-ui-v2 a.delete-learning-path {
+  transition: color .18s var(--lp-ease), transform .18s var(--lp-ease);
+}
+
+/* ============================================================
+   1. Icon system (SVG icons injected by learningpaths-enhance.js
+      land in these wrappers)
+   ============================================================ */
+html.lp-ui-v2 .lp-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+}
+html.lp-ui-v2 .lp-icon svg { width: 100%; height: 100%; display: block; }
+
+html.lp-ui-v2 .lp-modal-title-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: var(--lp-radius-sm);
+  background: linear-gradient(145deg, var(--lp-accent-500), var(--lp-accent));
+  color: #fff;
+  margin-right: .6rem;
+  box-shadow: 0 4px 10px rgba(236, 151, 7, .35);
+}
+html.lp-ui-v2 .lp-modal-title-icon svg { width: 18px; height: 18px; }
+
+/* Recolor Font Awesome glyphs already shipped by the plugin, brand-aligned */
+html.lp-ui-v2 .fa,
+html.lp-ui-v2 [class*="fa-"] {
+  transition: transform .18s var(--lp-ease), color .18s var(--lp-ease);
+}
+html.lp-ui-v2 a.settings-learning-path .fa,
+html.lp-ui-v2 #add-cohorts-lp .fa,
+html.lp-ui-v2 #add-courses-lp .fa,
+html.lp-ui-v2 #add-users-lp .fa,
+html.lp-ui-v2 .new-button .fa {
+  color: currentColor;
+}
+html.lp-ui-v2 a.delete-learning-path .fa,
+html.lp-ui-v2 .delete-course-learning-path .fa,
+html.lp-ui-v2 .wid-deleteicon {
+  color: var(--lp-danger);
+}
+html.lp-ui-v2 a:hover .fa {
+  transform: translateY(-1px) scale(1.08);
+}
+
+/* ============================================================
+   2. Buttons
+   ============================================================ */
+html.lp-ui-v2 .btn {
+  border-radius: var(--lp-radius-sm);
+  font-weight: 600;
+  letter-spacing: .01em;
+  padding: .55rem 1.1rem;
+  transition: transform .16s var(--lp-ease), box-shadow .16s var(--lp-ease), background-color .16s var(--lp-ease);
+  position: relative;
+  overflow: hidden;
+}
+html.lp-ui-v2 .btn:active { transform: translateY(1px) scale(.98); }
+
+html.lp-ui-v2 .btn-primary,
+html.lp-ui-v2 .new-button.btn-primary {
+  background: linear-gradient(135deg, var(--lp-primary-400), var(--lp-primary));
+  border-color: var(--lp-primary);
+  box-shadow: var(--lp-shadow-sm);
+}
+html.lp-ui-v2 .btn-primary:hover,
+html.lp-ui-v2 .new-button.btn-primary:hover {
+  background: linear-gradient(135deg, var(--lp-primary), var(--lp-primary-600));
+  box-shadow: 0 10px 22px rgba(0, 49, 82, .28);
+  transform: translateY(-2px);
+}
+html.lp-ui-v2 .btn-primary:focus-visible,
+html.lp-ui-v2 .new-button.btn-primary:focus-visible {
+  outline: 3px solid var(--lp-accent-100);
+  outline-offset: 2px;
+}
+
+html.lp-ui-v2 .btn-secondary { background: #fff; border-color: var(--lp-border); color: var(--lp-primary); }
+html.lp-ui-v2 .btn-secondary:hover { border-color: var(--lp-accent); color: var(--lp-accent-600); transform: translateY(-1px); }
+
+/* Ripple effect element injected on click by learningpaths-enhance.js */
+html.lp-ui-v2 .lp-ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  background: rgba(255, 255, 255, .55);
+  pointer-events: none;
+  animation: lp-ripple-anim .55s var(--lp-ease) forwards;
+}
+@keyframes lp-ripple-anim {
+  to { transform: scale(2.6); opacity: 0; }
+}
+
+/* ============================================================
+   3. Search + toolbar
+   ============================================================ */
+html.lp-ui-v2 .search-course-learning .searchbox { position: relative; }
+html.lp-ui-v2 .search-course-learning .input-group {
+  background: var(--lp-surface);
+  border-radius: var(--lp-radius-pill);
+  box-shadow: var(--lp-shadow-sm);
+  overflow: hidden;
+  border: 1px solid var(--lp-border);
+  transition: box-shadow .2s var(--lp-ease), border-color .2s var(--lp-ease);
+}
+html.lp-ui-v2 .search-course-learning .input-group:focus-within {
+  border-color: var(--lp-accent);
+  box-shadow: 0 0 0 4px var(--lp-accent-100);
+}
+html.lp-ui-v2 .search-course-learning .form-control {
+  border: none;
+  box-shadow: none;
+  background: #fff;
+  padding-left: .25rem;
+}
+html.lp-ui-v2 .search-course-learning .i-search {
+  color: var(--lp-primary);
+}
+html.lp-ui-v2 .search-course-learning .input-group-btn button {
+  background: transparent;
+  border: none;
+  padding: 0 .85rem;
+}
+
+/* ============================================================
+   4. Learning path list / rows (animated entrance + hover lift)
+   ============================================================ */
+html.lp-ui-v2 .title_lp_index {
+  background: var(--lp-primary);
+  color: #fff;
+  border-radius: var(--lp-radius-md) var(--lp-radius-md) 0 0;
+  padding: .85rem 1rem;
+  margin: 1rem 0 0;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: .78rem;
+  letter-spacing: .06em;
+}
+
+html.lp-ui-v2 .plms-learningpath {
+  background: var(--lp-surface);
+  border: 1px solid var(--lp-border);
+  border-top: none;
+  padding: .95rem 1rem;
+  margin: 0 !important;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(14px);
+  animation: lp-row-in .5s var(--lp-ease) forwards;
+  transition: background-color .2s var(--lp-ease), box-shadow .2s var(--lp-ease), transform .2s var(--lp-ease);
+}
+html.lp-ui-v2 .plms-learningpath:hover {
+  background: var(--lp-primary-050);
+  box-shadow: inset 3px 0 0 var(--lp-accent);
+  transform: translateX(2px);
+}
+html.lp-ui-v2 .plms-learningpath:last-child { border-radius: 0 0 var(--lp-radius-md) var(--lp-radius-md); }
+
+@keyframes lp-row-in {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+html.lp-ui-v2 .lpt-name a { color: var(--lp-primary); font-weight: 600; }
+html.lp-ui-v2 .lpt-name a:hover { color: var(--lp-accent-600); }
+
+html.lp-ui-v2 .learningpaths-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--lp-radius-sm);
+  margin-right: .3rem;
+  color:var(--lp-primary-050) !important;
+  background: var(--lp-primary);
+}
+html.lp-ui-v2 .learningpaths-actions a:hover { background: var(--lp-accent-100); transform: translateY(-2px); }
+
+/* Create / add button row */
+html.lp-ui-v2 .create-buttons.cbtn_lp { display: flex; justify-content: flex-end; }
+
+/* ============================================================
+   5. Tabs (learning path detail view)
+   ============================================================ */
+html.lp-ui-v2 .nav-tabs {
+  border-bottom: 2px solid var(--lp-accent);
+  gap: .25rem;
+}
+html.lp-ui-v2 .nav-tabs .nav-link {
+  border: none;
+  border-radius: var(--lp-radius-sm) var(--lp-radius-sm) 0 0;
+  color: var(--lp-ink-soft);
+  font-weight: 600;
+  padding: .65rem 1.1rem;
+  position: relative;
+  transition: color .18s var(--lp-ease), background-color .18s var(--lp-ease);
+}
+html.lp-ui-v2 .nav-tabs .nav-link::after {
+  content: "";
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: -2px;
+  height: 3px;
+  border-radius: var(--lp-radius-pill);
+  transform: scaleX(0);
+  transition: transform .22s var(--lp-ease-spring);
+}
+html.lp-ui-v2 .nav-tabs .nav-link:hover { color: var(--lp-primary); background: var(--lp-primary-050); }
+html.lp-ui-v2 .nav-tabs .nav-link.active {
+  color: var(--lp-primary);
+  background: var(--lp-accent);
+  box-shadow: var(--lp-shadow-sm);
+}
+html.lp-ui-v2 .nav-tabs .nav-link.active::after { transform: scaleX(1); }
+
+html.lp-ui-v2 .tab-pane {
+  animation: lp-fade-in .35s var(--lp-ease);
+}
+@keyframes lp-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   6. Tables / course-user-cohort lists inside tabs
+   ============================================================ */
+html.lp-ui-v2 table.lp-table,
+html.lp-ui-v2 .learningpath-courses-list table,
+html.lp-ui-v2 .learningpath-users-list table,
+html.lp-ui-v2 .learningpath-cohorts-list table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  background: var(--lp-surface);
+  border-radius: var(--lp-radius-md);
+  overflow: hidden;
+  box-shadow: var(--lp-shadow-sm);
+}
+html.lp-ui-v2 table.lp-table thead th {
+  background: var(--lp-primary-100);
+  color: var(--lp-primary);
+  text-transform: uppercase;
+  font-size: .72rem;
+  letter-spacing: .05em;
+  padding: .7rem .9rem;
+}
+html.lp-ui-v2 table.lp-table tbody tr {
+  transition: background-color .16s var(--lp-ease);
+}
+html.lp-ui-v2 table.lp-table tbody tr:hover { background: var(--lp-primary-050); }
+html.lp-ui-v2 table.lp-table tbody td { padding: .65rem .9rem; border-top: 1px solid var(--lp-border); }
+
+/* Badges used for "required" / status pills */
+html.lp-ui-v2 .badge,
+html.lp-ui-v2 .lp-badge {
+  border-radius: var(--lp-radius-pill);
+  font-weight: 600;
+  padding: .3em .7em;
+}
+html.lp-ui-v2 .badge-required,
+html.lp-ui-v2 .lp-badge-required { background: var(--lp-accent-100); color: var(--lp-accent-600); }
+html.lp-ui-v2 .badge-optional,
+html.lp-ui-v2 .lp-badge-optional { background: var(--lp-primary-100); color: var(--lp-primary); }
+
+/* Toggle switches (switchery) accent recolor */
+html.lp-ui-v2 .switchery,
+html.lp-ui-v2 .switch-lp { transition: background-color .2s var(--lp-ease); }
+
+/* ============================================================
+   7. Pagination
+   ============================================================ */
+html.lp-ui-v2 .pagination_lp .page_num select,
+html.lp-ui-v2 .count_select select {
+  border-radius: var(--lp-radius-sm);
+  border: 1px solid var(--lp-border);
+  padding: .3rem .6rem;
+}
+html.lp-ui-v2 .pagination a,
+html.lp-ui-v2 .pagination .page-link {
+  border-radius: var(--lp-radius-sm) !important;
+  margin: 0 .15rem;
+  color: var(--lp-primary);
+  border-color: var(--lp-border);
+}
+html.lp-ui-v2 .pagination .active .page-link,
+html.lp-ui-v2 .pagination a.active {
+  background: var(--lp-primary);
+  border-color: var(--lp-primary);
+  color: #fff;
+}
+
+/* ============================================================
+   8. MODALS - "perfected" version
+   ============================================================
+   Applies to: #largeModal (create LP), learningpath_popup_standart
+   instances (cohorts/users/courses/prerequisites popups),
+   #myModal-videopopup, and dynamically generated bootbox dialogs
+   (delete confirmations). All are plain Bootstrap modal markup, so
+   this is 100% presentational and never touches trigger logic.
+*/
+html.lp-ui-v2 .modal-backdrop {
+  background: rgba(2, 18, 31, 0.55);
+  backdrop-filter: blur(2px);
+}
+html.lp-ui-v2 .modal-backdrop.show { opacity: 1; }
+
+html.lp-ui-v2 .modal .modal-dialog {
+  transition: transform .32s var(--lp-ease-spring), opacity .28s var(--lp-ease);
+  transform: translateY(-24px) scale(.96);
+  opacity: 0;
+}
+html.lp-ui-v2 .modal.show .modal-dialog { transform: translateY(0) scale(1); opacity: 1; }
+
+html.lp-ui-v2 .modal-content {
+  border: none;
+  border-radius: var(--lp-radius-lg);
+  box-shadow: var(--lp-shadow-lg);
+  overflow: hidden;
+}
+
+html.lp-ui-v2 .modal-header {
+  background: linear-gradient(120deg, var(--lp-primary) 0%, var(--lp-primary-600) 60%, var(--lp-primary-400) 100%);
+  color: #fff;
+  border: none;
+  padding: 7px !important;
+  align-items: center;
+}
+#page-local-learningpaths-view #courses-popup-content{    margin-top: 10px !important;
+    margin-bottom: 10px !important;}
+html.lp-ui-v2 .modal-header::after {
+  /* subtle accent underline */
+  content: "";
+  position: absolute;
+}
+#page-local-learningpaths-view #courses-popup-content #fitem_id_submitbutton {
+    padding-top: 12px !important;}
+html.lp-ui-v2 .modal-title {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 1.08rem;
+  color: #fff !important;
+  margin: 0;
+}
+
+html.lp-ui-v2 .modal-header .close,
+html.lp-ui-v2 .modal-header .btn-close {
+  color: #fff;
+  opacity: .85;
+  background: rgba(255, 255, 255, .12);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: none;
+  transition: transform .22s var(--lp-ease-spring), background-color .18s var(--lp-ease), opacity .18s var(--lp-ease);
+  margin-left: auto;
+}
+html.lp-ui-v2 .modal-header .close:hover,
+html.lp-ui-v2 .modal-header .btn-close:hover {
+  opacity: 1;
+  background: var(--lp-accent);
+  transform: rotate(90deg);
+}
+html.lp-ui-v2 .modal-header .close .fa { color: inherit; }
+
+html.lp-ui-v2 .modal-body {
+  padding: 1.4rem;
+  background: var(--lp-surface);
+  max-height: 68vh;
+  overflow-y: auto;
+}
+html.lp-ui-v2 .modal-body::-webkit-scrollbar { width: 9px; }
+html.lp-ui-v2 .modal-body::-webkit-scrollbar-track { background: var(--lp-bg); }
+html.lp-ui-v2 .modal-body::-webkit-scrollbar-thumb {
+  background: var(--lp-primary-100);
+  border-radius: var(--lp-radius-pill);
+}
+html.lp-ui-v2 .modal-body::-webkit-scrollbar-thumb:hover { background: var(--lp-accent-100); }
+
+html.lp-ui-v2 .modal-footer {
+  border-top: 1px solid var(--lp-border);
+  background: var(--lp-primary-050);
+  padding: .9rem 1.4rem;
+}
+html.lp-ui-v2 .modal-footer .btn { min-width: 110px; }
+
+/* Bootbox confirm dialogs (delete confirmation etc.) */
+html.lp-ui-v2 .bootbox .modal-content { border-radius: var(--lp-radius-lg); }
+html.lp-ui-v2 .bootbox .modal-body { font-size: 1rem; color: var(--lp-ink); padding: 1.6rem 1.4rem 1rem; }
+html.lp-ui-v2 .bootbox .modal-footer { justify-content: flex-end; gap: .5rem; }
+html.lp-ui-v2 .bootbox .btn-default,
+html.lp-ui-v2 .bootbox .btn-secondary { background: #fff; border: 1px solid var(--lp-border); color: var(--lp-ink-soft); }
+html.lp-ui-v2 .bootbox .btn-primary { background: var(--lp-danger); border-color: var(--lp-danger); }
+html.lp-ui-v2 .bootbox .btn-primary:hover { background: #c93b34; }
+html.lp-ui-v2 .bootbox::before {
+  /* small decorative warning icon slot handled via JS injection into .bootbox-body */
+  content: "";
+}
+
+/* Video popup modal gets a themed cinematic frame */
+html.lp-ui-v2 #myModal-videopopup .modal-content { background: #000; }
+html.lp-ui-v2 #myModal-videopopup .modal-header { background: linear-gradient(120deg, var(--lp-primary), #000); }
+
+/* Modal loading / busy state (added by JS while an async action runs) */
+html.lp-ui-v2 .lp-modal-busy .modal-body { position: relative; min-height: 120px; }
+html.lp-ui-v2 .lp-modal-busy .modal-body::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, .7);
+  backdrop-filter: blur(1px);
+}
+html.lp-ui-v2 .lp-spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 4px solid var(--lp-primary-100);
+  border-top-color: var(--lp-accent);
+  animation: lp-spin .8s linear infinite;
+  position: absolute;
+  top: 50%; left: 50%;
+  margin: -20px 0 0 -20px;
+  z-index: 2;
+}
+@keyframes lp-spin { to { transform: rotate(360deg); } }
+
+/* Form controls inside modals */
+html.lp-ui-v2 .modal .form-control,
+html.lp-ui-v2 .modal select,
+html.lp-ui-v2 .modal textarea {
+  border-radius: var(--lp-radius-sm);
+  border: 1px solid var(--lp-border);
+  transition: border-color .18s var(--lp-ease), box-shadow .18s var(--lp-ease);
+}
+html.lp-ui-v2 .modal .form-control:focus,
+html.lp-ui-v2 .modal select:focus,
+html.lp-ui-v2 .modal textarea:focus {
+  border-color: var(--lp-accent);
+  box-shadow: 0 0 0 4px var(--lp-accent-100);
+}
+
+/* ============================================================
+   9. Popovers (help icons)
+   ============================================================ */
+html.lp-ui-v2 .popover {
+  border: none;
+  border-radius: var(--lp-radius-md);
+  box-shadow: var(--lp-shadow-md);
+}
+html.lp-ui-v2 .popover-header,
+html.lp-ui-v2 .popover-title {
+  background: var(--lp-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--lp-radius-md) var(--lp-radius-md) 0 0;
+}
+html.lp-ui-v2 .buttonhelp {
+  background: var(--lp-accent-100) !important;
+  border: none !important;
+  color: var(--lp-accent-600) !important;
+  border-radius: 50% !important;
+  width: 26px; height: 26px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+html.lp-ui-v2 .buttonhelp:hover { background: var(--lp-accent) !important; color: #fff !important; }
+
+/* ============================================================
+   10. Toast (lightweight success/error feedback shown by JS)
+   ============================================================ */
+html.lp-ui-v2 .lp-toast-stack {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+html.lp-ui-v2 .lp-toast {
+  background: var(--lp-surface);
+  border-left: 4px solid var(--lp-accent);
+  box-shadow: var(--lp-shadow-md);
+  border-radius: var(--lp-radius-sm);
+  padding: .75rem 1rem;
+  min-width: 240px;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  font-size: .9rem;
+  color: var(--lp-ink);
+  animation: lp-toast-in .35s var(--lp-ease-spring);
+}
+html.lp-ui-v2 .lp-toast.lp-toast-success { border-left-color: var(--lp-success); }
+html.lp-ui-v2 .lp-toast.lp-toast-danger { border-left-color: var(--lp-danger); }
+@keyframes lp-toast-in {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ============================================================
+   11. Responsive polish
+   ============================================================ */
+@media (max-width: 767.98px) {
+  html.lp-ui-v2 .modal-dialog { margin: .75rem; }
+  html.lp-ui-v2 .plms-learningpath { flex-wrap: wrap; }
+  html.lp-ui-v2 .title_lp_index { display: none; }
+  html.lp-ui-v2 .create-buttons.cbtn_lp { justify-content: stretch; }
+  html.lp-ui-v2 .create-buttons.cbtn_lp .new-button { width: 100%; justify-content: center; display: inline-flex; }
+}

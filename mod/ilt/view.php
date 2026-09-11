@@ -149,7 +149,10 @@ if (has_capability('mod/ilt:viewattendees', $context)) {
     $formats = array('excel' => get_string('excelformat', 'ilt'),
                      'ods' => get_string('odsformat', 'ilt'));
     echo html_writer::select($formats, 'download', 'excel', '');
-    echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => get_string('exporttofile', 'ilt'), 'class' => 'btn btn-secondary btn-square exporttofile'));
+    echo html_writer::tag('button',
+        html_writer::tag('i', '', array('class' => 'fa fa-download', 'aria-hidden' => 'true')) . ' ' .
+        get_string('export', 'ilt'),
+        array('type' => 'submit', 'class' => 'btn btn-secondary btn-square exporttofile'));
     echo html_writer::end_tag('div'). html_writer::end_tag('form');
 }
 

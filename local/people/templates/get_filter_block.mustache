@@ -1,87 +1,91 @@
 {{!
-    This file is part of Moodle - http://moodle.org/
-
-    Moodle is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    Moodle is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+    People Plugin - Left Panel Filter Block
+    multifilter tags rendered hidden in panel; JS reads and mirrors to top bar
 }}
-{{!
-    @template local_sitesetting/customise
 
-    Note: collapse/show functionality as well as check/uncheck functionality is 
-          developed using javascript (custom.js) file. Any change in HTML DOM 
-          structure can break these functionalities, so change cautiously.
-
-    @author: 2021 Akshay Pingale (akshay.p@paradisosolution.com)
-    @paradiso
-
-}}
-<div class="search-filter-buttons col-sm-12 col-md-12 col-lg-12 col-xl-3">
-    <div class="col-sm-12 col-md-12 report-left-block-acordeon px-0">
-     <div class="pad-all card filterpeople">
-      <div id="SearchParameters" class="hidden-xs hidden-sm">
-        <div class="row">
-          <div class="aply-filtter col-sm-12 px-0">   
-            <div class="content-apply col-sm-6" style="
-    border-radius: 5px;
-    text-align: center;">
-                <button class="btn btn-round" id="send" type="submit">
-                  {{#str}}apply_filter, local_people{{/str}}
-                  </button>
-              </div>
-        <div class="icon-filter col-sm-6 p-0">
-        <a class="clear-button d-inline-block" id="reset-form">
-            {{#str}}Clear_all_filter, local_people{{/str}}            
-        </a>
-    </div>
+{{! Applied filter tag data — hidden, read by JS to populate top bar }}
+{{#multifilter}}
+<div class="people-filter-tags-source" aria-hidden="true">
+    {{#fields}}
+    <span class="people-filter-tag-src" data-name="{{{fields}}}" data-label="{{{strfield}}}"></span>
+    {{/fields}}
 </div>
+{{/multifilter}}
 
-<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 content-filtter">
-    <div class="panel-group" id="accordion">
-      <div class="textfilter">
-        {{{userfullnamefilter}}}
-        {{{emailfilter}}}
-        {{{usernamefilter}}}
-      </div>
-      <div class="option-filters">
-        <div class="select-city">
-            {{{cityfilter}}}
+{{! Left panel filter accordion groups }}
+<div id="people-filter-groups">
+
+    {{! Text Filters }}
+    <div class="people-accordion">
+        <button class="people-accordion-header people-accordion-header--open" aria-expanded="true">
+            <span><i class="fa fa-font mr-1"></i>{{#str}}text_filters, local_people{{/str}}</span>
+            <i class="fa fa-chevron-down people-accordion-icon"></i>
+        </button>
+        <div class="people-accordion-body" style="display:block;">
+            {{{userfullnamefilter}}}
+            {{{emailfilter}}}
+            {{{usernamefilter}}}
         </div>
-        <div class="select-country">
+    </div>
+
+    {{! Location Filters }}
+    <div class="people-accordion">
+        <button class="people-accordion-header" aria-expanded="false">
+            <span><i class="fa fa-map-marker mr-1"></i>{{#str}}location_filters, local_people{{/str}}</span>
+            <i class="fa fa-chevron-down people-accordion-icon"></i>
+        </button>
+        <div class="people-accordion-body" style="display:none;">
+            {{{cityfilter}}}
             {{{countryfilter}}}
         </div>
-        <div class="select-course">
+    </div>
+
+    {{! Role Filters }}
+    <div class="people-accordion">
+        <button class="people-accordion-header" aria-expanded="false">
+            <span><i class="fa fa-shield mr-1"></i>{{#str}}role_filters, local_people{{/str}}</span>
+            <i class="fa fa-chevron-down people-accordion-icon"></i>
+        </button>
+        <div class="people-accordion-body" style="display:none;">
             {{{courserolefilter}}}
             {{{systemrolefilter}}}
             {{{authfilter}}}
         </div>
-      </div>
-      <div class="radio-filters">
-        <div class="confirm-form">
-         {{{confirmedfilter}}}
-        </div>
-        <div class="suspend-form">
-         {{{suspendedfilter}}}
-        </div>
-      </div>
-      <div class="date-filters">
-       {{{firstaccessdfilter}}}
-       {{{lastaccessedfilter}}}
-       {{{lastmodifiedfilter}}}
-      </div>
-       </div>
-     </div>
     </div>
-   </div>
-  </div>
- </div>
+
+    {{! Status Filters }}
+    <div class="people-accordion">
+        <button class="people-accordion-header" aria-expanded="false">
+            <span><i class="fa fa-toggle-on mr-1"></i>{{#str}}status_filters, local_people{{/str}}</span>
+            <i class="fa fa-chevron-down people-accordion-icon"></i>
+        </button>
+        <div class="people-accordion-body" style="display:none;">
+            {{{confirmedfilter}}}
+            {{{suspendedfilter}}}
+        </div>
+    </div>
+
+  {{! Department Filters }}
+    <div class="people-accordion">
+        <button class="people-accordion-header" aria-expanded="false">
+            <span><i class="fa fa-sitemap mr-1"></i>{{#str}}department, local_people{{/str}}</span>
+            <i class="fa fa-chevron-down people-accordion-icon"></i>
+        </button>
+        <div class="people-accordion-body" style="display:none;">
+            {{{departmentfilter}}}
+        </div>
+    </div>
+    {{! Date Filters }}
+    <div class="people-accordion">
+        <button class="people-accordion-header" aria-expanded="false">
+            <span><i class="fa fa-calendar mr-1"></i>{{#str}}date_filters, local_people{{/str}}</span>
+            <i class="fa fa-chevron-down people-accordion-icon"></i>
+        </button>
+        <div class="people-accordion-body" style="display:none;">
+            {{{firstaccessdfilter}}}
+            {{{lastaccessedfilter}}}
+            {{{lastmodifiedfilter}}}
+        </div>
+    </div>
+
 </div>

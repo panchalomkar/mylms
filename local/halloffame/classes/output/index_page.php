@@ -13,6 +13,7 @@ use local_halloffame\department_helper;
 /**
  * Renderable for the main Hall of Fame index page.
  * v2: injects IOMAD companyid context and dynamic department filter list.
+ * v4: passes editurl into award context for inline edit button.
  */
 class index_page implements renderable, templatable {
 
@@ -31,13 +32,13 @@ class index_page implements renderable, templatable {
         $cansubmit  = has_capability('local/halloffame:submit',       $context);
         $pending    = $canapprove ? count(manager::get_submissions('pending')) : 0;
 
-        // ── IOMAD context ────────────────────────────────────────────────────
+        // ── IOMAD context ─────────────────────────────────────────────────────
         $companyid   = iomad_helper::get_current_companyid();
         $companyname = iomad_helper::get_company_name($companyid);
         $issiteadmin = is_siteadmin();
 
-        // ── Filter data — departments now dynamic from profile fields ─────────
-        $months  = [];
+        // ── Filter data ───────────────────────────────────────────────────────
+        $months = [];
         foreach (manager::months_list() as $num => $name) {
             $months[] = ['value' => $num, 'label' => $name];
         }
@@ -46,11 +47,9 @@ class index_page implements renderable, templatable {
             $years[] = ['value' => $y, 'label' => $y];
         }
 
-        // Dynamic departments: reads user profile field, scoped to company.
-        $depts = department_helper::get_departments_for_filter($companyid);
-
-        $cats  = array_map(fn($c) => ['value' => $c->name, 'label' => $c->name],
-                           manager::get_categories());
+        $depts    = department_helper::get_departments_for_filter($companyid);
+        $cats     = array_map(fn($c) => ['value' => $c->name, 'label' => $c->name],
+                              manager::get_categories());
         $quarters = [
             ['value' => 1, 'label' => 'Q1 (Jan–Mar)'],
             ['value' => 2, 'label' => 'Q2 (Apr–Jun)'],
@@ -64,13 +63,12 @@ class index_page implements renderable, templatable {
             'canmanage'        => $canmanage,
             'canapprove'       => $canapprove,
             'cansubmit'        => $cansubmit,
+            'showsubmitmenu'   => ($cansubmit && !$canmanage && !$canapprove),
             'pendingcount'     => $pending,
             'haspending'       => $pending > 0,
-            // IOMAD context badge.
             'companyname'      => $companyname,
             'hascompany'       => $companyname !== '',
             'issiteadmin'      => $issiteadmin,
-            // URLs.
             'adminurl'         => (new \moodle_url('/local/halloffame/pages/admin.php'))->out(false),
             'reviewurl'        => (new \moodle_url('/local/halloffame/pages/review.php'))->out(false),
             'submiturl'        => (new \moodle_url('/local/halloffame/pages/submit.php'))->out(false),
@@ -92,48 +90,55 @@ class index_page implements renderable, templatable {
         if ($this->tab === 'awards') {
             $awards = [];
             foreach (manager::get_awards($this->filters) as $a) {
-                $user = \core_user::get_user($a->userid);
-                // FIX: Use $output->user_picture() with proper size for circular avatar.
+                $user     = \core_user::get_user($a->userid);
                 $awards[] = [
-                    'id'          => $a->id,
-                    'fullname'    => $a->fullname,
-                    // PROFILE IMAGE FIX: pass full user object to user_picture().
-                    'userpicture' => $output->user_picture($user, [
-                        'size'   => 80,
-                        'class'  => 'hof-avatar',
-                        'link'   => false,
-                        'alttext'=> false,
+                    'id'           => $a->id,
+                    'fullname'     => $a->fullname,
+                    'userpicture'  => $output->user_picture($user, [
+                        'size'    => 80,
+                        'class'   => 'hof-avatar',
+                        'link'    => false,
+                        'alttext' => false,
                     ]),
-                    'title'       => $a->title,
-                    'department'  => $a->department ?? '',
-                    'monthname'   => $a->monthname  ?? '',
-                    'year'        => $a->year,
-                    'message'     => $a->message    ?? '',
-                    'image'       => $a->image       ?? '',
-                    'likecount'   => $a->likecount,
-                    'userliked'   => (bool) $a->userliked,
-                    'gradient'    => $a->gradient,
-                    'canmanage'   => $canmanage,
-                    'deleteurl'   => (new \moodle_url('/local/halloffame/pages/delete_award.php', [
-                        'id' => $a->id, 'sesskey' => sesskey(),
-                    ]))->out(false),
+                    'title'        => $a->title,
+                    'department'   => $a->department ?? '',
+                    'category'     => $a->category   ?? '',
+                    'monthname'    => $a->monthname  ?? '',
+                    'year'         => $a->year,
+                    'message'      => $a->message    ?? '',
+                    'image'        => $a->image      ?? '',
+                    'likecount'    => $a->likecount,
+                    'userliked'    => (bool) $a->userliked,
+                    'commentcount' => $a->commentcount,
+                    'gradient'     => $a->gradient,
+                    'canmanage'    => $canmanage,
+                    // Edit URL — used by the pencil icon in card_award.mustache.
+                    'editurl'      => $canmanage
+                        ? (new \moodle_url('/local/halloffame/pages/edit_award.php',
+                            ['id' => $a->id]))->out(false)
+                        : '',
+                    'deleteurl'    => $canmanage
+                        ? (new \moodle_url('/local/halloffame/pages/delete_award.php',
+                            ['id' => $a->id, 'sesskey' => sesskey()]))->out(false)
+                        : '',
                 ];
             }
             $data['awards']    = $awards;
             $data['hasawards'] = !empty($awards);
+
         } else {
             $achs = [];
             foreach (manager::get_achievements($this->filters) as $a) {
-                $user = \core_user::get_user($a->userid);
+                $user   = \core_user::get_user($a->userid);
+                
                 $achs[] = [
                     'id'                 => $a->id,
                     'fullname'           => $a->fullname,
-                    // PROFILE IMAGE FIX: consistent $output->user_picture().
                     'userpicture'        => $output->user_picture($user, [
-                        'size'   => 52,
-                        'class'  => 'hof-ach-avatar',
-                        'link'   => false,
-                        'alttext'=> false,
+                        'size'    => 52,
+                        'class'   => 'hof-ach-avatar',
+                        'link'    => false,
+                        'alttext' => false,
                     ]),
                     'title'              => $a->title,
                     'issuer'             => $a->issuer             ?? '',
@@ -145,6 +150,16 @@ class index_page implements renderable, templatable {
                     'notes'              => $a->notes              ?? '',
                     'likecount'          => $a->likecount,
                     'userliked'          => (bool) $a->userliked,
+                    'commentcount'       => $a->commentcount,
+                    'canmanage'          => $canmanage,
+            'editurl'            => $canmanage
+                ? (new \moodle_url('/local/halloffame/pages/edit_achievement.php',
+                    ['id' => $a->id]))->out(false)
+                : '',
+            'deleteurl'          => $canmanage
+                ? (new \moodle_url('/local/halloffame/pages/delete_achievement.php',
+                    ['id' => $a->id, 'sesskey' => sesskey()]))->out(false)
+                : '',
                 ];
             }
             $data['achievements']    = $achs;

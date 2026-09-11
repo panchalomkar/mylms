@@ -29,7 +29,7 @@ global $DB;
 require_login();
 $context = context_system::instance();
 $PAGE->set_context($context);
-$PAGE->set_heading(get_string('pluginname', 'local_mydashboard'));
+// $PAGE->set_heading(get_string('pluginname', 'local_mydashboard'));
 $PAGE->set_pagelayout('standard');
 $PAGE->set_title(get_string('pluginname', 'local_mydashboard'));
 $reporturl = 'Home';
@@ -40,12 +40,12 @@ $id = optional_param_array('id', [], PARAM_INT);
 
 $localObj = new Level();
 echo $OUTPUT->header();
-echo '
-<div class="row">
-    <div class="col-md-6 mb-3 si-leftsec">
-        <div><a href="' . new moodle_url('/local/mydashboard/report.php') . '" class="btn btn-primary">Gamification  Report </a></div>
-    </div>
-</div>';
+echo' <div class="gam-admin-wrap"> <div class="gam-admin-header">
+    
+<h2>Gamification Levels</h2>
+        <div><a href="' . new moodle_url('/local/mydashboard/report.php') . '" class="btn btn-secondary">Gamification  Report </a></div>
+
+  </div></div>';
 
 $PAGE->requires->js_call_amd('local_mydashboard/local', 'load');
 

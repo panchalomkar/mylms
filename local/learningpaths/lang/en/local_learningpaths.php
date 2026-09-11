@@ -22,7 +22,7 @@ $string['assigned_courses'] = 'Assigned Courses';
 $string['add'] = 'Add';
 $string['remove'] = 'Remove';
 $string['search_learning'] = 'Search SMART Goal';
-
+$string['add_learningpath'] = 'Add learning path';
 $string['edit_learningpath'] = 'Edit SMART Goal';
 $string['view'] = 'Overview';  
 $string['edit'] = 'General Settings';

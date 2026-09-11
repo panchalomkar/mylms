@@ -18,10 +18,16 @@ if (!in_array($tab, ['awards', 'achievements'], true)) {
 $PAGE->set_context($context);
 $PAGE->set_url(new moodle_url('/local/halloffame/pages/index.php', ['tab' => $tab]));
 $PAGE->set_title(get_string('halloffame', 'local_halloffame'));
-$PAGE->set_heading(get_string('halloffame', 'local_halloffame'));
+$PAGE->set_heading('');
 $PAGE->set_pagelayout('standard');
 $PAGE->requires->css(new moodle_url('/local/halloffame/styles.css'));
 $PAGE->requires->js_call_amd('local_halloffame/main', 'init', [['tab' => $tab]]);
+$PAGE->navbar->ignore_active();
+// Breadcrumbs
+$PAGE->navbar->add(
+    get_string('dashboard', 'local_halloffame'),
+    new moodle_url('/my/')
+);
 
 $PAGE->navbar->add(
     get_string('halloffame', 'local_halloffame'),
@@ -34,5 +40,9 @@ $page = new index_page($tab);
 /** @var \local_halloffame\output\renderer $renderer */
 $renderer = $PAGE->get_renderer('local_halloffame');
 echo $renderer->render_from_template('local_halloffame/index', $page->export_for_template($OUTPUT));
+// $PAGE->requires->js_init_code("
+//     var tab = '{$tab}';
+//     history.replaceState(null, '', '/local/walloffame?tab=' + tab);
+// ");
 
 echo $OUTPUT->footer();

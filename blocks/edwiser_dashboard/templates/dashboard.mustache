@@ -50,8 +50,7 @@
       <div class=" text-center" style="width:100px;">
       <div class="bg-warning bg-opacity-10 p-2 mb-2 rounded-3 text-center">
         <small class="text-warning text-uppercase fw-semibold">Average Progress</small>
-        <div class="text-2xl fw-bold text-dark" id="cpAverage">{{courseprogress.average}}%</div>
-        <small class="text-success">+5% from last month</small>
+         <div class="text-2xl fw-bold text-dark" id="cpAverage">{{courseprogress.average}}%</div>
         </div>
         <div class="bg-secondary bg-opacity-10 p-2 rounded-4 text-center">
         <div class="mt-3 text-2xl fw-bold text-dark" id="cpTotal">{{courseprogress.totallearners}} Total Learners</div>
@@ -149,9 +148,11 @@
         <div class="col-4">
           <div class="bg-light rounded-4 p-3">
             <span class="material-icons text-secondary">groups</span>
-            <div class="h4 fw-bold mb-0" data-so="activeusers">{{siteoverview.activeusers}}</div>
-            <small class="text-muted">Total Active Users</small>
-            <div class="text-success small">▲ +12%</div>
+           <div class="h4 fw-bold mb-0" data-so="activeusers">{{siteoverview.activeusers}}</div>
+    <small class="text-muted">Total Active Users</small>
+    <div class="{{siteoverview.activeuserstrendclass}} small" data-so="activeuserstrend">
+      {{siteoverview.activeuserstrendarrow}} {{siteoverview.activeuserstrend}}
+    </div>
           </div>
         </div>
 
@@ -159,17 +160,21 @@
           <div class="bg-light rounded-4 p-3">
             <span class="material-icons text-warning">school</span>
             <div class="h4 fw-bold mb-0" data-so="enrollments">{{siteoverview.enrollments}}</div>
-            <small class="text-muted">Total Enrollments</small>
-            <div class="text-success small">▲ +8%</div>
+    <small class="text-muted">Total Enrollments</small>
+    <div class="{{siteoverview.enrollmentstrendclass}} small" data-so="enrollmentstrend">
+      {{siteoverview.enrollmentstrendarrow}} {{siteoverview.enrollmentstrend}}
+    </div>
           </div>
         </div>
 
         <div class="col-4">
           <div class="bg-light rounded-4 p-3">
             <span class="material-icons text-success">check_circle</span>
-            <div class="h4 fw-bold mb-0" data-so="completions">{{siteoverview.completions}}</div>
-            <small class="text-muted">Total Completions</small>
-            <div class="text-danger small">▼ -3%</div>
+           <div class="h4 fw-bold mb-0" data-so="completions">{{siteoverview.completions}}</div>
+    <small class="text-muted">Total Completions</small>
+    <div class="{{siteoverview.completionstrendclass}} small" data-so="completionstrend">
+      {{siteoverview.completionstrendarrow}} {{siteoverview.completionstrend}}
+    </div>
           </div>
         </div>
 

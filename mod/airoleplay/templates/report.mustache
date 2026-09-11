@@ -1,0 +1,383 @@
+{{!
+    Analytics report template.
+    @template mod_airoleplay/report
+    @copyright 2024 Enterprise AI Learning Platform
+}}
+
+<div class="air-platform">
+<div class="air-dashboard">
+
+  {{! Header }}
+  <div class="air-dashboard-header">
+    <div>
+      <div style="font-size:0.875rem;color:#64748b;margin-bottom:0.25rem">
+        <a href="{{view_url}}" style="color:#6366f1;text-decoration:none">← {{scenario_name}}</a>
+      </div>
+      <h1 class="air-dashboard-title">📊 Analytics Report</h1>
+    </div>
+    <div class="d-flex gap-2 align-items-center flex-wrap">
+      {{! Period filter }}
+      <form method="get" class="d-flex gap-2 align-items-center">
+        <input type="hidden" name="id" value="{{cmid}}">
+        <select name="period" class="form-select form-select-sm" onchange="this.form.submit()" style="width:auto">
+          {{#periods}}<option value="{{value}}" {{#selected}}selected{{/selected}}>{{label}}</option>{{/periods}}
+        </select>
+        {{#departments.0}}
+          <select name="department" class="form-select form-select-sm" onchange="this.form.submit()" style="width:auto">
+            <option value="">All Departments</option>
+            {{#departments}}<option value="{{name}}" {{#selected}}selected{{/selected}}>{{name}}</option>{{/departments}}
+          </select>
+        {{/departments.0}}
+      </form>
+      {{#can_export}}
+        <a href="{{export_url}}" class="air-btn air-btn--ghost" style="font-size:0.875rem">
+          ⬇ Export CSV
+        </a>
+      {{/can_export}}
+    </div>
+  </div>
+
+  {{! ============================================================ }}
+  {{! SUMMARY CARDS                                                  }}
+  {{! ============================================================ }}
+  <div class="air-summary-cards-grid">
+    <div class="air-stat-card air-stat-card--primary">
+      <div class="air-stat-icon"><i class="fa fa-play-circle"></i></div>
+      <div class="air-stat-content">
+        <div class="air-stat-value">{{stats.total_sessions}}</div>
+        <div class="air-stat-label">Total Sessions</div>
+      </div>
+    </div>
+    <div class="air-stat-card air-stat-card--info">
+      <div class="air-stat-icon"><i class="fa fa-users"></i></div>
+      <div class="air-stat-content">
+        <div class="air-stat-value">{{stats.unique_learners}}</div>
+        <div class="air-stat-label">Unique Learners</div>
+      </div>
+    </div>
+    <div class="air-stat-card air-stat-card--success">
+      <div class="air-stat-icon"><i class="fa fa-star"></i></div>
+      <div class="air-stat-content">
+        <div class="air-stat-value">{{stats.avg_score}}</div>
+        <div class="air-stat-label">Avg Score / 100</div>
+      </div>
+    </div>
+    <div class="air-stat-card air-stat-card--warning">
+      <div class="air-stat-icon"><i class="fa fa-check-circle"></i></div>
+      <div class="air-stat-content">
+        <div class="air-stat-value">{{stats.pass_rate}}%</div>
+        <div class="air-stat-label">Pass Rate</div>
+      </div>
+    </div>
+  </div>
+
+  {{! ============================================================ }}
+  {{! SCORE TREND + COMPETENCY RADAR                               }}
+  {{! ============================================================ }}
+  <div class="air-charts-row">
+    <div class="air-chart-card">
+      <div class="air-chart-card__title">📈 Score Trend</div>
+      <div id="air-trend-chart" style="width:100%;height:220px"></div>
+    </div>
+    <div class="air-chart-card">
+      <div class="air-chart-card__title">🎯 Competency Profile</div>
+      <div id="air-dash-radar" style="width:100%;height:280px"></div>
+    </div>
+  </div>
+
+  {{! ============================================================ }}
+  {{! COMPETENCY SKILL GAP                                          }}
+  {{! ============================================================ }}
+  {{#has_competency_data}}
+    <div class="air-results-card mb-4">
+      <div class="air-results-card__title">🔍 Competency Skill Gap Analysis</div>
+      <p style="font-size:0.875rem;color:#64748b;margin-bottom:1.25rem">
+        Sorted by lowest average score. Red = critical gaps requiring attention.
+      </p>
+      {{#competency_data}}
+        <div class="mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span style="font-weight:600;font-size:0.9375rem">{{label}}</span>
+            <div class="d-flex gap-3 align-items-center">
+              <span style="font-size:0.8125rem;color:#94a3b8">{{count}} evaluations</span>
+              <span class="air-comp-score" data-score="{{avg_score}}" style="font-weight:700;font-size:0.9375rem">
+                {{avg_score}}/100
+              </span>
+              <span class="air-badge" data-gap="{{gap}}" style="color:white;font-size:0.75rem">
+                Gap: {{gap}}
+              </span>
+            </div>
+          </div>
+          <div class="air-progress-track">
+            <div class="air-progress-fill"
+                 style="width:{{avg_score}}%;transition:width 1s ease">
+            </div>
+          </div>
+          <div style="font-size:0.75rem;color:#94a3b8;margin-top:0.25rem">
+            Range: {{min_score}} – {{max_score}}
+          </div>
+        </div>
+      {{/competency_data}}
+    </div>
+  {{/has_competency_data}}
+
+  {{! ============================================================ }}
+  {{! DEPARTMENT PERFORMANCE TABLE                                   }}
+  {{! ============================================================ }}
+  {{#has_department_data}}
+    <div class="air-sessions-table mb-4">
+      <div style="padding:1.25rem 1.5rem;font-weight:700;border-bottom:1px solid #e2e8f0">
+        🏢 Department Performance
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Department</th>
+            <th>Learners</th>
+            <th>Sessions</th>
+            <th>Avg Score</th>
+            <th>Pass Rate</th>
+            <th>Rating</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#department_data}}
+            <tr>
+              <td><strong>{{dept}}</strong></td>
+              <td>{{users}}</td>
+              <td>{{sessions}}</td>
+              <td>
+                <span class="air-comp-score" data-score="{{avg_score}}" style="font-weight:700">
+                  {{avg_score}}/100
+                </span>
+              </td>
+              <td>{{pass_rate}}%</td>
+              <td>
+                <span class="air-badge" data-score="{{avg_score}}" style="color:white;font-size:0.75rem">
+                  {{avg_score}}
+                </span>
+              </td>
+            </tr>
+          {{/department_data}}
+        </tbody>
+      </table>
+    </div>
+  {{/has_department_data}}
+
+  {{! ============================================================ }}
+  {{! TOP LEARNERS LEADERBOARD                                      }}
+  {{! ============================================================ }}
+  {{#has_top_learners}}
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <div class="air-leaderboard-card">
+          <div style="font-weight:700;font-size:1rem;margin-bottom:1rem">🏆 Top Learners</div>
+          {{#top_learners}}
+            <a href="{{detail_url}}" class="air-leader-row" style="text-decoration:none;color:inherit;cursor:pointer" title="View detailed report">
+              <span class="air-leader-rank">{{rank}}</span>
+              <div style="flex:1">
+                <div class="air-leader-name">{{name}}</div>
+                <div style="font-size:0.75rem;color:#94a3b8">{{dept}}</div>
+              </div>
+              <span class="air-leader-score">{{avg_score}}/100</span>
+              <span class="air-leader-count">{{sessions}} sessions</span>
+              <span style="color:#6366f1;font-size:0.8rem;margin-left:0.5rem">View →</span>
+            </a>
+          {{/top_learners}}
+        </div>
+      </div>
+    </div>
+  {{/has_top_learners}}
+
+</div>{{! .air-dashboard }}
+</div>{{! .air-platform }}
+
+{{! Inline chart initialization. SVG-rendered, so charts work even if the
+    Chart.js CDN is unreachable from the server's network. Other pages in
+    this plugin still use Chart.js — this change is scoped to report.mustache. }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var trendData    = {{{trend_json}}};
+  var compData     = {{{competency_json}}};
+
+  function _esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  // ---------- Score Trend (SVG line + area) -----------------------------
+  function _drawTrendSvg(items) {
+    if (!Array.isArray(items) || items.length === 0) { return ''; }
+    var W = 600, H = 220;
+    var padL = 40, padR = 14, padT = 20, padB = 36;
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    var n = items.length;
+    function xAt(i) { return n === 1 ? padL + plotW / 2 : padL + (i / (n - 1)) * plotW; }
+    function yAt(score) {
+      var s = Math.max(0, Math.min(100, Number(score) || 0));
+      return padT + (1 - s / 100) * plotH;
+    }
+    var grid = '';
+    [0, 25, 50, 75, 100].forEach(function (v) {
+      var y = yAt(v).toFixed(1);
+      grid += '<line x1="' + padL + '" y1="' + y + '" x2="' + (W - padR) + '" y2="' + y +
+              '" stroke="#f1f5f9" stroke-width="1"/>';
+      grid += '<text x="' + (padL - 8) + '" y="' + y + '" font-size="10" fill="#94a3b8" ' +
+              'text-anchor="end" dominant-baseline="middle">' + v + '</text>';
+    });
+    var linePts = items.map(function (t, i) {
+      return xAt(i).toFixed(1) + ',' + yAt(t.score).toFixed(1);
+    });
+    var areaPath = 'M ' + xAt(0).toFixed(1) + ',' + yAt(0).toFixed(1) +
+                   ' L ' + linePts.join(' L ') +
+                   ' L ' + xAt(n - 1).toFixed(1) + ',' + yAt(0).toFixed(1) + ' Z';
+    var linePath = 'M ' + linePts.join(' L ');
+    var dots = '', xlabels = '';
+    items.forEach(function (t, i) {
+      var x = xAt(i).toFixed(1), y = yAt(t.score).toFixed(1);
+      dots += '<circle cx="' + x + '" cy="' + y + '" r="4" fill="#6366f1" stroke="#fff" stroke-width="2">' +
+              '<title>' + _esc(t.date) + ': ' + Math.round(t.score) + '/100</title></circle>';
+      var showLabel = (n <= 8) || (i === 0) || (i === n - 1) || (i % Math.ceil(n / 6) === 0);
+      if (showLabel) {
+        xlabels += '<text x="' + x + '" y="' + (H - padB + 18) + '" font-size="10" fill="#64748b" text-anchor="middle">' +
+                   _esc(t.date) + '</text>';
+      }
+    });
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H +
+           '" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" style="display:block">' +
+           grid +
+           '<path d="' + areaPath + '" fill="rgba(99,102,241,0.10)"/>' +
+           '<path d="' + linePath + '" fill="none" stroke="rgba(99,102,241,0.95)" ' +
+                'stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+           dots + xlabels + '</svg>';
+  }
+
+  // ---------- Competency Radar (SVG) ------------------------------------
+  function _drawRadarSvg(items) {
+    if (!Array.isArray(items) || items.length === 0) { return ''; }
+    if (items.length < 3) {
+      // <3 axes can't be a radar — fall back to a bar list.
+      return items.map(function (c) {
+        var pct = Math.max(0, Math.min(100, Number(c.score) || 0));
+        var color = pct >= 80 ? '#22c55e' : pct >= 60 ? '#f59e0b' : '#ef4444';
+        return '<div style="margin:0.5rem 0">' +
+          '<div style="display:flex;justify-content:space-between;font-size:0.875rem;margin-bottom:2px">' +
+            '<span>' + _esc(c.label) + '</span>' +
+            '<span style="font-weight:700;color:' + color + '">' + Math.round(pct) + '/100</span>' +
+          '</div>' +
+          '<div style="background:#e2e8f0;border-radius:4px;height:8px;overflow:hidden">' +
+            '<div style="background:' + color + ';height:100%;width:' + pct + '%"></div>' +
+          '</div></div>';
+      }).join('');
+    }
+    // Wider viewBox + smaller radius so labels like "Objection Handling 75"
+    // never get clipped at the sides.
+    var W = 520, H = 300;
+    var cx = W / 2, cy = H / 2 + 4;
+    var R = 95;
+    var n = items.length;
+    var rings = [0.25, 0.5, 0.75, 1];
+    var twoPi = Math.PI * 2;
+    function truncLabel(s) {
+      s = String(s == null ? '' : s);
+      return s.length > 18 ? s.substring(0, 17) + '…' : s;
+    }
+    function ptForAxis(i, frac) {
+      var angle = -Math.PI / 2 + (i / n) * twoPi;
+      return { x: cx + Math.cos(angle) * R * frac, y: cy + Math.sin(angle) * R * frac };
+    }
+    var ringPaths = rings.map(function (f) {
+      var pts = [];
+      for (var i = 0; i < n; i++) {
+        var p = ptForAxis(i, f);
+        pts.push(p.x.toFixed(1) + ',' + p.y.toFixed(1));
+      }
+      return '<polygon points="' + pts.join(' ') + '" fill="none" stroke="#e2e8f0" stroke-width="1"/>';
+    }).join('');
+    var axes = '';
+    for (var i = 0; i < n; i++) {
+      var p = ptForAxis(i, 1);
+      axes += '<line x1="' + cx + '" y1="' + cy + '" x2="' + p.x.toFixed(1) + '" y2="' + p.y.toFixed(1) +
+              '" stroke="#e2e8f0" stroke-width="1"/>';
+    }
+    var dataPts = [];
+    for (var i = 0; i < n; i++) {
+      var s = Math.max(0, Math.min(100, Number(items[i].score) || 0));
+      var p2 = ptForAxis(i, s / 100);
+      dataPts.push(p2.x.toFixed(1) + ',' + p2.y.toFixed(1));
+    }
+    var dataPoly = '<polygon points="' + dataPts.join(' ') + '" fill="rgba(99,102,241,0.18)" ' +
+                   'stroke="rgba(99,102,241,0.9)" stroke-width="2" stroke-linejoin="round"/>';
+    var markers = '';
+    for (var i = 0; i < n; i++) {
+      var s = Math.max(0, Math.min(100, Number(items[i].score) || 0));
+      var pm = ptForAxis(i, s / 100);
+      markers += '<circle cx="' + pm.x.toFixed(1) + '" cy="' + pm.y.toFixed(1) + '" r="3" fill="#6366f1"/>';
+    }
+    var labels = '';
+    for (var i = 0; i < n; i++) {
+      var lp = ptForAxis(i, 1.22);
+      var anchor = 'middle';
+      if (lp.x > cx + 8) { anchor = 'start'; }
+      else if (lp.x < cx - 8) { anchor = 'end'; }
+      labels += '<text x="' + lp.x.toFixed(1) + '" y="' + lp.y.toFixed(1) +
+                '" font-size="11" fill="#475569" text-anchor="' + anchor +
+                '" dominant-baseline="middle">' +
+                _esc(truncLabel(items[i].label)) +
+                ' <tspan font-weight="700" fill="#0f172a">' + Math.round(items[i].score) + '</tspan>' +
+                '</text>';
+    }
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H +
+           '" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" style="display:block">' +
+           ringPaths + axes + dataPoly + markers + labels + '</svg>';
+  }
+
+  // Trend chart (SVG mount).
+  var trendMount = document.getElementById('air-trend-chart');
+  if (trendMount && trendData && trendData.length) {
+    trendMount.innerHTML = _drawTrendSvg(trendData);
+  }
+
+  // Competency radar (SVG mount).
+  var radarMount = document.getElementById('air-dash-radar');
+  if (radarMount && compData && compData.length) {
+    radarMount.innerHTML = _drawRadarSvg(compData);
+  }
+
+  // Colour-code competency progress bars (by width %).
+  document.querySelectorAll('.air-progress-fill').forEach(function(bar) {
+    var width = parseFloat(bar.style.width);
+    if (isNaN(width)) return;
+    if (width >= 80) bar.style.background = '#22c55e';
+    else if (width >= 60) bar.style.background = '#f59e0b';
+    else bar.style.background = '#ef4444';
+  });
+
+  // Colour score badges/labels by data-score (higher = better).
+  document.querySelectorAll('[data-score]').forEach(function(el) {
+    var score = parseFloat(el.dataset.score);
+    if (isNaN(score)) return;
+    var colour = score >= 80 ? '#22c55e'
+               : score >= 60 ? '#f59e0b'
+               : '#ef4444';
+    // air-badge elements get coloured background; everything else gets text colour.
+    if (el.classList.contains('air-badge')) {
+      el.style.background = colour;
+    } else {
+      el.style.color = colour;
+    }
+  });
+
+  // Colour gap badges (higher gap = worse).
+  document.querySelectorAll('[data-gap]').forEach(function(el) {
+    var gap = parseFloat(el.dataset.gap);
+    if (isNaN(gap)) return;
+    if (gap >= 30) { el.style.background = '#ef4444'; }
+    else if (gap >= 15) { el.style.background = '#f59e0b'; }
+    else { el.style.background = '#22c55e'; }
+    el.style.color = 'white';
+  });
+});
+</script>
+

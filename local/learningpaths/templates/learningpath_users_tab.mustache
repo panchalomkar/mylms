@@ -1,11 +1,17 @@
+<style>
+#users-popup .custom-search-form .input-group-btn .text-muted{left: 45px !important; top: 5px !important;}
+#users-popup .custom-search-form {margin-top: 10px;}
+#users-popup #fgroup_id_buttonar{padding-top:0px !important;}
+#users-popup .modal-body{    max-height: 80vh;}
+</style>
 {{#learningpath_users_tab}}
   <div class="content-search">
     <div class="row searchbox-add">
       <div class="col-sm-6">
         <div class="searchbox" id="searchbox" role="search">
-          <div class="mt-search input-group custom-search-form">
+          <div class="mt-search input-group custom-search-form" >
             <span class="input-group-btn search-lp">
-              <button type="button" onclick aria-label="" id="btn-search-users">
+              <button type="button" onclick aria-label="" id="btn-search-users" >
                 <i class="men men men-search-phx fa fa-search header-txt i-search"></i>
               </button>
             </span>
@@ -28,7 +34,7 @@
             </span>
           {{/has_delete_lp}}
               <span class="course">
-                <a href="#" id="add-users-lp" class="btn btn-primary new-button" data-toggle="modal" data-target="#users-popup">
+                <a href="#" id="add-users-lp" class="btn btn-primary new-button" data-toggle="modal" data-bs-toggle="modal" data-target="#users-popup" data-bs-target="#users-popup">
                   <i class="fa fa-plus-circle" title=""></i>
                     <span>{{#str}}enroll_users, local_learningpaths{{/str}}</span>
                 </a>

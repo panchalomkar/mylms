@@ -82,9 +82,7 @@ if ($hassiteconfig) {
         get_string('nav_label', 'local_halloffame'),
         get_string('nav_label_desc', 'local_halloffame'), '', PARAM_TEXT
     ));
-}
-
-    // ── IOMAD / Departments ───────────────────────────────────────────────────
+        // ── IOMAD / Departments ───────────────────────────────────────────────────
     $settings->add(new admin_setting_heading(
         'local_halloffame/iomad_heading',
         'IOMAD & Departments', ''
@@ -95,3 +93,6 @@ if ($hassiteconfig) {
         'Shortname of the custom user profile field used as the department source. Default: department.',
         'department', PARAM_ALPHANUMEXT
     ));
+}
+
+

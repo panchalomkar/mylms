@@ -1,0 +1,48 @@
+<div class="max-w-4xl mx-auto p-6 bg-green-50 border rounded-2xl text-center">
+
+    <div class="text-green-500 text-4xl mb-3">✔</div>
+
+    <h2 class="text-2xl font-bold text-gray-800">
+        Congratulations!
+    </h2>
+
+    <p class="text-gray-600 mb-6">
+        You have successfully passed this quiz.
+    </p>
+
+    <div class="grid grid-cols-3 gap-4 mb-6">
+
+        <div class="p-4 bg-white rounded-xl shadow">
+            <div class="text-sm text-gray-500">Your Score</div>
+            <div class="text-xl font-bold text-blue-700">{{score}}%</div>
+        </div>
+
+        <div class="p-4 bg-white rounded-xl shadow">
+            <div class="text-sm text-gray-500">Marks</div>
+            <div class="text-xl font-bold text-green-600">
+                {{marks}} / {{totalmarks}}
+            </div>
+        </div>
+
+        <div class="p-4 bg-white rounded-xl shadow">
+            <div class="text-sm text-gray-500">Time Taken</div>
+            <div class="text-xl font-bold text-orange-500">
+                {{timetaken}}
+            </div>
+        </div>
+
+    </div>
+
+    <div class="flex justify-center gap-4 mt-5">
+
+  <a href="{{reviewurl}}" class="px-5 py-2 bg-[#003152] text-white rounded-lg">
+    Review Attempt
+</a>
+
+<div class="px-5 py-2 border rounded-lg">
+    {{{reattemptbtn}}}
+</div>
+
+    </div>
+
+</div>

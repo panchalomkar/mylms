@@ -36,30 +36,68 @@
         ]
     }
 }}
-<div id="searchform-auto-{{uniqid}}" class="d-flex flex-wrap align-items-center simplesearchform">
-    <div class="input-group searchbar w-100" role="search">
+<div id="searchform-auto-{{uniqid}}" class="d-flex flex-wrap align-items-center simplesearchform activity-serach">
+    <div class="input-group searchbar w-100 position-relative" role="search">
+
+        <span style="
+            position:absolute;
+            left:18px;
+            top:50%;
+            transform:translateY(-50%);
+            z-index:10;
+            color:#7b8794;
+            pointer-events:none;
+            display:flex;
+            align-items:center;
+        ">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
+                 stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+        </span>
+
         <label for="searchinput-{{uniqid}}">
             <span class="visually-hidden">{{$label}}{{#str}} search, core {{/str}}{{/label}}</span>
         </label>
+
         <input
            type="text"
            data-region="input"
            data-action="search"
            id="searchinput-{{uniqid}}"
            class="form-control withclear rounded"
-           placeholder="{{$placeholder}}{{#str}} search, core {{/str}}{{/placeholder}}"
+           style="
+                height:40px;
+                padding-left: 46px !important;
+                border:1px solid #d9dee8;
+                border-radius:14px !important;
+                background:#f7f8fb;
+                font-size:18px;
+                box-shadow:none;
+           "
+           placeholder="Search activities and resources..."
            name="search"
            value="{{$value}}{{/value}}"
            autocomplete="off"
            {{$additionalattributes}}{{/additionalattributes}}
         >
+
         <button
             class="btn btn-clear d-none"
             data-action="clearsearch"
             type="button"
+            style="
+                position:absolute;
+                right:12px;
+                top:50%;
+                transform:translateY(-50%);
+                z-index:11;
+            "
         >
            {{#pix}} e/cancel, core {{/pix}}
-            <span class="visually-hidden">{{#str}} clearsearch, core {{/str}}</span>
+           <span class="visually-hidden">{{#str}} clearsearch, core {{/str}}</span>
         </button>
+
     </div>
 </div>

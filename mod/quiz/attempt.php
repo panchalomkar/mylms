@@ -28,11 +28,11 @@ use mod_quiz\quiz_attempt;
 
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
-?>
-<!-- added by omkar -->
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com"></script>
-<?php
+
+// added by omkar - inject into <head> instead of echoing before the doctype (was forcing quirks mode and breaking TinyMCE)
+$CFG->additionalhtmlhead = ($CFG->additionalhtmlhead ?? '')
+    . '<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>'
+    . '<script src="https://cdn.tailwindcss.com"></script>';
 // Look for old-style URLs, such as may be in the logs, and redirect them to startattemtp.php.
 if ($id = optional_param('id', 0, PARAM_INT)) {
     redirect($CFG->wwwroot . '/mod/quiz/startattempt.php?cmid=' . $id . '&sesskey=' . sesskey());
@@ -68,7 +68,20 @@ if ($attemptobj->get_userid() != $USER->id) {
         throw new moodle_exception('notyourattempt', 'quiz', $attemptobj->view_url());
     }
 }
+$context = context_module::instance($attemptobj->get_cm()->id);
 
+// Teacher/Admin capability check
+
+$PAGE->add_body_class('quiz-clean-ui-a');
+
+// added by omkar - move inline CSS into <head> (raw <style> here was output before the doctype)
+$CFG->additionalhtmlhead = ($CFG->additionalhtmlhead ?? '') . '
+<style>
+.quiz-clean-ui-a .drawer-left,button[data-target="theme_remui-drawers-courseindex"], .quiz-clean-ui-a .breadcrumb {
+    display: none !important;
+}
+#page-mod-quiz-attempt.quiz-clean-ui-a #page{margin-left:0px !important; margin-right: 298px !important;}
+</style>';
 // Check capabilities and block settings.
 if (!$attemptobj->is_preview_user()) {
     $attemptobj->require_capability('mod/quiz:attempt');

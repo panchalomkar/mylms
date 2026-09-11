@@ -14,21 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
-
 /**
  * Plugin version and other meta-data are defined here.
  *
  * @package     local_people
- * @copyright   2018 Daniel Carmona <daniel.carmona@paradisosolutions.com>
+ * @copyright   2024 People Plugin
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_people';
-$plugin->release = '1.0';
-$plugin->version = 2019112621;
-$plugin->requires = 2017051500;
-$plugin->maturity = MATURITY_ALPHA;
-
+$plugin->release   = '2.0';
+$plugin->version   = 2026041500;
+$plugin->requires  = 2024100700; // Moodle 5.0.x minimum
+$plugin->maturity  = MATURITY_STABLE;

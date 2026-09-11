@@ -128,4 +128,588 @@ body#page-mod-ilt-view div#page-content .formlocation {
 #page-mod-ilt-view table tr{
 /*    border: 1px solid #f4f4f4;*/
 }
+/* added by omkar - sessions.php */
+/* =====================================================================
+ * mod/ilt — "Add / edit a session" form restyle
+ * Add to mod/ilt/styles.css, then purge caches. Scoped to the sessions page.
+ * Selects are white; all checkboxes stay; TinyMCE toolbar untouched.
+ * ===================================================================== */
 
+body#page-mod-ilt-sessions {
+    --ilt-navy:   #0e2340;
+    --ilt-orange: #f5a623;
+    --ilt-border: #e9edf2;
+    --ilt-muted:  #6b7a8d;
+    --ilt-ink:    #1f2d3d;
+}
+
+/* Keep breadcrumb, hide the theme's duplicate activity title/icon. */
+body#page-mod-ilt-sessions #page-header .page-context-header,
+body#page-mod-ilt-sessions #page-header .header-actions-container { display: none; }
+body#page-mod-ilt-sessions #page-header { background: transparent; border: 0; box-shadow: none; margin-bottom: 0; }
+
+/* Strip the theme card so ours is the only one. */
+body#page-mod-ilt-sessions div[role="main"] { background: transparent; box-shadow: none; padding: 0; }
+body#page-mod-ilt-sessions #region-main .box.generalbox { border: 0; background: transparent; padding: 0 !important; }
+
+/* Stop the theme from Title-Casing headings/buttons. */
+body#page-mod-ilt-sessions #region-main .box.generalbox > h2,
+body#page-mod-ilt-sessions .mform .fieldset-title,
+body#page-mod-ilt-sessions .mform input[type="submit"],
+body#page-mod-ilt-sessions .mform button { text-transform: none !important; }
+
+/* ---------- Page title (navy pill above the card) ---------- */
+body#page-mod-ilt-sessions #region-main .box.generalbox > h2 {
+    background: var(--ilt-navy);
+    color: #fff !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+        border-radius: 10px 10px 0px 0px;
+    margin: 0 0 -10px !important;
+    padding: 16px 24px !important;
+}
+body#page-mod-ilt-sessions #region-main .box.generalbox>form.mform {overflow: hidden;}
+/* ---------- Form card (NO overflow:hidden — it clipped the editor toolbar) ---------- */
+body#page-mod-ilt-sessions #region-main .box.generalbox > form.mform {
+    background: #fff;
+    border: 1px solid var(--ilt-border);
+    border-radius: 14px;
+    padding: 0;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, .06);
+}
+
+/* ---------- Fieldset header -> navy bar (corners rounded to match card) ---------- */
+body#page-mod-ilt-sessions .mform fieldset { border: 0; margin: 0; padding: 0; }
+body#page-mod-ilt-sessions .mform .fieldset-header {
+    background: var(--ilt-navy);
+    margin: 0;
+    border: 0;
+    border-radius: 14px 14px 0 0;
+}
+body#page-mod-ilt-sessions .mform .fieldset-header .ftoggler { padding: 15px 24px; }
+body#page-mod-ilt-sessions .mform .fieldset-title { color: #fff; font-weight: 700; font-size: 16px; }
+body#page-mod-ilt-sessions .mform .fieldset-header a,
+body#page-mod-ilt-sessions .mform .fieldset-header .edw-icon { color: #fff; }
+body#page-mod-ilt-sessions .mform .fcontainer { padding: 4px 24px 12px; }
+
+/* ---------- Field rows ---------- */
+body#page-mod-ilt-sessions .mform .form-group.row.fitem {
+    padding: 14px 0;
+    border-bottom: 1px solid #f2f4f7;
+    margin: 0;
+}
+body#page-mod-ilt-sessions .mform .form-group.row.fitem:last-of-type { border-bottom: 0; }
+body#page-mod-ilt-sessions .mform .edw-form-label,
+body#page-mod-ilt-sessions .mform .col-form-label label,
+body#page-mod-ilt-sessions .mform .col-form-label p {
+    color: var(--ilt-ink) !important;
+    font-weight: 600 !important;
+}
+
+/* ---------- Dropdowns: light-blue by default (Session date/time known,
+ *            Location, Classroom, Cost center, ...) ---------- */
+body#page-mod-ilt-sessions .mform .form-select {
+    background-color: #e8eef5;
+    border: 1px solid #dbe4ee;
+    border-radius: 8px;
+    color: var(--ilt-navy);
+}
+
+/* Date / time pickers follow the "Session date/time known" toggle:
+ *   Yes -> selects ENABLED  -> WHITE
+ *   No  -> selects DISABLED -> light-blue */
+body#page-mod-ilt-sessions .mform .fdate_time_selector .form-select {
+    background-color: #fff;
+}
+body#page-mod-ilt-sessions .mform .fdate_time_selector .form-select:disabled {
+    background-color: #e8eef5;
+}
+
+/* ---------- Text inputs / textareas: white, orange focus ---------- */
+body#page-mod-ilt-sessions .mform input.form-control,
+body#page-mod-ilt-sessions .mform textarea.form-control {
+    background: #fff;
+    border: 1px solid var(--ilt-border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    color: var(--ilt-ink);
+    box-shadow: none;
+}
+/* Multi-select resources: white roomy box; disabled instructor picker: light-blue */
+body#page-mod-ilt-sessions .mform select.form-control[multiple] {
+    min-height: 96px;
+    border: 1px solid var(--ilt-border);
+    border-radius: 10px;
+    background: #fff;
+}
+body#page-mod-ilt-sessions .mform select.form-control[multiple]:disabled {
+    background-color: #e8eef5;
+    opacity: 1;
+}
+body#page-mod-ilt-sessions .mform .form-control:focus,
+body#page-mod-ilt-sessions .mform .form-select:focus {
+    border-color: var(--ilt-orange);
+    box-shadow: 0 0 0 3px rgba(245, 166, 35, .18);
+}
+
+/* ---------- Checkboxes: keep them all visible, tint the accent ---------- */
+body#page-mod-ilt-sessions .mform .form-check-input { accent-color: var(--ilt-navy); }
+body#page-mod-ilt-sessions .mform .form-check label,
+body#page-mod-ilt-sessions .mform .checkbox label { color: var(--ilt-ink); font-weight: 500; }
+
+/* "Remove this date": keep the checkbox, make the label a red link with a
+ * trash icon in front of the text. */
+body#page-mod-ilt-sessions .mform label[for^="id_datedelete"] {
+    color: #e0463c;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+body#page-mod-ilt-sessions .mform label[for^="id_datedelete"]::before {
+    content: "";
+    width: 15px; height: 15px;
+    background: center/contain no-repeat;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e0463c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='3 6 5 6 21 6'/%3E%3Cpath d='M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2'/%3E%3Cline x1='10' y1='11' x2='10' y2='17'/%3E%3Cline x1='14' y1='11' x2='14' y2='17'/%3E%3C/svg%3E");
+}
+
+/* ---------- Buttons ---------- */
+body#page-mod-ilt-sessions .mform #id_submitbutton,
+body#page-mod-ilt-sessions .mform input[name="submitbutton"] {
+    background: var(--ilt-navy) !important;
+    border: 0 !important;
+    color: #fff !important;
+    font-weight: 600;
+    border-radius: 10px !important;
+    padding: 10px 22px;
+}
+body#page-mod-ilt-sessions .mform #id_submitbutton:hover { background: #15305a !important; }
+
+body#page-mod-ilt-sessions .mform #id_cancel,
+body#page-mod-ilt-sessions .mform input[name="cancel"] {
+    background: #fff !important;
+    border: 1px solid var(--ilt-border) !important;
+    color: var(--ilt-ink) !important;
+    font-weight: 600;
+    border-radius: 10px !important;
+    padding: 10px 22px;
+}
+body#page-mod-ilt-sessions .mform #id_cancel:hover { background: #f4f6f9 !important; }
+
+body#page-mod-ilt-sessions .mform #id_date_add_fields,
+body#page-mod-ilt-sessions .mform input[name="date_add_fields"] {
+    background-color: #fff !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f5a623' stroke-width='2.5' stroke-linecap='round'%3E%3Cline x1='12' y1='5' x2='12' y2='19'/%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 16px center;
+    background-size: 15px 15px;
+    border: 1px solid var(--ilt-orange) !important;
+    color: #f5a623 !important;
+    font-weight: 600;
+    border-radius: 10px !important;
+    padding: 9px 18px 9px 40px;
+}
+body#page-mod-ilt-sessions .mform #id_date_add_fields:hover { background: #fff7ea !important; }
+
+/* Bottom button row + required legend padding (they sit outside the fieldset). */
+body#page-mod-ilt-sessions .mform #fgroup_id_buttonar {
+    padding: 16px 24px;
+    border-top: 1px solid var(--ilt-border);
+    margin: 0;
+}
+body#page-mod-ilt-sessions .mform .fdescription.required { padding: 0 24px 16px; }
+
+/* ilt/view screen UI  - view.php*/
+ /* =====================================================================
+ * mod/ilt — "All sessions" admin view restyle (Figma match)
+ * REPLACE the block you previously appended to mod/ilt/styles.css with
+ * this one, then purge caches. Scoped to #page-mod-ilt-view only.
+ * ===================================================================== */
+
+body#page-mod-ilt-view {
+    --ilt-navy:   #0e2340;
+    --ilt-orange: #f5a623;
+    --ilt-red:    #e0463c;
+    --ilt-border: #e9edf2;
+    --ilt-muted:  #6b7a8d;
+    --ilt-ink:    #1f2d3d;
+}
+
+/* Keep the breadcrumb, but hide only the theme's duplicate activity title +
+ * icon (our navy card below is the real title). */
+body#page-mod-ilt-view #page-header .page-context-header,
+body#page-mod-ilt-view #page-header .header-actions-container {
+    display: none;
+}
+body#page-mod-ilt-view #page-header {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    margin-bottom: 0;
+}
+
+body#page-mod-ilt-view #region-main { position: relative; }
+
+body#page-mod-ilt-view #region-main .box.generalbox {
+    border: 0;
+    background: transparent;
+    padding: 0 !important;
+}
+
+/* ---------- Title card: laid out with GRID so the icon and text are
+ *            separate cells and can never overlap. ---------- */
+body#page-mod-ilt-view #region-main h2.all_session {
+    display: grid;
+    grid-template-columns: 48px 1fr;   /* icon | text */
+    grid-template-rows: auto auto;     /* title / subtitle */
+    column-gap: 16px;
+    row-gap: 4px;
+    align-items: center;
+    align-content: center;
+    background: var(--ilt-navy);
+    color: #fff;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    line-height: 1.2;
+    border-radius: 14px;
+    margin: 0 0 20px !important;
+    padding: 20px 24px !important;
+}
+/* Orange square + white graduation-cap icon (grid cell 1, spans both rows). */
+body#page-mod-ilt-view #region-main h2.all_session::before {
+    content: "";
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    align-self: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background-color: var(--ilt-orange);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 26px 26px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M12 3 1 8l11 5 9-4.09V15h2V8L12 3zM5 13.18v3.5C5 18.34 8.13 20 12 20s7-1.66 7-3.32v-3.5l-7 3.18-7-3.18z'/%3E%3C/svg%3E");
+}
+/* Static subtitle (row 2, col 2). Live "· N sessions" count needs a PHP hook. */
+body#page-mod-ilt-view #region-main h2.all_session::after {
+    content: "Instructor-led training";
+    grid-column: 2;
+    grid-row: 2;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, .7);
+}
+
+/* ---------- "Add a new session" button (top-right of the card) ---------- */
+body#page-mod-ilt-view .Add_new_session {
+    position: absolute;
+    top: 45px;
+    right: 24px;
+    float: none;
+    margin: 0;
+    padding: 0;
+    border-top: 0;
+    z-index: 2;
+}
+body#page-mod-ilt-view a.addnewsession.btn {
+    background: var(--ilt-orange) !important;
+    border: 0 !important;
+    color: var(--ilt-navy) !important;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 11px 18px;
+    box-shadow: 0 1px 2px rgba(14, 35, 64, .15);
+}
+body#page-mod-ilt-view a.addnewsession.btn:hover { background: #e2941a !important; }
+body#page-mod-ilt-view a.addnewsession.btn i { margin-right: 6px; }
+
+/* ---------- Section header bars ---------- */
+body#page-mod-ilt-view h2.prev_session,
+body#page-mod-ilt-view h2.main {
+    background: var(--ilt-navy);
+    color: #fff !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    border-top: 0 !important;
+    border-radius: 12px;
+    margin: 20px 0 12px !important;
+    padding: 14px 20px !important;
+}
+
+/* ---------- Table cards ---------- */
+body#page-mod-ilt-view .table-responsive {
+    background: #fff;
+    border: 1px solid var(--ilt-border);
+    border-radius: 14px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, .06);
+    overflow: hidden;
+    margin-bottom: 22px;
+    padding: 25px;
+}
+body#page-mod-ilt-view table.generaltable {
+    width: 100%;
+    margin: 0;
+    border: 0;
+    border-collapse: collapse;
+        border-radius: 10px;
+    overflow: hidden;
+}
+body#page-mod-ilt-view table.generaltable thead th,
+body#page-mod-ilt-view table.generaltable thead th.header {
+    background: var(--ilt-navy);
+    color: #fff;
+    font-size: 12px !important;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    text-align: left;
+    border: 0;
+    padding: 14px 18px;
+    white-space: nowrap;
+}
+body#page-mod-ilt-view table.generaltable tbody td,
+body#page-mod-ilt-view table.generaltable tbody td.cell {
+    background: #fff;
+    border: 0;
+    border-bottom: 1px solid var(--ilt-border);
+    padding: 16px 18px;
+    font-size: 14px !important;
+    color: var(--ilt-ink);
+    vertical-align: middle;
+}
+body#page-mod-ilt-view table.generaltable tbody tr:last-child td { border-bottom: 0; }
+body#page-mod-ilt-view table.generaltable tbody td.c0 { font-weight: 700; color: var(--ilt-navy); }
+body#page-mod-ilt-view table.generaltable tbody tr.dimmed_text,
+body#page-mod-ilt-view table.generaltable tbody tr.dimmed_text td { opacity: 1; color: var(--ilt-ink); }
+
+/* Status pill (needs the status wrapped in a span — see note). */
+body#page-mod-ilt-view table.generaltable tbody td.c6 { white-space: nowrap; }
+body#page-mod-ilt-view table.generaltable tbody td.c6 .ilt-status,
+body#page-mod-ilt-view table.generaltable tbody td.c6 > span {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: #e8edf3;
+    color: #5a6b80;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+}
+
+/* ---------- Row action "..." trigger ---------- */
+body#page-mod-ilt-view table.generaltable td.c7 > a[data-toggle="dropdown"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--ilt-border);
+    border-radius: 9px;
+    color: var(--ilt-muted);
+    text-decoration: none;
+}
+body#page-mod-ilt-view table.generaltable td.c7 > a[data-toggle="dropdown"]:hover {
+    background: #f4f6f9;
+    color: var(--ilt-ink);
+}
+
+/* ---------- Row action dropdown menu + ICONS ---------- */
+body#page-mod-ilt-view .box.generalbox .dropdown-menu {
+    border: 0;
+    border-radius: 12px;
+    padding: 6px;
+    min-width: 200px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, .14);
+}
+body#page-mod-ilt-view .box.generalbox .dropdown-menu a.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--ilt-ink);
+}
+body#page-mod-ilt-view .box.generalbox .dropdown-menu a.dropdown-item:hover { background: #f4f6f9; }
+
+/* Icon slot before every item. */
+body#page-mod-ilt-view .box.generalbox .dropdown-menu a.dropdown-item::before {
+    content: "";
+    flex: 0 0 18px;
+    width: 18px;
+    height: 18px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 18px 18px;
+}
+/* Edit = pencil (orange). Matches sessions.php?s=N with no &c / &d. */
+body#page-mod-ilt-view .box.generalbox .dropdown-menu a.dropdown-item[href*="sessions.php"]:not([href*="&c=1"]):not([href*="&d=1"])::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f5a623' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20h9'/%3E%3Cpath d='M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z'/%3E%3C/svg%3E");
+}
+/* Copy (orange). */
+body#page-mod-ilt-view .box.generalbox .dropdown-menu a.dropdown-item[href*="&c=1"]::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f5a623' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='13' height='13' rx='2'/%3E%3Cpath d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'/%3E%3C/svg%3E");
+}
+/* Delete = trash (red), and red label. */
+body#page-mod-ilt-view .box.generalbox .dropdown-menu a.dropdown-item[href*="&d=1"] { color: var(--ilt-red); }
+body#page-mod-ilt-view .box.generalbox .dropdown-menu a.dropdown-item[href*="&d=1"]::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e0463c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='3 6 5 6 21 6'/%3E%3Cpath d='M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2'/%3E%3Cline x1='10' y1='11' x2='10' y2='17'/%3E%3Cline x1='14' y1='11' x2='14' y2='17'/%3E%3C/svg%3E");
+}
+/* See attendees = user-check (orange), with a divider above it. */
+body#page-mod-ilt-view .box.generalbox .dropdown-menu a.dropdown-item[href*="attendees.php"] {
+    border-top: 1px solid var(--ilt-border);
+    margin-top: 5px;
+    padding-top: 11px;
+}
+body#page-mod-ilt-view .box.generalbox .dropdown-menu a.dropdown-item[href*="attendees.php"]::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f5a623' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3Cpolyline points='16 11 18 13 22 9'/%3E%3C/svg%3E");
+}
+/* Sign-up = user-plus (orange). */
+body#page-mod-ilt-view .box.generalbox .dropdown-menu a.dropdown-item[href*="signup.php"]::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f5a623' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3Cline x1='19' y1='8' x2='19' y2='14'/%3E%3Cline x1='16' y1='11' x2='22' y2='11'/%3E%3C/svg%3E");
+}
+
+/* ---------- Pagination (rendered as the card's white footer) ---------- */
+/* When a pager follows a table card, flatten that card's bottom so the pager
+ * attaches as its footer. :has() is ignored by old browsers, which simply
+ * fall back to the pager sitting below the card. */
+body#page-mod-ilt-view .table-responsive:has(+ nav.pagination),
+body#page-mod-ilt-view .table-responsive:has(+ .pagination) {
+    margin-bottom: 0;
+    border-bottom: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+body#page-mod-ilt-view nav.pagination {
+    display: flex;
+    justify-content: flex-end;
+    background: #fff;
+    margin: 0 0 22px;
+    padding: 12px 18px;
+    border: 1px solid var(--ilt-border);
+    border-top: 0;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, .06);
+}
+body#page-mod-ilt-view nav.pagination ul.pagination { margin: 0; }
+body#page-mod-ilt-view .pagination .page-item .page-link {
+    min-width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 4px;
+    border: 1px solid var(--ilt-border);
+    border-radius: 9px;
+    color: #33455c;
+    font-weight: 600;
+    background: #fff;
+}
+body#page-mod-ilt-view .pagination .page-item.active .page-link {
+    background: var(--ilt-navy);
+    border-color: var(--ilt-navy);
+    color: #fff;
+}
+body#page-mod-ilt-view .pagination .page-item:last-child .page-link { color: var(--ilt-orange); }
+
+/* ---------- Export attendance ---------- */
+body#page-mod-ilt-view #region-main .box.generalbox > h2 {
+    background: var(--ilt-navy);
+    color: #fff !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    border-radius: 12px 12px 0 0;
+    margin: 24px 0 0 !important;
+    padding: 14px 20px !important;
+}
+body#page-mod-ilt-view #region-main .box.generalbox > form {
+    background: #fff;
+    border: 1px solid var(--ilt-border);
+    border-top: 0;
+    border-radius: 0 0 14px 14px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, .06);
+}
+body#page-mod-ilt-view .box.generalbox > form select.menudownload,
+body#page-mod-ilt-view .box.generalbox > form select[name="download"] {
+    border: 1px solid var(--ilt-border);
+    border-radius: 10px;
+    padding: 8px 12px;
+    min-width: 180px;
+    margin-right: 12px;
+}
+body#page-mod-ilt-view div[role="main"] {
+    background: transparent;
+    border-radius: 8px;
+    box-shadow: unset;
+    padding: 0;
+}
+body#page-mod-ilt-view .box.generalbox > form input.exporttofile {
+    background: var(--ilt-navy) !important;
+    border: 0 !important;
+    color: #fff !important;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 10px 18px;
+}
+body#page-mod-ilt-view .box.generalbox > form input.exporttofile:hover { background: #15305a !important; } 
+/* ---------- Export attendance ---------- */
+body#page-mod-ilt-view #region-main .box.generalbox > h2 {
+    background: var(--ilt-navy);
+    color: #fff !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    border-radius: 12px 12px 0 0;
+    margin: 24px 0 0 !important;
+    padding: 14px 20px !important;
+}
+body#page-mod-ilt-view #region-main .box.generalbox > form {
+    background: #fff;
+    border: 1px solid var(--ilt-border);
+    border-top: 0;
+    border-radius: 0 0 14px 14px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, .06);
+}
+/* "Format" label on row 1; select + button pinned side-by-side on row 2. */
+body#page-mod-ilt-view .box.generalbox > form > div {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    justify-content: start;
+    align-items: center;
+    column-gap: 12px;
+    row-gap: 8px;
+    color: var(--ilt-navy);
+    font-weight: 600;
+}
+body#page-mod-ilt-view .box.generalbox > form select.menudownload,
+body#page-mod-ilt-view .box.generalbox > form select[name="download"] {
+    grid-row: 2;
+    grid-column: 1;
+    width: auto;
+    min-width: 190px;
+    margin: 0;
+    border: 1px solid var(--ilt-border);
+    border-radius: 10px;
+    padding: 9px 12px;
+}
+/* The export control is now a <button>, so target .exporttofile (not input). */
+body#page-mod-ilt-view .box.generalbox > form .exporttofile {
+    grid-row: 2;
+    grid-column: 2;
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--ilt-navy) !important;
+    border: 0 !important;
+    color: #fff !important;
+    font-weight: 600;
+    border-radius: 10px !important;
+    padding: 10px 20px;
+    white-space: nowrap;
+}
+body#page-mod-ilt-view .box.generalbox > form .exporttofile:hover { background: #15305a !important; }
+
+/* attendees.php */

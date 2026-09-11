@@ -847,43 +847,49 @@ $data['courseid'] = $coursedata;
 } else if ($case == 'fiterDepartment') {
 
     $departmentId = required_param('departmentId', PARAM_TEXT);
-    $managerid = required_param('userid', PARAM_INT);
+    $userid = required_param('userid', PARAM_INT);
 
     $dapartment = '';
 
-    // ✅ FIXED QUERY
-if (is_siteadmin($managerid)) {
-    // Admin sees all users
-    $userSql = "SELECT u.id, u.firstname, u.lastname, u.email
-                FROM {user} u
-                WHERE u.department = ?";
-    $params = [$departmentId];
+    //  Check if Site Admin
+    if (is_siteadmin($userid)) {
 
-} else {
-    // Normal manager
-    $userSql = "SELECT u.id, u.firstname, u.lastname, u.email
-                FROM {user} u
-                INNER JOIN {user_info_data} uid ON uid.userid = u.id
-                INNER JOIN {user_info_field} uif ON uif.id = uid.fieldid
-                WHERE u.department = ?
-                AND uif.shortname = 'reportingmanager'
-                AND uid.data = ?";
-    $params = [$departmentId, $managerid];
-}
+        // 🔥 ADMIN: Get ALL users from selected department
+        $userSql = "SELECT DISTINCT u.id as userid, u.*
+                    FROM {user_info_data} ud
+                    INNER JOIN {user_info_field} uf ON ud.fieldid = uf.id
+                    INNER JOIN {user} u ON u.id = ud.userid
+                    WHERE uf.shortname = 'department'
+                    AND ud.data = ?";
 
-$allUsers = $DB->get_records_sql($userSql, $params);
+        $allUsers = $DB->get_records_sql($userSql, [$departmentId]);
 
+    } else {
+
+        //   MANAGER LOGIC (UNCHANGED)
+        $userSql = "SELECT DISTINCT ud.userid, u.*
+                    FROM {user_info_data} AS ud
+                    INNER JOIN {user_info_field} AS uf ON ud.fieldid = uf.id
+                    INNER JOIN {user} u ON ud.userid = u.id
+                    WHERE ud.data LIKE ?
+                    AND department = ?";
+
+        $allUsers = $DB->get_records_sql($userSql, [$userid . '%', $departmentId]);
+    }
+
+    //  Dropdown render (same for both)
     $dapartment .= '<select name="userid" id="userid" class="form-control">
-        <option value="">Select user</option>';
+            <option value="">Select user</option>';
 
     foreach ($allUsers as $user) {
-        $dapartment .= "<option value='{$user->id}'>" . fullname($user) . " ({$user->email})</option>";
+        $fullname = fullname($user);
+        $dapartment .= "<option value='" . $user->userid . "'>" . $fullname . " (" . $user->email . ")</option>";
     }
 
     $dapartment .= '</select>';
 
     echo $dapartment;
-} else if ($case == 'fiterlanddRating') {
+}else if ($case == 'fiterlanddRating') {
 
 	//$roleid = required_param('roleid', PARAM_INT);
 	$buid = required_param('buid', PARAM_TEXT);

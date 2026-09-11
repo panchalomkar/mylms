@@ -1,5 +1,28 @@
 <?php
-use theme_remui\widget;
+defined('MOODLE_INTERNAL') || die();
+global $CFG;
+// ✅ ADD THIS HERE
+require_once($CFG->dirroot . '/theme/remui/classes/widget.php');
+/**
+ * Build a plain HTML <select> element (replaces theme_remui\widget::select).
+ * Compatible with Moodle 5.0 / REMUI 5 without widget dependency.
+ */
+function people_build_select($options, $id, $name, $selected = '', $anyvalue = '', $multiple = false) {
+    $multiple_attr = $multiple ? ' multiple' : '';
+    $html = '<select id="' . s($id) . '" name="' . s($name) . '" class="form-control people-select"' . $multiple_attr . '>';
+    if ($anyvalue !== '') {
+        $html .= '<option value="">' . s($anyvalue) . '</option>';
+    }
+    if (is_array($options)) {
+        foreach ($options as $val => $label) {
+            $sel = ((string)$val === (string)$selected) ? ' selected' : '';
+            $html .= '<option value="' . s($val) . '"' . $sel . '>' . s($label) . '</option>';
+        }
+    }
+    $html .= '</select>';
+    return $html;
+}
+
 
 /** 
 * Function For Displying New Design For Search Button Entire LMS and Action Buttons  
@@ -14,8 +37,8 @@ function get_first_rowsearch_buttons_block($filter, $multifilter, $companyid) {
   if (!empty($SESSION->currenteditingcompany)) {
       $companyids = $SESSION->currenteditingcompany;
   } else if (!empty($USER->profile->company)) {
-      $usercompany = company::by_userid($USER->id);
-      $companyids = $usercompany->id;
+      
+      
   } else {
       $companyids = "";
   }
@@ -34,9 +57,9 @@ function get_first_rowsearch_buttons_block($filter, $multifilter, $companyid) {
     }
 
     if (isset($_POST['search'])) {
-        $search = filter_input(INPUT_POST, 'search', FILTER_SANITIZE_ENCODED);
+        $search = filter_input(INPUT_POST, 'search', FILTER_SANITIZE_SPECIAL_CHARS);
     } else if (isset($_GET['search'])) {
-        $search = filter_input(INPUT_GET, 'search', FILTER_SANITIZE_ENCODED);
+        $search = filter_input(INPUT_GET, 'search', FILTER_SANITIZE_SPECIAL_CHARS);
     } else {
         $search = '';
     }
@@ -216,6 +239,15 @@ function get_filter_block($filter, $multifilter) {
     }
 
     $contextdata['confirmedfilter'] = get_confirmed_filter($authenticationop);
+
+    // Department filter (custom profile field)
+    $ffilter = (isset($multifilter['department'])) ? $multifilter['department'] : null;
+    if(isset($ffilter->field) && $ffilter->field=='department') {
+      $departmentop = $ffilter->ar;
+    } else {
+      $departmentop = null;
+    }
+    $contextdata['departmentfilter'] = get_department_filter($departmentop);
     $ffilter = (isset($multifilter['suspended'])) ? $multifilter['suspended'] : null;
     if(isset($ffilter->field) && $ffilter->field=='suspended') {
       $authenticationop = $ffilter->value;
@@ -276,7 +308,7 @@ function get_filter_block($filter, $multifilter) {
 * @since 2018-02-12
 * @remui
 */
-function get_user_block($filter, $sortfield='', $order='ASC', $multifilter) {
+function get_user_block($filter, $multifilter, $sortfield = '', $order = 'ASC') {
   global $CFG, $DB, $OUTPUT, $USER;
     /**
     * Descripcion : Add clear all case, Set filter an multifilter to null and set filter page to 0
@@ -420,7 +452,12 @@ function get_user_block($filter, $sortfield='', $order='ASC', $multifilter) {
       if(has_capability('moodle/user:update', $sitecontext)) {
           // prevent editing of admins by non-admins
         if (is_siteadmin($USER) or !is_siteadmin($user)) {
-          $urledit = $CFG->wwwroot.'/user/editadvanced.php?id='.$user->id;
+          $returnurl = urlencode('/local/people/');
+
+$urledit = $CFG->wwwroot.'/user/editadvanced.php?id='
+    .$user->id.
+    '&returnto=profile'.
+    '&returnurl='.$returnurl;
           $userdata['urledit'] = $urledit;
           $userdata['iseditbtn'] = true;
         }
@@ -513,34 +550,66 @@ function get_user_block($filter, $sortfield='', $order='ASC', $multifilter) {
          $tenant_comp = '-';
        }
      
-     $sqlss = "SELECT d.name FROM {company_users} AS cu 
-      JOIN {department} AS d ON d.id = cu.departmentid AND cu.userid = :userid WHERE cu.suspended = 0";
-      $get_dept = $DB->get_record_sql($sqlss,['userid' => $user->id]);
-      }
+     // Department from company_users (optional - skip if IOMAD not installed).
+    $get_dept = null;
 
-      $sqlssss = "SELECT * FROM {block_skilladd} WHERE userid = $user->id";
-      $get_skill = $DB->get_record_sql($sqlssss);
+try {
 
-      
-      if ($get_skill->skilllevel == "level1") {
-        $level = "Beginner";
-      }elseif ($get_skill->skilllevel == "level2") {
-        $level = "Intermediate";
-      }elseif ($get_skill->skilllevel == "level3") {
-        $level = "Advanced";
-      }else{
-        $level = "--";
-      }
+    $sqlss = "SELECT uid.data AS name
+                FROM {user_info_data} uid
+                JOIN {user_info_field} uif
+                  ON uif.id = uid.fieldid
+               WHERE uid.userid = :userid
+                 AND uif.shortname = :shortname";
 
-      $get_skillname = $DB->get_record('block_skilladd_items', array('id' => $get_skill->skill));
+    $get_dept = $DB->get_record_sql($sqlss, [
+        'userid' => $user->id,
+        'shortname' => 'department'
+    ]);
+
+} catch (Exception $e) { /* ignore */ }
+     }
+
+      // Skill block (optional - skip gracefully if block not installed).
+      $get_skill = null;
+      $get_skillname = null;
+      $level = "--";
+      try {
+          if ($DB->get_manager()->table_exists('block_skilladd')) {
+              $sqlssss = "SELECT * FROM {block_skilladd} WHERE userid = $user->id";
+              $get_skill = $DB->get_record_sql($sqlssss);
+              if ($get_skill) {
+                  if ($get_skill->skilllevel == "level1") { $level = "Beginner"; }
+                  elseif ($get_skill->skilllevel == "level2") { $level = "Intermediate"; }
+                  elseif ($get_skill->skilllevel == "level3") { $level = "Advanced"; }
+                  $get_skillname = $DB->get_record('block_skilladd_items', array('id' => $get_skill->skill));
+              }
+          }
+      } catch (Exception $e) { /* ignore missing tables */ }
      $userdata['checkbox'] = $checkbox;
      $userdata['fullname'] = $user->firstname .' '.$user->lastname;
-     $userdata['dept'] = $get_dept->name;
+     // Avatar initials (fallback) and username for new template.
+     $userdata['initials'] = strtoupper(substr($user->firstname, 0, 1) . substr($user->lastname, 0, 1));
+     $userdata['username'] = $user->username;
+
+     // User profile picture — build URL directly from stored picture revision.
+     // Avoids user_picture::__construct() strictness on stdClass fields.
+     $userpicture = isset($user->picture) ? (int)$user->picture : 0;
+     if ($userpicture > 0) {
+         // Moodle stores profile images at: /pluginfile.php/{context_id}/user/icon/theme/f{size}-{revision}
+         $usercontext = context_user::instance((int)$user->id);
+         $picurl = $CFG->wwwroot . '/pluginfile.php/' . $usercontext->id
+                 . '/user/icon/' . $PAGE->theme->name . '/f1?rev=' . $userpicture;
+         $userdata['userimage'] = $picurl;
+     } else {
+         $userdata['userimage'] = false;
+     }
+     $userdata['dept'] = isset($get_dept->name) ? $get_dept->name : '-';
      $userdata['email'] = $user->email;
      $userdata['enroll'] = $courses['enroll'];
      $userdata['complete'] = $courses['complete'];
-     $userdata['skill'] = $get_skillname->name;
-     $userdata['position'] = $get_skill->position;
+     $userdata['skill'] = isset($get_skillname->name) ? $get_skillname->name : '-';
+     $userdata['position'] = isset($get_skill->position) ? $get_skill->position : '-';
      $userdata['level'] = $level;
      $userdata['tenant_comp'] = $tenant_comp;
      $userdata['istenant'] = $tenant;
@@ -553,7 +622,7 @@ function get_user_block($filter, $sortfield='', $order='ASC', $multifilter) {
 
     if(has_capability('moodle/user:update', $sitecontext)) {
       $userdata['isupdateuser'] = true;
-      $userdata['isupdateuserurl'] =  new moodle_url($CFG->wwwroot . '/user/profile.php', array('id' => $user->id));
+      $userdata['isupdateuserurl'] = (new moodle_url('/user/profile.php', array('id' => $user->id)))->out(false);
     }
     $userrows[] = $userdata;
   }
@@ -585,8 +654,12 @@ function get_user_block($filter, $sortfield='', $order='ASC', $multifilter) {
       $contextdata['totalrecords'] = get_string('totalrecords', 'local_people', $result->count);
     }
      // Check if Disable tenant from setting then below condition working 
-    $theme = theme_config::load('remui');
-    $tenanthide = $theme->settings->enabletenantinfo;
+    // REMUI theme tenant setting (gracefully degrade if setting missing).
+    $tenanthide = false;
+    try {
+        $theme = theme_config::load('remui');
+        $tenanthide = isset($theme->settings->enabletenantinfo) ? $theme->settings->enabletenantinfo : false;
+    } catch (Exception $e) { $tenanthide = false; }
       // END
     if($isadmin && empty($tenanthide)){
       $contextdata['tenanthide'] = true;
@@ -775,6 +848,42 @@ function get_username_filter($usernameop = 'contain', $usernamevalue = '') {
 * @param string $suspendedop    
 * @return This method return the suspend filter block
 */
+
+/** 
+* Department Filter — values fetched from user custom profile field (shortname=department)
+*/
+function get_department_filter($departmentop = null) {
+  global $CFG, $DB, $OUTPUT, $SESSION;
+
+  $context = array();
+
+  // Fetch distinct department values from user_info_data joined with user_info_field
+  $sql = "SELECT DISTINCT uid.data AS dept
+            FROM {user_info_data} uid
+            JOIN {user_info_field} uif ON uif.id = uid.fieldid
+           WHERE uif.shortname = :shortname
+             AND uid.data <> ''
+        ORDER BY uid.data ASC";
+  $rows = $DB->get_records_sql($sql, ['shortname' => 'department']);
+
+  $selected = is_array($departmentop) ? $departmentop : [];
+  $opts = [];
+  foreach ($rows as $row) {
+      $opts[] = [
+          'value'    => $row->dept,
+          'selected' => in_array($row->dept, $selected),
+      ];
+  }
+  $context['departmentopt'] = $opts;
+
+  if (!empty($selected)) {
+      $context['departmentvalue'] = true;
+      $context['departmentselected'] = array_map(function($v){ return ['value' => $v]; }, $selected);
+  }
+
+  return $OUTPUT->render_from_template('local_people/get_department_filter', $context);
+}
+
 function get_suspended_filter($suspendedop = 'manual') {
   global $CFG, $DB, $OUTPUT, $USER, $SESSION;
 
@@ -799,8 +908,9 @@ function get_suspended_filter($suspendedop = 'manual') {
     $checked2 = true;
   }
 
-  $input = widget::radio(get_string('no'), $checked1,'', 'unsuspended', false, array('value' => 0));        
-  $input2 = widget::radio(get_string('yes'), $checked2,'', 'suspended', false, array('value' => 1));
+  // Radio name must be 'suspendedop' so index.php finds $param->suspendedop via selectfilter logic
+  $input  = widget::radio(get_string('no'),  $checked1, '', 'suspendedop', false, array('value' => 0));
+  $input2 = widget::radio(get_string('yes'), $checked2, '', 'suspendedop', false, array('value' => 1));
   $context['input2'] = $input2;
   $context['input'] = $input;
 
@@ -842,8 +952,9 @@ function get_confirmed_filter($confirmedop = 'yes') {
     $checked1 = false;
   }
 
-  $input2 = widget::radio(get_string('no'), $checked1,'unconfirmed', 'unconfirmed', false, array('value' => 0));        
-  $input = widget::radio(get_string('yes'), $checked2,'confirmed', 'confirmed', false, array('value' => 1));
+  // Radio name must be 'confirmedop' so index.php finds $param->confirmedop via selectfilter logic
+  $input2 = widget::radio(get_string('no'),  $checked1, 'confirmedop', 'confirmedop', false, array('value' => 0));
+  $input  = widget::radio(get_string('yes'), $checked2, 'confirmedop', 'confirmedop', false, array('value' => 1));
   $context['input2'] = $input2;
   $context['input'] = $input;
 
@@ -864,7 +975,7 @@ function get_systemrole_filter($system) {
     $context['system'] = true;
   }
 
-  $select = \theme_remui\widget::select($options, '', '', (string)$system, get_string('anyvalue', 'local_people'), 'systemroleop');
+  $select = people_build_select($options, 'systemroleop', 'systemroleop', (string)$system, get_string('anyvalue', 'local_people'));
   $context['select'] = $select;
   return $OUTPUT->render_from_template('local_people/get_systemrole_filter', $context);             
 }
@@ -878,20 +989,38 @@ function get_systemrole_filter($system) {
 function get_courserole_filter($courselist,  $role) {
   global $CFG, $DB, $OUTPUT, $USER;
   $options = enroll_display_roles(CONTEXT_COURSE); 
-  if($courselist) {
+
+  // Normalise $courselist to an array of IDs for comparison
+  $selectedIds = array();
+  if ($courselist) {
     $context['courselistvalue'] = true;
+    if (is_array($courselist)) {
+      $selectedIds = array_map('strval', $courselist);
+    } else {
+      $selectedIds = array(strval($courselist));
+    }
   }
 
   $courses  = get_courses();
   $selector = array();
 
   foreach($courses as $key => $course){
-    $op['key'] = $course->id;
-    $op['value'] = $course->fullname;
+    $op['key']      = $course->id;
+    $op['value']    = $course->fullname;
+    $op['selected'] = in_array(strval($course->id), $selectedIds) ? true : false;
     $opt[] = $op;
   }
   $context['selectoropt'] = $opt;
-  $select = \theme_remui\widget::select($options, '', '', (string)$role, get_string('anyvalue', 'local_people'), 'courseroleop');
+
+  // Also pass selected courses as a simple list for JS pre-rendering tags
+  $context['selectedcourses'] = array();
+  foreach($courses as $key => $course){
+    if(in_array(strval($course->id), $selectedIds)){
+      $context['selectedcourses'][] = array('id' => $course->id, 'name' => $course->fullname);
+    }
+  }
+
+  $select = people_build_select($options, 'courseroleop', 'courseroleop', (string)$role, get_string('anyvalue', 'local_people'));
   $context['select'] = $select;
 
   return $OUTPUT->render_from_template('local_people/get_courserole_filter', $context);
@@ -1033,7 +1162,7 @@ function get_auth_filter($authenticationop = 'manual') {
   if($authenticationop) {
     $context['authenticationop'] = true;
   }
-  $select = \theme_remui\widget::select($options, '', '', (string)$authenticationop, get_string('anyvalue', 'local_people'), 'authop');
+  $select = people_build_select($options, 'authop', 'authop', (string)$authenticationop, get_string('anyvalue', 'local_people'));
   $context['select'] = $select;
   return $OUTPUT->render_from_template('local_people/get_auth_filter', $context);  
 }
@@ -1085,7 +1214,7 @@ function get_company_user(){
   if (!empty($SESSION->currenteditingcompany)) {
       $companyid = $SESSION->currenteditingcompany;
   } else if (!empty($USER->profile->company)) {
-      $usercompany = company::by_userid($USER->id);
+      
       $companyid = $usercompany->id;
   } else {
       $companyid = "";
@@ -1132,7 +1261,7 @@ function get_user_list($filter, $multifilter) {
   if (!empty($SESSION->currenteditingcompany)) {
       $selectedcompany = $SESSION->currenteditingcompany;
   } else if (!empty($USER->profile->company)) {
-      $usercompany = company::by_userid($USER->id);
+      
       $selectedcompany = $usercompany->id;
   } else {
       $selectedcompany = "";
@@ -1140,8 +1269,8 @@ function get_user_list($filter, $multifilter) {
   $sql = '';
   $countcondition = array();
   $result   = new stdClass();
-  $countsql = 'SELECT count(*),id,firstname,email,lastname,lastaccess,suspended,confirmed FROM {user} u WHERE id > 1 AND deleted <> 1';
-  $sql      = 'SELECT id,firstname,email,lastname,lastaccess,suspended,confirmed FROM {user} u WHERE id > 1 AND deleted <> 1'; 
+  $countsql = 'SELECT count(*),id,firstname,email,lastname,username,picture,imagealt,lastaccess,suspended,confirmed FROM {user} u WHERE id > 1 AND deleted <> 1';
+  $sql      = 'SELECT id,firstname,email,lastname,username,picture,imagealt,lastaccess,suspended,confirmed FROM {user} u WHERE id > 1 AND deleted <> 1'; 
 
 
   // $systemcontext = context_system::instance();
@@ -1217,8 +1346,8 @@ function get_user_list($filter, $multifilter) {
 
           if($ffilter->field !=='auth') {
             $op = ($ffilter->op) ? " = 1" : " = 0";
-            $sql .= "$field{$op}";
-            $countsql .= "$field{$op}";
+            $sql .= "u.$field{$op}";
+            $countsql .= "u.$field{$op}";
           }else {
             $sql .= "$field = :selection";
             $countsql .= "$field = :selection";
@@ -1268,7 +1397,8 @@ function get_user_list($filter, $multifilter) {
 
         $invalues = array();
 
-        if(isset($ffilter->field) && isset($ffilter->op) && $ffilter->type=='multipleselectfilter') {
+        // Skip 'department' here — it uses a subquery below (user_info_data), not u.department
+        if(isset($ffilter->field) && isset($ffilter->op) && $ffilter->type=='multipleselectfilter' && $ffilter->field !== 'department') {
 
           $field = validate_name($ffilter->field);
           foreach ($ffilter->ar as $key => $value) {
@@ -1284,6 +1414,19 @@ function get_user_list($filter, $multifilter) {
           $sql .= " u.id IN (SELECT userid FROM {role_assignments} a WHERE a.contextid=1 AND a.roleid= :roleid )";
           $countsql .= " u.id IN (SELECT userid FROM {role_assignments} a WHERE a.contextid=1 AND a.roleid= :roleid )";
           $params['roleid'] = $ffilter->op;
+        }
+
+        // Department filter — stored in user custom profile field (user_info_data), not on user table
+        if(isset($ffilter->field) && $ffilter->field=='department' && $ffilter->type=='multipleselectfilter' && !empty($ffilter->ar)) {
+          $deptvals = array();
+          foreach($ffilter->ar as $dk => $dv) {
+            $deptvals[] = ":dept$dk";
+            $params["dept$dk"] = $dv;
+          }
+          $deptlist = implode(',', $deptvals);
+          $deptsub = " u.id IN (SELECT uid.userid FROM {user_info_data} uid JOIN {user_info_field} uif ON uif.id = uid.fieldid WHERE uif.shortname = 'department' AND uid.data IN ({$deptlist}))";
+          $sql      .= $deptsub;
+          $countsql .= $deptsub;
         }
 
         if(isset($ffilter->field) && $ffilter->type=='courserole' && !empty($ffilter->ar)) {
@@ -1366,7 +1509,7 @@ function get_user_list($filter, $multifilter) {
       $information = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
       if($information == null) {
         $sql = "";
-        $sql  = 'SELECT id,firstname,lastname,email,lastaccess,suspended FROM {user} WHERE id > 1 AND deleted <> 1';
+        $sql  = 'SELECT id,firstname,lastname,email,username,picture,imagealt,lastaccess,suspended FROM {user} WHERE id > 1 AND deleted <> 1';
 
         $sql .= " ORDER BY firstname ASC";
         $filter->page = 0;
@@ -1385,7 +1528,7 @@ function get_user_list($filter, $multifilter) {
       $users = $DB->get_records_sql($companySQL, $params);
       foreach($users as $key => $value ) {
         $condition = null;
-        $usercompany = company::get_company_byuserid($value->id);
+        $usercompany = (function_exists("company") || class_exists("company")) ? company::get_company_byuserid($value->id) : false;
         $condition = is_object($usercompany) ? $usercompany->id !== $companyids : true;
         $condition = ($companyids == 'NONE')  ? $usercompany != false : $condition;
         $condition = ($companyids == 'ALL')   ? $usercompany == false : $condition;
@@ -1598,7 +1741,7 @@ function get_cohortadd_form(array $users): array{
       $cohortlist[$key] = $value->name;
     }
 
-    $cohortlist = \theme_remui\widget::select2(get_string('cohortlist','local_people'), $cohortlist, 'cohortlist', '-1', 'cohortlist', true);
+    $cohortlist = people_build_select($cohortlist, 'cohortlist', 'cohortlist', '-1', '');
 
     $hash = [
       'users' => $users,
@@ -1663,7 +1806,7 @@ function get_message_form_html(): user_message_form{
   require_capability('moodle/site:readallmessages', context_system::instance());
 
   if (empty($CFG->messaging)) {
-    print_error('messagingdisable', 'error');
+    throw new moodle_exception('messagingdisable', 'error');
   }
 
     //TODO: add support for large number of users

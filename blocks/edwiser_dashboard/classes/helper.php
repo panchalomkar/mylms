@@ -382,37 +382,131 @@ public static function get_custom_report_block(int $reportid): array {
 //     ];
 // }
 
+// public static function get_site_overview(
+//     string $filter = 'last7days',
+//     int $cohortid = 0
+// ): array {
+//     // Instantiate active users block
+//     $activeusersblock = new \local_edwiserreports\blocks\activeusersblock();
+
+//     $params = (object)[
+//         'filter'   => $filter,    // last7days | last30days | thismonth
+//         'cohortid' => $cohortid
+//     ];
+
+//     $data = $activeusersblock->get_data($params);
+
+//     $totalActiveUsers = array_sum($data->data->activeUsers ?? []);
+//     $totalEnrollments = array_sum($data->data->enrolments ?? []);
+//     $totalCompletions = array_sum($data->data->completionRate ?? []);
+
+//     return [
+//         'activeusers'  => $totalActiveUsers,
+//         'enrollments'  => $totalEnrollments,
+//         'completions'  => $totalCompletions,
+
+//         'trendActiveUsers' => $data->data->activeUsers ?? [],
+//         'trendEnrollments' => $data->data->enrolments ?? [],
+//         'trendCompletions' => $data->data->completionRate ?? [],
+//         'trendDates'       => $data->dates ?? []
+//     ];
+// }
+
+
+/* ================= SITE OVERVIEW ================= */
 public static function get_site_overview(
     string $filter = 'last7days',
     int $cohortid = 0
 ): array {
     // Instantiate active users block
     $activeusersblock = new \local_edwiserreports\blocks\activeusersblock();
-
+ 
     $params = (object)[
         'filter'   => $filter,    // last7days | last30days | thismonth
         'cohortid' => $cohortid
     ];
-
+ 
     $data = $activeusersblock->get_data($params);
-
-    $totalActiveUsers = array_sum($data->data->activeUsers ?? []);
-    $totalEnrollments = array_sum($data->data->enrolments ?? []);
-    $totalCompletions = array_sum($data->data->completionRate ?? []);
-
+ 
+    $activeUsersSeries = $data->data->activeUsers ?? [];
+    $enrolmentsSeries  = $data->data->enrolments ?? [];
+    $completionsSeries = $data->data->completionRate ?? [];
+ 
+    $totalActiveUsers = array_sum($activeUsersSeries);
+    $totalEnrollments = array_sum($enrolmentsSeries);
+    $totalCompletions = array_sum($completionsSeries);
+ 
+    // Real, dynamic trend: compares the first half of the selected window
+    // against the second half (e.g. days 1-3 vs days 4-7 for "last7days").
+    // NOTE: this is NOT a "vs last month" figure - the underlying block
+    // has no API to fetch an equivalent prior window, so a true
+    // period-over-period comparison isn't available without changes to
+    // activeusersblock itself.
+    $activeuserstrend  = self::calculate_split_trend($activeUsersSeries);
+    $enrollmentstrend  = self::calculate_split_trend($enrolmentsSeries);
+    $completionstrend  = self::calculate_split_trend($completionsSeries);
+ 
     return [
         'activeusers'  => $totalActiveUsers,
         'enrollments'  => $totalEnrollments,
         'completions'  => $totalCompletions,
-
-        'trendActiveUsers' => $data->data->activeUsers ?? [],
-        'trendEnrollments' => $data->data->enrolments ?? [],
-        'trendCompletions' => $data->data->completionRate ?? [],
+ 
+        // flat fields the mustache template / AJAX handler can bind to directly
+        'activeuserstrend'      => $activeuserstrend['trend'],
+        'activeuserstrendclass' => $activeuserstrend['trendtype']['up'] ? 'text-success' : ($activeuserstrend['trendtype']['down'] ? 'text-danger' : 'text-muted'),
+        'activeuserstrendarrow' => $activeuserstrend['trendtype']['up'] ? '▲' : ($activeuserstrend['trendtype']['down'] ? '▼' : ''),
+ 
+        'enrollmentstrend'      => $enrollmentstrend['trend'],
+        'enrollmentstrendclass' => $enrollmentstrend['trendtype']['up'] ? 'text-success' : ($enrollmentstrend['trendtype']['down'] ? 'text-danger' : 'text-muted'),
+        'enrollmentstrendarrow' => $enrollmentstrend['trendtype']['up'] ? '▲' : ($enrollmentstrend['trendtype']['down'] ? '▼' : ''),
+ 
+        'completionstrend'      => $completionstrend['trend'],
+        'completionstrendclass' => $completionstrend['trendtype']['up'] ? 'text-success' : ($completionstrend['trendtype']['down'] ? 'text-danger' : 'text-muted'),
+        'completionstrendarrow' => $completionstrend['trendtype']['up'] ? '▲' : ($completionstrend['trendtype']['down'] ? '▼' : ''),
+ 
+        'trendActiveUsers' => $activeUsersSeries,
+        'trendEnrollments' => $enrolmentsSeries,
+        'trendCompletions' => $completionsSeries,
         'trendDates'       => $data->dates ?? []
     ];
 }
-
-
+ 
+/**
+ * Splits a per-day series in half and compares the sum of the earlier
+ * half to the later half, returning the same shape as the admin
+ * calculate_trend() helper: ['trend' => '+12%', 'trendtype' => ['up'=>bool,'down'=>bool]]
+ */
+private static function calculate_split_trend(array $series): array {
+    $count = count($series);
+ 
+    if ($count < 2) {
+        return [
+            'trend' => '0%',
+            'trendtype' => ['up' => false, 'down' => false]
+        ];
+    }
+ 
+    $mid = (int) floor($count / 2);
+    $earlier = array_slice($series, 0, $mid);
+    $later   = array_slice($series, $mid);
+ 
+    $earliersum = array_sum($earlier);
+    $latersum   = array_sum($later);
+ 
+    if ($earliersum <= 0) {
+        return [
+            'trend' => $latersum > 0 ? '+100%' : '0%',
+            'trendtype' => ['up' => $latersum > 0, 'down' => false]
+        ];
+    }
+ 
+    $percent = round((($latersum - $earliersum) / $earliersum) * 100);
+ 
+    return [
+        'trend' => ($percent >= 0 ? '+' : '') . $percent . '%',
+        'trendtype' => ['up' => $percent > 0, 'down' => $percent < 0]
+    ];
+}
     /* ================= ACTIVE USERS ================= */
     private static function get_active_users(): array {
         $block = new \local_edwiserreports\blocks\activeusersblock();

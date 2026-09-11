@@ -181,11 +181,12 @@ switch (required_param('action', PARAM_TEXT)) {
     // Remove a course from a lerningpath.
     case 'remove_course':
         require_once "{$CFG->dirroot}/local/learningpaths/classes/forms/AddCoursesForm.php";
-        $learningpathcourse = new LearningPathCourse(required_param('item', PARAM_INT));
-        $deleted = $learningpathcourse->delete();
-        if (!$deleted) {
-            throw new dml_write_exception('cannot_remove_the_course', 'local_learningpaths');
-        }else{
+       case 'remove_course':
+    $learningpathcourse = new LearningPathCourse(required_param('item', PARAM_INT));
+    $deleted = $learningpathcourse->delete();
+    if (!$deleted) {
+        throw new dml_write_exception('cannot_remove_the_course', 'local_learningpaths');
+    }else{
             /**
              * Delete the course prerreq too
              * @author Daniel Carmona

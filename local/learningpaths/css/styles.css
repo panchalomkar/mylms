@@ -1,3 +1,4 @@
+
 .img-responsive-plms{
     width: 100%;
     height: 100%;
@@ -2176,13 +2177,13 @@ body#page-local-learningpaths-view .slider.round:before {
 	 border-top-left-radius: 3px;
 	 margin-bottom: 5px !important;
 	 box-shadow: none !important;
-	 border-left: 4px solid #dbecf5;
+	 border-left: 4px solid #ec9707;
 	 color: #465b65 !important;
 	 font-weight:600;
 	 font-size: 13px;
 }
  #page-local-learningpaths-index .plms-learningpaths div.plms-learningpath a, #page-local-learningpaths-view .plms-learningpaths div.plms-learningpath a {
-	 color: #465b65 !important;
+	 color: #465b65;
 	 font-size: 13px;
 }
  #page-local-learningpaths-index .plms-learningpaths div.plms-learningpath i, #page-local-learningpaths-view .plms-learningpaths div.plms-learningpath i {
@@ -2368,6 +2369,7 @@ body#page-local-learningpaths-view .slider.round:before {
 	 overflow: hidden;
 	 white-space: nowrap;
 	 text-overflow: ellipsis;
+     margin-left: 60px;
 }
  #page-local-learningpaths-view #block_lpd_content .start-date {
 	 width: 20%;
@@ -2749,9 +2751,9 @@ body#page-local-learningpaths-view .slider.round:before {
  .tab-pane div.input-group-btn, .tab-pane div.input-group div {
 	 width: 100%;
 }
- #page-local-learningpaths-view .modal-header {
+ /* #page-local-learningpaths-view .modal-header {
 	 margin: 15px; padding: 6px;
-}
+} */
  #page-local-learningpaths-view .header-add-course .header-courses .header-title span {
 	 margin-left: 2.5rem;
 }
@@ -2980,3 +2982,4 @@ button.add-prerequisites.btn.btn-primary.btn-round {
     height: auto;
     margin-bottom: 0;
 }
+  

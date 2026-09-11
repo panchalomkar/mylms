@@ -450,7 +450,7 @@ class main implements renderable, templatable {
 
         $defaultvariables = [
             'totalcoursecount' => count(enrol_get_all_users_courses($USER->id, true)),
-            'nocoursesimg' => $nocoursesurl,
+            'nocoursesimg' => 'abc.png',
             'newcourseurl' => $newcourseurl,
             'grouping' => $this->grouping,
             'sort' => $sort,

@@ -32,7 +32,7 @@ class LearningPath extends LearningPathBase {
         global $PAGE;
         // Call parent contructor
         parent::__construct();
-        $PAGE->set_pagelayout('standard');
+        $PAGE->set_pagelayout('default_plugins');
         // Assign object attribute values
         $this->id = ($id != 0) ? $id : false;
         $this->renderer = $this->page->get_renderer('local_learningpaths');
@@ -273,7 +273,7 @@ class LearningPath extends LearningPathBase {
         );
 
         // Get users ids, add guest user to array and convert to string to use on sql query
-        $users = array_keys(is_array($users) ? $users : []);
+        $users = array_keys($users);
         $users[] = 1;
         $users = implode(",", $users);
 
@@ -313,54 +313,27 @@ class LearningPath extends LearningPathBase {
     /**
     * load available cohorts list to add in the learning path
     */
-private function load_available_cohorts_list($companyid) {
-    global $DB;
-
-    $cohorts = [];
-
-    // Collect already assigned cohort IDs
-    foreach ($this->cohorts as $cohort) {
-        if (!empty($cohort->data->cohortid)) {
-            $cohorts[] = (int)$cohort->data->cohortid;
+    private function load_available_cohorts_list($companyid) {
+        $cohorts = [];
+        $join    = '';
+        $cohorts_where = '';
+        foreach ($this->cohorts as $cohort) {
+            $cohorts[] = $cohort->data->cohortid;
         }
-    }
-
-    // Base WHERE
-    $where = "c.visible = 1";
-    $params = [];
-
-    // Exclude already added cohorts
-    if (!empty($cohorts)) {
-        list($notinsql, $notinparams) = $DB->get_in_or_equal($cohorts, SQL_PARAMS_NAMED, 'coh', false);
-        $where .= " AND c.id $notinsql";
-        $params = array_merge($params, $notinparams);
-    }
-
-    // ✅ Check if company table exists
-    $manager = $DB->get_manager();
-
-    if (!empty($companyid) && $manager->table_exists('company_cohorts')) {
-
-        $where .= " AND cc.companyid = :companyid";
-        $params['companyid'] = (int)$companyid;
-
-        $sql = "SELECT c.id, c.name
-                FROM {cohort} c
-                JOIN {company_cohorts} cc ON c.id = cc.cohortid
-                WHERE $where
-                ORDER BY c.name ASC";
-
-    } else {
-
-        // ✅ No company system → normal cohorts
-        $sql = "SELECT c.id, c.name
-                FROM {cohort} c
-                WHERE $where
-                ORDER BY c.name ASC";
-    }
-
-    $this->data->available_cohorts = $DB->get_records_sql($sql, $params);
+        /**
+         * Added companyid check to show company's cohorts
+         * @author Manisha M
+         * @since 14-11-2019
+         * @paradiso
+        */
+        $cohorts_where .= (count($cohorts) > 0) ? " AND c.id NOT IN (" . implode(', ', $cohorts) . ")" : "";
+       if (!empty($companyid) && $this->db->get_manager()->table_exists('company_cohorts')) {
+    $join = "LEFT JOIN {company_cohorts} cc ON c.id = cc.cohortid";
+    $cohorts_where .= " AND cc.companyid = :companyid";
 }
+        $this->data->available_cohorts = $this->db->get_records_sql("SELECT c.id, c.name FROM {cohort} c $join WHERE c.visible = '1' AND c.id != '' {$cohorts_where}");
+    }
+
     /**
     * This function must be used as way to save all forms data
     * @param (form) form name that must be checked and saved
@@ -376,7 +349,8 @@ private function load_available_cohorts_list($companyid) {
                 
                 // If get post data
                 if ($data = $mform->get_data()) {
-                    $courses = optional_param_array('courses', [], PARAM_RAW);
+                    // AddCoursesForm case
+$courses = optional_param_array('courses', [], PARAM_RAW);
                     $saved = [];
 
                     // Save relations between course and learning path
@@ -432,60 +406,48 @@ private function load_available_cohorts_list($companyid) {
                 break;
 
             // Adding new users.
-            case 'ManageUsersForm':
-                $users = is_array($this->available_users) ? $this->available_users : [];
+case 'ManageUsersForm':
+    $mform = new ManageUsersForm(null, ['users' => $this->data->available_users, 'learningpath' => $this->id]);
+    $activetab = "&tab=users";
+    if ($data = $mform->get_data()) {
+        $date = date('Y-m-d');
+        $enrollment_date = strtotime($date);
 
-$mform = new ManageUsersForm(null, [
-    'users' => $users,
-    'learningpath' => $this->id
-]);
-                $activetab = "&tab=users";
-                if ($data = $mform->get_data()) {
-                    // Get learningpath enrollment date
-                    $date = date('Y-m-d');
-                    $enrollment_date = strtotime($date);
-                    
-                    foreach (optional_param_array('users', [], PARAM_RAW) as $userid) {
-                        if ((int) $userid > 0) {
-                            // Create user record object
-                            $this->setUserLearningPath(['learningpathid' => $this->id, 'userid' => $userid, 'enrollment_date' => $enrollment_date]);
-                        }
-                    }
-                    if(empty(optional_param_array('users', [], PARAM_RAW))) {
-                        redirect("{$CFG->wwwroot}/local/learningpaths/view.php?id={$this->id}{$activetab}", '', null, '');
-                    }
-                    redirect("{$CFG->wwwroot}/local/learningpaths/view.php?id={$this->id}{$activetab}", get_string('changessaved'), null, \core\output\notification::NOTIFY_SUCCESS);
-                }
-                break;
+        foreach (optional_param_array('users', [], PARAM_RAW) as $userid) {
+            if ((int) $userid > 0) {
+                $this->setUserLearningPath(['learningpathid' => $this->id, 'userid' => $userid, 'enrollment_date' => $enrollment_date]);
+            }
+        }
+        if (empty(optional_param_array('users', [], PARAM_RAW))) {
+            redirect("{$CFG->wwwroot}/local/learningpaths/view.php?id={$this->id}{$activetab}", '', null, '');
+        }
+        redirect("{$CFG->wwwroot}/local/learningpaths/view.php?id={$this->id}{$activetab}", get_string('changessaved'), null, \core\output\notification::NOTIFY_SUCCESS);
+    }
+    break;
 
             // Adding new cohorts
-            case 'ManageCohortsForm':
-                $cohorts = is_array($this->available_cohorts) ? $this->available_cohorts : [];
+          case 'ManageCohortsForm':
+    $mform = new ManageCohortsForm(null, ['cohorts' => $this->data->available_cohorts, 'learningpath' => $this->id]);
+    $activetab = "&tab=cohorts";
+    if ($data = $mform->get_data()) {
+        $date = date('Y-m-d');
+        $enrollment_date = strtotime($date);
 
-$mform = new ManageCohortsForm(null, [
-    'cohorts' => $cohorts,
-    'learningpath' => $this->id
-]);
-                $activetab = "&tab=cohorts";
-                if ($data = $mform->get_data()) {
-                    $date = date('Y-m-d');
-                    $enrollment_date = strtotime($date);
+        foreach (optional_param_array('cohorts', [], PARAM_RAW) as $cohortid) {
+            if ((int) $cohortid > 0) {
+                $record = new stdClass();
+                $record->learningpathid = $this->id;
+                $record->cohortid = $cohortid;
+                $record->enrollment_date = $enrollment_date;
 
-                    foreach (optional_param_array('cohorts', [], PARAM_RAW) as $cohortid) {
-                        if ((int) $cohortid > 0) {
-                            $record = new stdClass();
-                            $record->learningpathid = $this->id;
-                            $record->cohortid = $cohortid;
-                            $record->enrollment_date = $enrollment_date;
-
-                            // Create Learningpath cohort object and save it
-                            $learningpathCohort = new LearningPathCohort();
-                            $learningpathCohort->save($record);
-                        }
-                    }
-                    redirect("{$CFG->wwwroot}/local/learningpaths/view.php?id={$this->id}{$activetab}", get_string('changessaved'), null, \core\output\notification::NOTIFY_SUCCESS);
-                }
-                break;
+                // Create Learningpath cohort object and save it
+                $learningpathCohort = new LearningPathCohort();
+                $learningpathCohort->save($record);
+            }
+        }
+        redirect("{$CFG->wwwroot}/local/learningpaths/view.php?id={$this->id}{$activetab}", get_string('changessaved'), null, \core\output\notification::NOTIFY_SUCCESS);
+    }
+    break;
 
             // Creating or editing a learning path
             case 'LearningPathForm':
@@ -745,40 +707,27 @@ $mform = new ManageCohortsForm(null, [
         return $this->db->set_field("learningpaths", 'deleted', 1, ['id' => $this->id]);
     }
 
-     public function proccess_learningpaths() {
-    global $DB;
+    public function proccess_learningpaths() {
+        global $DB;
 
-    $learningpaths = $DB->get_records_sql(
-        'SELECT id FROM {learningpaths} WHERE deleted = ?', 
-        [0]
-    );
+        $learningpaths = $DB->get_records_sql('SELECT id FROM {learningpaths} WHERE deleted = ?', [0]);
 
-    if (!is_array($learningpaths)) {
-        $learningpaths = [];
-    }
-
-    foreach ($learningpaths as $learningpathdb) {
-        $_instance = new self($learningpathdb->id);
-
-        // ✅ SAFE: ensure courses is array
-        $courses = $_instance->data->courses ?? [];
-        $users   = $_instance->data->users ?? [];
-        $cohorts = $_instance->data->cohorts ?? [];
-
-        if (is_countable($courses) && count($courses) > 0) {
-
-            // ✅ users
-            if (is_countable($users) && count($users) > 0) {
-                $_instance->process_users($_instance->get_all_users_not_completed());
-            }
-
-            // ✅ cohorts
-            if (is_countable($cohorts) && count($cohorts) > 0) {
-                $_instance->enroll_cohorts();
+        // Get learningpaths working.
+        foreach ($learningpaths as $learningpathdb) {
+            $_instance = new self($learningpathdb->id);
+            // If learningpath has courses, proceed with enrollments.
+            if (count($_instance->data->courses > 0)) {
+                // Enrol users if learningpath has it.
+                if (count($_instance->data->users) > 0) {
+                    $_instance->process_users($_instance->get_all_users_not_completed());
+                }
+                // Enrol cohorts if learningpath has it.
+                if (count($_instance->data->cohorts) > 0) {
+                    $_instance->enroll_cohorts();
+                }
             }
         }
     }
-}
 
     /*
     * Call form to new/edit a learning path

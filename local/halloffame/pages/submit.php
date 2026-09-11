@@ -29,7 +29,7 @@ $PAGE->navbar->add(get_string('halloffame', 'local_halloffame'),
     new moodle_url('/local/halloffame/pages/index.php'));
 $PAGE->navbar->add(get_string('submit', 'local_halloffame'));
 
-global $USER;
+global $USER, $DB;
 $error   = '';
 $success = false;
 
@@ -54,10 +54,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
         }
     }
 
-    if ($error === '') {
+if ($error === '') {
+
+    $exists = $DB->record_exists('halloffame_submissions', [
+        'userid' => $USER->id,
+        'title'  => $title
+    ]);
+
+    if ($exists) {
+        $error = 'Already submitted this certificate';
+    } else {
         manager::submit_achievement(compact('title','issuer','issuedate','type','notes','fileurl'));
         $success = true;
     }
+}
 }
 
 $types = [
@@ -95,5 +105,24 @@ echo $OUTPUT->render_from_template('local_halloffame/submit_form', [
     'success' => false,
     'backurl' => (new moodle_url('/local/halloffame/pages/index.php'))->out(false),
 ]);
+echo '<script>
+document.addEventListener("DOMContentLoaded", function () {
 
+    const form = document.querySelector(".hof-form");
+    const btn  = document.getElementById("hofSubmitBtn");
+
+    if (!form || !btn) return;
+
+    form.addEventListener("submit", function () {
+
+        // Disable button after first click
+        btn.disabled = true;
+
+        // Change button text
+        btn.innerText = "Submitting...";
+
+    });
+
+});
+</script>';
 echo $OUTPUT->footer();

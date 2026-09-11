@@ -116,7 +116,11 @@ $(document).ready(function($) {
 });
 </script>
 <!--sidebar end-->
-
+<style>
+.menu a{
+    border-width: 0px !important;
+}
+</style>
 <!--mini tools -->
 <div class="tool-left-panel d-none">
     <ul>
@@ -127,7 +131,7 @@ $(document).ready(function($) {
     </ul>
 </div>
 
-<div class="sidebar" style="padding: 19px 0px 0px 16px !important;margin-left: 0px;!important;z-index: 9999;height: 100ch !important;" >
+<div class="sidebar" style="padding: 19px 0px 0px 16px !important;margin-left: 0px;!important;z-index: 9999;height: 100vh !important;" >
  <a href="{{{ config.homeurl }}}" class="navbar-brand logoalign d-flex item-center" style="justify-content: center;" aria-label="{{ sitename }} - {{#str}}brandname, theme_remui{{/str}}" title="{{ sitename }}">
       
         <span class="">  {{#output.get_branding_context}}
@@ -192,6 +196,9 @@ $(document).ready(function($) {
    <span class="icon"><i class="fa fa-sitemap" aria-hidden="true"></i></span> <span class="">Multi-Tenant</span></a></li>
          <li id="mainmenu10" class=""> <a href="{{performance}}"  title="Competency">
    <span class="icon"><i class="fa fa-usb" aria-hidden="true"></i></span> <span class="">Competency</span></a></li>
+
+   <li id="mainmenu101" class=""> <a href="/local/halloffame/pages"  title="wall of fame">
+   <span class="icon"><i class="fa fa-trophy" aria-hidden="true"></i></span> <span class="">Wall of Fame</span></a></li>
 <li id="mainmenu113467"> <a href="/local/quizreport/"  title="Quiz Report">
    <span class="icon"><i class="fa fa-pie-chart" aria-hidden="true"></i></span> <span class="">Quiz Report</span></a></li> 
     <li id="mainmenu11345" class=""> <a href="/local/content_structure/"  title="CMS">
@@ -230,6 +237,8 @@ $(document).ready(function($) {
    <span class="icon"><i class="fa fa-gamepad" aria-hidden="true"></i></span> <span class="">Rewards Zone</span></a></li>
          <li id="mainmenu10" class=""> <a href="{{performance}}"  title="Competency">
    <span class="icon"><i class="fa fa-usb" aria-hidden="true"></i></span> <span class="">Competency</span></a></li>
+    <li id="mainmenu101" class=""> <a href="/local/halloffame/pages"  title="wall of fame">
+   <span class="icon"><i class="fa fa-trophy" aria-hidden="true"></i></span> <span class="">Wall of Fame</span></a></li>
          <li id="mainmenu4" class="d-none"> <a href="{{report&analytics}}"  title="Reports & Analytics">
    <span class="icon"><i class="fa fa-line-chart" aria-hidden="true"></i></span> <span class="">Reports & Analytics</span></a></li>
  <li id="mainmenu1134523"> <a href="{{logouturl}}"  title="signout">
@@ -274,6 +283,8 @@ $(document).ready(function($) {
    <span class="icon"><i class="fa fa-sitemap" aria-hidden="true"></i></span> <span class="">My Team</span></a></li>
    <li id="mainmenu10" class=""> <a href="{{performance}}"  title="Competency">
    <span class="icon"><i class="fa fa-usb" aria-hidden="true"></i></span> <span class="">Competency</span></a></li>
+    <li id="mainmenu101" class=""> <a href="/local/halloffame/pages"  title="wall of fame">
+   <span class="icon"><i class="fa fa-trophy" aria-hidden="true"></i></span> <span class="">Wall of Fame</span></a></li>
       <li id="mainmenu4" class=""> <a href="{{report&analytics}}"  title="Reports & Analytics">
    <span class="icon"><i class="fa fa-line-chart" aria-hidden="true"></i></span> <span class="">Reports & Analytics</span></a></li>
     <li id="mainmenu11345" class=""> <a href="/local/content_structure/"  title="CMS">

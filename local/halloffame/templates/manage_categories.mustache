@@ -1,54 +1,97 @@
-{{! local_halloffame/manage_categories }}
-<div class="hof-admin-wrap">
-  <div class="hof-admin-card">
-    <h2>{{#str}}managecategories,local_halloffame{{/str}}</h2>
 
-    <form method="post" action="{{pageurl}}" class="hof-form" style="margin-bottom:28px;">
+<div class="hof-admin-wrap">
+
+  <!-- HEADER -->
+  <div class="hof-admin-header">
+    <h2>{{#str}}managecategories,local_halloffame{{/str}}</h2>
+    <a href="{{backurl}}" class="hof-btn-secondary">← Back</a>
+  </div>
+
+  <!-- ADD FORM CARD -->
+  <div class="hof-admin-card hof-card-form">
+    <h3>Add New Category</h3>
+
+    <form method="post" action="{{pageurl}}" class="hof-form">
       <input type="hidden" name="sesskey" value="{{sesskey}}"/>
       <input type="hidden" name="action"  value="add"/>
-      <div class="hof-admin-row">
-        <label>New Category Name</label>
-        <input type="text" name="catname" class="hof-input" required placeholder="e.g. Innovation Award"/>
-        <button type="submit" class="btn hof-btn-primary" style="white-space:nowrap">Add</button>
-      </div>
-      <div class="hof-admin-row">
-        <label>Description <small>(optional)</small></label>
-        <input type="text" name="catdesc" class="hof-input" placeholder="Short description"/>
+
+      <div class="hof-form-grid">
+        <div>
+          <label>Category Name</label>
+          <input type="text" name="catname" class="hof-input" required placeholder="e.g. Innovation Award"/>
+        </div>
+
+        <div>
+          <label>Description</label>
+          <input type="text" name="catdesc" class="hof-input" placeholder="Short description"/>
+        </div>
+
+        <div class="hof-form-action">
+          <button type="submit" class="btn hof-btn-primary mb-2">+ Add Category</button>
+        </div>
       </div>
     </form>
-
-    <table class="hof-manage-table">
-      <thead><tr><th>#</th><th>Name</th><th>Description</th><th>Actions</th></tr></thead>
-      <tbody>
-        {{#categories}}
-        <tr>
-          <td>{{@index_plus_one}}</td>
-          <td>
-            <form method="post" action="{{pageurl}}" class="hof-inline-form">
-              <input type="hidden" name="sesskey" value="{{sesskey}}"/>
-              <input type="hidden" name="action"  value="rename"/>
-              <input type="hidden" name="cid"     value="{{id}}"/>
-              <input type="hidden" name="catdesc" value="{{description}}"/>
-              <input type="text" name="catname" value="{{name}}" class="hof-input hof-input-sm" required/>
-              <button type="submit" class="btn hof-btn-secondary hof-btn-sm">Save</button>
-            </form>
-          </td>
-          <td>{{description}}</td>
-          <td>
-            <a href="{{pageurl}}?action=delete&cid={{id}}&sesskey={{sesskey}}"
-               class="btn hof-btn-reject hof-btn-sm"
-               onclick="return confirm('Delete category: {{name}}?')">Delete</a>
-          </td>
-        </tr>
-        {{/categories}}
-        {{^categories}}
-        <tr><td colspan="4" class="hof-empty" style="text-align:center">No categories yet.</td></tr>
-        {{/categories}}
-      </tbody>
-    </table>
-
-    <p class="hof-back-link" style="margin-top:20px;">
-      <a href="{{backurl}}">← Back to Admin Panel</a>
-    </p>
   </div>
+
+  <!-- LISTING CARD -->
+  <div class="hof-admin-card hof-card-table">
+    <div class="hof-table-header">
+      <h3>Category List</h3>
+  
+    </div>
+
+    <div class="hof-table-wrapper">
+      <table class="hof-manage-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th style="text-align:right;">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {{#categories}}
+          <tr>
+            <td>{{@index_plus_one}}</td>
+
+            <td>
+              <form method="post" action="{{pageurl}}" class="hof-inline-form">
+                <input type="hidden" name="sesskey" value="{{sesskey}}"/>
+                <input type="hidden" name="action" value="rename"/>
+                <input type="hidden" name="cid" value="{{id}}"/>
+                <input type="hidden" name="catdesc" value="{{description}}"/>
+
+                <div class="hof-inline-edit">
+                  <input type="text" name="catname" value="{{name}}" class="hof-input hof-input-sm" required/>
+                  <button type="submit" class="hof-btn-icon">✔</button>
+                </div>
+              </form>
+            </td>
+
+            <td style="    font-size: 12px;
+    padding: 0px 0px 0px 50px;
+">{{description}}</td>
+
+            <td style="text-align:right;">
+              <a href="{{pageurl}}?action=delete&cid={{id}}&sesskey={{sesskey}}"
+                 class="hof-btn-danger"
+                 onclick="return confirm('Delete category: {{name}}?')">
+                 Delete
+              </a>
+            </td>
+          </tr>
+          {{/categories}}
+
+          {{^categories}}
+          <tr>
+            <td colspan="4" class="hof-empty">No categories yet</td>
+          </tr>
+          {{/categories}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 </div>

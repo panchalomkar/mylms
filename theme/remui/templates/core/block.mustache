@@ -35,7 +35,20 @@
     }
 }}
 {{! Block Skip Link }}
+<style>
+section[data-block="learningpathview"] .icon-learningpathview{
+    display: inline-block;
 
+}
+    .block .block-header-wrapper .block-header, .block-header-wrapper-1 .block-header {
+    background: #141f38 !important;
+    border-radius: 5px;
+    padding: 5px !important;
+    color: white !important;
+}
+.block_learningpathview .card-text.content.block-content-area.edw-block-body {padding: 5px;
+}
+</style>
 {{#showskiplink}}
 <a href="#sb-{{skipid}}" class="sr-only sr-only-focusable">{{#str}}skipa, access, {{{title}}}{{/str}}</a>
 {{/showskiplink}}
@@ -79,7 +92,21 @@
         <path d="M12 7v14"></path>
         <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path>
     </svg>
-
+{{! Learning path icon }}
+<svg class="block-icon icon-learningpathview"
+     xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 24 24"
+     fill="none"
+     stroke="currentColor"
+     stroke-width="2"
+     stroke-linecap="round"
+     stroke-linejoin="round">
+    <circle cx="5" cy="12" r="2"></circle>
+    <circle cx="12" cy="6" r="2"></circle>
+    <circle cx="19" cy="18" r="2"></circle>
+    <path d="M7 12 L10 7"></path>
+    <path d="M14 7 L17 16"></path>
+</svg>
     {{! Recently accessed icon }}
     <svg class="block-icon icon-recent"
          xmlns="http://www.w3.org/2000/svg"

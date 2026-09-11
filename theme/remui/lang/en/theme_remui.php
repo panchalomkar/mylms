@@ -376,7 +376,7 @@ $string['createnewaccount'] = 'Create a new account';
 $string['welcometobrand'] = 'Hi, Welcome to {$a}';
 $string['entertologin'] = "Enter your details to log in your account";
 $string['forgotaccount'] = 'Forgot your password?';
-$string['potentialidps'] = 'Or login using your account';
+$string['potentialidps'] = 'Login using your account';
 $string['firsttime'] = 'First time using this site';
 // Signup Page.
 $string['createnewaccount'] = 'Create a new account';

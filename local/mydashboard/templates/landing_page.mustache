@@ -45,8 +45,8 @@
 
     <!-- PAGE TITLE -->
     <div class="text-center mb-3">
-        <h1 class="text-2xl font-bold text-gray-800 tracking-wide text-game to-accent">Gamification Dashboard</h1>
-        <p class="text-gray-500 mt-1">Track your progress, earn rewards, and climb the leaderboard!</p>
+        <h1 class="text-2xl font-bold text-gray-800 tracking-wide text-game to-accent">{{#str}}gamification_dashboard, local_mydashboard{{/str}}</h1>
+        <p class="text-gray-500 mt-1">{{#str}}dashboard_subtitle, local_mydashboard{{/str}}</p>
     </div>
 
     <!-- TOP GRID -->
@@ -81,19 +81,19 @@
                         <div class="space-y-3">
                             <div class="flex items-center gap-2">
                                 <span class="material-symbols-rounded text-gray-600 text-lg">apartment</span>
-                                <span class="text-gray-500">Department:</span>
+                                <span class="text-gray-500">{{#str}}department, local_mydashboard{{/str}}</span>
                                 <b class="text-gray-800">{{department}}</b>
                             </div>
 
                             <div class="flex items-center gap-2">
                                 <span class="material-symbols-rounded text-gray-600 text-lg">badge</span>
-                                <span class="text-gray-500">Employee ID:</span>
+                                <span class="text-gray-500">{{#str}}employee_id, local_mydashboard{{/str}}</span>
                                 <b class="text-gray-800">{{empcode}}</b>
                             </div>
 
                             <div class="flex items-center gap-2">
                                 <span class="material-symbols-rounded text-gray-600 text-lg">call</span>
-                                <span class="text-gray-500">Contact:</span>
+                                <span class="text-gray-500">{{#str}}contact, local_mydashboard{{/str}}</span>
                                 <b class="text-gray-800">{{phone}}</b>
                             </div>
                         </div>
@@ -102,19 +102,19 @@
                         <div class="space-y-3">
                             <div class="flex items-center gap-2">
                                 <span class="material-symbols-rounded text-yellow-500 text-lg">trending_up</span>
-                                <span class="text-gray-500">Next Level:</span>
+                                <span class="text-gray-500">{{#str}}next_level, local_mydashboard{{/str}}</span>
                                 <b class="text-gray-700">{{nextlevel}}</b>
                             </div>
 
                             <div class="flex items-center gap-2">
                                 <span class="material-symbols-rounded text-yellow-500 text-lg">military_tech</span>
-                                <span class="text-gray-500">Points to Next:</span>
+                                <span class="text-gray-500">{{#str}}points_to_next, local_mydashboard{{/str}}</span>
                                 <b class="text-yellow-600">{{points_needed}}</b>
                             </div>
 
                             <div class="flex items-center gap-2">
                                 <span class="material-symbols-rounded text-yellow-500 text-lg">percent</span>
-                                <span class="text-gray-500">Course Average:</span>
+                                <span class="text-gray-500">{{#str}}course_average, local_mydashboard{{/str}}</span>
                                 <b class="text-blue-700">{{grade_needed}}</b>
                             </div>
                         </div>
@@ -129,7 +129,7 @@
 
             <h3 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
                 <span class="material-symbols-rounded text-yellow-500 text-3xl">trophy</span>
-                Achievements
+                {{#str}}achievements, local_mydashboard{{/str}}
             </h3>
 
             <div class="mt-6 flex justify-around items-center">
@@ -139,7 +139,7 @@
                         <span class="material-symbols-rounded text-yellow-500 text-4xl">emoji_events</span>
                     </div>
                     <p class="text-lg font-bold text-yellow-500 mt-3" style="color: #eab308 !important;">{{lifetime_points}}</p>
-                    <p class="text-xs text-gray-500">Points</p>
+                    <p class="text-xs text-gray-500">{{#str}}points, local_mydashboard{{/str}}</p>
                 </div>
 
                 <div class="text-center">
@@ -147,7 +147,7 @@
                         <span class="material-symbols-rounded text-blue-500 text-4xl">workspace_premium</span>
                     </div>
                     <p class="text-lg font-bold text-gray-800 mt-3">0</p>
-                    <p class="text-xs text-gray-500">Badges</p>
+                    <p class="text-xs text-gray-500">{{#str}}badges, local_mydashboard{{/str}}</p>
                 </div>
 
                 <div class="text-center">
@@ -155,7 +155,7 @@
                         <span class="material-symbols-rounded text-yellow-500 text-4xl">grade</span>
                     </div>
                     <p class="text-lg font-bold text-yellow-600 mt-3" style="color: #eab308 !important;">{{my_rank}}</p>
-                    <p class="text-xs text-gray-500">Level</p>
+                    <p class="text-xs text-gray-500">{{#str}}level, local_mydashboard{{/str}}</p>
                 </div>
 
             </div>
@@ -173,14 +173,14 @@
                     <div class=" trophydata text-center">
                         <img src="images/coins1.png" class="card-img-top rounded-circle wh-50 rounded-circle" style="    width: 46px;" alt="User">
                       </div>
-                    My Active Points
+                    {{#str}}my_active_points, local_mydashboard{{/str}}
                 </h3>
 
                 <button onclick="openPointsModal()" 
                     class="px-4 py-2 rounded-lg shadow flex items-center gap-2 text-white"
                     style="background: linear-gradient(90deg, #0B2964, #23468D);">
                     <span class="material-symbols-rounded text-white text-base">list_alt</span>
-                    Points log
+                    {{#str}}points_log, local_mydashboard{{/str}}
                 </button>
             </div>
 
@@ -198,7 +198,7 @@
                 <div class="w-full flex flex-col items-center">
                     <h4 class="text-gray-700 text-sm mb-4 flex items-center font-bold  w-100 gap-2">
                         <span class="material-symbols-rounded text-gray-600 text-base ">monitoring</span>
-                        Points Distribution
+                        {{#str}}points_distribution, local_mydashboard{{/str}}
                     </h4>
 
                    <div class="d-flex gap-5">
@@ -214,7 +214,7 @@
                 <div>
                     <h4 class="text-gray-700 text-sm mb-4 flex items-center font-bold  gap-2">
                         <span class="material-symbols-rounded text-gray-600 text-base">timeline</span>
-                        7-Day Trends
+                        {{#str}}seven_day_trends, local_mydashboard{{/str}}
                     </h4>
 
                     <canvas id="barChart" width="480" height="190" class="w-full h-64"></canvas>
@@ -229,7 +229,7 @@
     <!-- Header Title -->
     <div class="flex items-center gap-3 mb-3">
         <span class="material-symbols-rounded text-blue-700 text-yellow-500">monitoring</span>
-        <h2 class="text-xl font-semibold text-gray-800">Daily Quiz and Login Analytics</h2>
+        <h2 class="text-xl font-semibold text-gray-800">{{#str}}daily_quiz_login_analytics, local_mydashboard{{/str}}</h2>
     </div>
 
     <!-- =========================== QUIZ + LOGIN GRID =========================== -->
@@ -238,7 +238,7 @@
         <!-- =============== LEFT SIDE — DAILY QUIZ =============== -->
         <div>
             <!-- Section Title -->
-            <h3 class="text-md font-bold text-gray-800 mb-2">DAILY QUIZ</h3>
+            <h3 class="text-md font-bold text-gray-800 mb-2">{{#str}}daily_quiz, local_mydashboard{{/str}}</h3>
 
             <div class="flex items-center gap-4 mb-2">
                 <!-- Avatar -->
@@ -254,7 +254,7 @@
             </div>
 
             <!-- Sub title -->
-            <div class="text-gray-600 text-sm font-medium mt-4 mb-1">Points Graph</div>
+            <div class="text-gray-600 text-sm font-medium mt-4 mb-1">{{#str}}points_graph, local_mydashboard{{/str}}</div>
 
             <!-- Chart -->
             <div class="bg-white rounded-lg border p-2">
@@ -266,7 +266,7 @@
 
         <!-- =============== RIGHT SIDE — DAILY LOGIN =============== -->
         <div>
-            <h3 class="text-md font-bold text-gray-800 mb-2">DAILY LOGIN</h3>
+            <h3 class="text-md font-bold text-gray-800 mb-2">{{#str}}daily_login, local_mydashboard{{/str}}</h3>
 
             <div class="flex items-center gap-4 mb-4">
                 <!-- Login Icon (circle) -->
@@ -281,8 +281,8 @@
             </div>
 
             <div class="text-gray-600 text-sm font-medium mt-4 mb-1 flex justify-between">
-                <span>Points Graph</span>
-                <span class="text-yellow-500 text-xs">Login Points</span>
+                <span>{{#str}}points_graph, local_mydashboard{{/str}}</span>
+                <span class="text-yellow-500 text-xs">{{#str}}login_points_label, local_mydashboard{{/str}}</span>
             </div>
 
             <!-- Chart -->
@@ -300,9 +300,9 @@
 <div class="bg-white rounded-lg shadow p-3 mt-3">
     <div class="flex justify-between items-center mb-4">
         <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
-            <span class="material-symbols-rounded text-yellow-500">star</span> Scratch Card
+            <span class="material-symbols-rounded text-yellow-500">star</span> {{#str}}scratchcard, local_mydashboard{{/str}}
         </h2>
-        <span class="text-gray-600 text-sm">Available scratch card: <strong>{{scratchcounter}}</strong></span>
+        <span class="text-gray-600 text-sm">{{#str}}available_scratch_card, local_mydashboard{{/str}} <strong>{{scratchcounter}}</strong></span>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 d-flex justify-center mb-2">
@@ -313,7 +313,7 @@
 <div class="bg-white rounded-lg shadow p-3 mt-3">
     <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
         <span class="material-symbols-rounded text-yellow-500">card_giftcard</span> 
-        Rewards and Redemption
+        {{#str}}rewards_and_redemption, local_mydashboard{{/str}}
     </h2>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-3">
@@ -322,7 +322,7 @@
             <div class="bg-[#003152] w-20 h-20 rounded-full flex items-center justify-center mb-2 top-user-img" style="border: solid 8px #486398;">
                <span class="material-symbols-rounded text-3xl text-white spin-refresh-icon">refresh</span>
             </div>
-            <h3 class="font-semibold text-gray-900 mb-2 mt-3">Spin Wheel</h3>
+            <h3 class="font-semibold text-gray-900 mb-2 mt-3">{{#str}}spin_wheel, local_mydashboard{{/str}}</h3>
             <p class="text-gray-800 mb-2 d-none" style="font-size: 12px;">Spin the wheel and luck your chance to get points benefit</p>
          
             <div class="">
@@ -335,8 +335,8 @@
             <div class="bg-[#003152] w-20 h-20 rounded-full flex items-center justify-center mb-2 top-user-img" style="border: solid 8px #486398;">
                 <span class="material-symbols-rounded text-3xl text-white ">poll</span>
             </div>
-            <h3 class="font-semibold text-gray-900 mt-3">Poll</h3>
-            <a href="{{pollurl}}" class="bg-yellow-500 d-flex hover:bg-yellow-600 text-white font-semibold py-2 px-6 gap-2 rounded mt-2" style="align-items:center;"><span class="material-symbols-rounded text-white " style="font-size: 16px;">poll</span> Take Poll</a>
+            <h3 class="font-semibold text-gray-900 mt-3">{{#str}}poll, local_mydashboard{{/str}}</h3>
+            <a href="{{pollurl}}" class="bg-yellow-500 d-flex hover:bg-yellow-600 text-white font-semibold py-2 px-6 gap-2 rounded mt-2" style="align-items:center;"><span class="material-symbols-rounded text-white " style="font-size: 16px;">poll</span>{{#str}}take_poll, local_mydashboard{{/str}}</a>
         </div>
 
         <!-- Redemption Zone -->
@@ -344,14 +344,14 @@
             <div class="bg-[#003152] w-20 h-20 rounded-full flex items-center justify-center mb-2 top-user-img" style="border: solid 8px #486398;">
                 <span class="material-symbols-rounded text-3xl text-white">card_giftcard</span>
             </div>
-            <h3 class="font-semibold text-gray-900 mt-3">Redemption Zone</h3>
+            <h3 class="font-semibold text-gray-900 mt-3">{{#str}}redemption_zone, local_mydashboard{{/str}}</h3>
             <div class="flex flex-row w-100 justify-center gap-2 mt-2 ">
                 <button id="redeem-point"
         data-toggle="modal"
         data-target="#redeemModal"
         class="px-2 bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded flex items-center gap-1">
     <svg class="text-white mr-1 " xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lov-id="src/components/MyPoints.tsx:148:16" data-lov-name="Coins" data-component-path="src/components/MyPoints.tsx" data-component-line="148" data-component-file="MyPoints.tsx" data-component-name="Coins" data-component-content="%7B%22className%22%3A%22text-accent%22%7D"><circle cx="8" cy="8" r="6"></circle><path d="M18.09 10.37A6 6 0 1 1 10.34 18"></path><path d="M7 6h1v4"></path><path d="m16.71 13.88.7.71-2.82 2.82"></path></svg>
-    <span class="bg-yellow-500 d-flex hover:bg-yellow-600 text-white font-semibold ">Point Redeem</span>
+    <span class="bg-yellow-500 d-flex hover:bg-yellow-600 text-white font-semibold ">{{#str}}point_redeem, local_mydashboard{{/str}}</span>
 </button>
 
 <button id="gift-reward"
@@ -359,7 +359,7 @@
         data-target="#exampleModal"
         class="px-3 bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded flex items-center gap-1">
     <span class="material-symbols-rounded  text-white "style="font-size: 16px;">redeem</span>
-    <span class="bg-yellow-500 d-flex hover:bg-yellow-600 text-white font-semibold ">Gift Rewards</span>
+    <span class="bg-yellow-500 d-flex hover:bg-yellow-600 text-white font-semibold ">{{#str}}gift_rewards, local_mydashboard{{/str}}</span>
 </button>
 
             </div>
@@ -373,7 +373,7 @@
 <div class="bg-white rounded-lg shadow p-3  mt-3">
 <div class="flex items-center gap-3 mb-4 pl-3">
     <span class="material-symbols-rounded text-yellow-500 text-3xl">groups</span>
-    <h2 class="text-2xl font-bold text-[#003152]">Leader Board</h2>
+    <h2 class="text-2xl font-bold text-[#003152]">{{#str}}leaderboard, local_mydashboard{{/str}}</h2>
 </div>
 
 <!-- TOP 3 USERS -->
@@ -386,12 +386,12 @@
     <!-- Table Header -->
     <div class="bg-[#00245c] rounded-lg text-white font-semibold grid grid-cols-6 py-3 px-4 text-sm">
         <div>#</div>
-        <div>Name</div>
-        <div>Rank</div>
-        <div>Department</div>
-        <div>Points</div>
-        <div>Badges</div>
-        <div class="d-none">Action</div>
+        <div>{{#str}}lb_name, local_mydashboard{{/str}}</div>
+        <div>{{#str}}lb_rank, local_mydashboard{{/str}}</div>
+        <div>{{#str}}lb_department, local_mydashboard{{/str}}</div>
+        <div>{{#str}}lb_points, local_mydashboard{{/str}}</div>
+        <div>{{#str}}lb_badges, local_mydashboard{{/str}}</div>
+        <div class="d-none">{{#str}}lb_action, local_mydashboard{{/str}}</div>
     </div>
 
     <!-- Table Body -->
@@ -419,7 +419,7 @@
         <!-- Title -->
         <div class="flex justify-center items-center gap-2 mb-3">
             <span class="text-3xl">🎉</span>
-            <h2 class="text-2xl font-bold text-gray-800">Congratulations!</h2>
+            <h2 class="text-2xl font-bold text-gray-800">{{#str}}congratulations, local_mydashboard{{/str}}</h2>
         </div>
 
         <!-- Trophy Icon -->
@@ -430,9 +430,9 @@
         </div>
 
         <!-- Text -->
-        <p class="text-gray-600 mb-1 text-lg">You have won</p>
+        <p class="text-gray-600 mb-1 text-lg">{{#str}}you_have_won, local_mydashboard{{/str}}</p>
         <p class="text-yellow-500 font-extrabold mb-6" style="font-size:20px;color;color: rgb(234, 179, 8) !important;">
-            <span id="wonPoints" style="font-size:20px;color;color: rgb(234, 179, 8);">0</span> Points
+            <span id="wonPoints" style="font-size:20px;color;color: rgb(234, 179, 8);">0</span> {{#str}}points, local_mydashboard{{/str}}
         </p>
 
     </div>
@@ -442,15 +442,15 @@
 <div id="betterLuckModal" class="modal fixed inset-0 bg-black/40 backdrop-blur-sm hidden justify-center items-center z-50">
     <div class="bg-white rounded-2xl shadow-xl p-3 w-[420px] relative animate-fadeIn">
         <button class="closeModal absolute right-4 top-4 text-gray-500 hover:text-black text-xl">✕</button>
-        <h2 class="text-xl font-bold text-center mb-6 flex items-center justify-center gap-2">😢 Better Luck Next Time!</h2>
+        <h2 class="text-xl font-bold text-center mb-6 flex items-center justify-center gap-2">😢 {{#str}}better_luck_title, local_mydashboard{{/str}}</h2>
         <div class="d-flex justify-center">
         <div class="bg-gray-200 rounded-xl p-4 shadow-lg text-center w-50 mb-3">
             <div class="text-5xl mb-2">🎁</div>
-            <div id="rewardPointsZero" class="text-2xl font-semibold">0 Points</div>
+            <div id="rewardPointsZero" class="text-2xl font-semibold">0 {{#str}}points, local_mydashboard{{/str}}</div>
         </div>
         </div>
         <h3 class="text-xl font-bold text-center mb-2">Try Again! 🎯</h3>
-        <p class="text-center text-gray-700 mb-1">Better luck next time!</p>
+        <p class="text-center text-gray-700 mb-1">{{#str}}better_luck, local_mydashboard{{/str}}</p>
     </div>
 </div>
 <!-- SCRATCH REWARD POPUP -->
@@ -467,7 +467,7 @@
 
         <!-- Title -->
         <h2 class="text-xl font-bold text-center mb-6 flex items-center justify-center gap-2">
-            🎉 Scratch Card Reveal!
+            {{#str}}scratch_card_reveal, local_mydashboard{{/str}}
         </h2>
 
         <!-- Green Reward Box -->
@@ -475,19 +475,19 @@
         <div class="bg-gradient-to-r from-green-400 to-green-500
                     text-white rounded-xl p-4 shadow-lg text-center mb-3 w-50">
             <div class="text-5xl mb-2">🎁</div>
-            <div id="rewardPoints" class="text-2xl font-semibold">0 Points</div>
+            <div id="rewardPoints" class="text-2xl font-semibold">0 {{#str}}points, local_mydashboard{{/str}}</div>
         </div>
        </div>
 
         <!-- Message -->
-        <h3 class="text-xl font-bold text-center mb-2">Congratulations! 🎊</h3>
+        <h3 class="text-xl font-bold text-center mb-2">{{#str}}congrats_emoji, local_mydashboard{{/str}}</h3>
 
         <p class="text-center text-yellow-500 mb-1" style="color:rgb(234 179 8) !important;">
-            You won: <span id="wonPoints1" class="text-yellow-600 font-semibold" style="color:rgb(234 179 8);"></span>
+            {{#str}}you_won, local_mydashboard{{/str}} <span id="wonPoints1" class="text-yellow-600 font-semibold" style="color:rgb(234 179 8);"></span>
         </p>
 
         <p class="text-center text-gray-500 text-sm">
-            Reward has been added to your account
+            {{#str}}reward_added, local_mydashboard{{/str}}
         </p>
 
         <!-- Confetti -->
@@ -510,7 +510,7 @@
             <!-- HEADER -->
             <div class="modal-header border-0 px-3 pb-0 pt-2">
                 <h5 class="modal-title font-weight-bold" style="color:#0b2c6d;font-size: 16px;">
-                    Gift your rewards to friends (Avl Pts: {{available_points}})
+                   {{#str}}gift_modal_title, local_mydashboard, {{available_points}}{{/str}}
                 </h5>
                 <button type="button" class="close" data-dismiss="modal"
                         style="font-size:28px; color:#666;">
@@ -526,14 +526,14 @@
                     <input type="search"
                            class="form-control"
                            id="searchtext"
-                           placeholder="Search by employee name"
+                           placeholder="{{#str}}search_employee, local_mydashboard{{/str}}"
                            style="border-radius:10px; height:30px;width: -webkit-fill-available;">
 
                     <button class="btn d-flex align-items-center px-4"
                             id="searchuser"
                             style="background:#16a34a; color:#fff; border-radius:10px; height:30px;">
                         <span class="material-symbols-rounded mr-2">search</span>
-                        Search
+                        {{#str}}search, local_mydashboard{{/str}}
                     </button>
                 </div>
 
@@ -558,7 +558,7 @@
 
                         <input type="number"
                                class="form-control text-center"
-                               placeholder="Points"
+                               placeholder="{{#str}}points_placeholder, local_mydashboard{{/str}}"
                                style="width:110px; border-radius:10px;">
                     </div>
                     -->
@@ -598,7 +598,7 @@
             <!-- HEADER -->
             <div class="modal-header border-0 px-4 pt-4">
                 <h5 class="modal-title font-weight-bold" style="color:#0b2c6d;">
-                    Redeem (Avl Pts: <span id="modalAvailablePoints"class="available-points">{{available_points}}</span>)
+                    {{#str}}redeem_avl_pts, local_mydashboard{{/str}} <span id="modalAvailablePoints"class="available-points">{{available_points}}</span>)
                 </h5>
                 <button type="button" class="close" data-dismiss="modal"
                         style="font-size:28px; color:#666;">
@@ -618,7 +618,7 @@
                 trophy
             </span>
 
-                            <div class="text-muted">Lifetime Points</div>
+                            <div class="text-muted">{{#str}}lifetime_points, local_mydashboard{{/str}}</div>
                             <div id="lifetimePoints"
                                  style="font-size:25px; font-weight:700; color:#0b2c6d;">
                                 0
@@ -632,7 +632,7 @@
                               <span class="material-symbols-rounded text-danger fs-2">
                 local_fire_department
             </span>
-                            <div class="text-muted">Burn Out Points</div>
+                            <div class="text-muted">{{#str}}burnout_points, local_mydashboard{{/str}}</div>
                             <div id="burnoutPoints"
                                  style="font-size:25px; font-weight:700; color:#ff4d4f;">
                                 0
@@ -647,7 +647,7 @@
                     <span class="material-symbols-rounded text-[#0b2c6d]fs-3">
             bolt
         </span>
-                        <div class="text-muted">Active Points</div>
+                        <div class="text-muted">{{#str}}active_points, local_mydashboard{{/str}}</div>
                         <div id="totalPoints"
                              style="font-size:20px; font-weight:700; color:#0b2c6d;">
                             0
@@ -658,7 +658,7 @@
                     <span class="material-symbols-rounded text-warning fs-3">
             redeem
         </span>
-                        <div class="text-muted">Redeemable Points</div>
+                        <div class="text-muted">{{#str}}redeemable_points, local_mydashboard{{/str}}</div>
                         <div id="redeemablePoints"
                              style="font-size:20px; font-weight:700; color:#f4b400;">
                             0
@@ -677,12 +677,10 @@
 
             <!-- FOOTER -->
             <div class="modal-footer border-0 px-4 pb-4">
-                <button type="button"
-                        id="redeemnow"
-                        class="btn px-4 py-2"
-                        style="background:#0b2c6d; color:#fff; border-radius:10px; font-weight:600;">
-                    Redeem Now
-                </button>
+                <button type="button" id="redeemnow" class="btn px-4 py-2"
+        style="background:#0b2c6d; color:#fff; border-radius:10px; font-weight:600;">
+    {{#str}}redeem_now, local_mydashboard{{/str}}
+</button>
             </div>
 
         </div>
@@ -698,7 +696,7 @@
         <div class="modal-dialog" role="document" style="max-width:300px !important;">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">You have won <strong id="spinpoint"></strong> point(s)</h5>
+                    <h5 class="modal-title">{{#str}}you_have_won_spin, local_mydashboard{{/str}} <strong id="spinpoint"></strong> {{#str}}points_suffix, local_mydashboard{{/str}}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -716,18 +714,18 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-            <h4 class="modal-title">Message</h4>
+            <h4 class="modal-title">{{#str}}message, local_mydashboard{{/str}}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                  <label for="exampleFormControlTextarea1">Type text</label>
+                  <label for="exampleFormControlTextarea1">{{#str}}type_text, local_mydashboard{{/str}}</label>
                   <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary" id="submitdata">Send <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">{{#str}}close, local_mydashboard{{/str}}</button>
+                <button type="submit" class="btn btn-primary" id="submitdata">{{#str}}send, local_mydashboard{{/str}} <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
             </div>
         </div>
     </div>

@@ -288,21 +288,33 @@ class EnrollByProfileUser {
     */
     public function get_user_fields_all(){ 
         global $DB,$CFG;  
-        $fields = $DB->get_records_sql('select * from {user_info_field} where categoryid <> 1 ') ;  
-        $user = $DB->get_records_sql("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'mdl_user' AND COLUMN_NAME IN ('Username','firstname','lastname','email','City','Country','Firstaccess','moodlenetprofile','Company','Subordinates','Marketing','Sales','Flag','Designation','role','tenant')"); 
-         
-        $user = array_keys($user);  
-        for ($i=0; $i < count($user); $i++) { 
-            if ( preg_match('/\[/', get_string($user[$i]) ) ) 
-            { 
-                $user[$user[$i]] = array('type'=>'text','name'=>$user[$i]) ;  
-            } 
-            else  
-            { 
-                $user[$user[$i]]  = array('type'=>'text','name'=>get_string($user[$i])) ; 
-            } 
-            unset($user[$i]) ;  
-        } 
+$fields = $DB->get_records('user_info_field');
+       $tablename = $DB->get_prefix() . 'user';
+$columns = ['username','firstname','lastname','email','city','country','firstaccess',
+            'moodlenetprofile','company','subordinates','marketing','sales','flag',
+            'designation','department','institution'];
+
+list($insql, $inparams) = $DB->get_in_or_equal($columns);
+$sql = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_NAME = ? AND LOWER(COLUMN_NAME) $insql";
+$user = $DB->get_records_sql($sql, array_merge([$tablename], $inparams));
+       $columnkeys = array_keys($user);
+foreach ($columnkeys as $col) {
+    $identifier = strtolower($col);
+    if (get_string_manager()->string_exists($identifier, 'core')) {
+        $label = get_string($identifier);
+    } else {
+        // fallback: no matching lang string, just use the raw column name
+        $label = ucfirst($col);
+    }
+    $user[$col] = array('type' => 'text', 'name' => $label);
+}
+// remove the original numeric-indexed keys left over from array_keys()
+foreach ($columnkeys as $i => $col) {
+    if (isset($user[$i])) {
+        unset($user[$i]);
+    }
+}
         foreach ($fields as $key => $value) { 
             if($value->shortname){  
                 $user[$value->shortname] = array('type'=>$value->datatype,'name'=>$value->name);  

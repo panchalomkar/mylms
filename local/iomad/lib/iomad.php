@@ -55,7 +55,7 @@ class iomad {
      * @param $context - stdclass()
      * @returns int
      */
-    public static function get_my_companyid($context, $required=true) {
+    public static function get_my_companyid($context, $required=false) {
         global $SESSION, $USER, $DB, $CFG;
 
         // are we logged in?

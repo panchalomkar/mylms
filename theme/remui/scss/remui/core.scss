@@ -2578,3 +2578,253 @@ font-weight: bold;
    #fitem_id_info .felement{width: 100%;}
    #fitem_id_info .form-control-static {width: 100%;}
    
+/* ================================================
+   REMUI 5.0 Activity Chooser — Full Fix
+   Based on actual rendered HTML classes
+   ================================================ */
+
+/* ── 1. MODAL SIZE ── */
+#region-main .modal-dialog,
+.modal-dialog.modal-lg {
+    max-width: 860px !important;
+}
+
+/* ── 2. GRADIENT HEADER (fix double title) ── */
+
+
+/* Hide the OLD modal-header title (keep only remui-chooser-title) */
+
+.modal{
+/* ── 3. SEARCH BOX ── */
+.remui-searchcontainer .form-control,
+.remui-searchcontainer input[type="text"] {
+    border-radius: 10px !important;
+    border: 1.5px solid #e5e7eb !important;
+    padding: 10px 14px !important;
+    font-size: 14px !important;
+    box-shadow: none !important;
+}
+
+.remui-searchcontainer .form-control:focus,
+.remui-searchcontainer input[type="text"]:focus {
+    border-color: #a78bfa !important;
+    box-shadow: 0 0 0 3px rgba(167,139,250,0.15) !important;
+}
+
+/* ── 4. TAB BAR ── */
+.nav.remui-tab-bar {
+    border-bottom: 1px solid #f3f4f6 !important;
+    gap: 4px !important;
+    padding: 8px 0 0 !important;
+    background: #fff !important;
+    flex-wrap: nowrap !important;
+}
+
+/* Remove Bootstrap nav-tabs underline behavior */
+.nav.remui-tab-bar .remui-tab-pill {
+    border: none !important;
+    border-bottom: none !important;
+    border-radius: 20px !important;
+    padding: 6px 18px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: #6b7280 !important;
+    background: transparent !important;
+    margin-bottom: 6px !important;
+    transition: background 0.15s, color 0.15s !important;
+    white-space: nowrap;
+}
+
+.nav.remui-tab-bar .remui-tab-pill:hover {
+    background: #f3f4f6 !important;
+    color: #374151 !important;
+    border: none !important;
+}
+
+/* Active tab — pink */
+.nav.remui-tab-bar .remui-tab-pill.active {
+    background: #003152 !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-bottom: none !important;
+}
+
+/* Active starred tab — amber */
+.nav.remui-tab-bar .remui-tab-starred.active {
+    background: #f59e0b !important;
+    color: #ffffff !important;
+}
+
+/* Kill Bootstrap's ::after underline on active tab */
+.nav.remui-tab-bar .remui-tab-pill::after,
+.nav.remui-tab-bar .remui-tab-pill.active::after {
+    display: none !important;
+    border: none !important;
+}
+
+/* ── 5. TAB CONTENT PANEL ── */
+.tab-content.bg-light {
+    background: #ffffff !important;
+    border: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+}
+
+/* ── 6. ACTIVITY GRID — switch from flex-wrap to CSS grid ── */
+.optionscontainer[role="menubar"] {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+    padding: 16px !important;
+    flex-wrap: unset !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* ── 7. EACH ACTIVITY CARD — horizontal row layout ── */
+.optionscontainer .option.card {
+    display: flex !important;
+    flex-direction: row !important;       /* KEY: horizontal, not vertical */
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 10px 12px !important;
+    border-radius: 12px !important;
+    border: 1px solid #f0f0f0 !important;
+    background: #ffffff !important;
+    margin: 0 !important;                 /* override m-1 */
+    width: auto !important;
+    min-width: 0 !important;
+    cursor: pointer;
+    transition: all .3s cubic-bezier(.4,0,.2,1);
+}
+
+.optionscontainer .option.card:hover {
+    transform: translateY(-3px) scale(1.02);
+    border-color: #dbeafe;
+    background: #fafbff;
+    box-shadow:
+        0 20px 25px -5px rgba(0,0,0,.08),
+        0 8px 10px -6px rgba(0,0,0,.06);
+}
+
+/* ── 8. INNER optioninfo — also horizontal ── */
+ .optioninfo.card-body {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 0 !important;
+    text-align: left !important;
+    width: 100% !important;
+}
+
+/* ── 9. INNER LINK — horizontal ── */
+ .optioninfo .d-flex.flex-column {
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 12px !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+}
+
+/* ── 10. ICON BADGE — coloured rounded square ── */
+ .activityiconcontainer {
+    width: 44px !important;
+    height: 44px !important;
+       min-height: 48px;
+    min-width: 48px !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
+    /* Default colour — overridden per module below */
+    background-color: #6b7280;
+}
+
+/* Force icon white */
+ .activityiconcontainer .icon.activityicon {
+    width: 40px !important;
+    height: 40px !important;
+    filter: brightness(0) invert(1) !important;
+    margin: 0 !important;
+}
+
+/* ── 11. ACTIVITY NAME ── */
+ .optionname {
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    color: #1f2937 !important;
+    text-align: left !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    -webkit-line-clamp: unset !important;
+}
+
+/* ── 12. ACTION BUTTONS (star + info) ── */
+ .optionactions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 2px !important;
+    flex-shrink: 0 !important;
+    margin-left: auto !important;
+}
+
+.optionactions .btn.optionaction {
+    padding: 3px !important;
+    font-size: 14px !important;
+    color: #d1d5db !important;
+    background: none !important;
+    border: none !important;
+}
+
+/* Starred (filled) star */
+ .optionactions .btn.optionaction.text-primary {
+    color: #f59e0b !important;
+}
+
+ .optionactions .btn.optionaction:hover {
+    color: #f59e0b !important;
+}
+}
+/* ── 13. BADGE COLOURS PER MODULE (from your actual modicon_ classes) ── */
+
+
+/* ── 14. RESPONSIVE ── */
+@media (max-width: 750px) {
+    .optionscontainer[role="menubar"] {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .optionscontainer[role="menubar"] {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+.modal[data-region="modal-container"] .modchooser .modal-header {
+    /* background: red; */
+    width: 100%;
+    border-radius: 7px;
+    padding: 15px;
+    color: #fff;
+    padding: 14px;
+    background: #ec9707;
+    .modal-title{    font-size: 20px !important;
+    font-weight: 700 !important; color: #fff !important;}
+    button{ color: #fff !important; 
+   span{color: #fff !important;}
+   }
+   }
+    .modal[data-region="modal-container"] .modchooser modal-body{border-radius: 10px;}
+
+.modal[data-region="modal-container"] .modchooser .activity-serach{padding: 0px 30px !important;}
+.modal-dialog.modchooser {
+    min-width: 75% !important;}

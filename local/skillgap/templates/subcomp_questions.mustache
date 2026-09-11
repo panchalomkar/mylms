@@ -1,0 +1,240 @@
+{{!
+  @template local_skillgap/subcomp_questions
+  Questions management for sub-competency or sub-sub-competency.
+}}
+<div class="local-skillgap">
+
+  {{! Breadcrumb header }}
+  <div class="d-flex align-items-center justify-content-between flex-wrap mb-4">
+    <div>
+      <h4 class="mb-0" style="color:#033252;">
+        <i class="fa fa-question-circle mr-2" style="color:#eb980d;"></i>
+        Questions: <strong>{{subcomp_name}}</strong>
+      </h4>
+      <nav class="small text-muted mt-1">
+        <a href="{{{wwwroot}}}/local/skillgap/admin/competencies.php?deptid={{deptid}}&desigid={{desigid}}" class="text-muted">
+          <i class="fa fa-arrow-left mr-1"></i>Back to Competencies
+        </a>
+        <span class="mx-1">›</span>
+        <span>{{comp_name}}</span>
+        {{#is_subsub}}<span class="mx-1">›</span><span>{{parent_name}}</span>{{/is_subsub}}
+        <span class="mx-1">›</span>
+        <span class="font-weight-bold" style="color:#033252;">{{subcomp_name}}</span>
+      </nav>
+    </div>
+    <div class="d-flex gap-2 mt-2 mt-md-0">
+      <span class="badge badge-{{#has_5_questions}}success{{/has_5_questions}}{{^has_5_questions}}warning{{/has_5_questions}} px-3 py-2" style="font-size:13px;">
+        {{q_count}}/5 Questions
+      </span>
+      {{#is_subsub}}
+      <span class="badge badge-info px-2 py-2 small">Sub-Sub Competency</span>
+      {{/is_subsub}}
+      {{^is_subsub}}
+      <span class="badge badge-secondary px-2 py-2 small">Sub-Competency</span>
+      {{/is_subsub}}
+    </div>
+  </div>
+
+  {{! Progress bar }}
+  <div class="card mb-4">
+    <div class="card-body py-2">
+      <div class="d-flex justify-content-between small mb-1">
+        <span class="font-weight-bold">Question Progress</span>
+        <span class="{{#has_5_questions}}text-success{{/has_5_questions}}{{^has_5_questions}}text-warning{{/has_5_questions}} font-weight-bold">
+          {{q_count}}/5
+          {{#has_5_questions}}<i class="fa fa-check-circle ml-1"></i>{{/has_5_questions}}
+        </span>
+      </div>
+      <div class="progress" style="height:10px;">
+        <div class="progress-bar {{#has_5_questions}}bg-success{{/has_5_questions}}{{^has_5_questions}}bg-warning{{/has_5_questions}}"
+             role="progressbar" style="width:{{q_pct}}%;" aria-valuenow="{{q_pct}}" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+      {{^has_5_questions}}
+      <small class="text-muted mt-1 d-block">{{remaining}} more question(s) needed to reach 5.</small>
+      {{/has_5_questions}}
+    </div>
+  </div>
+
+  <div class="row">
+
+    {{! Add question form }}
+    {{#can_add_more}}
+    <div class="col-md-5 mb-4">
+      <div class="card">
+        <div class="card-header" style="background:#033252;color:#fff;">
+          <h6 class="mb-0"><i class="fa fa-plus-circle mr-2" style="color:#eb980d;"></i>Add Question ({{remaining}} remaining)</h6>
+        </div>
+        <div class="card-body">
+          <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/subcomp_questions.php?subcompid={{subcompid}}&compid={{compid}}&assessmentid={{assessmentid}}&deptid={{deptid}}&desigid={{desigid}}">
+            <input type="hidden" name="action"    value="save_question">
+            <input type="hidden" name="sesskey"   value="{{sesskey}}">
+            <div class="form-group">
+              <label class="font-weight-bold small">Question Text <span class="text-danger">*</span></label>
+              <textarea name="questiontext" class="form-control form-control-sm" rows="3" required placeholder="Enter question..."></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-6">
+                <label class="small font-weight-bold">Option A <span class="text-danger">*</span></label>
+                <input type="text" name="option_a" class="form-control form-control-sm" required>
+              </div>
+              <div class="form-group col-6">
+                <label class="small font-weight-bold">Option B <span class="text-danger">*</span></label>
+                <input type="text" name="option_b" class="form-control form-control-sm" required>
+              </div>
+              <div class="form-group col-6">
+                <label class="small font-weight-bold">Option C <span class="text-danger">*</span></label>
+                <input type="text" name="option_c" class="form-control form-control-sm" required>
+              </div>
+              <div class="form-group col-6">
+                <label class="small font-weight-bold">Option D <span class="text-danger">*</span></label>
+                <input type="text" name="option_d" class="form-control form-control-sm" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="small font-weight-bold">Correct Answer <span class="text-danger">*</span></label>
+              <select name="correct" class="form-control form-control-sm" required>
+                <option value="0">A — is correct</option>
+                <option value="1">B — is correct</option>
+                <option value="2">C — is correct</option>
+                <option value="3">D — is correct</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-block" style="background:#033252;color:#fff;">
+              <i class="fa fa-plus-circle mr-1"></i>Add Question
+            </button>
+          </form>
+
+          <hr class="my-3">
+          <h6 class="font-weight-bold small">CSV Upload</h6>
+          <p class="text-muted small">Format: Question, OptionA, OptionB, OptionC, OptionD (first option = correct)</p>
+          <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/subcomp_questions.php?subcompid={{subcompid}}&compid={{compid}}&assessmentid={{assessmentid}}&deptid={{deptid}}&desigid={{desigid}}" enctype="multipart/form-data">
+            <input type="hidden" name="action"  value="upload_csv">
+            <input type="hidden" name="sesskey" value="{{sesskey}}">
+            <div class="d-flex gap-2">
+              <input type="file" name="csvfile" class="form-control-file form-control-sm" accept=".csv" required style="flex:1;">
+              <button type="submit" class="btn btn-sm btn-warning">
+                <i class="fa fa-upload mr-1"></i>Import
+              </button>
+            </div>
+          </form>
+          <div class="mt-2">
+            <a href="{{{wwwroot}}}/local/skillgap/admin/download_sample.php?type=questions" class="btn btn-sm btn-outline-secondary btn-block">
+              <i class="fa fa-download mr-1"></i>Download Sample CSV
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {{/can_add_more}}
+
+    {{! Question list }}
+    <div class="{{#can_add_more}}col-md-7{{/can_add_more}}{{^can_add_more}}col-md-12{{/can_add_more}} mb-4">
+      <div class="card">
+        <div class="card-header bg-white d-flex align-items-center justify-content-between">
+          <h6 class="mb-0 font-weight-bold" style="color:#033252;">
+            <i class="fa fa-list mr-2" style="color:#eb980d;"></i>Questions ({{q_count}}/5)
+          </h6>
+          {{#has_5_questions}}
+          <span class="badge badge-success"><i class="fa fa-check-circle mr-1"></i>Complete</span>
+          {{/has_5_questions}}
+        </div>
+        <div class="card-body p-0">
+          {{#question_rows}}
+          <div class="p-3 border-bottom">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <span class="badge badge-secondary mr-1">Q{{num}}</span>
+                <span class="badge badge-{{source_badge}} mr-2">{{source}}</span>
+                <span class="small font-weight-medium">{{questiontext}}</span>
+              </div>
+              <div class="d-flex gap-1 ml-2 flex-shrink-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary sg-edit-question-btn" data-qid="{{id}}">
+                  <i class="fa fa-pencil"></i>
+                </button>
+                <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/subcomp_questions.php?subcompid={{subcompid}}&compid={{compid}}&assessmentid={{assessmentid}}&deptid={{deptid}}&desigid={{desigid}}"
+                      class="d-inline" onsubmit="return confirm('Delete this question?');">
+                  <input type="hidden" name="action"   value="delete_question">
+                  <input type="hidden" name="id"       value="{{id}}">
+                  <input type="hidden" name="sesskey"  value="{{sesskey}}">
+                  <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa fa-trash"></i></button>
+                </form>
+              </div>
+            </div>
+            <div class="row">
+              {{#options}}
+              <div class="col-6 mb-1">
+                <span class="badge {{#iscorrect}}badge-success{{/iscorrect}}{{^iscorrect}}badge-light border{{/iscorrect}} mr-1">
+                  {{#iscorrect}}<i class="fa fa-check"></i>{{/iscorrect}}{{^iscorrect}}&nbsp;{{/iscorrect}}
+                </span>
+                <small class="{{^iscorrect}}text-muted{{/iscorrect}}">{{text}}</small>
+              </div>
+              {{/options}}
+            </div>
+
+            {{! Inline edit form }}
+            <div class="sg-edit-question-form mt-3 p-3 border rounded" id="sg-edit-qform-{{id}}" style="display:none;background:#f8f9fa;">
+              <h6 class="font-weight-bold mb-3 small" style="color:#033252;"><i class="fa fa-pencil mr-1" style="color:#eb980d;"></i>Edit Question</h6>
+              <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/subcomp_questions.php?subcompid={{subcompid}}&compid={{compid}}&assessmentid={{assessmentid}}&deptid={{deptid}}&desigid={{desigid}}">
+                <input type="hidden" name="action"  value="update_question">
+                <input type="hidden" name="id"      value="{{id}}">
+                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                <div class="form-group">
+                  <label class="font-weight-bold small">Question Text</label>
+                  <textarea name="questiontext" class="form-control form-control-sm" rows="2" required>{{questiontext}}</textarea>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-6"><label class="small">A</label><input type="text" name="option_a" class="form-control form-control-sm" value="{{opt_a}}" required></div>
+                  <div class="form-group col-6"><label class="small">B</label><input type="text" name="option_b" class="form-control form-control-sm" value="{{opt_b}}" required></div>
+                  <div class="form-group col-6"><label class="small">C</label><input type="text" name="option_c" class="form-control form-control-sm" value="{{opt_c}}" required></div>
+                  <div class="form-group col-6"><label class="small">D</label><input type="text" name="option_d" class="form-control form-control-sm" value="{{opt_d}}" required></div>
+                </div>
+                <div class="form-group">
+                  <label class="small font-weight-bold">Correct</label>
+                  <select name="correct" class="form-control form-control-sm">
+                    <option value="0" {{#correct_0}}selected{{/correct_0}}>A is correct</option>
+                    <option value="1" {{#correct_1}}selected{{/correct_1}}>B is correct</option>
+                    <option value="2" {{#correct_2}}selected{{/correct_2}}>C is correct</option>
+                    <option value="3" {{#correct_3}}selected{{/correct_3}}>D is correct</option>
+                  </select>
+                </div>
+                <div class="d-flex gap-2">
+                  <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-save mr-1"></i>Save</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary sg-cancel-edit-question" data-qid="{{id}}">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          {{/question_rows}}
+          {{^question_rows}}
+          <div class="p-4 text-center text-muted">
+            <i class="fa fa-inbox fa-2x mb-2 d-block"></i>
+            No questions yet. Add your first question on the left.
+          </div>
+          {{/question_rows}}
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function() {
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.sg-edit-question-btn');
+    if (btn) {
+      var qid  = btn.getAttribute('data-qid');
+      var form = document.getElementById('sg-edit-qform-' + qid);
+      if (form) form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+  });
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.sg-cancel-edit-question');
+    if (btn) {
+      var qid  = btn.getAttribute('data-qid');
+      var form = document.getElementById('sg-edit-qform-' + qid);
+      if (form) form.style.display = 'none';
+    }
+  });
+})();
+</script>

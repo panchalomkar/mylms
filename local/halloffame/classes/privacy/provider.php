@@ -44,6 +44,14 @@ class provider implements
             'timecreated' => 'privacy:metadata:halloffame_likes',
         ], 'privacy:metadata:halloffame_likes');
 
+        $c->add_database_table('halloffame_comments', [
+            'userid'      => 'privacy:metadata:halloffame_comments',
+            'itemid'      => 'privacy:metadata:halloffame_comments',
+            'itemtype'    => 'privacy:metadata:halloffame_comments',
+            'message'     => 'privacy:metadata:halloffame_comments',
+            'timecreated' => 'privacy:metadata:halloffame_comments',
+        ], 'privacy:metadata:halloffame_comments');
+
         return $c;
     }
 
@@ -60,7 +68,8 @@ class provider implements
         $sql = 'SELECT userid FROM {halloffame_awards}
                 UNION SELECT userid FROM {halloffame_achievements}
                 UNION SELECT userid FROM {halloffame_submissions}
-                UNION SELECT userid FROM {halloffame_likes}';
+                UNION SELECT userid FROM {halloffame_likes}
+                UNION SELECT userid FROM {halloffame_comments}';
         $ul->add_from_sql('userid', $sql, []);
     }
 
@@ -85,6 +94,10 @@ class provider implements
             ['Hall of Fame', 'Likes'],
             (object)['likes' => array_values($DB->get_records('halloffame_likes', ['userid' => $uid]))]
         );
+        writer::with_context($ctx)->export_data(
+            ['Hall of Fame', 'Comments'],
+            (object)['comments' => array_values($DB->get_records('halloffame_comments', ['userid' => $uid, 'deleted' => 0]))]
+        );
     }
 
     public static function delete_data_for_all_users_in_context(\context $ctx): void {
@@ -92,6 +105,7 @@ class provider implements
         if (!$ctx instanceof \context_system) {
             return;
         }
+        $DB->delete_records('halloffame_comments');
         $DB->delete_records('halloffame_likes');
         $DB->delete_records('halloffame_submissions');
         $DB->delete_records('halloffame_achievements');
@@ -101,6 +115,7 @@ class provider implements
     public static function delete_data_for_user(approved_contextlist $cl): void {
         global $DB;
         $uid = $cl->get_user()->id;
+        $DB->delete_records('halloffame_comments',     ['userid' => $uid]);
         $DB->delete_records('halloffame_likes',        ['userid' => $uid]);
         $DB->delete_records('halloffame_submissions',  ['userid' => $uid]);
         $DB->delete_records('halloffame_achievements', ['userid' => $uid]);
@@ -114,7 +129,7 @@ class provider implements
             return;
         }
         [$in, $p] = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
-        foreach (['halloffame_likes','halloffame_submissions',
+        foreach (['halloffame_comments','halloffame_likes','halloffame_submissions',
                   'halloffame_achievements','halloffame_awards'] as $t) {
             $DB->delete_records_select($t, "userid $in", $p);
         }

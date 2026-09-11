@@ -521,3 +521,4 @@ STRING;
 
 
 }
+class_alias('theme_remui\\widget', 'widget');

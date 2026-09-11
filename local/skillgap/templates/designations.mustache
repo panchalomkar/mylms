@@ -1,0 +1,234 @@
+{{!
+  @template local_skillgap/designations
+  Designation hierarchy manager.
+  Hierarchy is determined entirely by sort_order (position 1 = highest rank).
+  Use Move Up / Move Down to define the promotion ladder.
+  No parent-child relationships.
+}}
+<div class="local-skillgap container-fluid px-0">
+
+  <div class="d-flex align-items-center justify-content-between flex-wrap mb-4">
+    <div>
+      <h3 class="mb-0" style="color:#033252;">
+        <i class="fa fa-sitemap mr-2" style="color:#eb980d;"></i>
+        {{#str}} designations, local_skillgap {{/str}}
+      </h3>
+      <p class="text-muted small mb-0 mt-1">Designation names are sourced from Moodle user profile field <code>designation</code></p>
+    </div>
+    <a href="{{{wwwroot}}}/local/skillgap/admin/analytics_visibility.php"
+       class="btn btn-sm font-weight-bold mt-2 mt-md-0" style="background:#eb980d;color:#fff;">
+      <i class="fa fa-eye mr-1"></i>Team Analytics Visibility Mapping
+    </a>
+  </div>
+
+  <div class="alert py-2" style="background:#e8f1f8;border:1px solid #b5d4f4;border-radius:6px;">
+    <i class="fa fa-info-circle mr-2" style="color:#033252;"></i>
+    <strong>How it works:</strong>
+    Select a department, then click <strong>Sync Designations</strong> to import designation names from user profiles.
+    Use <strong>Move Up / Move Down</strong> to define the promotion ladder —
+    <strong>position 1 (top) = highest rank</strong> (e.g. HOD / Director).
+    Promotion automatically moves a user one step up the ladder.
+  </div>
+
+  {{! Department selector }}
+  <div class="card mb-4">
+    <div class="card-body py-2">
+      <form method="get" action="{{{wwwroot}}}/local/skillgap/admin/designations.php" class="form-inline flex-wrap" style="gap:10px;">
+        <label class="font-weight-bold">{{#str}} department, local_skillgap {{/str}}:</label>
+        <select name="deptid" class="form-control mr-2" onchange="this.form.submit()">
+          {{#dept_options}}<option value="{{id}}" {{#selected}}selected{{/selected}}>{{name}}</option>{{/dept_options}}
+        </select>
+        <button type="submit" class="btn" style="background:#033252;color:#fff;">
+          <i class="fa fa-search mr-1"></i>{{#str}} load, local_skillgap {{/str}}
+        </button>
+      </form>
+    </div>
+  </div>
+
+  {{#has_dept}}
+
+  {{! Sync + profile summary }}
+  <div class="row mb-3">
+    <div class="col-12 col-md-6 mb-3">
+      <div class="card h-100" style="border-left:4px solid #033252;">
+        <div class="card-body py-3">
+          <h6 class="font-weight-bold" style="color:#033252;">
+            <i class="fa fa-users mr-2"></i>Designations found in user profiles: <strong>{{profile_count}}</strong>
+          </h6>
+          {{#profile_names}}
+          <span class="badge badge-secondary mr-1 mb-1">{{name}}</span>
+          {{/profile_names}}
+          {{^profile_names}}
+          <p class="text-muted small mb-0">
+            No users found with a <code>designation</code> profile field value in department <strong>{{dept_name}}</strong>.
+          </p>
+          {{/profile_names}}
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 mb-3">
+      <div class="card h-100" style="border-left:4px solid #eb980d;">
+        <div class="card-body py-3">
+          <h6 class="font-weight-bold" style="color:#854F0B;">
+            <i class="fa fa-refresh mr-2"></i>Not yet synced to hierarchy: <strong>{{unsynced_count}}</strong>
+          </h6>
+          {{#available_names}}
+          <span class="badge badge-warning mr-1 mb-1">{{name}}</span>
+          {{/available_names}}
+          {{^has_unsynced}}
+          <p class="text-success small mb-0"><i class="fa fa-check mr-1"></i>All profile designations are synced.</p>
+          {{/has_unsynced}}
+          {{#has_unsynced}}
+          <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/designations.php?deptid={{selected_deptid}}" class="mt-2">
+            <input type="hidden" name="action"  value="sync">
+            <input type="hidden" name="sesskey" value="{{sesskey}}">
+            <button type="submit" class="btn btn-sm" style="background:#eb980d;color:#fff;">
+              <i class="fa fa-refresh mr-1"></i>Sync {{unsynced_count}} Designation(s)
+            </button>
+          </form>
+          {{/has_unsynced}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{#has_rows}}
+  <div class="row">
+
+    {{! Left: Sortable ladder table }}
+    <div class="col-12 col-lg-7 mb-4">
+      <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between" style="background:#033252;color:#fff;">
+          <h5 class="mb-0"><i class="fa fa-sort mr-2" style="color:#eb980d;"></i>Promotion Ladder &amp; Order</h5>
+          <small style="color:rgba(255,255,255,0.65);">Position 1 = highest rank &nbsp;|&nbsp; Move Up/Down to reorder</small>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0" id="sg-desig-table">
+              <thead class="thead-light">
+                <tr>
+                  <th style="width:50px;"># Rank</th>
+                  <th>Designation</th>
+                  <th style="width:130px;">Move</th>
+                  <th style="width:70px;">Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#hierarchy_rows}}
+                <tr data-id="{{id}}">
+                  <td class="align-middle text-center">
+                    {{#is_top}}
+                    <span class="badge" style="background:#eb980d;color:#fff;">1 ★</span>
+                    {{/is_top}}
+                    {{^is_top}}
+                    <span class="text-muted">{{position}}</span>
+                    {{/is_top}}
+                  </td>
+                  <td class="align-middle font-weight-medium">
+                    {{#is_top}}
+                    <span style="color:#033252;">{{designation_name}}</span>
+                    <span class="badge badge-primary ml-1" style="font-size:10px;background:#033252;">Top</span>
+                    {{/is_top}}
+                    {{^is_top}}
+                    {{designation_name}}
+                    {{/is_top}}
+                  </td>
+                  <td class="align-middle">
+                    {{#can_move_up}}
+                    <form method="post"
+                          action="{{{wwwroot}}}/local/skillgap/admin/designations.php?deptid={{deptid}}"
+                          class="d-inline">
+                      <input type="hidden" name="action"  value="move_up">
+                      <input type="hidden" name="hid"     value="{{id}}">
+                      <input type="hidden" name="sesskey" value="{{sesskey}}">
+                      <button type="submit" class="btn btn-sm btn-outline-secondary" title="Move Up (higher rank)">
+                        <i class="fa fa-arrow-up"></i>
+                      </button>
+                    </form>
+                    {{/can_move_up}}
+                    {{^can_move_up}}<span class="btn btn-sm btn-light disabled"><i class="fa fa-arrow-up"></i></span>{{/can_move_up}}
+                    {{#can_move_down}}
+                    <form method="post"
+                          action="{{{wwwroot}}}/local/skillgap/admin/designations.php?deptid={{deptid}}"
+                          class="d-inline">
+                      <input type="hidden" name="action"  value="move_down">
+                      <input type="hidden" name="hid"     value="{{id}}">
+                      <input type="hidden" name="sesskey" value="{{sesskey}}">
+                      <button type="submit" class="btn btn-sm btn-outline-secondary" title="Move Down (lower rank)">
+                        <i class="fa fa-arrow-down"></i>
+                      </button>
+                    </form>
+                    {{/can_move_down}}
+                    {{^can_move_down}}<span class="btn btn-sm btn-light disabled"><i class="fa fa-arrow-down"></i></span>{{/can_move_down}}
+                  </td>
+                  <td class="align-middle">
+                    <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/designations.php?deptid={{deptid}}"
+                          onsubmit="return confirm('Delete &quot;{{designation_name}}&quot;? This cannot be undone.');">
+                      <input type="hidden" name="action"  value="delete_designation">
+                      <input type="hidden" name="hid"     value="{{id}}">
+                      <input type="hidden" name="sesskey" value="{{sesskey}}">
+                      <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                        <i class="fa fa-trash"></i>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+                {{/hierarchy_rows}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{! Right: Visual ladder }}
+    <div class="col-12 col-lg-5 mb-4">
+      <div class="card h-100">
+        <div class="card-header" style="background:#033252;color:#fff;">
+          <h5 class="mb-0"><i class="fa fa-arrow-up mr-2" style="color:#eb980d;"></i>Promotion Ladder (Top → Bottom)</h5>
+        </div>
+        <div class="card-body p-2">
+          <ul class="list-unstyled mb-0">
+            {{#hierarchy_rows}}
+            <li class="d-flex align-items-center py-2" style="border-bottom:1px solid #f0f0f0;">
+              {{#is_top}}
+              <span class="mr-2" style="color:#eb980d;font-size:16px;">&#9733;</span>
+              <span class="font-weight-bold" style="color:#033252;">{{designation_name}}</span>
+              <span class="badge ml-2" style="background:#033252;color:#fff;font-size:10px;">Highest Rank</span>
+              {{/is_top}}
+              {{^is_top}}
+              <span class="mr-2 text-muted" style="font-size:11px;">{{position}}.</span>
+              <i class="fa fa-long-arrow-right mr-2 text-muted" style="font-size:11px;"></i>
+              <span style="color:#444;">{{designation_name}}</span>
+              {{/is_top}}
+            </li>
+            {{/hierarchy_rows}}
+          </ul>
+          <p class="text-muted small mt-3 mb-0">
+            <i class="fa fa-info-circle mr-1"></i>
+            Promotion moves a user one step up this ladder (lower position number = higher rank).
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  {{/has_rows}}
+
+  {{^has_rows}}
+  <div class="alert alert-warning">
+    <i class="fa fa-exclamation-triangle mr-2"></i>
+    No designations found for <strong>{{dept_name}}</strong>.
+    {{#has_unsynced}}Click <strong>Sync Designations</strong> above to import from user profiles.{{/has_unsynced}}
+    {{^has_unsynced}}Ensure users in this department have the <code>designation</code> profile field populated.{{/has_unsynced}}
+  </div>
+  {{/has_rows}}
+
+  {{/has_dept}}
+  {{^has_dept}}
+  <div class="alert alert-warning">
+    <i class="fa fa-arrow-up mr-1"></i>{{#str}} select_dept_first, local_skillgap {{/str}}
+  </div>
+  {{/has_dept}}
+
+</div>
