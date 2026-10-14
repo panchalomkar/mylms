@@ -161,3 +161,7 @@ $string['url_failed'] = 'A valid Google Meet URL is required';
 $string['url_help'] = 'E.g. https://meet.google.com/aaa-aaaa-aaa';
 $string['visible'] = 'Visible';
 $string['week'] = 'Week(s)';
+$string['instructors'] = 'Select instructor';
+$string['instructors_help'] = 'Instructor(s) delivering this session. Counted as trainers on the Business Intelligence dashboard.';
+$string['instructors_none'] = 'No instructor selected';
+$string['instructors_search'] = 'Search instructor';

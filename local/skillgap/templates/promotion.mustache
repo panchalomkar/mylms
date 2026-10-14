@@ -1,82 +1,354 @@
-{{!
-  @template local_skillgap/promotion
-  Promotion panel — shows all users, their readiness, current and next designation, and promote action.
-}}
-<div class="local-skillgap">
-  <h3 class="mb-4"><i class="fa fa-arrow-up mr-2 text-success"></i>{{#str}} promotion, local_skillgap {{/str}}</h3>
-  <div class="alert alert-info small">
-    <i class="fa fa-info-circle mr-1"></i>
-    Users are listed when they have assessment scores recorded. Readiness is calculated as the percentage of
-    competencies marked <strong>Competent</strong>. A user with &ge;80% is considered <strong>Ready</strong>.
-    Promoting a user updates their designation to the next level in the hierarchy and assigns any active
-    assessments for that designation automatically.
+{{! @template local_skillgap/promotion - promotion panel (Figma UI) }}
+<style>
+  .local-skillgap-promo{
+    --sg-navy-1:#0A1F3D;
+    --sg-navy-2:#0D2647;
+    --sg-orange:#F5A623;
+    --sg-orange-light:#FDF1DC;
+    --sg-blue:#2F6FED;
+    --sg-blue-light:#EAF0FE;
+    --sg-green:#1E9E58;
+    --sg-green-light:#E7F8EE;
+    --sg-amber:#B45309;
+    --sg-amber-light:#FEF3DC;
+    --sg-red:#E5484D;
+    --sg-red-light:#FDEAEA;
+    --sg-gray-light:#EEF1F5;
+    --sg-gray-bg:#F5F7FA;
+    --sg-border:#E7EBF1;
+    --sg-text-muted:#8A93A3;
+    --sg-text-dark:#1B2A41;
+    font-family:inherit;color:var(--sg-text-dark);background:var(--sg-gray-bg);
+    padding:24px;border-radius:14px;
+  }
+  .local-skillgap-promo *{box-sizing:border-box;}
+#page-local-skillgap-admin-promotion div[role="main"] {
+    filter: none;
+    padding: 0px !important;
+    box-shadow: none !important;
+    background: #f6f8fc;
+}
+  /* ── Header ── */
+  .sg-page-head{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:18px;}
+  .sg-head-left{display:flex;align-items:center;gap:14px;}
+  .sg-head-icon{width:46px;height:46px;border-radius:12px;background:var(--sg-orange-light);color:var(--sg-orange);
+    display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+  .sg-page-head h2{margin:0;font-weight:800;font-size:25px;color:var(--sg-text-dark);}
+  .sg-page-head .sg-sub{color:var(--sg-text-muted);font-size:13px;margin-top:2px;}
+  .sg-btn-outline{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--sg-border);
+    border-radius:24px;padding:8px 16px;font-size:13px;font-weight:600;color:var(--sg-text-dark);text-decoration:none;}
+  .sg-btn-outline:hover{border-color:var(--sg-navy-1);color:var(--sg-text-dark);text-decoration:none;}
+  .sg-btn-outline i{color:var(--sg-text-muted);}
+
+  /* ── Card ── */
+  .sg-card{background:#fff;border:1px solid var(--sg-border);border-radius:14px;overflow:hidden;}
+
+  /* bulk bar */
+  .sg-bulk-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:14px 20px;border-bottom:1px solid var(--sg-border);}
+  .sg-bulk-count{font-size:13px;font-weight:600;color:var(--sg-text-dark);}
+  .sg-bulk-count strong{color:var(--sg-green);}
+  .sg-btn-bulk{display:inline-flex;align-items:center;gap:7px;background:var(--sg-navy-1);border:1px solid var(--sg-navy-1);border-radius:20px;
+    padding:8px 18px;font-size:13px;font-weight:600;color:#fff;}
+  .sg-btn-bulk:hover{background:var(--sg-navy-2);color:#fff;}
+  .sg-btn-bulk:disabled{opacity:.45;cursor:not-allowed;}
+
+  /* ── Table ── */
+  .local-skillgap-promo table thead th{padding:12px 16px;font-size:11px;text-transform:uppercase;letter-spacing:.4px;
+    color:var(--sg-text-muted);font-weight:700;border-top:none;border-bottom:1px solid var(--sg-border);background:#F8FAFC;}
+  .local-skillgap-promo table td{vertical-align:middle;border-color:var(--sg-border);font-size:13px;padding:14px 16px;}
+  .sg-learner-name{font-weight:700;color:var(--sg-text-dark);}
+  .sg-learner-email{font-size:12px;color:var(--sg-text-muted);}
+  .sg-dept{color:var(--sg-text-dark);}
+  .sg-cur-desig{color:var(--sg-text-dark);}
+  .sg-next-desig{font-weight:700;color:var(--sg-text-dark);}
+  .sg-next-top{color:var(--sg-text-muted);}
+
+  .sg-progress-track{background:var(--sg-gray-light);border-radius:6px;height:7px;overflow:hidden;max-width:120px;flex:1 1 auto;min-width:70px;}
+  .sg-progress-fill{height:100%;border-radius:6px;}
+  .sg-fill-success{background:var(--sg-green);}
+  .sg-fill-warning{background:var(--sg-orange);}
+  .sg-fill-danger{background:var(--sg-red);}
+  .sg-pct{font-weight:800;font-size:13px;color:var(--sg-text-dark);min-width:40px;}
+
+  .sg-status-badge{display:inline-block;border-radius:20px;padding:4px 12px;font-size:11.5px;font-weight:600;white-space:nowrap;}
+  .sg-status-success{background:var(--sg-green-light);color:var(--sg-green);}
+  .sg-status-warning{background:var(--sg-amber-light);color:var(--sg-amber);}
+  .sg-status-danger{background:var(--sg-red-light);color:var(--sg-red);}
+  .sg-status-secondary{background:var(--sg-gray-light);color:var(--sg-text-muted);}
+
+  .sg-btn-promote{display:inline-flex;align-items:center;gap:7px;background:var(--sg-navy-1);border:none;border-radius:20px;
+    padding:8px 18px;font-size:12.5px;font-weight:600;color:#fff;cursor:pointer;}
+  .sg-btn-promote:hover{background:var(--sg-navy-2);color:#fff;}
+  .sg-btn-promote.sg-disabled{background:#9AA6B5;cursor:not-allowed;}
+  .sg-promoted-pill{display:inline-flex;align-items:center;gap:5px;background:var(--sg-green-light);color:var(--sg-green);border-radius:20px;font-size:11.5px;font-weight:600;padding:4px 12px;}
+
+  /* checkboxes */
+  .local-skillgap-promo .sg-cb{
+    -webkit-appearance:none !important;-moz-appearance:none !important;appearance:none !important;
+    width:18px !important;height:18px !important;min-width:18px !important;
+    border:1.5px solid var(--sg-border) !important;border-radius:5px !important;
+    background:#fff !important;background-image:none !important;box-shadow:none !important;cursor:pointer;position:relative;margin:0 !important;flex-shrink:0;
+  }
+  .local-skillgap-promo .sg-cb:checked{background:var(--sg-navy-1) !important;border-color:var(--sg-navy-1) !important;background-image:none !important;}
+  .local-skillgap-promo .sg-cb::before,.local-skillgap-promo .sg-cb::after{display:none;}
+  .local-skillgap-promo .sg-cb:checked::after{content:"";display:block;position:absolute;left:5px;top:1px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);}
+
+  /* ── Pagination ── */
+  .sg-pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid var(--sg-border);
+    font-size:12.5px;color:var(--sg-text-muted);flex-wrap:wrap;gap:8px;}
+  .sg-page-btn{background:#fff;border:1px solid var(--sg-border);border-radius:16px;padding:5px 14px;font-size:12.5px;font-weight:600;color:var(--sg-text-dark);}
+  .sg-page-btn:disabled{opacity:.4;}
+  .sg-empty{text-align:center;color:var(--sg-text-muted);padding:40px 16px;}
+
+  /* ── Popups ── */
+  .sg-pop-overlay{position:fixed;inset:0;background:rgba(10,31,61,.45);z-index:1090;display:none;align-items:center;justify-content:center;padding:16px;}
+  .sg-pop-overlay.open{display:flex;}
+  .sg-pop{background:#fff;border-radius:16px;width:380px;max-width:100%;box-shadow:0 20px 50px rgba(10,31,61,.3);overflow:hidden;text-align:center;}
+  .sg-pop-icon{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;margin:22px auto 10px;}
+  .sg-pop-icon.warn{background:var(--sg-orange-light);color:var(--sg-orange);}
+  .sg-pop-icon.ok{background:var(--sg-green-light);color:var(--sg-green);}
+  .sg-pop h4{font-size:17px;font-weight:800;margin:0 0 6px;color:var(--sg-text-dark);}
+  .sg-pop p{font-size:13px;color:var(--sg-text-muted);margin:0 22px 18px;line-height:1.5;}
+  .sg-pop-actions{display:flex;gap:10px;padding:0 22px 22px;}
+  .sg-pop-btn{flex:1;border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--sg-border);background:#fff;color:var(--sg-text-dark);}
+  .sg-pop-btn.sg-confirm{background:var(--sg-navy-1);border-color:var(--sg-navy-1);color:#fff;}
+  .sg-pop-btn.sg-confirm:hover{background:var(--sg-navy-2);}
+  .sg-pop-btn.sg-ok-btn{background:var(--sg-green);border-color:var(--sg-green);color:#fff;}
+</style>
+
+<div class="local-skillgap-promo p-0">
+
+  {{! ── Header ── }}
+  <div class="sg-page-head">
+    <div class="sg-head-left">
+      <div class="sg-head-icon"><i class="fa fa-magic"></i></div>
+      <div>
+        <h2>{{#str}} promotion, local_skillgap {{/str}}</h2>
+        <div class="sg-sub">Review learner readiness against the 80% promotion threshold.</div>
+      </div>
+    </div>
+    <a href="{{{wwwroot}}}/local/skillgap/admin/index.php" class="sg-btn-outline"><i class="fa fa-arrow-left"></i>Back to Dashboard</a>
   </div>
-  <div class="card">
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover mb-0">
-          <thead class="thead-light">
-            <tr>
-              <th>{{#str}} user_name, local_skillgap {{/str}}</th>
-              <th>{{#str}} department, local_skillgap {{/str}}</th>
-              <th>Current Designation</th>
-              <th>Next Designation</th>
-              <th>{{#str}} readiness, local_skillgap {{/str}}</th>
-              <th>Progress</th>
-              <th>{{#str}} action, local_skillgap {{/str}}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {{#promotion_users}}
-            <tr>
-              <td class="font-weight-medium">{{fullname}}</td>
-              <td>{{department}}</td>
-              <td>
-                <span class="text-muted">{{current_desig}}</span>
-              </td>
-              <td>
-                {{#has_next_desig}}
-                <span class="font-weight-bold" style="color:#033252;">
-                  <i class="fa fa-long-arrow-right mr-1" style="color:#eb980d;"></i>{{next_desig}}
-                </span>
-                {{/has_next_desig}}
-                {{^has_next_desig}}
-                <span class="text-muted small">Top level</span>
-                {{/has_next_desig}}
-              </td>
-              <td><span class="badge badge-{{badge_class}}">{{readiness_label}}</span></td>
-              <td>
-                <div class="progress" style="height:8px;min-width:80px;">
-                  <div class="progress-bar bg-{{badge_class}}" style="width:{{readiness_pct}}%;"></div>
-                </div>
-              </td>
-              <td>
-                {{#can_promote}}
-                <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/promotion.php" class="d-inline"
-                      onsubmit="return confirm('Promote {{fullname}} to {{next_desig}}?');">
-                  <input type="hidden" name="action"  value="promote">
-                  <input type="hidden" name="userid"  value="{{userid}}">
-                  <input type="hidden" name="sesskey" value="{{sesskey}}">
-                  <button type="submit" class="btn btn-sm btn-success">
-                    <i class="fa fa-arrow-up mr-1"></i>{{#str}} promote, local_skillgap {{/str}}
-                  </button>
-                </form>
-                {{/can_promote}}
-                {{#already_promoted}}
-                <span class="badge badge-success px-2 py-1">
-                  <i class="fa fa-check mr-1"></i>Promoted recently
-                </span>
-                {{/already_promoted}}
-                {{^can_promote}}{{^already_promoted}}<span class="text-muted small">Not ready</span>{{/already_promoted}}{{/can_promote}}
-              </td>
-            </tr>
-            {{/promotion_users}}
-            {{^has_promotions}}
-            <tr><td colspan="7" class="text-center text-muted py-3">{{#str}} no_promotions, local_skillgap {{/str}}</td></tr>
-            {{/has_promotions}}
-          </tbody>
-        </table>
+
+  <div class="sg-card sg-promo-card" data-wwwroot="{{{wwwroot}}}" data-sesskey="{{sesskey}}">
+    {{! Bulk bar }}
+    <div class="sg-bulk-bar">
+      <span class="sg-bulk-count"><strong id="sg-sel-count">0</strong> selected</span>
+      <button type="button" class="sg-btn-bulk" id="sg-bulk-promote" disabled><i class="fa fa-arrow-up"></i>Promote Selected</button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th style="width:40px;"><input type="checkbox" class="sg-cb" id="sg-select-all" title="Select all ready"></th>
+            <th>{{#str}} user_name, local_skillgap {{/str}}</th>
+            <th>{{#str}} department, local_skillgap {{/str}}</th>
+            <th>Current Designation</th>
+            <th>Next Designation</th>
+            <th style="min-width:140px;">{{#str}} readiness, local_skillgap {{/str}}</th>
+            <th>Status</th>
+            <th>{{#str}} action, local_skillgap {{/str}}</th>
+          </tr>
+        </thead>
+        <tbody class="sg-promo-body">
+          {{#promotion_users}}
+          <tr class="sg-promo-row">
+            <td>
+              {{#can_promote}}<input type="checkbox" class="sg-cb sg-promo-cb" value="{{userid}}" data-name="{{fullname}}">{{/can_promote}}
+            </td>
+            <td><div class="sg-learner-name">{{fullname}}</div><div class="sg-learner-email">{{email}}</div></td>
+            <td class="sg-dept">{{department}}</td>
+            <td class="sg-cur-desig">{{current_desig}}</td>
+            <td>
+              {{#has_next_desig}}<span class="sg-next-desig">{{next_desig}}</span>{{/has_next_desig}}
+              {{^has_next_desig}}<span class="sg-next-top">Top level</span>{{/has_next_desig}}
+            </td>
+            <td>
+              <div class="d-flex align-items-center" style="gap:10px;">
+                <div class="sg-progress-track"><div class="sg-progress-fill sg-fill-{{badge_class}}" style="width:{{readiness_pct}}%;"></div></div>
+                <span class="sg-pct">{{readiness_pct}}%</span>
+              </div>
+            </td>
+            <td><span class="sg-status-badge sg-status-{{badge_class}}">{{readiness_label}}</span></td>
+            <td>
+              {{#can_promote}}
+              <button type="button" class="sg-btn-promote sg-promote-one" data-userid="{{userid}}" data-name="{{fullname}}" data-next="{{next_desig}}">
+                <i class="fa fa-arrow-circle-up"></i>{{#str}} promote, local_skillgap {{/str}}
+              </button>
+              {{/can_promote}}
+              {{#already_promoted}}<span class="sg-promoted-pill"><i class="fa fa-check"></i>Promoted</span>{{/already_promoted}}
+              {{^can_promote}}{{^already_promoted}}
+              <span class="sg-btn-promote sg-disabled"><i class="fa fa-arrow-circle-up"></i>{{#str}} promote, local_skillgap {{/str}}</span>
+              {{/already_promoted}}{{/can_promote}}
+            </td>
+          </tr>
+          {{/promotion_users}}
+          {{^has_promotions}}
+          <tr><td colspan="8" class="sg-empty"><i class="fa fa-users fa-2x mb-2 d-block"></i>{{#str}} no_promotions, local_skillgap {{/str}}</td></tr>
+          {{/has_promotions}}
+        </tbody>
+      </table>
+    </div>
+
+    {{#has_promotions}}
+    <div class="sg-pagination">
+      <span class="sg-page-info"></span>
+      <span>
+        <button type="button" class="sg-page-btn sg-page-prev">Previous</button>
+        <button type="button" class="sg-page-btn sg-page-next">Next</button>
+      </span>
+    </div>
+    {{/has_promotions}}
+  </div>
+
+  {{! Hidden form that performs the actual POST }}
+  <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/promotion.php" id="sg-promo-form" style="display:none;">
+    <input type="hidden" name="action"  value="promote" id="sg-promo-action">
+    <input type="hidden" name="sesskey" value="{{sesskey}}">
+    <input type="hidden" name="userid"  value="" id="sg-promo-userid">
+    <input type="hidden" name="userids" value="" id="sg-promo-userids">
+  </form>
+
+  {{! Confirmation popup }}
+  <div class="sg-pop-overlay" id="sg-confirm-pop">
+    <div class="sg-pop">
+      <div class="sg-pop-icon warn"><i class="fa fa-arrow-up"></i></div>
+      <h4>Confirm Promotion</h4>
+      <p id="sg-confirm-text">Promote the selected user(s)?</p>
+      <div class="sg-pop-actions">
+        <button type="button" class="sg-pop-btn" id="sg-confirm-cancel">Cancel</button>
+        <button type="button" class="sg-pop-btn sg-confirm" id="sg-confirm-yes">Promote</button>
       </div>
     </div>
   </div>
+
+  {{! Success popup }}
+  <div class="sg-pop-overlay" id="sg-success-pop">
+    <div class="sg-pop">
+      <div class="sg-pop-icon ok"><i class="fa fa-check"></i></div>
+      <h4>Promoted Successfully</h4>
+      <p id="sg-success-text">The user has been promoted.</p>
+      <div class="sg-pop-actions"><button type="button" class="sg-pop-btn sg-ok-btn" id="sg-success-ok">Done</button></div>
+    </div>
+  </div>
+
 </div>
+
+<script>
+(function() {
+  var root = document.querySelector('.local-skillgap-promo');
+  if (!root) { return; }
+  var card = root.querySelector('.sg-promo-card');
+  var form = document.getElementById('sg-promo-form');
+
+  var selAll   = document.getElementById('sg-select-all');
+  var bulkBtn  = document.getElementById('sg-bulk-promote');
+  var selCount = document.getElementById('sg-sel-count');
+  var cbs      = Array.prototype.slice.call(card ? card.querySelectorAll('.sg-promo-cb') : []);
+
+  function updateSel() {
+    var checked = cbs.filter(function(c){ return c.checked; });
+    if (selCount) { selCount.textContent = checked.length; }
+    if (bulkBtn) { bulkBtn.disabled = checked.length === 0; }
+    if (selAll) { selAll.checked = cbs.length > 0 && checked.length === cbs.length; }
+  }
+  cbs.forEach(function(c){ c.addEventListener('change', updateSel); });
+  if (selAll) {
+    selAll.addEventListener('change', function() {
+      cbs.forEach(function(c){ c.checked = selAll.checked; });
+      updateSel();
+    });
+  }
+  updateSel();
+
+  /* ── Confirmation popup ── */
+  var confirmPop  = document.getElementById('sg-confirm-pop');
+  var confirmText = document.getElementById('sg-confirm-text');
+  var confirmYes  = document.getElementById('sg-confirm-yes');
+  var pendingIds  = [];
+
+  function openConfirm(ids, msg) {
+    pendingIds = ids;
+    if (confirmText) { confirmText.textContent = msg; }
+    if (confirmPop) { confirmPop.classList.add('open'); }
+  }
+  function closeConfirm(){ if (confirmPop) { confirmPop.classList.remove('open'); } }
+
+  // single promote
+  root.addEventListener('click', function(e) {
+    var btn = e.target.closest('.sg-promote-one');
+    if (!btn) { return; }
+    openConfirm([btn.getAttribute('data-userid')],
+      'Promote ' + (btn.getAttribute('data-name') || 'this user') +
+      (btn.getAttribute('data-next') ? ' to ' + btn.getAttribute('data-next') : '') + '?');
+  });
+  // bulk promote
+  if (bulkBtn) {
+    bulkBtn.addEventListener('click', function() {
+      var ids = cbs.filter(function(c){ return c.checked; }).map(function(c){ return c.value; });
+      if (!ids.length) { return; }
+      openConfirm(ids, 'Promote ' + ids.length + ' selected user(s) to their next designation?');
+    });
+  }
+
+  document.getElementById('sg-confirm-cancel').addEventListener('click', closeConfirm);
+  if (confirmPop) { confirmPop.addEventListener('click', function(e){ if (e.target === confirmPop) { closeConfirm(); } }); }
+
+  confirmYes.addEventListener('click', function() {
+    if (!pendingIds.length || !form) { return; }
+    if (pendingIds.length === 1) {
+      document.getElementById('sg-promo-action').value = 'promote';
+      document.getElementById('sg-promo-userid').value = pendingIds[0];
+      document.getElementById('sg-promo-userids').value = '';
+    } else {
+      document.getElementById('sg-promo-action').value = 'bulk_promote';
+      document.getElementById('sg-promo-userids').value = pendingIds.join(',');
+      document.getElementById('sg-promo-userid').value = '';
+    }
+    form.submit();
+  });
+
+  /* ── Success popup — shows after redirect back with ?promoted=N ── */
+  var successPop  = document.getElementById('sg-success-pop');
+  var successText = document.getElementById('sg-success-text');
+  try {
+    var params = new URLSearchParams(window.location.search);
+    if (params.has('promoted')) {
+      var n = parseInt(params.get('promoted'), 10) || 0;
+      if (successText) { successText.textContent = n > 1 ? (n + ' users have been promoted successfully.') : 'The user has been promoted successfully.'; }
+      if (successPop) { successPop.classList.add('open'); }
+    }
+  } catch (err) {}
+  function closeSuccess() {
+    if (successPop) { successPop.classList.remove('open'); }
+    try { var u = new URL(window.location.href); u.searchParams.delete('promoted'); window.history.replaceState({}, '', u.toString()); } catch (e) {}
+  }
+  document.getElementById('sg-success-ok').addEventListener('click', closeSuccess);
+  if (successPop) { successPop.addEventListener('click', function(e){ if (e.target === successPop) { closeSuccess(); } }); }
+
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') { closeConfirm(); closeSuccess(); } });
+
+  /* ── Pagination (6/page) ── */
+  if (card) {
+    var rows = Array.prototype.slice.call(card.querySelectorAll('.sg-promo-row'));
+    var info = card.querySelector('.sg-page-info');
+    var prevBtn = card.querySelector('.sg-page-prev');
+    var nextBtn = card.querySelector('.sg-page-next');
+    if (rows.length) {
+      var PAGE_SIZE = 6, page = 1, totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+      var render = function() {
+        page = Math.min(Math.max(1, page), totalPages);
+        var start = (page - 1) * PAGE_SIZE;
+        rows.forEach(function(r, i) { r.style.display = (i >= start && i < start + PAGE_SIZE) ? '' : 'none'; });
+        if (info) { info.textContent = 'Showing ' + (start + 1) + '-' + Math.min(start + PAGE_SIZE, rows.length) + ' of ' + rows.length; }
+        if (prevBtn) { prevBtn.disabled = (page <= 1); }
+        if (nextBtn) { nextBtn.disabled = (page >= totalPages); }
+      };
+      if (prevBtn) { prevBtn.addEventListener('click', function() { page--; render(); }); }
+      if (nextBtn) { nextBtn.addEventListener('click', function() { page++; render(); }); }
+      render();
+    }
+  }
+})();
+</script>

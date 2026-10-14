@@ -103,6 +103,17 @@ class mod_googlemeet_mod_form extends moodleform_mod {
         $attributes['rows'] = 5;
         $element->setAttributes($attributes);
 
+        // Select instructor(s) for this session (stored in googlemeet.instructors as comma separated user ids).
+        $instructoroptions = googlemeet_get_instructor_options((int)$this->_course->id,
+            googlemeet_instructor_ids_from_string($this->current->instructors ?? ''));
+        $mform->addElement('autocomplete', 'instructors_picker', get_string('instructors', 'googlemeet'), $instructoroptions, [
+            'multiple' => true,
+            'noselectionstring' => get_string('instructors_none', 'googlemeet'),
+            'placeholder' => get_string('instructors_search', 'googlemeet'),
+        ]);
+        $mform->setType('instructors_picker', PARAM_INT);
+        $mform->addHelpButton('instructors_picker', 'instructors', 'googlemeet');
+
         $hours = [];
         $minutes = [];
         for ($i = 0; $i <= 23; $i++) {
@@ -250,6 +261,18 @@ class mod_googlemeet_mod_form extends moodleform_mod {
         if ($this->current->instance) {
             $defaultvalues['days'] = json_decode($defaultvalues['days'], true);
         }
+        // Selected instructors.
+        $defaultvalues['instructors_picker'] = googlemeet_instructor_ids_from_string($defaultvalues['instructors'] ?? '');
+    }
+
+    /**
+     * Converts the selected instructors to the comma separated list stored in googlemeet.instructors.
+     *
+     * @param stdClass $data passed by reference
+     */
+    public function data_postprocessing($data) {
+        parent::data_postprocessing($data);
+        $data->instructors = implode(',', array_map('intval', (array)($data->instructors_picker ?? [])));
     }
 
     /**

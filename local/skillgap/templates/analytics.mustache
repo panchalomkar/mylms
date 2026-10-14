@@ -1,246 +1,310 @@
 {{!
   @template local_skillgap/analytics
-  Competency Analytics Dashboard — modern UI matching design spec.
+  Competency Analytics Dashboard — Figma-matched UI.
+  Scoped styles under .local-skillgap-analytics.
 }}
-<div class="local-skillgap sg-analytics-wrap" style="background:#f5f7fa;min-height:100vh;padding:24px;">
+<style>
+  .local-skillgap-analytics{
+    --sg-navy-1:#0A1F3D;
+    --sg-navy-2:#0D2647;
+    --sg-orange:#F5A623;
+    --sg-orange-light:#FDF1DC;
+    --sg-blue:#ec9707;
+    --sg-blue-light:#EAF0FE;
+    --sg-green:#1E9E58;
+    --sg-green-light:#E7F8EE;
+    --sg-amber:#B45309;
+    --sg-amber-light:#FEF3DC;
+    --sg-red:#E5484D;
+    --sg-gray:#6B7280;
+    --sg-gray-light:#EEF1F5;
+    --sg-gray-bg:#F5F7FA;
+    --sg-border:#E7EBF1;
+    --sg-text-muted:#8A93A3;
+    --sg-text-dark:#1B2A41;
+    font-family:inherit;color:var(--sg-text-dark);background:var(--sg-gray-bg);
+    min-height:100vh;padding:24px;
+  }
+  .local-skillgap-analytics *{box-sizing:border-box;}
+  #page-local-skillgap-admin-analytics div[role="main"] {
+    filter: none;
+    padding: 0px !important;
+    box-shadow: none !important;
+    background: #f6f8fc;
+}
+#page-header{display:none;}
+  /* ── Page header ── */
+  .sg-page-head{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:22px;}
+  .sg-head-left{display:flex;align-items:center;gap:14px;}
+  .sg-head-icon{width:46px;height:46px;border-radius:12px;background:var(--sg-orange-light);color:var(--sg-orange);
+    display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+  .sg-page-head h2{margin:0;font-weight:800;font-size:26px;color:var(--sg-text-dark);}
+  .sg-page-head .sg-sub{color:var(--sg-text-muted);font-size:13.5px;margin-top:2px;}
+  .sg-back-btn{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--sg-border);
+    border-radius:24px;padding:8px 16px;font-size:13px;font-weight:600;color:var(--sg-text-dark);text-decoration:none;}
+  .sg-back-btn:hover{border-color:var(--sg-navy-1);color:var(--sg-text-dark);text-decoration:none;}
+  .sg-back-btn i{color:var(--sg-text-muted);}
+
+  /* ── Stat cards ── */
+  .sg-stat-card{background:#fff;border:1px solid var(--sg-border);border-radius:14px;padding:18px 20px;height:100%;position:relative;}
+  .sg-stat-label{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--sg-text-muted);font-weight:700;}
+  .sg-stat-value{font-size: 25px;
+    font-weight: 600;color:var(--sg-text-dark);line-height:1;margin-top:14px;}
+  .sg-stat-icon{position:absolute;top:16px;right:16px;width:38px;height:38px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:15px;}
+  .sg-icon-blue{background:var(--sg-blue-light);color:var(--sg-blue);}
+  .sg-icon-green{background:var(--sg-green-light);color:var(--sg-green);}
+  .sg-icon-orange{background:var(--sg-orange-light);color:var(--sg-orange);}
+  .sg-icon-navy{background:#E7ECF3;color:var(--sg-navy-1);}
+
+  /* ── Analytics card ── */
+  .sg-card{background:#fff;border:1px solid var(--sg-border);border-radius:14px;overflow:hidden;}
+  .sg-card-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    padding:16px 20px;border-bottom:1px solid var(--sg-border);}
+  .sg-card-head .sg-title{font-weight:600;font-size:16px;color:var(--sg-text-dark);}
+  .sg-card-head .sg-desc{font-size:12.5px;color:var(--sg-text-muted);margin-top:2px;}
+  .sg-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .sg-search-wrap{position:relative;}
+  .sg-search-wrap i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--sg-text-muted);font-size:12px;}
+  .sg-search-input{border:1px solid var(--sg-border);border-radius:24px;padding:8px 14px 8px 32px;font-size:13px;
+    background:var(--sg-gray-bg);width:220px;max-width:100%;}
+  .sg-filter-select{border:1px solid var(--sg-border);border-radius:24px;background:var(--sg-gray-bg);font-size:13px;
+    padding:8px 30px 8px 14px;color:var(--sg-text-dark);}
+  .sg-export-btn{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--sg-border);
+    border-radius:24px;padding:8px 16px;font-size:13px;font-weight:600;color:var(--sg-text-dark);text-decoration:none;}
+  .sg-export-btn:hover{border-color:var(--sg-navy-1);color:var(--sg-text-dark);text-decoration:none;}
+  .sg-export-btn i{color:var(--sg-text-muted);}
+
+  /* ── Table ── */
+  .local-skillgap-analytics table thead th{padding:12px 16px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;
+    color:var(--sg-text-muted);font-weight:700;border-top:none;border-bottom:1px solid var(--sg-border);background:#F8FAFC;}
+  .local-skillgap-analytics table td{vertical-align:middle;border-color:var(--sg-border);font-size:13.5px;padding:14px 16px;}
+  .sg-comp-name{font-weight:500;color:var(--sg-text-dark);}
+  .sg-type-text{color:var(--sg-text-muted);font-size:13px;}
+
+  .sg-status-badge{border-radius:20px;font-size:11.5px;font-weight:600;padding:4px 12px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
+  .sg-status-ready{background:var(--sg-green-light);color:var(--sg-green);}
+  .sg-status-incomplete{background:var(--sg-amber-light);color:var(--sg-amber);}
+
+  .sg-num{color:var(--sg-text-dark);font-weight:600;}
+  .sg-muted{color:var(--sg-text-muted);}
+
+  .sg-progress-track{background:var(--sg-gray-light);border-radius:6px;height:7px;overflow:hidden;flex:1 1 auto;min-width:60px;}
+  .sg-progress-fill{height:100%;border-radius:6px;}
+  .sg-fill-success{background:var(--sg-green);}
+  .sg-fill-warning{background:var(--sg-orange);}
+  .sg-fill-danger{background:var(--sg-red);}
+  .sg-avg-pct{font-weight:500;font-size:13px;min-width:40px;}
+  .sg-pct-success{color: #0a1f3d;}
+  .sg-pct-warning{color: #0a1f3d;}
+  .sg-pct-danger{color: #0a1f3d;}
+
+  .sg-act-csv{display:inline-flex;align-items:center;gap:5px;background:#fff;border:1px solid var(--sg-border);
+    border-radius:8px;padding:5px 12px;font-size:12.5px;font-weight:600;color:var(--sg-text-dark);text-decoration:none;}
+  .sg-act-csv:hover{border-color:var(--sg-navy-1);color:var(--sg-text-dark);text-decoration:none;}
+  .sg-act-csv i{color:var(--sg-text-muted);}
+  .sg-act-edit{display:inline-flex;align-items:center;gap:5px;background:var(--sg-navy-1);border:1px solid var(--sg-navy-1);
+    border-radius:8px;padding:5px 12px;font-size:12.5px;font-weight:600;color:#fff;text-decoration:none;}
+  .sg-act-edit:hover{background:var(--sg-navy-2);color:#fff;text-decoration:none;}
+  .sg-act-report{display:inline-flex;align-items:center;gap:5px;background:var(--sg-blue);border:1px solid var(--sg-blue);
+    border-radius:8px;padding:5px 12px;font-size:12.5px;font-weight:600;color:#fff;text-decoration:none;}
+  .sg-act-report:hover{background:#2559c9;color:#fff;text-decoration:none;}
+
+  /* ── Pagination ── */
+  .sg-pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid var(--sg-border);
+    font-size:12.5px;color:var(--sg-text-muted);flex-wrap:wrap;gap:8px;}
+  .sg-page-btn{background:#fff;border:1px solid var(--sg-border);border-radius:16px;padding:5px 14px;font-size:12.5px;
+    font-weight:600;color:var(--sg-text-dark);}
+  .sg-page-btn:disabled{opacity:.4;}
+  .sg-empty{text-align:center;color:var(--sg-text-muted);padding:32px 16px;}
+</style>
+
+<div class="local-skillgap-analytics">
 
   {{! ── Page header ── }}
-  <div class="d-flex align-items-start justify-content-between flex-wrap mb-4">
-    <div>
-      <h2 class="mb-1 font-weight-bold" style="color:#1a2b4a;">
-        {{#str}} pluginname, local_skillgap {{/str}}
-      </h2>
-      <p class="text-muted mb-0" style="font-size:14px;">
-        {{#str}} analytics_subtitle, local_skillgap {{/str}}
-      </p>
+  <div class="sg-page-head">
+    <div class="sg-head-left">
+      <div class="sg-head-icon"><i class="fa fa-bar-chart"></i></div>
+      <div>
+        <h2>{{#str}} pluginname, local_skillgap {{/str}}</h2>
+        <div class="sg-sub">{{#str}} analytics_subtitle, local_skillgap {{/str}}</div>
+      </div>
     </div>
-    <a href="{{{wwwroot}}}/local/skillgap/admin/index.php"
-       class="btn btn-outline-secondary btn-sm mt-2 mt-md-0" style="border-radius:8px;">
-      <i class="fa fa-arrow-left mr-1"></i>{{#str}} back_to_dashboard, local_skillgap {{/str}}
+    <a href="{{{wwwroot}}}/local/skillgap/admin/index.php" class="sg-back-btn">
+      <i class="fa fa-arrow-left"></i>{{#str}} back_to_dashboard, local_skillgap {{/str}}
     </a>
   </div>
 
-  {{! ── Stat Cards ── }}
+  {{! ── Stat cards ── }}
   <div class="row mb-4">
     <div class="col-6 col-md-3 mb-3">
-      <div class="bg-white rounded p-3" style="box-shadow:0 1px 4px rgba(0,0,0,.08);">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-          <span class="small text-uppercase font-weight-bold" style="color:#8492a6;letter-spacing:.6px;font-size:11px;">
-            {{#str}} total_competencies, local_skillgap {{/str}}
-          </span>
-          <span class="rounded-circle d-flex align-items-center justify-content-center"
-                style="width:36px;height:36px;background:#eef0ff;">
-            <i class="fa fa-list-ul" style="color:#5c67f2;font-size:15px;"></i>
-          </span>
-        </div>
-        <div class="font-weight-bold mb-0" style="font-size:28px;color:#1a2b4a;">{{total_comps_count}}</div>
-        <div class="small text-muted">{{#str}} across_all_categories, local_skillgap {{/str}}</div>
+      <div class="sg-stat-card">
+        <div class="sg-stat-icon sg-icon-blue"><i class="fa fa-list-ul"></i></div>
+        <div class="sg-stat-label">{{#str}} total_competencies, local_skillgap {{/str}}</div>
+        <div class="sg-stat-value">{{total_comps_count}}</div>
       </div>
     </div>
     <div class="col-6 col-md-3 mb-3">
-      <div class="bg-white rounded p-3" style="box-shadow:0 1px 4px rgba(0,0,0,.08);">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-          <span class="small text-uppercase font-weight-bold" style="color:#8492a6;letter-spacing:.6px;font-size:11px;">
-            {{#str}} ready, local_skillgap {{/str}}
-          </span>
-          <span class="rounded-circle d-flex align-items-center justify-content-center"
-                style="width:36px;height:36px;background:#e6f9f0;">
-            <i class="fa fa-bar-chart" style="color:#34c97a;font-size:15px;"></i>
-          </span>
-        </div>
-        <div class="font-weight-bold mb-0" style="font-size:28px;color:#1a2b4a;">{{ready_count}}</div>
-        <div class="small text-muted">{{#str}} published_live, local_skillgap {{/str}}</div>
+      <div class="sg-stat-card">
+        <div class="sg-stat-icon sg-icon-green"><i class="fa fa-check-circle"></i></div>
+        <div class="sg-stat-label">{{#str}} ready, local_skillgap {{/str}}</div>
+        <div class="sg-stat-value">{{ready_count}}</div>
       </div>
     </div>
     <div class="col-6 col-md-3 mb-3">
-      <div class="bg-white rounded p-3" style="box-shadow:0 1px 4px rgba(0,0,0,.08);">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-          <span class="small text-uppercase font-weight-bold" style="color:#8492a6;letter-spacing:.6px;font-size:11px;">
-            {{#str}} active_users, local_skillgap {{/str}}
-          </span>
-          <span class="rounded-circle d-flex align-items-center justify-content-center"
-                style="width:36px;height:36px;background:#eaf0ff;">
-            <i class="fa fa-users" style="color:#4a78f5;font-size:15px;"></i>
-          </span>
-        </div>
-        <div class="font-weight-bold mb-0" style="font-size:28px;color:#1a2b4a;">{{active_users_count}}</div>
-        <div class="small text-muted">{{#str}} across_all_competencies, local_skillgap {{/str}}</div>
+      <div class="sg-stat-card">
+        <div class="sg-stat-icon sg-icon-navy"><i class="fa fa-users"></i></div>
+        <div class="sg-stat-label">{{#str}} active_users, local_skillgap {{/str}}</div>
+        <div class="sg-stat-value">{{active_users_count}}</div>
       </div>
     </div>
     <div class="col-6 col-md-3 mb-3">
-      <div class="bg-white rounded p-3" style="box-shadow:0 1px 4px rgba(0,0,0,.08);">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-          <span class="small text-uppercase font-weight-bold" style="color:#8492a6;letter-spacing:.6px;font-size:11px;">
-            {{#str}} avg_score, local_skillgap {{/str}}
-          </span>
-          <span class="rounded-circle d-flex align-items-center justify-content-center"
-                style="width:36px;height:36px;background:#fff7e6;">
-            <i class="fa fa-bar-chart" style="color:#f0a500;font-size:15px;"></i>
-          </span>
-        </div>
-        <div class="font-weight-bold mb-0" style="font-size:28px;color:#1a2b4a;">{{site_avg_pct}}%</div>
-        <div class="small text-muted">{{#str}} overall_performance, local_skillgap {{/str}}</div>
+      <div class="sg-stat-card">
+        <div class="sg-stat-icon sg-icon-orange"><i class="fa fa-bar-chart"></i></div>
+        <div class="sg-stat-label">{{#str}} avg_score, local_skillgap {{/str}}</div>
+        <div class="sg-stat-value">{{site_avg_pct}}%</div>
       </div>
     </div>
   </div>
 
-  {{! ── Competency Analytics Table ── }}
-  <div class="bg-white rounded mb-4" style="box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden;">
-    <div class="d-flex align-items-center justify-content-between flex-wrap px-4 py-3"
-         style="border-bottom:1px solid #f0f0f0;">
-      <div class="d-flex align-items-center">
-        <span class="rounded-circle d-flex align-items-center justify-content-center mr-3"
-              style="width:38px;height:38px;background:#eef0ff;">
-          <i class="fa fa-bar-chart" style="color:#5c67f2;font-size:16px;"></i>
-        </span>
-        <div>
-          <div class="font-weight-bold" style="color:#1a2b4a;font-size:16px;">
-            {{#str}} competency_analytics, local_skillgap {{/str}}
-          </div>
-          <div class="small text-muted">{{#str}} analytics_subtitle, local_skillgap {{/str}}</div>
-        </div>
+  {{! ── Competency analytics table ── }}
+  <div class="sg-card sg-analytics-card">
+    <div class="sg-card-head">
+      <div>
+        <div class="sg-title">{{#str}} competency_analytics, local_skillgap {{/str}}</div>
+        <div class="sg-desc">{{#str}} analytics_subtitle, local_skillgap {{/str}}</div>
       </div>
-      <div class="d-flex align-items-center mt-2 mt-md-0" style="gap:8px;">
-        <div class="input-group input-group-sm" style="width:200px;">
-          <div class="input-group-prepend">
-            <span class="input-group-text" style="background:#f5f7fa;border-right:0;">
-              <i class="fa fa-search" style="color:#8492a6;font-size:12px;"></i>
-            </span>
-          </div>
-          <input type="text" id="sg-comp-search" class="form-control form-control-sm"
-                 placeholder="{{#str}} search_competencies, local_skillgap {{/str}}"
-                 style="border-left:0;background:#f5f7fa;">
+      <div class="sg-tools">
+        <div class="sg-search-wrap">
+          <i class="fa fa-search"></i>
+          <input type="text" id="sg-comp-search" class="sg-search-input"
+                 placeholder="{{#str}} search_competencies, local_skillgap {{/str}}">
         </div>
-        <select id="sg-status-filter" class="form-control form-control-sm" style="width:130px;background:#f5f7fa;">
+        <select id="sg-status-filter" class="sg-filter-select">
           <option value="">{{#str}} all_status, local_skillgap {{/str}}</option>
           <option value="Ready">{{#str}} ready, local_skillgap {{/str}}</option>
           <option value="Incomplete">{{#str}} status_incomplete, local_skillgap {{/str}}</option>
         </select>
-        <a href="{{{wwwroot}}}/local/skillgap/admin/analytics.php?export=csv"
-           class="btn btn-sm btn-outline-secondary" style="border-radius:6px;">
-          <i class="fa fa-download mr-1"></i>{{#str}} export, local_skillgap {{/str}}
+        <a href="{{{wwwroot}}}/local/skillgap/admin/analytics.php?export=csv" class="sg-export-btn">
+          <i class="fa fa-download"></i>{{#str}} export, local_skillgap {{/str}}
         </a>
       </div>
     </div>
 
     <div class="table-responsive">
-      <table class="table table-hover mb-0" id="sg-analytics-table" style="font-size:14px;">
+      <table class="table table-hover mb-0" id="sg-analytics-table">
         <thead>
-          <tr style="border-bottom:2px solid #f0f0f0;">
-            <th class="px-4 py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;">
-              {{#str}} competency, local_skillgap {{/str}}
-            </th>
-            <th class="text-center py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;width:70px;">
-              {{#str}} type, local_skillgap {{/str}}
-            </th>
-            <th class="text-center py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;width:110px;">
-              {{#str}} status, local_skillgap {{/str}}
-            </th>
-            <th class="text-center py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;width:90px;">
-              {{#str}} questions, local_skillgap {{/str}}
-            </th>
-            <th class="text-center py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;width:80px;">
-              {{#str}} sub_comps_col, local_skillgap {{/str}}
-            </th>
-            <th class="text-center py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;width:100px;">
-              {{#str}} assessments, local_skillgap {{/str}}
-            </th>
-            <th class="text-center py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;width:70px;">
-              {{#str}} users, local_skillgap {{/str}}
-            </th>
-            <th class="py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;width:160px;">
-              {{#str}} avg_score, local_skillgap {{/str}}
-            </th>
-            <th class="text-right px-4 py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;">
-              {{#str}} actions, local_skillgap {{/str}}
-            </th>
+          <tr>
+            <th>{{#str}} competency, local_skillgap {{/str}}</th>
+            <th>{{#str}} type, local_skillgap {{/str}}</th>
+            <th>{{#str}} status, local_skillgap {{/str}}</th>
+            <th class="text-center">{{#str}} questions, local_skillgap {{/str}}</th>
+            <th class="text-center">{{#str}} sub_comps_col, local_skillgap {{/str}}</th>
+            <th class="text-center">{{#str}} assessments, local_skillgap {{/str}}</th>
+            <th class="text-center">{{#str}} users, local_skillgap {{/str}}</th>
+            <th style="width:160px;">{{#str}} avg_score, local_skillgap {{/str}}</th>
+            <th class="text-right">{{#str}} actions, local_skillgap {{/str}}</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="sg-pg-list">
           {{#comp_rows}}
-          <tr class="sg-comp-row" data-name="{{name}}" data-status="{{status}}"
-              style="border-bottom:1px solid #f5f7fa;">
-            <td class="px-4 py-3 font-weight-bold align-middle" style="color:#1a2b4a;">{{name}}</td>
-            <td class="text-center align-middle">
-              <span class="badge" style="background:#f0f2ff;color:#5c67f2;border-radius:20px;padding:4px 10px;font-size:12px;">
-                {{type}}
-              </span>
+          <tr class="sg-comp-row sg-pg-row" data-name="{{name}}" data-status="{{status}}">
+            <td><span class="sg-comp-name">{{name}}</span></td>
+            <td><span class="sg-type-text">{{type}}</span></td>
+            <td>
+              {{#is_ready}}<span class="sg-status-badge sg-status-ready">{{#str}} ready, local_skillgap {{/str}}</span>{{/is_ready}}
+              {{^is_ready}}<span class="sg-status-badge sg-status-incomplete">{{#str}} status_incomplete, local_skillgap {{/str}}</span>{{/is_ready}}
             </td>
-            <td class="text-center align-middle">
-              {{#is_ready}}
-              <span style="display:inline-flex;align-items:center;background:#e6f9f0;color:#1a9e5c;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;">
-                <span style="width:7px;height:7px;background:#1a9e5c;border-radius:50%;margin-right:5px;"></span>
-                {{#str}} ready, local_skillgap {{/str}}
-              </span>
-              {{/is_ready}}
-              {{^is_ready}}
-              <span style="display:inline-flex;align-items:center;background:#fff8e6;color:#d48a00;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;">
-                <span style="width:7px;height:7px;background:#d48a00;border-radius:50%;margin-right:5px;"></span>
-                {{#str}} status_incomplete, local_skillgap {{/str}}
-              </span>
-              {{/is_ready}}
-            </td>
-            <td class="text-center align-middle">
-              <span class="badge badge-secondary" style="border-radius:20px;padding:4px 10px;">{{q_total}}</span>
-            </td>
-            <td class="text-center align-middle text-muted">{{sub_count}}</td>
-            <td class="text-center align-middle text-muted">{{assess_count}}</td>
-            <td class="text-center align-middle text-muted">{{user_count}}</td>
-            <td class="align-middle">
-              <div class="d-flex align-items-center">
-                <div class="progress flex-grow-1 mr-2" style="height:7px;border-radius:4px;background:#eef0f5;">
-                  <div class="progress-bar" style="width:{{avg_pct}}%;background:{{#score_green}}#34c97a{{/score_green}}{{#score_yellow}}#f0a500{{/score_yellow}}{{#score_red}}#e94e4e{{/score_red}};border-radius:4px;"></div>
+            <td class="text-center sg-num">{{q_total}}</td>
+            <td class="text-center sg-muted">{{sub_count}}</td>
+            <td class="text-center sg-muted">{{assess_count}}</td>
+            <td class="text-center sg-muted">{{user_count}}</td>
+            <td>
+              <div class="d-flex align-items-center" style="gap:8px;">
+                <div class="sg-progress-track">
+                  <div class="sg-progress-fill {{#score_green}}sg-fill-success{{/score_green}}{{#score_yellow}}sg-fill-warning{{/score_yellow}}{{#score_red}}sg-fill-danger{{/score_red}}" style="width:{{avg_pct}}%;"></div>
                 </div>
-                <span class="font-weight-bold" style="font-size:13px;color:{{#score_green}}#34c97a{{/score_green}}{{#score_yellow}}#f0a500{{/score_yellow}}{{#score_red}}#e94e4e{{/score_red}};min-width:38px;">
-                  {{avg_pct}}%
-                </span>
+                <span class="sg-avg-pct {{#score_green}}sg-pct-success{{/score_green}}{{#score_yellow}}sg-pct-warning{{/score_yellow}}{{#score_red}}sg-pct-danger{{/score_red}}">{{avg_pct}}%</span>
               </div>
             </td>
-            <td class="text-right px-4 align-middle">
+            <td class="text-right">
               <div class="d-flex justify-content-end align-items-center" style="gap:6px;">
-                <a href="{{{wwwroot}}}/local/skillgap/admin/analytics.php?compid={{id}}&export=csv"
-                   class="btn btn-sm btn-outline-secondary" style="border-radius:6px;padding:4px 10px;font-size:12px;">
-                  <i class="fa fa-download mr-1"></i>{{#str}} csv, local_skillgap {{/str}}
+                <a href="{{{wwwroot}}}/local/skillgap/admin/analytics.php?compid={{id}}&export=csv" class="sg-act-csv">
+                  <i class="fa fa-download"></i>{{#str}} csv, local_skillgap {{/str}}
                 </a>
-                <a href="{{{wwwroot}}}/local/skillgap/admin/questions.php?compid={{id}}"
-                   class="btn btn-sm btn-outline-secondary" style="border-radius:6px;padding:4px 10px;font-size:12px;">
-                  <i class="fa fa-pencil mr-1"></i>{{#str}} edit, local_skillgap {{/str}}
+                <a href="{{{wwwroot}}}/local/skillgap/admin/questions.php?compid={{id}}" class="sg-act-edit">
+                  <i class="fa fa-pencil"></i>{{#str}} edit, local_skillgap {{/str}}
                 </a>
-                <a href="{{{wwwroot}}}/local/skillgap/admin/analytics_report.php?compid={{id}}"
-                   class="btn btn-sm font-weight-bold text-white"
-                   style="border-radius:6px;padding:4px 12px;font-size:12px;background:#4a78f5;border:none;">
-                  <i class="fa fa-bar-chart mr-1"></i>{{#str}} reports, local_skillgap {{/str}}
+                <a href="{{{wwwroot}}}/local/skillgap/admin/analytics_report.php?compid={{id}}" class="sg-act-report">
+                  <i class="fa fa-bar-chart"></i>{{#str}} reports, local_skillgap {{/str}}
                 </a>
               </div>
             </td>
           </tr>
           {{/comp_rows}}
           {{^has_comps}}
-          <tr><td colspan="9" class="text-center text-muted py-4">{{#str}} no_data, local_skillgap {{/str}}</td></tr>
+          <tr class="sg-empty-row"><td colspan="9" class="sg-empty">{{#str}} no_data, local_skillgap {{/str}}</td></tr>
           {{/has_comps}}
         </tbody>
       </table>
     </div>
+
+    {{#has_comps}}
+    <div class="sg-pagination">
+      <span class="sg-page-info"></span>
+      <span>
+        <button type="button" class="sg-page-btn sg-page-prev">Previous</button>
+        <button type="button" class="sg-page-btn sg-page-next">Next</button>
+      </span>
+    </div>
+    {{/has_comps}}
   </div>
 
 </div>
 
 <script>
 (function() {
-  // Search + status filter.
+  var card = document.querySelector('.local-skillgap-analytics .sg-analytics-card');
+  if (!card) { return; }
+
   var searchInput  = document.getElementById('sg-comp-search');
   var statusFilter = document.getElementById('sg-status-filter');
-  function filterTable() {
+  var rows    = Array.prototype.slice.call(card.querySelectorAll('.sg-comp-row'));
+  var info    = card.querySelector('.sg-page-info');
+  var prevBtn = card.querySelector('.sg-page-prev');
+  var nextBtn = card.querySelector('.sg-page-next');
+  var PAGE_SIZE = 8;
+  var page = 1;
+
+  function matches(row) {
     var q  = searchInput  ? searchInput.value.toLowerCase()  : '';
     var st = statusFilter ? statusFilter.value.toLowerCase() : '';
-    document.querySelectorAll('.sg-comp-row').forEach(function(row) {
-      var name   = (row.getAttribute('data-name')   || '').toLowerCase();
-      var status = (row.getAttribute('data-status') || '').toLowerCase();
-      var show   = (!q || name.includes(q)) && (!st || status === st.toLowerCase());
-      row.style.display = show ? '' : 'none';
-    });
+    var name   = (row.getAttribute('data-name')   || '').toLowerCase();
+    var status = (row.getAttribute('data-status') || '').toLowerCase();
+    return (!q || name.indexOf(q) !== -1) && (!st || status === st);
   }
-  if (searchInput)  { searchInput.addEventListener('input',  filterTable); }
-  if (statusFilter) { statusFilter.addEventListener('change', filterTable); }
+
+  function render() {
+    var visible = rows.filter(matches);
+    var totalPages = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
+    page = Math.min(Math.max(1, page), totalPages);
+    var start = (page - 1) * PAGE_SIZE;
+
+    rows.forEach(function(r) { r.style.display = 'none'; });
+    visible.slice(start, start + PAGE_SIZE).forEach(function(r) { r.style.display = ''; });
+
+    if (info) {
+      var from = visible.length ? start + 1 : 0;
+      info.textContent = 'Showing ' + from + '-' + Math.min(start + PAGE_SIZE, visible.length) + ' of ' + visible.length;
+    }
+    if (prevBtn) { prevBtn.disabled = (page <= 1); }
+    if (nextBtn) { nextBtn.disabled = (page >= totalPages); }
+  }
+
+  if (searchInput)  { searchInput.addEventListener('input',  function() { page = 1; render(); }); }
+  if (statusFilter) { statusFilter.addEventListener('change', function() { page = 1; render(); }); }
+  if (prevBtn) { prevBtn.addEventListener('click', function() { page--; render(); }); }
+  if (nextBtn) { nextBtn.addEventListener('click', function() { page++; render(); }); }
+  render();
 })();
 </script>

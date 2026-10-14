@@ -1,0 +1,171 @@
+diff -ru a/backup/moodle2/backup_googlemeet_stepslib.php b/backup/moodle2/backup_googlemeet_stepslib.php
+--- a/backup/moodle2/backup_googlemeet_stepslib.php	2025-10-08 11:51:20.000000000 +0000
++++ b/backup/moodle2/backup_googlemeet_stepslib.php	2026-10-06 13:19:34.703518016 +0000
+@@ -56,7 +56,8 @@
+             'eventenddate',
+             'notify',
+             'minutesbefore',
+-            'timemodified'
++            'timemodified',
++            'instructors'
+         ]);
+ 
+         $events = new backup_nested_element('events');
+diff -ru a/db/install.xml b/db/install.xml
+--- a/db/install.xml	2025-10-08 11:51:16.000000000 +0000
++++ b/db/install.xml	2026-10-06 13:19:34.703126314 +0000
+@@ -28,6 +28,7 @@
+         <FIELD NAME="minutesbefore" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="When the notification should be send."/>
+         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Timestamp of when the instance was last modified."/>
+         <FIELD NAME="eventid" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="Google Calendar Event ID"/>
++        <FIELD NAME="instructors" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Comma separated user ids of the instructors selected for this session"/>
+       </FIELDS>
+       <KEYS>
+         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+diff -ru a/db/upgrade.php b/db/upgrade.php
+--- a/db/upgrade.php	2025-10-08 11:51:16.000000000 +0000
++++ b/db/upgrade.php	2026-10-06 13:19:34.703317339 +0000
+@@ -49,5 +49,19 @@
+         upgrade_mod_savepoint(true, 2023042200, 'googlemeet');
+     }
+ 
++    if ($oldversion < 2023050102) {
++        // Define field instructors to be added to googlemeet.
++        $table = new xmldb_table('googlemeet');
++        $field = new xmldb_field('instructors', XMLDB_TYPE_TEXT, null, null, null, null, null, 'eventid');
++
++        // Conditionally launch add field instructors.
++        if (!$dbman->field_exists($table, $field)) {
++            $dbman->add_field($table, $field);
++        }
++
++        // Googlemeet savepoint reached.
++        upgrade_mod_savepoint(true, 2023050102, 'googlemeet');
++    }
++
+     return true;
+ }
+diff -ru a/lang/en/googlemeet.php b/lang/en/googlemeet.php
+--- a/lang/en/googlemeet.php	2025-10-08 11:51:18.000000000 +0000
++++ b/lang/en/googlemeet.php	2026-10-06 13:19:34.705378601 +0000
+@@ -161,3 +161,7 @@
+ $string['url_help'] = 'E.g. https://meet.google.com/aaa-aaaa-aaa';
+ $string['visible'] = 'Visible';
+ $string['week'] = 'Week(s)';
++$string['instructors'] = 'Select instructor';
++$string['instructors_help'] = 'Instructor(s) delivering this session. Counted as trainers on the Business Intelligence dashboard.';
++$string['instructors_none'] = 'No instructor selected';
++$string['instructors_search'] = 'Search instructor';
+diff -ru a/locallib.php b/locallib.php
+--- a/locallib.php	2025-10-08 11:51:10.000000000 +0000
++++ b/locallib.php	2026-10-06 13:19:34.703000199 +0000
+@@ -528,3 +528,58 @@
+ 
+     return false;
+ }
++
++/**
++ * Parse the comma separated instructor user ids stored in googlemeet.instructors.
++ *
++ * @param string|null $value
++ * @return int[]
++ */
++function googlemeet_instructor_ids_from_string(?string $value): array {
++    return array_values(array_unique(array_filter(array_map('intval', preg_split('/[\s,;|]+/', (string)$value)))));
++}
++
++/**
++ * Users offered in the "Select instructor" dropdown: teachers of the course, users marked as trainers through a
++ * "trainertype" custom profile field (e.g. guest trainers who are not enrolled), plus the current selection.
++ *
++ * @param int $courseid
++ * @param int[] $selected
++ * @return array userid => display name
++ */
++function googlemeet_get_instructor_options(int $courseid, array $selected = []): array {
++    global $DB;
++    $ids = [];
++    if ($courseid && $courseid != SITEID) {
++        $context = context_course::instance($courseid, IGNORE_MISSING);
++        if ($context) {
++            $ids = $DB->get_fieldset_sql("SELECT DISTINCT ra.userid
++                                            FROM {role_assignments} ra
++                                            JOIN {role} r ON r.id = ra.roleid
++                                           WHERE ra.contextid = :ctx AND r.archetype IN ('editingteacher', 'teacher')",
++                ['ctx' => $context->id]);
++        }
++    }
++    $fieldid = $DB->get_field('user_info_field', 'id', ['shortname' => 'trainertype']);
++    if ($fieldid) {
++        $ids = array_merge($ids, $DB->get_fieldset_select('user_info_data', 'userid',
++            'fieldid = :fid AND ' . $DB->sql_isnotempty('user_info_data', 'data', true, true), ['fid' => $fieldid]));
++    }
++    $ids = array_values(array_unique(array_map('intval', array_merge($ids, $selected))));
++    if (!$ids) {
++        return [];
++    }
++    [$insql, $params] = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
++    $namefields = implode(', ', array_map(function($f) {
++        return 'u.' . $f;
++    }, \core_user\fields::get_name_fields()));
++    $users = $DB->get_records_sql("SELECT u.id, u.email, {$namefields}
++                                     FROM {user} u
++                                    WHERE u.id {$insql} AND u.deleted = 0
++                                 ORDER BY u.firstname, u.lastname", $params);
++    $options = [];
++    foreach ($users as $user) {
++        $options[(int)$user->id] = fullname($user) . ' (' . $user->email . ')';
++    }
++    return $options;
++}
+diff -ru a/mod_form.php b/mod_form.php
+--- a/mod_form.php	2025-10-08 11:51:10.000000000 +0000
++++ b/mod_form.php	2026-10-06 13:19:34.702657933 +0000
+@@ -103,6 +103,17 @@
+         $attributes['rows'] = 5;
+         $element->setAttributes($attributes);
+ 
++        // Select instructor(s) for this session (stored in googlemeet.instructors as comma separated user ids).
++        $instructoroptions = googlemeet_get_instructor_options((int)$this->_course->id,
++            googlemeet_instructor_ids_from_string($this->current->instructors ?? ''));
++        $mform->addElement('autocomplete', 'instructors_picker', get_string('instructors', 'googlemeet'), $instructoroptions, [
++            'multiple' => true,
++            'noselectionstring' => get_string('instructors_none', 'googlemeet'),
++            'placeholder' => get_string('instructors_search', 'googlemeet'),
++        ]);
++        $mform->setType('instructors_picker', PARAM_INT);
++        $mform->addHelpButton('instructors_picker', 'instructors', 'googlemeet');
++
+         $hours = [];
+         $minutes = [];
+         for ($i = 0; $i <= 23; $i++) {
+@@ -250,6 +261,18 @@
+         if ($this->current->instance) {
+             $defaultvalues['days'] = json_decode($defaultvalues['days'], true);
+         }
++        // Selected instructors.
++        $defaultvalues['instructors_picker'] = googlemeet_instructor_ids_from_string($defaultvalues['instructors'] ?? '');
++    }
++
++    /**
++     * Converts the selected instructors to the comma separated list stored in googlemeet.instructors.
++     *
++     * @param stdClass $data passed by reference
++     */
++    public function data_postprocessing($data) {
++        parent::data_postprocessing($data);
++        $data->instructors = implode(',', array_map('intval', (array)($data->instructors_picker ?? [])));
+     }
+ 
+     /**
+diff -ru a/version.php b/version.php
+--- a/version.php	2025-10-08 11:51:08.000000000 +0000
++++ b/version.php	2026-10-06 13:19:34.703435937 +0000
+@@ -26,6 +26,6 @@
+ 
+ $plugin->component = 'mod_googlemeet';
+ $plugin->release = '2.1.1';
+-$plugin->version = 2023050101;
++$plugin->version = 2023050102;
+ $plugin->requires = 2019052000; // Moodle 3.7.
+ $plugin->maturity = MATURITY_STABLE;

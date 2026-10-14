@@ -49,5 +49,19 @@ function xmldb_googlemeet_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2023042200, 'googlemeet');
     }
 
+    if ($oldversion < 2023050102) {
+        // Define field instructors to be added to googlemeet.
+        $table = new xmldb_table('googlemeet');
+        $field = new xmldb_field('instructors', XMLDB_TYPE_TEXT, null, null, null, null, null, 'eventid');
+
+        // Conditionally launch add field instructors.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Googlemeet savepoint reached.
+        upgrade_mod_savepoint(true, 2023050102, 'googlemeet');
+    }
+
     return true;
 }

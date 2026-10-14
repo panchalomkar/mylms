@@ -1,48 +1,188 @@
-{{!
-  @template local_skillgap/questions
-  Question management page. Linked to assessmentid context.
-  Shows competency list for assessment, per-competency question manager.
-}}
-<div class="local-skillgap container-fluid px-0">
+{{! @template local_skillgap/questions - question manager (Figma UI) }}
+<style>
+  .local-skillgap-q{
+    --sg-navy-1:#0A1F3D;
+    --sg-navy-2:#0D2647;
+    --sg-orange:#F5A623;
+    --sg-orange-light:#FDF1DC;
+    --sg-blue:#2F6FED;
+    --sg-blue-light:#EAF0FE;
+    --sg-green:#1E9E58;
+    --sg-green-light:#E7F8EE;
+    --sg-amber:#B45309;
+    --sg-red:#E5484D;
+    --sg-red-light:#FDEAEA;
+    --sg-gray-light:#EEF1F5;
+    --sg-gray-bg:#F5F7FA;
+    --sg-border:#E7EBF1;
+    --sg-text-muted:#8A93A3;
+    --sg-text-dark:#1B2A41;
+    font-family:inherit;color:var(--sg-text-dark);background:var(--sg-gray-bg);
+    padding:24px;border-radius:14px;
+  }
+  .local-skillgap-q *{box-sizing:border-box;}
+#page-local-skillgap-admin-questions div[role="main"] {
+    filter: none;
+    padding: 0px !important;
+    box-shadow: none !important;
+    background: #f6f8fc;
+}
+  /* ── Header ── */
+  .sg-topbar{display:flex;justify-content:flex-end;margin-bottom:6px;}
+  .sg-btn-outline{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--sg-border);
+    border-radius:24px;padding:8px 16px;font-size:13px;font-weight:600;color:var(--sg-text-dark);text-decoration:none;}
+  .sg-btn-outline:hover{border-color:var(--sg-navy-1);color:var(--sg-text-dark);text-decoration:none;}
+  .sg-btn-outline i{color:var(--sg-text-muted);}
+  .sg-page-head{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+  .sg-head-icon{width:44px;height:44px;border-radius:12px;background:var(--sg-orange-light);color:var(--sg-orange);
+    display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+  .sg-page-head h2{margin:0;font-weight:800;font-size:24px;color:var(--sg-text-dark);}
 
-  {{! Assessment context bar }}
-  {{#has_assessment}}
-  <div class="alert alert-info d-flex align-items-center justify-content-between flex-wrap mb-4">
-    <div>
-      <i class="fa fa-check-square-o mr-2"></i>
-      <strong>Assessment:</strong> {{assess_title}}
-      &nbsp;&mdash;&nbsp;Add 5 questions per competency before users can take this assessment.
-    </div>
-    <a href="{{{wwwroot}}}/local/skillgap/admin/assessments.php" class="btn btn-sm btn-outline-info mt-2 mt-md-0">
-      <i class="fa fa-arrow-left mr-1"></i>{{#str}} back_to_assessments, local_skillgap {{/str}}
-    </a>
+  /* ── Cards ── */
+  .sg-card{background:#fff;border:1px solid var(--sg-border);border-radius:14px;}
+  .sg-section-header{background:var(--sg-navy-1);color:#fff;padding:14px 20px;display:flex;align-items:center;
+    justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  .sg-section-header h5{color:#fff;margin:0;font-weight:700;font-size:15px;display:flex;align-items:center;gap:10px;}
+  .sg-section-header h5 i{color:var(--sg-orange);}
+  .sg-hdr-ok{background:rgba(255,255,255,.16);color:#fff;border-radius:20px;font-size:12px;font-weight:600;padding:4px 12px;}
+
+  /* ── Selector ── */
+  .sg-selector{padding:18px 20px;}
+  .sg-selector label{font-size:12.5px;font-weight:700;color:var(--sg-text-dark);display:block;margin-bottom:8px;}
+  .sg-select{border:1px solid var(--sg-border);border-radius:10px;padding:11px 14px;font-size:14px;background:#fff;color:var(--sg-text-dark);min-width:260px;max-width:100%;}
+  /* searchable competency combo */
+  .sg-combo{position:relative;min-width:260px;flex:1 1 260px;max-width:360px;}
+  .sg-combo-input{width:100%;border:1px solid var(--sg-border);border-radius:10px;padding:11px 34px 11px 14px;font-size:14px;background:#fff;color:var(--sg-text-dark);cursor:pointer;}
+  .sg-combo-input::placeholder{color:var(--sg-text-muted);}
+  .sg-combo-caret{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--sg-text-muted);font-size:12px;pointer-events:none;}
+  .sg-combo-panel{position:absolute;left:0;right:0;top:calc(100% + 4px);background:#fff;border:1px solid var(--sg-border);
+    border-radius:10px;box-shadow:0 8px 24px rgba(10,31,61,.12);max-height:260px;overflow-y:auto;z-index:50;display:none;}
+  .sg-combo.open .sg-combo-panel{display:block;}
+  .sg-combo-opt{padding:10px 14px;font-size:13.5px;cursor:pointer;border-bottom:1px solid var(--sg-gray-light);}
+  .sg-combo-opt:last-child{border-bottom:none;}
+  .sg-combo-opt:hover,.sg-combo-opt.active{background:var(--sg-blue-light);color:var(--sg-navy-1);}
+  .sg-combo-empty{padding:12px 14px;color:var(--sg-text-muted);font-size:13px;}
+  .sg-btn-navy{display:inline-flex;align-items:center;justify-content:center;gap:7px;background:var(--sg-navy-1);border:1px solid var(--sg-navy-1);
+    border-radius:10px;padding:11px 20px;font-size:13.5px;font-weight:600;color:#fff;}
+  .sg-btn-navy:hover{background:var(--sg-navy-2);color:#fff;}
+  .sg-btn-block{width:100%;}
+  .sg-btn-orange{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--sg-orange);border:none;border-radius:10px;
+    padding:10px 16px;font-size:13px;font-weight:600;color:#fff;}
+  .sg-btn-orange:hover{background:#e0940e;color:#fff;}
+  .sg-btn-info{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--sg-blue);border:none;border-radius:10px;
+    padding:10px 16px;font-size:13px;font-weight:600;color:#fff;}
+  .sg-btn-info:hover{background:#2559c9;color:#fff;}
+
+  /* ── Progress ── */
+  .sg-prog-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:8px;}
+  .sg-prog-title{font-weight:800;font-size:15.5px;color:var(--sg-text-dark);}
+  .sg-prog-pill{border-radius:20px;font-size:12.5px;font-weight:700;padding:4px 14px;color:#fff;}
+  .sg-prog-pill.sg-warn{background:var(--sg-orange);}
+  .sg-prog-pill.sg-ok{background:var(--sg-green);}
+  .sg-prog-track{background:var(--sg-gray-light);border-radius:8px;height:10px;overflow:hidden;margin-bottom:8px;}
+  .sg-prog-fill{height:100%;border-radius:8px;transition:width .25s;}
+  .sg-prog-fill.sg-warn{background:var(--sg-orange);}
+  .sg-prog-fill.sg-ok{background:var(--sg-green);}
+  .sg-prog-warn{font-size:12.5px;color:var(--sg-amber);display:flex;align-items:center;gap:6px;}
+  .sg-prog-warn i{color:var(--sg-orange);}
+  .sg-prog-ok{font-size:12.5px;color:var(--sg-green);font-weight:600;display:flex;align-items:center;gap:6px;}
+
+  /* ── Add tabs ── */
+  .sg-tabs{display:flex;gap:4px;padding:0 20px;background:var(--sg-navy-1);}
+  .sg-tab{border:none;background:transparent;color:rgba(255,255,255,.6);padding:12px 16px;font-size:13px;font-weight:600;
+    cursor:pointer;border-bottom:2px solid transparent;display:inline-flex;align-items:center;gap:6px;}
+  .sg-tab.active{color:#fff;border-bottom-color:var(--sg-orange);}
+  .sg-tab-panel{display:none;padding:18px 20px;}
+  .sg-tab-panel.active{display:block;}
+  .sg-form-body label{font-size:12px;font-weight:700;color:var(--sg-text-dark);display:block;margin-bottom:6px;}
+  .sg-input,.sg-textarea,.sg-select-full{width:100%;border:1px solid var(--sg-border);border-radius:10px;padding:9px 12px;font-size:13.5px;background:#fff;color:var(--sg-text-dark);}
+  .sg-textarea{resize:vertical;min-height:70px;}
+  .sg-note{background:var(--sg-blue-light);border:1px solid #D7E3FB;border-radius:10px;padding:10px 14px;font-size:12.5px;color:#2B4B8A;margin-bottom:14px;}
+
+  /* ── Question rows ── */
+  .sg-q-row{padding:18px 20px;border-bottom:1px solid var(--sg-border);}
+  .sg-q-row:last-child{border-bottom:none;}
+  .sg-q-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px;}
+  .sg-q-left{display:flex;align-items:flex-start;gap:10px;min-width:0;}
+  .sg-q-badge{width:34px;height:34px;min-width:34px;border-radius:50%;background:var(--sg-navy-1);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;}
+  .sg-q-source{border:1px solid var(--sg-border);border-radius:8px;font-size:10.5px;font-weight:700;letter-spacing:.5px;
+    color:var(--sg-text-muted);padding:3px 8px;text-transform:uppercase;flex-shrink:0;}
+  .sg-q-text{font-weight:700;font-size:14px;color:var(--sg-text-dark);padding-top:6px;}
+  .sg-q-actions{display:flex;gap:6px;flex-shrink:0;}
+  .sg-circle{width:34px;height:34px;border-radius:8px;background:#fff;border:1px solid var(--sg-border);display:inline-flex;
+    align-items:center;justify-content:center;font-size:12.5px;color:var(--sg-text-dark);}
+  .sg-circle:hover{border-color:var(--sg-navy-1);}
+  .sg-circle.sg-del{border-color:var(--sg-red-light);color:var(--sg-red);}
+  .sg-circle.sg-del:hover{background:var(--sg-red-light);}
+
+  .sg-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  @media (max-width:640px){.sg-opts{grid-template-columns:1fr;}}
+  .sg-opt{display:flex;align-items:center;gap:10px;border:1px solid var(--sg-border);border-radius:12px;padding:11px 14px;font-size:13px;}
+  .sg-opt.sg-correct{background:var(--sg-green-light);border:1.5px solid var(--sg-green);}
+  .sg-opt-radio{width:20px;height:20px;min-width:20px;border-radius:50%;border:1.5px solid var(--sg-border);
+    display:flex;align-items:center;justify-content:center;font-size:10px;}
+  .sg-opt.sg-correct .sg-opt-radio{background:var(--sg-green);border-color:var(--sg-green);color:#fff;}
+  .sg-opt-text{color:var(--sg-text-muted);}
+  .sg-opt.sg-correct .sg-opt-text{color:var(--sg-green);font-weight:600;}
+
+  .sg-edit-panel{margin-top:14px;padding:16px;border:1px solid var(--sg-border);border-radius:12px;background:#F8FAFC;display:none;}
+  .sg-edit-panel.show{display:block;}
+  .sg-edit-title{font-weight:700;font-size:13px;color:var(--sg-navy-1);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+  .sg-edit-title i{color:var(--sg-orange);}
+  .sg-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  @media (max-width:640px){.sg-grid2{grid-template-columns:1fr;}}
+
+  /* ── Assessment context ── */
+  .sg-ctx-banner{background:var(--sg-blue-light);border:1px solid #D7E3FB;border-radius:12px;padding:12px 18px;
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:13.5px;color:#2B4B8A;margin-bottom:18px;}
+  .sg-comp-chip{display:block;padding:10px 12px;border:1px solid var(--sg-border);border-radius:10px;text-decoration:none;color:var(--sg-text-dark);}
+  .sg-comp-chip:hover{border-color:var(--sg-navy-1);text-decoration:none;color:var(--sg-text-dark);}
+  .sg-comp-chip.sel{background:var(--sg-blue-light);border-color:var(--sg-blue);}
+  .sg-comp-chip.sub{border-left:3px solid var(--sg-orange);}
+  .sg-chip-pill{border-radius:20px;font-size:11px;font-weight:700;padding:3px 9px;color:#fff;}
+  .sg-chip-pill.sg-ok{background:var(--sg-green);}
+  .sg-chip-pill.sg-warn{background:var(--sg-orange);}
+  .sg-chip-track{background:var(--sg-gray-light);border-radius:6px;height:5px;overflow:hidden;margin-top:6px;}
+  .sg-chip-fill{height:100%;border-radius:6px;}
+
+  .sg-empty{text-align:center;color:var(--sg-text-muted);padding:40px 16px;}
+  .sg-alert-warn{background:var(--sg-orange-light);border:1px solid #F3D89A;border-radius:12px;padding:14px 18px;font-size:13.5px;color:#8a5a00;display:flex;align-items:flex-start;gap:10px;}
+  .sg-alert-warn i{color:var(--sg-orange);margin-top:2px;}
+</style>
+
+<div class="local-skillgap-q">
+
+  {{! ── Back to dashboard ── }}
+  <div class="sg-topbar">
+    <a href="{{{wwwroot}}}/local/skillgap/admin/index.php" class="sg-btn-outline"><i class="fa fa-arrow-left"></i>Back to Dashboard</a>
   </div>
 
-  {{! Competency progress list for this assessment }}
+  {{! ── Header ── }}
+  <div class="sg-page-head">
+    <div class="sg-head-icon"><i class="fa fa-question-circle"></i></div>
+    <h2>{{#str}} pluginname, local_skillgap {{/str}}</h2>
+  </div>
+
+  {{! ── Assessment context ── }}
+  {{#has_assessment}}
+  <div class="sg-ctx-banner">
+    <span><i class="fa fa-check-square-o mr-2"></i><strong>Assessment:</strong> {{assess_title}} &mdash; add 5 questions per competency before users can take it.</span>
+    <a href="{{{wwwroot}}}/local/skillgap/admin/assessments.php" class="sg-btn-outline">{{#str}} back_to_assessments, local_skillgap {{/str}}</a>
+  </div>
   {{#has_assess_comps}}
-  <div class="card mb-4">
-    <div class="card-header" style="background:#033252;color:#fff;">
-      <h6 class="mb-0"><i class="fa fa-list mr-2"></i>Competencies in this Assessment</h6>
-    </div>
-    <div class="card-body py-2">
+  <div class="sg-card mb-4">
+    <div class="sg-section-header"><h5><i class="fa fa-list"></i>Competencies in this Assessment</h5></div>
+    <div class="card-body">
       <div class="row">
         {{#assess_comps}}
-        <div class="col-12 col-md-6 col-lg-4 mb-2">
-          <a href="{{{url}}}" class="d-block p-2 border rounded text-decoration-none
-            {{#is_selected}}border-primary{{/is_selected}}{{^is_selected}}border-light{{/is_selected}}"
-             style="{{#is_selected}}background:#e8f1f8;{{/is_selected}}{{#is_sub}}border-left:3px solid #eb980d!important;{{/is_sub}}">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-              <span class="font-weight-medium text-dark small">
-                {{#is_sub}}<span class="text-muted small mr-1">{{{level_prefix}}}</span>{{/is_sub}}{{name}}
-              </span>
-              <span class="badge {{#has_5_questions}}badge-success{{/has_5_questions}}{{^has_5_questions}}badge-warning{{/has_5_questions}}">
-                {{q_count}}/5
-              </span>
+        <div class="col-12 col-md-6 col-lg-4 mb-3">
+          <a href="{{{url}}}" class="sg-comp-chip {{#is_selected}}sel{{/is_selected}} {{#is_sub}}sub{{/is_sub}}">
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="font-weight-medium small">{{#is_sub}}<span class="text-muted mr-1">{{{level_prefix}}}</span>{{/is_sub}}{{name}}</span>
+              <span class="sg-chip-pill {{#has_5_questions}}sg-ok{{/has_5_questions}}{{^has_5_questions}}sg-warn{{/has_5_questions}}">{{q_count}}/5</span>
             </div>
-            <div class="progress" style="height:5px;">
-              <div class="progress-bar {{#has_5_questions}}bg-success{{/has_5_questions}}{{^has_5_questions}}bg-warning{{/has_5_questions}}"
-                   style="width:{{q_pct}}%;"></div>
-            </div>
+            <div class="sg-chip-track"><div class="sg-chip-fill {{#has_5_questions}}sg-fill-ok{{/has_5_questions}}" style="width:{{q_pct}}%;background:{{#has_5_questions}}var(--sg-green){{/has_5_questions}}{{^has_5_questions}}var(--sg-orange){{/has_5_questions}};"></div></div>
           </a>
         </div>
         {{/assess_comps}}
@@ -52,182 +192,117 @@
   {{/has_assess_comps}}
   {{/has_assessment}}
 
+  {{! ── Standalone selector ── }}
   {{^has_assessment}}
-  {{! Standalone competency selector }}
-  <div class="card mb-4">
-    <div class="card-body">
-      <form method="get" action="{{{wwwroot}}}/local/skillgap/admin/questions.php" class="form-inline flex-wrap">
+  <div class="sg-card mb-4">
+    <div class="sg-selector">
+      <label>{{#str}} competency, local_skillgap {{/str}}</label>
+      <form method="get" action="{{{wwwroot}}}/local/skillgap/admin/questions.php" class="d-flex flex-wrap align-items-center" style="gap:10px;" id="sg-comp-form">
         {{#selected_assessmentid}}<input type="hidden" name="assessmentid" value="{{selected_assessmentid}}">{{/selected_assessmentid}}
-        <label class="mr-2 font-weight-bold">{{#str}} competency, local_skillgap {{/str}}:</label>
-        <select name="compid" class="form-control mr-2 mb-2" onchange="this.form.submit()">
-          {{#comp_options}}
-          <option value="{{id}}" {{#selected}}selected{{/selected}}>{{name}}</option>
-          {{/comp_options}}
-        </select>
-        <button type="submit" class="btn mb-2" style="background:#033252;color:#fff;">
-          <i class="fa fa-search mr-1"></i>{{#str}} load, local_skillgap {{/str}}
-        </button>
+        <input type="hidden" name="compid" id="sg-comp-value" value="{{selected_compid}}">
+        <div class="sg-combo" id="sg-comp-combo"
+             data-options='[{{#comp_options}}{"id":"{{id}}","name":"{{name}}"{{#selected}},"sel":1{{/selected}}},{{/comp_options}}{"id":"","name":""}]'>
+          <input type="text" class="sg-combo-input" id="sg-comp-input" placeholder="Search &amp; select competency..." autocomplete="off" readonly>
+          <i class="fa fa-chevron-down sg-combo-caret"></i>
+          <div class="sg-combo-panel" id="sg-comp-panel"></div>
+        </div>
+        <button type="submit" class="sg-btn-navy"><i class="fa fa-search"></i>{{#str}} load, local_skillgap {{/str}}</button>
       </form>
     </div>
   </div>
   {{/has_assessment}}
 
   {{#has_comp}}
-  {{! Progress bar }}
-  <div class="mb-3">
-    <div class="d-flex justify-content-between align-items-center mb-1">
-      <span class="font-weight-bold">{{comp_name}}</span>
-      <span class="badge {{#has_5_questions}}badge-success{{/has_5_questions}}{{^has_5_questions}}badge-warning{{/has_5_questions}}">
-        {{q_count}} / 5
-      </span>
-    </div>
-    <div class="progress" style="height:10px;">
-      <div class="progress-bar {{#has_5_questions}}bg-success{{/has_5_questions}}{{^has_5_questions}}bg-warning{{/has_5_questions}}"
-           role="progressbar" style="width:{{q_pct}}%;" aria-valuenow="{{q_pct}}" aria-valuemin="0" aria-valuemax="100"></div>
-    </div>
-    {{#has_5_questions}}
-    <p class="text-success small mt-1 mb-0"><i class="fa fa-check-circle mr-1"></i>{{#str}} questions_complete, local_skillgap {{/str}}</p>
-    {{/has_5_questions}}
-    {{^has_5_questions}}
-    <p class="text-warning small mt-1 mb-0"><i class="fa fa-exclamation-triangle mr-1"></i>{{remaining}} more question(s) needed.</p>
-    {{/has_5_questions}}
+  {{! ── Progress ── }}
+  <div class="sg-prog-head">
+    <span class="sg-prog-title">{{comp_name}}</span>
+    <span class="sg-prog-pill {{#has_5_questions}}sg-ok{{/has_5_questions}}{{^has_5_questions}}sg-warn{{/has_5_questions}}">{{q_count}}/5</span>
   </div>
+  <div class="sg-prog-track">
+    <div class="sg-prog-fill {{#has_5_questions}}sg-ok{{/has_5_questions}}{{^has_5_questions}}sg-warn{{/has_5_questions}}" style="width:{{#has_5_questions}}100{{/has_5_questions}}{{^has_5_questions}}{{q_pct}}{{/has_5_questions}}%;"></div>
+  </div>
+  {{#has_5_questions}}<div class="sg-prog-ok mb-4"><i class="fa fa-check-circle"></i>{{#str}} questions_complete, local_skillgap {{/str}}</div>{{/has_5_questions}}
+  {{^has_5_questions}}<div class="sg-prog-warn mb-4"><i class="fa fa-exclamation-triangle"></i>{{remaining}} more question(s) needed.</div>{{/has_5_questions}}
 
   <div class="row">
-    {{! ── Left: Add question panel ── }}
+    {{! ── Add panel (tabs) ── }}
     {{#can_add_more}}
     <div class="col-12 col-lg-5 mb-4">
-      <div class="card h-100">
-        <div class="card-header" style="background:#033252;color:#fff;">
-          <ul class="nav nav-tabs card-header-tabs" id="q-tabs" role="tablist">
-            <li class="nav-item">
-              <a class="nav-link active text-white" id="tab-manual-link" data-toggle="tab" href="#tab-manual" role="tab">
-                <i class="fa fa-keyboard-o mr-1"></i>Manual
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-white-50" id="tab-csv-link" data-toggle="tab" href="#tab-csv" role="tab">
-                <i class="fa fa-upload mr-1"></i>CSV
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-white-50" id="tab-ai-link" data-toggle="tab" href="#tab-ai" role="tab">
-                <i class="fa fa-magic mr-1"></i>AI
-              </a>
-            </li>
-          </ul>
+      <div class="sg-card h-100 sg-add-card">
+        <div class="sg-tabs">
+          <button type="button" class="sg-tab active" data-tab="manual"><i class="fa fa-keyboard-o"></i>Manual</button>
+          <button type="button" class="sg-tab" data-tab="csv"><i class="fa fa-upload"></i>CSV</button>
+          <button type="button" class="sg-tab" data-tab="ai"><i class="fa fa-magic"></i>AI</button>
         </div>
-        <div class="card-body">
-          <div class="tab-content">
 
-            {{! Manual entry }}
-            <div class="tab-pane fade show active" id="tab-manual" role="tabpanel">
-              <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/questions.php?compid={{selected_compid}}&assessmentid={{selected_assessmentid}}">
-                <input type="hidden" name="action"         value="save_question">
-                <input type="hidden" name="compid"         value="{{selected_compid}}">
-                <input type="hidden" name="assessmentid"   value="{{selected_assessmentid}}">
-                <input type="hidden" name="sesskey"        value="{{sesskey}}">
-                <div class="form-group">
-                  <label class="font-weight-bold small">{{#str}} question_text, local_skillgap {{/str}} <span class="text-danger">*</span></label>
-                  <textarea name="questiontext" class="form-control" rows="3" required placeholder="Enter your question..."></textarea>
-                </div>
-                <div class="form-group">
-                  <label class="font-weight-bold small">{{#str}} option_a, local_skillgap {{/str}} <span class="text-danger">*</span></label>
-                  <input type="text" name="option_a" class="form-control form-control-sm" required placeholder="Option A text">
-                </div>
-                <div class="form-group">
-                  <label class="font-weight-bold small">{{#str}} option_b, local_skillgap {{/str}} <span class="text-danger">*</span></label>
-                  <input type="text" name="option_b" class="form-control form-control-sm" required placeholder="Option B text">
-                </div>
-                <div class="form-group">
-                  <label class="font-weight-bold small">{{#str}} option_c, local_skillgap {{/str}} <span class="text-danger">*</span></label>
-                  <input type="text" name="option_c" class="form-control form-control-sm" required placeholder="Option C text">
-                </div>
-                <div class="form-group">
-                  <label class="font-weight-bold small">{{#str}} option_d, local_skillgap {{/str}} <span class="text-danger">*</span></label>
-                  <input type="text" name="option_d" class="form-control form-control-sm" required placeholder="Option D text">
-                </div>
-                <div class="form-group">
-                  <label class="font-weight-bold small">{{#str}} correct_option, local_skillgap {{/str}} <span class="text-danger">*</span></label>
-                  <select name="correct" class="form-control form-control-sm" required>
-                    <option value="0">A — is correct</option>
-                    <option value="1">B — is correct</option>
-                    <option value="2">C — is correct</option>
-                    <option value="3">D — is correct</option>
-                  </select>
-                </div>
-                <button type="submit" class="btn btn-block" style="background:#033252;color:#fff;">
-                  <i class="fa fa-save mr-1"></i>{{#str}} save, local_skillgap {{/str}} Question
-                </button>
-              </form>
+        {{! Manual }}
+        <div class="sg-tab-panel active sg-form-body" data-panel="manual">
+          <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/questions.php?compid={{selected_compid}}&assessmentid={{selected_assessmentid}}">
+            <input type="hidden" name="action"       value="save_question">
+            <input type="hidden" name="compid"       value="{{selected_compid}}">
+            <input type="hidden" name="assessmentid" value="{{selected_assessmentid}}">
+            <input type="hidden" name="sesskey"      value="{{sesskey}}">
+            <div class="mb-3"><label>{{#str}} question_text, local_skillgap {{/str}} <span style="color:var(--sg-red);">*</span></label>
+              <textarea name="questiontext" class="sg-textarea" required placeholder="Enter your question..."></textarea></div>
+            <div class="sg-grid2 mb-3">
+              <div><label>{{#str}} option_a, local_skillgap {{/str}} <span style="color:var(--sg-red);">*</span></label><input type="text" name="option_a" class="sg-input" required></div>
+              <div><label>{{#str}} option_b, local_skillgap {{/str}} <span style="color:var(--sg-red);">*</span></label><input type="text" name="option_b" class="sg-input" required></div>
+              <div><label>{{#str}} option_c, local_skillgap {{/str}} <span style="color:var(--sg-red);">*</span></label><input type="text" name="option_c" class="sg-input" required></div>
+              <div><label>{{#str}} option_d, local_skillgap {{/str}} <span style="color:var(--sg-red);">*</span></label><input type="text" name="option_d" class="sg-input" required></div>
             </div>
+            <div class="mb-3"><label>{{#str}} correct_option, local_skillgap {{/str}} <span style="color:var(--sg-red);">*</span></label>
+              <select name="correct" class="sg-select-full" required>
+                <option value="0">A — is correct</option><option value="1">B — is correct</option>
+                <option value="2">C — is correct</option><option value="3">D — is correct</option>
+              </select></div>
+            <button type="submit" class="sg-btn-navy sg-btn-block"><i class="fa fa-save"></i>{{#str}} save, local_skillgap {{/str}} Question</button>
+          </form>
+        </div>
 
-            {{! CSV upload }}
-            <div class="tab-pane fade" id="tab-csv" role="tabpanel">
-              <p class="small text-muted mb-3">
-                CSV columns: <strong>Question, Option A (correct), Option B, Option C, Option D</strong>
-              </p>
-              <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/questions.php?compid={{selected_compid}}&assessmentid={{selected_assessmentid}}" enctype="multipart/form-data">
-                <input type="hidden" name="action"       value="upload_csv">
-                <input type="hidden" name="compid"       value="{{selected_compid}}">
-                <input type="hidden" name="assessmentid" value="{{selected_assessmentid}}">
-                <input type="hidden" name="sesskey"      value="{{sesskey}}">
-                <div class="form-group">
-                  <label class="font-weight-bold small">Select CSV file:</label>
-                  <input type="file" name="csvfile" class="form-control-file" accept=".csv" required>
-                </div>
-                <button type="submit" class="btn btn-warning btn-block">
-                  <i class="fa fa-upload mr-1"></i>{{#str}} import_csv, local_skillgap {{/str}}
-                </button>
-              </form>
-              <a href="{{{wwwroot}}}/local/skillgap/admin/download_sample.php?type=questions" class="btn btn-link btn-sm btn-block mt-2">
-                <i class="fa fa-download mr-1"></i>{{#str}} download_sample, local_skillgap {{/str}}
-              </a>
-            </div>
+        {{! CSV }}
+        <div class="sg-tab-panel sg-form-body" data-panel="csv">
+          <div class="sg-note">CSV columns: <strong>Question, Option A (correct), Option B, Option C, Option D</strong></div>
+          <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/questions.php?compid={{selected_compid}}&assessmentid={{selected_assessmentid}}" enctype="multipart/form-data">
+            <input type="hidden" name="action"       value="upload_csv">
+            <input type="hidden" name="compid"       value="{{selected_compid}}">
+            <input type="hidden" name="assessmentid" value="{{selected_assessmentid}}">
+            <input type="hidden" name="sesskey"      value="{{sesskey}}">
+            <div class="mb-3"><label>Select CSV file</label><input type="file" name="csvfile" class="form-control-file" accept=".csv" required></div>
+            <button type="submit" class="sg-btn-orange sg-btn-block"><i class="fa fa-upload"></i>{{#str}} import_csv, local_skillgap {{/str}}</button>
+          </form>
+          <a href="{{{wwwroot}}}/local/skillgap/admin/download_sample.php?type=questions" class="sg-btn-outline sg-btn-block mt-2"><i class="fa fa-download"></i>{{#str}} download_sample, local_skillgap {{/str}}</a>
+        </div>
 
-            {{! AI generation }}
-            <div class="tab-pane fade sg-ai-section" id="tab-ai" role="tabpanel">
-              <div class="alert alert-info py-2 small mb-3">
-                <i class="fa fa-magic mr-1"></i>
-                Uses <strong>GPT-4o</strong> to generate <strong>{{remaining}}</strong> question(s) for
-                <strong>{{comp_name}}</strong>. Requires OpenAI API key in Settings.
-              </div>
-              <button type="button" class="btn btn-info btn-block sg-ai-generate-btn"
-                      data-compid="{{selected_compid}}"
-                      data-assessmentid="{{selected_assessmentid}}">
-                <i class="fa fa-magic mr-1"></i>{{#str}} generate_ai, local_skillgap {{/str}}
-              </button>
-              <div class="sg-ai-status mt-2"></div>
-            </div>
-
-          </div>
+        {{! AI }}
+        <div class="sg-tab-panel sg-form-body sg-ai-section" data-panel="ai">
+          <div class="sg-note"><i class="fa fa-magic mr-1"></i>Uses <strong>GPT-4o</strong> to generate <strong>{{remaining}}</strong> question(s) for <strong>{{comp_name}}</strong>. Requires OpenAI API key in Settings.</div>
+          <button type="button" class="sg-btn-info sg-btn-block sg-ai-generate-btn" data-compid="{{selected_compid}}" data-assessmentid="{{selected_assessmentid}}">
+            <i class="fa fa-magic"></i>{{#str}} generate_ai, local_skillgap {{/str}}
+          </button>
+          <div class="sg-ai-status mt-2"></div>
         </div>
       </div>
     </div>
     {{/can_add_more}}
 
-    {{! ── Right: Existing questions ── }}
+    {{! ── Existing questions ── }}
     <div class="{{#can_add_more}}col-12 col-lg-7{{/can_add_more}}{{^can_add_more}}col-12{{/can_add_more}} mb-4">
-      <div class="card">
-        <div class="card-header" style="background:#033252;color:#fff;">
-          <h6 class="mb-0"><i class="fa fa-list mr-2"></i>{{#str}} existing_questions, local_skillgap {{/str}}</h6>
+      <div class="sg-card">
+        <div class="sg-section-header">
+          <h5><i class="fa fa-list"></i>{{#str}} existing_questions, local_skillgap {{/str}}</h5>
+          {{#has_5_questions}}<span class="sg-hdr-ok"><i class="fa fa-check-circle mr-1"></i>Complete</span>{{/has_5_questions}}
         </div>
         <div class="card-body p-0">
           {{#question_rows}}
-          <div class="p-3 border-bottom">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-              <div>
-                <span class="badge badge-secondary mr-1">Q{{num}}</span>
-                <span class="badge badge-{{source_badge}} mr-2">{{source}}</span>
-                <span class="font-weight-medium small">{{questiontext}}</span>
+          <div class="sg-q-row">
+            <div class="sg-q-top">
+              <div class="sg-q-left">
+                <span class="sg-q-badge">Q{{num}}</span>
+                <span class="sg-q-source">{{source}}</span>
+                <span class="sg-q-text">{{questiontext}}</span>
               </div>
-              <div class="d-flex gap-1 ml-2 flex-shrink-0">
-                {{! Edit button }}
-                <button type="button" class="btn btn-sm btn-outline-secondary sg-edit-question-btn"
-                        data-qid="{{id}}" title="Edit this question">
-                  <i class="fa fa-pencil"></i>
-                </button>
-                {{! Delete button }}
+              <div class="sg-q-actions">
+                <button type="button" class="sg-circle sg-edit-question-btn" data-qid="{{id}}"><i class="fa fa-pencil"></i></button>
                 <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/questions.php?compid={{selected_compid}}&assessmentid={{selected_assessmentid}}"
                       class="d-inline" onsubmit="return confirm('Delete this question?');">
                   <input type="hidden" name="action"       value="delete_question">
@@ -235,79 +310,53 @@
                   <input type="hidden" name="compid"       value="{{selected_compid}}">
                   <input type="hidden" name="assessmentid" value="{{selected_assessmentid}}">
                   <input type="hidden" name="sesskey"      value="{{sesskey}}">
-                  <button type="submit" class="btn btn-sm btn-outline-danger">
-                    <i class="fa fa-trash"></i>
-                  </button>
+                  <button type="submit" class="sg-circle sg-del"><i class="fa fa-trash"></i></button>
                 </form>
               </div>
             </div>
-            <div class="row">
+
+            <div class="sg-opts">
               {{#options}}
-              <div class="col-6 mb-1">
-                <span class="badge {{#iscorrect}}badge-success{{/iscorrect}}{{^iscorrect}}badge-light border{{/iscorrect}} mr-1">
-                  {{#iscorrect}}<i class="fa fa-check"></i>{{/iscorrect}}{{^iscorrect}}&nbsp;{{/iscorrect}}
-                </span>
-                <small class="{{^iscorrect}}text-muted{{/iscorrect}}">{{text}}</small>
+              <div class="sg-opt {{#iscorrect}}sg-correct{{/iscorrect}}">
+                <span class="sg-opt-radio">{{#iscorrect}}<i class="fa fa-check"></i>{{/iscorrect}}</span>
+                <span class="sg-opt-text">{{text}}</span>
               </div>
               {{/options}}
             </div>
 
-            {{! ── Inline edit form (hidden by default) ── }}
-            <div class="sg-edit-question-form mt-3 p-3 border rounded" id="sg-edit-qform-{{id}}" style="display:none;background:#f8f9fa;">
-              <h6 class="font-weight-bold mb-3" style="color:#033252;"><i class="fa fa-pencil mr-1" style="color:#eb980d;"></i>Edit Question</h6>
+            {{! Inline edit }}
+            <div class="sg-edit-panel" id="sg-edit-qform-{{id}}">
+              <div class="sg-edit-title"><i class="fa fa-pencil"></i>Edit Question</div>
               <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/questions.php?compid={{selected_compid}}&assessmentid={{selected_assessmentid}}">
                 <input type="hidden" name="action"       value="update_question">
                 <input type="hidden" name="id"           value="{{id}}">
                 <input type="hidden" name="compid"       value="{{selected_compid}}">
                 <input type="hidden" name="assessmentid" value="{{selected_assessmentid}}">
                 <input type="hidden" name="sesskey"      value="{{sesskey}}">
-                <div class="form-group">
-                  <label class="font-weight-bold small">Question Text <span class="text-danger">*</span></label>
-                  <textarea name="questiontext" class="form-control form-control-sm" rows="2" required>{{questiontext}}</textarea>
+                <div class="mb-3"><label>Question Text <span style="color:var(--sg-red);">*</span></label><textarea name="questiontext" class="sg-textarea" required>{{questiontext}}</textarea></div>
+                <div class="sg-grid2 mb-3">
+                  <div><label>Option A <span style="color:var(--sg-red);">*</span></label><input type="text" name="option_a" class="sg-input" value="{{opt_a}}" required></div>
+                  <div><label>Option B <span style="color:var(--sg-red);">*</span></label><input type="text" name="option_b" class="sg-input" value="{{opt_b}}" required></div>
+                  <div><label>Option C <span style="color:var(--sg-red);">*</span></label><input type="text" name="option_c" class="sg-input" value="{{opt_c}}" required></div>
+                  <div><label>Option D <span style="color:var(--sg-red);">*</span></label><input type="text" name="option_d" class="sg-input" value="{{opt_d}}" required></div>
                 </div>
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <label class="font-weight-bold small">Option A <span class="text-danger">*</span></label>
-                    <input type="text" name="option_a" class="form-control form-control-sm" value="{{opt_a}}" required>
-                  </div>
-                  <div class="form-group col-md-6">
-                    <label class="font-weight-bold small">Option B <span class="text-danger">*</span></label>
-                    <input type="text" name="option_b" class="form-control form-control-sm" value="{{opt_b}}" required>
-                  </div>
-                  <div class="form-group col-md-6">
-                    <label class="font-weight-bold small">Option C <span class="text-danger">*</span></label>
-                    <input type="text" name="option_c" class="form-control form-control-sm" value="{{opt_c}}" required>
-                  </div>
-                  <div class="form-group col-md-6">
-                    <label class="font-weight-bold small">Option D <span class="text-danger">*</span></label>
-                    <input type="text" name="option_d" class="form-control form-control-sm" value="{{opt_d}}" required>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="font-weight-bold small">Correct Option <span class="text-danger">*</span></label>
-                  <select name="correct" class="form-control form-control-sm" required>
+                <div class="mb-3"><label>Correct Option <span style="color:var(--sg-red);">*</span></label>
+                  <select name="correct" class="sg-select-full" required>
                     <option value="0" {{#correct_0}}selected{{/correct_0}}>A — is correct</option>
                     <option value="1" {{#correct_1}}selected{{/correct_1}}>B — is correct</option>
                     <option value="2" {{#correct_2}}selected{{/correct_2}}>C — is correct</option>
                     <option value="3" {{#correct_3}}selected{{/correct_3}}>D — is correct</option>
-                  </select>
-                </div>
-                <div class="d-flex gap-2">
-                  <button type="submit" class="btn btn-sm btn-primary">
-                    <i class="fa fa-save mr-1"></i>Save Changes
-                  </button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary sg-cancel-edit-question"
-                          data-qid="{{id}}">Cancel</button>
+                  </select></div>
+                <div class="d-flex" style="gap:8px;">
+                  <button type="submit" class="sg-btn-navy"><i class="fa fa-save"></i>Save Changes</button>
+                  <button type="button" class="sg-btn-outline sg-cancel-edit-question" data-qid="{{id}}">Cancel</button>
                 </div>
               </form>
             </div>
           </div>
           {{/question_rows}}
           {{^question_rows}}
-          <div class="p-4 text-center text-muted">
-            <i class="fa fa-question-circle fa-2x mb-2"></i>
-            <p class="mb-0">{{#str}} no_questions, local_skillgap {{/str}}</p>
-          </div>
+          <div class="sg-empty"><i class="fa fa-question-circle fa-2x mb-2 d-block"></i>{{#str}} no_questions, local_skillgap {{/str}}</div>
           {{/question_rows}}
         </div>
       </div>
@@ -317,15 +366,11 @@
 
   {{^has_comp}}
   {{^has_assessment}}
-  <div class="alert alert-warning">
-    <i class="fa fa-info-circle mr-2"></i>{{#str}} select_comp_first, local_skillgap {{/str}}
-  </div>
+  <div class="sg-alert-warn"><i class="fa fa-info-circle"></i><span>{{#str}} select_comp_first, local_skillgap {{/str}}</span></div>
   {{/has_assessment}}
   {{#has_assessment}}
   {{^has_assess_comps}}
-  <div class="alert alert-warning">
-    <i class="fa fa-info-circle mr-2"></i>Select a competency from the list above to add questions.
-  </div>
+  <div class="sg-alert-warn"><i class="fa fa-info-circle"></i><span>Select a competency from the list above to add questions.</span></div>
   {{/has_assess_comps}}
   {{/has_assessment}}
   {{/has_comp}}
@@ -334,25 +379,71 @@
 
 <script>
 (function() {
-  // Toggle inline question edit form
-  document.addEventListener('click', function(e) {
-    var btn = e.target.closest('.sg-edit-question-btn');
-    if (btn) {
-      var qid  = btn.getAttribute('data-qid');
-      var form = document.getElementById('sg-edit-qform-' + qid);
-      if (form) {
-        form.style.display = form.style.display === 'none' ? 'block' : 'none';
-      }
+  var root = document.querySelector('.local-skillgap-q');
+  if (!root) { return; }
+  /* ── Searchable competency combo ── */
+  var compCombo = document.getElementById('sg-comp-combo');
+  if (compCombo) {
+    var compInput = document.getElementById('sg-comp-input');
+    var compPanel = document.getElementById('sg-comp-panel');
+    var compValue = document.getElementById('sg-comp-value');
+    var compForm  = document.getElementById('sg-comp-form');
+    var compOpts  = [];
+    try { compOpts = JSON.parse(compCombo.getAttribute('data-options')) || []; } catch (e) {}
+    compOpts = compOpts.filter(function(o) { return o.id !== ''; });
+
+    var escC = function(s){ return String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+    var preset = compOpts.filter(function(o){ return o.sel; })[0];
+    if (preset) { compInput.value = preset.name; compValue.value = preset.id; }
+
+    function renderComp(filter) {
+      var q = (filter || '').toLowerCase();
+      var html = '';
+      compOpts.forEach(function(o) {
+        if (!q || o.name.toLowerCase().indexOf(q) !== -1) {
+          html += '<div class="sg-combo-opt" data-id="' + o.id + '">' + escC(o.name) + '</div>';
+        }
+      });
+      compPanel.innerHTML = html || '<div class="sg-combo-empty">No matching competency.</div>';
     }
-  });
-  // Cancel edit question
-  document.addEventListener('click', function(e) {
-    var btn = e.target.closest('.sg-cancel-edit-question');
-    if (btn) {
-      var qid  = btn.getAttribute('data-qid');
-      var form = document.getElementById('sg-edit-qform-' + qid);
-      if (form) { form.style.display = 'none'; }
+    function openComp() { compCombo.classList.add('open'); compInput.removeAttribute('readonly'); compInput.value=''; renderComp(''); compInput.focus(); }
+    function closeComp() {
+      compCombo.classList.remove('open'); compInput.setAttribute('readonly','readonly');
+      var cur = compOpts.filter(function(o){ return o.id === compValue.value; })[0];
+      compInput.value = cur ? cur.name : '';
     }
+    compInput.addEventListener('click', function(e){ e.stopPropagation(); compCombo.classList.contains('open') ? closeComp() : openComp(); });
+    compInput.addEventListener('input', function(){ if (compCombo.classList.contains('open')) { renderComp(this.value); } });
+    compPanel.addEventListener('click', function(e){
+      var opt = e.target.closest('.sg-combo-opt'); if (!opt) { return; }
+      compValue.value = opt.getAttribute('data-id');
+      var cur = compOpts.filter(function(o){ return o.id === compValue.value; })[0];
+      compInput.value = cur ? cur.name : '';
+      compCombo.classList.remove('open'); compInput.setAttribute('readonly','readonly');
+      if (compForm) { compForm.submit(); }   // auto-load like the old onchange
+    });
+    document.addEventListener('click', function(e){ if (!compCombo.contains(e.target)) { closeComp(); } });
+  }
+
+
+  /* Add-panel tabs */
+  var addCard = root.querySelector('.sg-add-card');
+  if (addCard) {
+    addCard.querySelectorAll('.sg-tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        var t = tab.getAttribute('data-tab');
+        addCard.querySelectorAll('.sg-tab').forEach(function(x) { x.classList.toggle('active', x === tab); });
+        addCard.querySelectorAll('.sg-tab-panel').forEach(function(p) { p.classList.toggle('active', p.getAttribute('data-panel') === t); });
+      });
+    });
+  }
+
+  /* Inline edit toggle */
+  root.addEventListener('click', function(e) {
+    var edit = e.target.closest('.sg-edit-question-btn');
+    if (edit) { var f = document.getElementById('sg-edit-qform-' + edit.getAttribute('data-qid')); if (f) { f.classList.toggle('show'); } return; }
+    var cancel = e.target.closest('.sg-cancel-edit-question');
+    if (cancel) { var cf = document.getElementById('sg-edit-qform-' + cancel.getAttribute('data-qid')); if (cf) { cf.classList.remove('show'); } }
   });
 })();
 </script>

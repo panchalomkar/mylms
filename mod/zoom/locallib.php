@@ -1356,3 +1356,43 @@ function zoom_get_user_display_name($zoomuserid) {
         return null;
     }
 }
+// added by omkar
+function zoom_instructor_ids_from_string(?string $value): array {
+    return array_values(array_unique(array_filter(array_map('intval', preg_split('/[\s,;|]+/', (string)$value)))));
+}
+
+function zoom_get_instructor_options(int $courseid, array $selected = []): array {
+    global $DB;
+    $ids = [];
+    if ($courseid && $courseid != SITEID) {
+        $context = context_course::instance($courseid, IGNORE_MISSING);
+        if ($context) {
+            $ids = $DB->get_fieldset_sql("SELECT DISTINCT ra.userid
+                                            FROM {role_assignments} ra
+                                            JOIN {role} r ON r.id = ra.roleid
+                                           WHERE ra.contextid = :ctx AND r.archetype IN ('editingteacher', 'teacher')",
+                ['ctx' => $context->id]);
+        }
+    }
+    $fieldid = $DB->get_field('user_info_field', 'id', ['shortname' => 'trainertype']);
+    if ($fieldid) {
+        $ids = array_merge($ids, $DB->get_fieldset_select('user_info_data', 'userid',
+            'fieldid = :fid AND ' . $DB->sql_isnotempty('user_info_data', 'data', true, true), ['fid' => $fieldid]));
+    }
+    $ids = array_values(array_unique(array_map('intval', array_merge($ids, $selected))));
+    if (!$ids) {
+        return [];
+    }
+    [$insql, $params] = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
+    $namefields = implode(', ', array_map(function($f) {
+        return 'u.' . $f;
+    }, \core_user\fields::get_name_fields()));
+    $users = $DB->get_records_sql("SELECT u.id, u.email, {$namefields} FROM {user} u
+                                    WHERE u.id {$insql} AND u.deleted = 0
+                                 ORDER BY u.firstname, u.lastname", $params);
+    $options = [];
+    foreach ($users as $user) {
+        $options[(int)$user->id] = fullname($user) . ' (' . $user->email . ')';
+    }
+    return $options;
+}

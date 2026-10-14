@@ -1,122 +1,291 @@
-{{!
-  @template local_skillgap/assessments
-  Assessment creation and management.
-  After saving, user is redirected to questions.php to add questions.
-}}
-<div class="local-skillgap container-fluid px-0">
+{{! @template local_skillgap/assessments - assessment creation & management (Figma UI) }}
+<style>
+  .local-skillgap-as{
+    --sg-navy-1:#0A1F3D;
+    --sg-navy-2:#0D2647;
+    --sg-orange:#F5A623;
+    --sg-orange-light:#FDF1DC;
+    --sg-blue:#2F6FED;
+    --sg-blue-light:#EAF0FE;
+    --sg-green:#1E9E58;
+    --sg-green-light:#E7F8EE;
+    --sg-amber:#B45309;
+    --sg-amber-light:#FEF3DC;
+    --sg-red:#E5484D;
+    --sg-red-light:#FDEAEA;
+    --sg-gray-light:#EEF1F5;
+    --sg-gray-bg:#F5F7FA;
+    --sg-border:#E7EBF1;
+    --sg-text-muted:#8A93A3;
+    --sg-text-dark:#1B2A41;
+    font-family:inherit;color:var(--sg-text-dark);background:var(--sg-gray-bg);
+    padding:24px;border-radius:14px;
+  }
+ .local-skillgap-as *{box-sizing:border-box;}
+   #page-local-skillgap-admin-assessments div[role="main"] {
+    filter: none;
+    padding: 0px !important;
+    box-shadow: none !important;
+}
 
-  <div class="d-flex align-items-center justify-content-between flex-wrap mb-4">
-    <h3 class="mb-0" style="color:#033252;">
-      <i class="fa fa-check-square-o mr-2" style="color:#eb980d;"></i>
-      {{#str}} assessments, local_skillgap {{/str}}
-    </h3>
-    <a href="{{{wwwroot}}}/local/skillgap/admin/index.php" class="btn btn-outline-secondary btn-sm">
-      <i class="fa fa-arrow-left mr-1"></i>{{#str}} admin_dashboard, local_skillgap {{/str}}
-    </a>
+  /* ── Header ── */
+  .sg-page-head{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;}
+  .sg-head-left{display:flex;align-items:center;gap:14px;}
+  .sg-head-icon{width:46px;height:46px;border-radius:12px;background:var(--sg-orange-light);color:var(--sg-orange);
+    display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+  .sg-page-head h2{margin:0;font-weight:800;font-size:25px;color:var(--sg-text-dark);}
+  .sg-page-head .sg-sub{color:var(--sg-text-muted);font-size:13px;margin-top:2px;}
+  .sg-btn-outline{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--sg-border);
+    border-radius:24px;padding:8px 16px;font-size:13px;font-weight:600;color:var(--sg-text-dark);text-decoration:none;}
+  .sg-btn-outline:hover{border-color:var(--sg-navy-1);color:var(--sg-text-dark);text-decoration:none;}
+  .sg-btn-outline i{color:var(--sg-text-muted);}
+
+  /* ── Info banner ── */
+  .sg-info-banner{background:var(--sg-blue-light);border:1px solid #D7E3FB;border-radius:12px;padding:14px 18px;
+    font-size:13px;color:#2B4B8A;display:flex;align-items:flex-start;gap:10px;line-height:1.5;margin-bottom:18px;}
+  .sg-info-banner i{color:var(--sg-blue);font-size:15px;margin-top:2px;}
+  .sg-badge-55{background:var(--sg-green);color:#fff;border-radius:20px;font-size:10.5px;font-weight:700;padding:2px 8px;}
+
+  /* ── Cards ── */
+  .sg-card{background:#fff;border:1px solid var(--sg-border);border-radius:14px;overflow:hidden;}
+  .sg-section-header{background:var(--sg-navy-1);color:#fff;padding:14px 20px;display:flex;align-items:center;
+    justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  .sg-section-header h5{color:#fff;margin:0;font-weight:700;font-size:15.5px;display:flex;align-items:center;gap:10px;}
+  .sg-section-header h5 i{color:var(--sg-orange);}
+
+  /* ── Form ── */
+  .sg-form-body{padding:18px 20px;}
+  .sg-form-body label{font-size:12.5px;font-weight:700;color:var(--sg-text-dark);display:block;margin-bottom:6px;}
+  .sg-input,.sg-select{width:100%;border:1px solid var(--sg-border);border-radius:10px;padding:11px 14px;font-size:13.5px;background:#fff;color:var(--sg-text-dark);}
+  .sg-grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media (max-width:520px){.sg-grid2{grid-template-columns:1fr;}}
+
+  .sg-comp-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;}
+  .sg-comp-head .sg-count{font-size:12px;font-weight:600;color:var(--sg-text-muted);}
+
+  /* selected pills */
+  .sg-sel-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+  .sg-sel-pill{display:inline-flex;align-items:center;gap:6px;background:var(--sg-orange);color:#fff;border-radius:8px;
+    font-size:12px;font-weight:700;padding:5px 10px;}
+  .sg-sel-pill button{background:none;border:none;color:#fff;font-size:13px;line-height:1;cursor:pointer;padding:0;}
+
+  .sg-search-wrap{position:relative;margin-bottom:8px;}
+  .sg-search-wrap > i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--sg-text-muted);font-size:12px;pointer-events:none;}
+  .sg-search-input{width:100%;border:1px solid var(--sg-border);border-radius:10px;padding:10px 14px 10px 34px;font-size:13.5px;background:var(--sg-gray-bg);color:var(--sg-text-dark);}
+
+  /* AMD-injected competency list — themed + circular checkboxes */
+  #sg-comp-checkboxes{border:1px solid var(--sg-border);border-radius:12px;padding:4px;max-height:280px;overflow-y:auto;background:#fff;}
+  #sg-comp-checkboxes .form-check,
+  #sg-comp-checkboxes .sg-comp-item{display:flex !important;align-items:center;gap:12px;padding:10px 12px;margin:0;
+    border-bottom:1px solid var(--sg-gray-light);position:relative;padding-left:12px;}
+  #sg-comp-checkboxes .form-check:last-child,
+  #sg-comp-checkboxes .sg-comp-item:last-child{border-bottom:none;}
+  #sg-comp-checkboxes .form-check-label,
+  #sg-comp-checkboxes label{font-size:13.5px;color:var(--sg-text-dark);margin:0;flex:1 1 auto;cursor:pointer;}
+  .local-skillgap-as #sg-comp-checkboxes input[type="checkbox"]{
+    -webkit-appearance:none !important;-moz-appearance:none !important;appearance:none !important;
+    position:static !important;margin:0 !important;float:none !important;
+    width:20px !important;height:20px !important;min-width:20px !important;
+    border:1.5px solid var(--sg-border) !important;border-radius:50% !important;
+    background:#fff !important;background-image:none !important;box-shadow:none !important;cursor:pointer;flex-shrink:0;
+  }
+  .local-skillgap-as #sg-comp-checkboxes input[type="checkbox"]:checked{
+    background:var(--sg-navy-1) !important;border-color:var(--sg-navy-1) !important;background-image:none !important;
+  }
+  .local-skillgap-as #sg-comp-checkboxes input[type="checkbox"]::before,
+  .local-skillgap-as #sg-comp-checkboxes input[type="checkbox"]::after{display:none;}
+  .local-skillgap-as #sg-comp-checkboxes input[type="checkbox"]:checked::after{
+    content:"";display:block !important;position:absolute;left:15px;top:15px;width:5px;height:10px;
+    border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);
+  }
+  .local-skillgap-as #sg-comp-checkboxes input[type="checkbox"]::after {display:none !important;}
+  /* the 5/5 badge AMD renders */
+  #sg-comp-checkboxes .badge{background:var(--sg-green-light) !important;color:var(--sg-green) !important;
+    border-radius:20px;font-size:11px;font-weight:700;padding:3px 9px;}
+  #sg-comp-checkboxes .badge-warning{background:var(--sg-amber-light) !important;color:var(--sg-amber) !important;}
+
+  .sg-hint{font-size:11.5px;color:var(--sg-text-muted);margin-top:6px;display:block;}
+
+  .sg-btn-navy{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--sg-navy-1);border:1px solid var(--sg-navy-1);
+    border-radius:10px;padding:12px 18px;font-size:14px;font-weight:600;color:#fff;width:100%;margin-top:16px;}
+  .sg-btn-navy:hover{background:var(--sg-navy-2);color:#fff;}
+  .sg-btn-cancel{width:100%;background:#fff;border:1px solid var(--sg-border);border-radius:10px;padding:9px;font-size:12.5px;font-weight:600;color:var(--sg-text-dark);margin-top:8px;}
+
+  /* ── Table ── */
+  .local-skillgap-as table thead th{padding:10px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.3px;
+    color:var(--sg-text-muted);font-weight:700;border-top:none;border-bottom:1px solid var(--sg-border);background:#F8FAFC;white-space:nowrap;}
+  .local-skillgap-as table td{vertical-align:top;border-color:var(--sg-border);font-size:12px;padding:10px;}
+  .sg-as-title{font-weight:700;color:var(--sg-text-dark);font-size:12.5px;}
+  .sg-as-dept{color:var(--sg-text-dark);font-size:12px;}
+  .sg-as-desig{color:var(--sg-orange);font-size:11px;}
+  .sg-comp-cell{max-width:200px;}
+  .sg-comp-count{display:inline-flex;align-items:center;gap:6px;background:var(--sg-blue-light);color:var(--sg-blue);
+    border:none;border-radius:16px;font-size:11.5px;font-weight:700;padding:5px 12px;cursor:pointer;}
+  .sg-comp-count:hover{background:#dce7fd;}
+  .sg-comp-count i{font-size:10px;}
+
+  /* competency popup */
+  .sg-pop-overlay{position:fixed;inset:0;background:rgba(10,31,61,.45);z-index:1080;display:none;align-items:center;justify-content:center;padding:16px;}
+  .sg-pop-overlay.open{display:flex;}
+  .sg-pop{background:#fff;border-radius:14px;width:420px;max-width:100%;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 50px rgba(10,31,61,.3);}
+  .sg-pop-head{background:var(--sg-navy-1);color:#fff;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .sg-pop-head h5{margin:0;font-size:14.5px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px;}
+  .sg-pop-head h5 i{color:var(--sg-orange);}
+  .sg-pop-close{background:none;border:none;color:#fff;font-size:20px;line-height:1;cursor:pointer;}
+  .sg-pop-summary{display:flex;flex-wrap:wrap;gap:16px;padding:12px 16px;background:var(--sg-gray-bg);
+    border-bottom:1px solid var(--sg-border);font-size:12.5px;color:var(--sg-text-muted);}
+  .sg-pop-summary strong{color:var(--sg-text-dark);font-weight:800;}
+  .sg-pop-summary i{color:var(--sg-orange);}
+  .sg-pop-body{padding:10px 14px;overflow-y:auto;}
+  .sg-pop-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:1px solid var(--sg-gray-light);font-size:13px;}
+  .sg-pop-row:last-child{border-bottom:none;}
+  .sg-pop-name{font-weight:600;color:var(--sg-text-dark);}
+  .sg-pop-pill{border-radius:16px;font-size:11px;font-weight:700;padding:3px 10px;white-space:nowrap;}
+  .sg-pop-pill.ok{background:var(--sg-green-light);color:var(--sg-green);}
+  .sg-pop-pill.no{background:var(--sg-amber-light);color:var(--sg-amber);}
+  .sg-comp-pill{display:inline-block;background:var(--sg-green-light);color:var(--sg-green);border-radius:14px;
+    font-size:10.5px;font-weight:600;padding:3px 8px;margin:0 3px 3px 0;white-space:nowrap;}
+  .sg-comp-pill.sg-warn{background:var(--sg-amber-light);color:var(--sg-amber);}
+  .sg-q-pill{display:inline-block;background:var(--sg-blue-light);color:var(--sg-blue);border-radius:14px;font-size:11.5px;font-weight:700;padding:3px 9px;}
+  .sg-status-badge{display:inline-block;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;white-space:nowrap;}
+  .sg-status-success{background:var(--sg-green-light);color:var(--sg-green);}
+  .sg-status-warning{background:var(--sg-amber-light);color:var(--sg-amber);}
+  .sg-status-info{background:var(--sg-blue-light);color:var(--sg-blue);}
+  .sg-status-secondary{background:var(--sg-gray-light);color:var(--sg-text-muted);}
+
+  .sg-act-col{display:flex;flex-direction:column;gap:5px;align-items:stretch;width:112px;}
+  .sg-act-navy{display:inline-flex;align-items:center;justify-content:center;gap:5px;background:var(--sg-navy-1);border:none;border-radius:16px;
+    padding:6px 10px;font-size:11.5px;font-weight:600;color:#fff;text-decoration:none;white-space:nowrap;}
+  .sg-act-navy:hover{background:var(--sg-navy-2);color:#fff;text-decoration:none;}
+  .sg-act-ol{display:inline-flex;align-items:center;justify-content:center;gap:5px;background:#fff;border:1px solid var(--sg-border);border-radius:16px;
+    padding:5px 10px;font-size:11.5px;font-weight:600;color:var(--sg-text-dark);text-decoration:none;white-space:nowrap;}
+  .sg-act-ol:hover{border-color:var(--sg-navy-1);color:var(--sg-text-dark);text-decoration:none;}
+  .sg-act-ol i{color:var(--sg-text-muted);}
+  .sg-act-warn{border-color:var(--sg-orange);color:var(--sg-amber);}
+  .sg-act-warn i{color:var(--sg-orange);}
+  .sg-act-success{border-color:var(--sg-green);color:var(--sg-green);}
+  .sg-act-success i{color:var(--sg-green);}
+  .sg-act-del{width:30px;height:30px;border-radius:50%;background:#fff;border:1px solid var(--sg-red-light);color:var(--sg-red);
+    display:inline-flex;align-items:center;justify-content:center;font-size:11.5px;align-self:center;}
+  .sg-act-del:hover{background:var(--sg-red-light);}
+  .sg-act-disabled{opacity:.5;cursor:not-allowed;}
+
+  /* ── Pagination ── */
+  .sg-pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid var(--sg-border);
+    font-size:12.5px;color:var(--sg-text-muted);flex-wrap:wrap;gap:8px;}
+  .sg-page-btn{background:#fff;border:1px solid var(--sg-border);border-radius:16px;padding:5px 14px;font-size:12.5px;font-weight:600;color:var(--sg-text-dark);}
+  .sg-page-btn:disabled{opacity:.4;}
+  .sg-empty{text-align:center;color:var(--sg-text-muted);padding:40px 16px;}
+</style>
+
+<div class="local-skillgap-as p-0">
+
+  {{! ── Header ── }}
+  <div class="sg-page-head">
+    <div class="sg-head-left">
+      <div class="sg-head-icon"><i class="fa fa-clipboard"></i></div>
+      <div>
+        <h2>{{#str}} assessments, local_skillgap {{/str}}</h2>
+        <div class="sg-sub">Skill Gap Analysis</div>
+      </div>
+    </div>
+    <a href="{{{wwwroot}}}/local/skillgap/admin/index.php" class="sg-btn-outline"><i class="fa fa-arrow-left"></i>Back to Dashboard</a>
   </div>
 
-  <div class="alert py-2 small mb-4" style="background:#e8f1f8;border:1px solid #b5d4f4;border-radius:6px;">
-    <i class="fa fa-info-circle mr-1" style="color:#033252;"></i>
-    <strong>Workflow:</strong> Select competencies that already have 5 questions mapped.
-    Each selected competency contributes exactly 5 questions to the assessment.
-    Only competencies showing <span class="badge badge-success" style="font-size:10px;">5/5</span> can be selected.
+  {{! ── Workflow banner ── }}
+  <div class="sg-info-banner">
+    <i class="fa fa-info-circle"></i>
+    <span><strong>Workflow:</strong> Select competencies that already have 5 questions mapped. Each selected competency
+      contributes exactly 5 questions to the assessment. Only competencies showing <span class="sg-badge-55">5/5</span> can be selected.</span>
   </div>
 
   <div class="row">
     {{! ── Create / Edit form ── }}
     <div class="col-12 col-lg-5 mb-4">
-      <div class="card">
-        <div class="card-header" style="background:#033252;color:#fff;">
-          <h5 class="mb-0" id="sg-form-title"><i class="fa fa-plus-circle mr-2" style="color:#eb980d;"></i>{{#str}} add_assessment, local_skillgap {{/str}}</h5>
-        </div>
-        <div class="card-body">
+      <div class="sg-card">
+        <div class="sg-section-header"><h5 id="sg-form-title"><i class="fa fa-plus-circle"></i>{{#str}} add_assessment, local_skillgap {{/str}}</h5></div>
+        <div class="sg-form-body">
           <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/assessments.php" id="sg-create-assessment-form">
             <input type="hidden" name="action"  value="save" id="sg-form-action">
             <input type="hidden" name="id"      value="" id="sg-edit-id">
             <input type="hidden" name="sesskey" value="{{sesskey}}">
             <input type="hidden" name="compids" id="sg-compids-input">
 
-            <div class="form-group">
-              <label class="font-weight-bold small">{{#str}} assessment_title, local_skillgap {{/str}} <span class="text-danger">*</span></label>
-              <input type="text" name="title" class="form-control" required placeholder="e.g. Q3 Engineering Assessment">
+            <div class="mb-3">
+              <label>{{#str}} assessment_title, local_skillgap {{/str}} <span style="color:var(--sg-red);">*</span></label>
+              <input type="text" name="title" class="sg-input" required placeholder="e.g. Q3 Engineering Assessment">
             </div>
 
-            <div class="form-group">
-              <label class="font-weight-bold small">{{#str}} department, local_skillgap {{/str}} <span class="text-danger">*</span></label>
-              <select name="deptid" id="sg-assess-dept" class="form-control" required>
-                {{#dept_options}}
-                <option value="{{id}}" {{#selected}}selected{{/selected}}>{{name}}</option>
-                {{/dept_options}}
+            <div class="mb-3">
+              <label>{{#str}} department, local_skillgap {{/str}} <span style="color:var(--sg-red);">*</span></label>
+              <select name="deptid" id="sg-assess-dept" class="sg-select" required>
+                {{#dept_options}}<option value="{{id}}" {{#selected}}selected{{/selected}}>{{name}}</option>{{/dept_options}}
               </select>
             </div>
 
-            <div class="form-group">
-              <label class="font-weight-bold small">{{#str}} designation, local_skillgap {{/str}} <span class="text-danger">*</span></label>
-              <select name="desigid" id="sg-assess-desig" class="form-control" required>
+            <div class="mb-3">
+              <label>{{#str}} designation, local_skillgap {{/str}} <span style="color:var(--sg-red);">*</span></label>
+              <select name="desigid" id="sg-assess-desig" class="sg-select" required>
                 <option value="">-- Select Department first --</option>
               </select>
             </div>
 
-            <div class="form-group">
-              <label class="font-weight-bold small">{{#str}} frequency, local_skillgap {{/str}} <span class="text-danger">*</span></label>
-              <select name="frequency" class="form-control" required>
+            <div class="mb-3">
+              <label>{{#str}} frequency, local_skillgap {{/str}} <span style="color:var(--sg-red);">*</span></label>
+              <select name="frequency" class="sg-select" required>
                 <option value="quarterly">{{#str}} quarterly, local_skillgap {{/str}}</option>
                 <option value="half_yearly">{{#str}} half_yearly, local_skillgap {{/str}}</option>
                 <option value="yearly">{{#str}} yearly, local_skillgap {{/str}}</option>
               </select>
             </div>
 
-            <div class="form-row">
-              <div class="form-group col-md-6">
-                <label class="font-weight-bold small">{{#str}} start_date, local_skillgap {{/str}} <span class="text-danger">*</span></label>
-                <input type="date" name="startdate" id="sg-startdate" class="form-control" required>
+            <div class="sg-grid2 mb-3">
+              <div>
+                <label>{{#str}} start_date, local_skillgap {{/str}} <span style="color:var(--sg-red);">*</span></label>
+                <input type="date" name="startdate" id="sg-startdate" class="sg-input" required>
               </div>
-              <div class="form-group col-md-6">
-                <label class="font-weight-bold small">{{#str}} end_date, local_skillgap {{/str}} <span class="text-danger">*</span></label>
-                <input type="date" name="enddate" class="form-control" required>
+              <div>
+                <label>{{#str}} end_date, local_skillgap {{/str}} <span style="color:var(--sg-red);">*</span></label>
+                <input type="date" name="enddate" class="sg-input" required>
               </div>
             </div>
 
-            <div class="form-group">
-              <label class="font-weight-bold small">{{#str}} select_competencies, local_skillgap {{/str}} <span class="text-danger">*</span></label>
-              <div id="sg-comp-checkboxes"
-                   class="border rounded p-3"
-                   style="max-height:320px;overflow-y:auto;min-height:60px;background:#f8f9fa;">
-                <p class="text-muted small mb-0">
-                  <i class="fa fa-arrow-up mr-1"></i>Select department and designation above.
-                </p>
+            <div class="mb-2">
+              <div class="sg-comp-head">
+                <label style="margin:0;">{{#str}} select_competencies, local_skillgap {{/str}} <span style="color:var(--sg-red);">*</span></label>
+                <span class="sg-count" id="sg-comp-count">0 selected &middot; 0 Q</span>
               </div>
-              <small class="text-muted">Select any combination of main, sub, and sub-sub competencies. Each selected competency contributes 5 questions.</small>
+
+              {{! Selected pills (built by JS from checked AMD checkboxes) }}
+              <div class="sg-sel-pills" id="sg-sel-pills"></div>
+
+              {{! Search }}
+              <div class="sg-search-wrap">
+                <i class="fa fa-search"></i>
+                <input type="text" id="sg-comp-search" class="sg-search-input" placeholder="Search competencies" autocomplete="off">
+              </div>
+
+              {{! AMD injects checkboxes here based on dept/desig }}
+              <div id="sg-comp-checkboxes">
+                <p class="text-muted small mb-0 p-2"><i class="fa fa-arrow-up mr-1"></i>Select department and designation above.</p>
+              </div>
+              <small class="sg-hint">Each selected competency contributes 5 questions.</small>
             </div>
 
-            {{! Hierarchy preview table — shown after competencies selected }}
-            <div id="sg-comp-preview" class="mb-3" style="display:none;">
-              <label class="font-weight-bold small">Selected Competencies &amp; Questions:</label>
+            {{! Hierarchy preview table (AMD populates) }}
+            <div id="sg-comp-preview" class="mt-3" style="display:none;">
+              <label>Selected Competencies &amp; Questions:</label>
               <table class="table table-sm table-bordered mb-0">
-                <thead class="thead-light">
-                  <tr>
-                    <th>Competency</th>
-                    <th style="width:70px;">Level</th>
-                    <th class="text-center" style="width:100px;">Questions</th>
-                  </tr>
-                </thead>
+                <thead><tr><th>Competency</th><th style="width:70px;">Level</th><th class="text-center" style="width:100px;">Questions</th></tr></thead>
                 <tbody id="sg-comp-preview-body"></tbody>
-                <tfoot>
-                  <tr class="font-weight-bold" style="background:#f8f9fa;">
-                    <td colspan="2">Total Questions</td>
-                    <td class="text-center" id="sg-comp-preview-total">0</td>
-                  </tr>
-                </tfoot>
+                <tfoot><tr class="font-weight-bold" style="background:#f8f9fa;"><td colspan="2">Total Questions</td><td class="text-center" id="sg-comp-preview-total">0</td></tr></tfoot>
               </table>
             </div>
 
-            <button type="submit" class="btn btn-block font-weight-bold"
-                    id="sg-submit-btn"
-                    style="background:#eb980d;color:#fff;">
-              <i class="fa fa-save mr-1"></i><span id="sg-submit-label">Save &amp; Add Questions</span>
+            <button type="submit" class="sg-btn-navy" id="sg-submit-btn">
+              <i class="fa fa-plus-circle"></i><span id="sg-submit-label">Create Assessment</span>
             </button>
-            <button type="button" class="btn btn-block btn-outline-secondary btn-sm mt-1"
-                    id="sg-cancel-edit-btn" style="display:none;" onclick="sgResetForm()">
+            <button type="button" class="sg-btn-cancel" id="sg-cancel-edit-btn" style="display:none;" onclick="sgResetForm()">
               <i class="fa fa-times mr-1"></i>Cancel Edit
             </button>
           </form>
@@ -126,152 +295,119 @@
 
     {{! ── Assessment list ── }}
     <div class="col-12 col-lg-7 mb-4">
-      <div class="card">
-        <div class="card-header" style="background:#033252;color:#fff;">
-          <h5 class="mb-0"><i class="fa fa-list-alt mr-2" style="color:#eb980d;"></i>All Assessments</h5>
-        </div>
-        <div class="card-body p-0">
-          <div class="table-responsive">
-            <table class="table table-hover table-sm mb-0">
-              <thead class="thead-light">
-                <tr>
-                  <th>{{#str}} assessment_title, local_skillgap {{/str}}</th>
-                  <th>Dept / Designation</th>
-                  <th>Freq</th>
-                  <th>Competencies</th>
-                  <th>Total Q</th>
-                  <th>{{#str}} status, local_skillgap {{/str}}</th>
-                  <th>{{#str}} action, local_skillgap {{/str}}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {{#assessments}}
-                <tr>
-                  <td class="font-weight-medium">{{title}}</td>
-                  <td><small class="text-muted">{{dept_name}}<br>{{desig_name}}</small></td>
-                  <td><small>{{frequency}}</small></td>
-                  <td>
-                    {{! Show actual competency names, not just count }}
-                    {{#comp_details}}
-                    <span class="badge mr-1 mb-1 {{#has_5}}badge-success{{/has_5}}{{^has_5}}badge-warning{{/has_5}}"
-                          title="{{q_count}}/5 questions" style="font-size:11px;">
-                      {{cname}}
-                      <small>({{q_count}}/5)</small>
-                    </span>
-                    {{/comp_details}}
-                    {{^comp_details}}
-                    <span class="text-muted small">—</span>
-                    {{/comp_details}}
-                  </td>
-                  <td class="text-center">
-                    <span class="badge badge-info">{{total_questions}}</span>
-                  </td>
-                  <td><span class="badge badge-{{status_badge}}">{{status_label}}</span></td>
-                  <td>
-                    <a href="{{{wwwroot}}}/local/skillgap/admin/questions.php?assessmentid={{id}}"
-                       class="btn btn-sm mb-1" style="background:#033252;color:#fff;" title="Manage Questions">
-                      <i class="fa fa-question-circle mr-1"></i>Questions
-                    </a>
-                    {{! Preview button }}
-                    <button type="button" class="btn btn-sm btn-outline-info mb-1 sg-preview-assessment-btn"
-                            data-id="{{id}}" data-sesskey="{{sesskey}}" title="Preview full assessment">
-                      <i class="fa fa-eye mr-1"></i>Preview
-                    </button>
-                    {{! Edit button }}
-                    <button type="button" class="btn btn-sm btn-outline-secondary mb-1 sg-edit-assessment-btn"
-                            data-id="{{id}}"
-                            data-title="{{title_val}}"
-                            data-deptid="{{deptid_val}}"
-                            data-desigid="{{desigid_val}}"
-                            data-frequency="{{frequency_val}}"
-                            data-startdate="{{startdate_val}}"
-                            data-enddate="{{enddate_val}}"
-                            data-compids="{{{compids_json}}}"
-                            title="Edit this assessment">
-                      <i class="fa fa-pencil mr-1"></i>Edit
-                    </button>
-                    {{! Competency Report button }}
-                    <a href="{{{wwwroot}}}/local/skillgap/admin/assessment_report.php?assessmentid={{id}}"
-                       class="btn btn-sm btn-outline-primary mb-1 d-none" title="View competency-wise report">
-                      <i class="fa fa-bar-chart mr-1"></i>Report
-                    </a>
-                    {{! Publish button (only show when not yet active) }}
+      <div class="sg-card sg-assess-card">
+        <div class="sg-section-header"><h5><i class="fa fa-list-alt"></i>All Assessments</h5></div>
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>{{#str}} assessment_title, local_skillgap {{/str}}</th>
+                <th>Dept / Designation</th>
+                <th>Freq</th>
+                <th>Competencies</th>
+                <th class="text-center">Total Q</th>
+                <th>{{#str}} status, local_skillgap {{/str}}</th>
+                <th>{{#str}} action, local_skillgap {{/str}}</th>
+              </tr>
+            </thead>
+            <tbody class="sg-as-body">
+              {{#assessments}}
+              <tr class="sg-as-row" data-name="{{title}}">
+                <td><div class="sg-as-title">{{title}}</div></td>
+                <td><div class="sg-as-dept">{{dept_name}}</div><div class="sg-as-desig">{{desig_name}}</div></td>
+                <td>{{frequency}}</td>
+                <td  class="text-center">
+                  {{#comp_details}}{{/comp_details}}
+                  {{#has_comp_details}}
+                  <button type="button" class="sg-comp-count sg-show-comps"
+                          data-title="{{title}}"
+                          data-comps='[{{#comp_details}}{"n":"{{cname}}","q":"{{q_count}}","ok":{{#has_5}}1{{/has_5}}{{^has_5}}0{{/has_5}}},{{/comp_details}}{"n":"","q":"0","ok":0}]'>
+                    {{comp_count}}
+                  </button>
+                  {{/has_comp_details}}
+                  {{^has_comp_details}}<span class="text-muted small">—</span>{{/has_comp_details}}
+                </td>
+                <td class="text-center"><span class="sg-q-pill">{{total_questions}}</span></td>
+                <td><span class="sg-status-badge sg-status-{{status_badge}}">{{status_label}}</span></td>
+                <td>
+                  <div class="sg-act-col">
+                    <a href="{{{wwwroot}}}/local/skillgap/admin/questions.php?assessmentid={{id}}" class="sg-act-navy"><i class="fa fa-question-circle"></i>Questions</a>
+                    <button type="button" class="sg-act-ol sg-preview-assessment-btn" data-id="{{id}}" data-sesskey="{{sesskey}}"><i class="fa fa-eye"></i>Preview</button>
+
                     {{#is_draft}}
+                    <button type="button" class="sg-act-ol sg-edit-assessment-btn"
+                            data-id="{{id}}" data-title="{{title_val}}" data-deptid="{{deptid_val}}" data-desigid="{{desigid_val}}"
+                            data-frequency="{{frequency_val}}" data-startdate="{{startdate_val}}" data-enddate="{{enddate_val}}"
+                            data-compids="{{{compids_json}}}"><i class="fa fa-pencil"></i>Edit</button>
                     {{#can_publish}}
-                    <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/assessments.php"
-                          class="d-inline" onsubmit="return confirm('Publish this assessment? Users with matching department/designation will see it.');">
-                      <input type="hidden" name="action"  value="publish">
-                      <input type="hidden" name="id"      value="{{id}}">
-                      <input type="hidden" name="sesskey" value="{{sesskey}}">
-                      <button type="submit" class="btn btn-sm btn-success mb-1" title="Publish assessment">
-                        <i class="fa fa-check-circle mr-1"></i>Publish
-                      </button>
+                    <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/assessments.php" class="d-inline"
+                          onsubmit="return confirm('Publish this assessment? Users with matching department/designation will see it.');">
+                      <input type="hidden" name="action" value="publish"><input type="hidden" name="id" value="{{id}}"><input type="hidden" name="sesskey" value="{{sesskey}}">
+                      <button type="submit" class="sg-act-ol sg-act-success"><i class="fa fa-check-circle"></i>Publish</button>
                     </form>
                     {{/can_publish}}
                     {{^can_publish}}
-                    <span class="btn btn-sm btn-outline-secondary mb-1 disabled" title="Add 5 questions to all competencies first">
-                      <i class="fa fa-lock mr-1"></i>Publish
-                    </span>
+                    <span class="sg-act-ol sg-act-disabled" title="Add 5 questions to all competencies first"><i class="fa fa-lock"></i>Publish</span>
                     {{/can_publish}}
                     {{/is_draft}}
+
                     {{#is_active}}
-                    <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/assessments.php"
-                          class="d-inline" onsubmit="return confirm('Move assessment back to Draft?');">
-                      <input type="hidden" name="action"  value="unpublish">
-                      <input type="hidden" name="id"      value="{{id}}">
-                      <input type="hidden" name="sesskey" value="{{sesskey}}">
-                      <button type="submit" class="btn btn-sm btn-outline-warning mb-1" title="Unpublish (move to Draft)">
-                        <i class="fa fa-undo mr-1"></i>Unpublish
-                      </button>
+                    <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/assessments.php" class="d-inline"
+                          onsubmit="return confirm('Move assessment back to Draft?');">
+                      <input type="hidden" name="action" value="unpublish"><input type="hidden" name="id" value="{{id}}"><input type="hidden" name="sesskey" value="{{sesskey}}">
+                      <button type="submit" class="sg-act-ol sg-act-warn"><i class="fa fa-undo"></i>Unpublish</button>
                     </form>
                     {{/is_active}}
-                    {{! Delete button }}
-                    <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/assessments.php"
-                          class="d-inline" onsubmit="return confirm('Delete this assessment?');">
-                      <input type="hidden" name="action"  value="delete">
-                      <input type="hidden" name="id"      value="{{id}}">
-                      <input type="hidden" name="sesskey" value="{{sesskey}}">
-                      <button type="submit" class="btn btn-sm btn-outline-danger mb-1" title="Delete">
-                        <i class="fa fa-trash"></i>
-                      </button>
+
+                    <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/assessments.php" class="d-inline"
+                          onsubmit="return confirm('Delete this assessment?');">
+                      <input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="{{id}}"><input type="hidden" name="sesskey" value="{{sesskey}}">
+                      <button type="submit" class="sg-act-del" title="Delete"><i class="fa fa-trash"></i></button>
                     </form>
-                  </td>
-                </tr>
-                {{/assessments}}
-                {{^assessments}}
-                <tr>
-                  <td colspan="7" class="text-center text-muted py-4">
-                    <i class="fa fa-inbox fa-2x mb-2 d-block"></i>
-                    {{#str}} no_assessments, local_skillgap {{/str}}
-                  </td>
-                </tr>
-                {{/assessments}}
-              </tbody>
-            </table>
-          </div>
+                  </div>
+                </td>
+              </tr>
+              {{/assessments}}
+              {{^assessments}}
+              <tr><td colspan="7" class="sg-empty"><i class="fa fa-inbox fa-2x mb-2 d-block"></i>{{#str}} no_assessments, local_skillgap {{/str}}</td></tr>
+              {{/assessments}}
+            </tbody>
+          </table>
+        </div>
+        <div class="sg-pagination">
+          <span class="sg-page-info"></span>
+          <span>
+            <button type="button" class="sg-page-btn sg-page-prev">Previous</button>
+            <button type="button" class="sg-page-btn sg-page-next">Next</button>
+          </span>
         </div>
       </div>
     </div>
   </div>
-
 </div>
-
-{{! ── Assessment Preview Modal ── }}
-<div class="modal fade" id="sg-assessment-preview-modal" tabindex="-1" role="dialog"
-     data-wwwroot="{{{wwwroot}}}">
+<div class="sg-pop-overlay" id="sg-comp-pop">
+  <div class="sg-pop">
+    <div class="sg-pop-head"style="background:#003152;">
+      <h5><i class="fa fa-list-ul"></i><span id="sg-pop-title">Competencies</span></h5>
+      <button type="button" class="sg-pop-close" id="sg-pop-close">&times;</button>
+    </div>
+    <div class="sg-pop-summary">
+      <span><i class="fa fa-cubes mr-1"></i>Total competencies: <strong id="sg-pop-ccount">0</strong></span>
+      <span><i class="fa fa-question-circle mr-1"></i>Total questions: <strong id="sg-pop-qcount">0</strong></span>
+    </div>
+    <div class="sg-pop-body" id="sg-pop-body"></div>
+  </div>
+</div>
+{{! ── Assessment Preview Modal (unchanged) ── }}
+<div class="modal fade" id="sg-assessment-preview-modal" tabindex="-1" role="dialog" data-wwwroot="{{{wwwroot}}}">
   <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
     <div class="modal-content">
-      <div class="modal-header p-2" style="background:#033252;color:#fff;">
-        <h5 class="modal-title text-light">
-          <i class="fa fa-eye mr-2" style="color:#eb980d;"></i>Assessment Preview
-        </h5>
+      <div class="modal-header p-2" style="background:#0A1F3D;color:#fff;">
+        <h5 class="modal-title text-light"><i class="fa fa-eye mr-2" style="color:#F5A623;"></i>Assessment Preview</h5>
         <button type="button" class="close text-white" data-dismiss="modal" data-bs-dismiss="modal">&times;</button>
       </div>
       <div class="modal-body" id="sg-preview-modal-body">
-        <div class="text-center py-5">
-          <div class="spinner-border text-primary" role="status"></div>
-          <p class="mt-2 text-muted small">Loading preview...</p>
-        </div>
+        <div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted small">Loading preview...</p></div>
       </div>
       <div class="modal-footer" id="sg-preview-modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal" data-bs-dismiss="modal">Close</button>
@@ -282,90 +418,173 @@
 
 <script>
 (function() {
-  // Read wwwroot from data attribute (triple-brace rendered, never HTML-escaped).
+  var root = document.querySelector('.local-skillgap-as');
+
+  /* ── Selected pills + count + search over AMD-injected checkboxes ── */
+  var box    = document.getElementById('sg-comp-checkboxes');
+  var pills  = document.getElementById('sg-sel-pills');
+  var count  = document.getElementById('sg-comp-count');
+  var search = document.getElementById('sg-comp-search');
+
+  function rowName(cb) {
+    var row = cb.closest('.form-check') || cb.closest('.sg-comp-item') || cb.parentElement;
+    if (!row) { return cb.value; }
+    var clone = row.cloneNode(true);
+    clone.querySelectorAll('input, .badge').forEach(function(n){ n.remove(); });
+    return (clone.textContent || '').trim();
+  }
+
+  function refresh() {
+    if (!box) { return; }
+    var checked = box.querySelectorAll('input[type="checkbox"]:checked');
+    var n = checked.length, html = '';
+    checked.forEach(function(cb) {
+      html += '<span class="sg-sel-pill" data-for="' + cb.id + '">' +
+        rowName(cb).replace(/</g,'&lt;') + ' <button type="button" data-uncheck="' + cb.id + '">&times;</button></span>';
+    });
+    if (pills) { pills.innerHTML = html; }
+    if (count) { count.innerHTML = n + ' selected &middot; ' + (n * 5) + ' Q'; }
+  }
+
+  if (box) {
+    // delegate change for current + future (AMD-injected) checkboxes
+    box.addEventListener('change', function(e) {
+      if (e.target && e.target.matches('input[type="checkbox"]')) { refresh(); }
+    });
+    // AMD rebuilds the list when dept/desig change — re-run then
+    var mo = new MutationObserver(function() { applySearch(); refresh(); });
+    mo.observe(box, { childList: true, subtree: true });
+  }
+  if (pills) {
+    pills.addEventListener('click', function(e) {
+      var b = e.target.closest('[data-uncheck]'); if (!b) { return; }
+      var cb = document.getElementById(b.getAttribute('data-uncheck'));
+      if (cb) { cb.checked = false; cb.dispatchEvent(new Event('change', { bubbles: true })); }
+      refresh();
+    });
+  }
+  function applySearch() {
+    if (!box || !search) { return; }
+    var q = search.value.toLowerCase();
+    box.querySelectorAll('.form-check, .sg-comp-item').forEach(function(item) {
+      var cb = item.querySelector('input[type="checkbox"]');
+      var txt = cb ? rowName(cb).toLowerCase() : item.textContent.toLowerCase();
+      item.style.display = (!q || txt.indexOf(q) !== -1) ? '' : 'none';
+    });
+  }
+  if (search) { search.addEventListener('input', applySearch); }
+  refresh();
+
+  /* ── All Assessments pagination (6/page) ── */
+  var card = root ? root.querySelector('.sg-assess-card') : null;
+  if (card) {
+    var rows = Array.prototype.slice.call(card.querySelectorAll('.sg-as-row'));
+    var info = card.querySelector('.sg-page-info');
+    var prevBtn = card.querySelector('.sg-page-prev');
+    var nextBtn = card.querySelector('.sg-page-next');
+    if (rows.length) {
+      var PAGE_SIZE = 6, page = 1, totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+      var render = function() {
+        page = Math.min(Math.max(1, page), totalPages);
+        var start = (page - 1) * PAGE_SIZE;
+        rows.forEach(function(r, i) { r.style.display = (i >= start && i < start + PAGE_SIZE) ? '' : 'none'; });
+        if (info) { info.textContent = 'Showing ' + (start + 1) + '-' + Math.min(start + PAGE_SIZE, rows.length) + ' of ' + rows.length; }
+        if (prevBtn) { prevBtn.disabled = (page <= 1); }
+        if (nextBtn) { nextBtn.disabled = (page >= totalPages); }
+      };
+      if (prevBtn) { prevBtn.addEventListener('click', function() { page--; render(); }); }
+      if (nextBtn) { nextBtn.addEventListener('click', function() { page++; render(); }); }
+      render();
+    }
+  }
+  /* ── Competency count popup ── */
+  var pop = document.getElementById('sg-comp-pop');
+  var popBody = document.getElementById('sg-pop-body');
+  var popTitle = document.getElementById('sg-pop-title');
+  function closePop(){ if (pop) { pop.classList.remove('open'); } }
+  if (root) {
+    root.addEventListener('click', function(e) {
+      var btn = e.target.closest('.sg-show-comps');
+      if (!btn) { return; }
+      var comps = [];
+      try { comps = JSON.parse(btn.getAttribute('data-comps')) || []; } catch (err) {}
+      comps = comps.filter(function(c){ return c.n !== ''; });
+      var html = '';
+      comps.forEach(function(c) {
+        var cls = (String(c.ok) === '1') ? 'ok' : 'no';
+        html += '<div class="sg-pop-row"><span class="sg-pop-name">' + String(c.n).replace(/</g,'&lt;') +
+          '</span><span class="sg-pop-pill ' + cls + '">' + c.q + '/5</span></div>';
+      });
+      if (popBody) { popBody.innerHTML = html || '<div class="sg-pop-row text-muted">No competencies.</div>'; }
+      if (popTitle) { popTitle.textContent = (btn.getAttribute('data-title') || 'Competencies'); }
+      var totalQ = 0;
+      comps.forEach(function(c){ totalQ += parseInt(c.q, 10) || 0; });
+      var cc = document.getElementById('sg-pop-ccount');
+      var qc = document.getElementById('sg-pop-qcount');
+      if (cc) { cc.textContent = comps.length; }
+      if (qc) { qc.textContent = totalQ; }
+      if (pop) { pop.classList.add('open'); }
+    });
+  }
+  var popCloseBtn = document.getElementById('sg-pop-close');
+  if (popCloseBtn) { popCloseBtn.addEventListener('click', closePop); }
+  if (pop) { pop.addEventListener('click', function(e){ if (e.target === pop) { closePop(); } }); }
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') { closePop(); } });
+
+  /* ── Preview modal (kept from original) ── */
+  /* ── Preview modal (kept from original) ── */
   var modal   = document.getElementById('sg-assessment-preview-modal');
   var wwwroot = modal ? modal.getAttribute('data-wwwroot') : '';
   var _lastSesskey = '';
+  function esc(str){ var d=document.createElement('div'); d.appendChild(document.createTextNode(str||'')); return d.innerHTML; }
 
   document.addEventListener('click', function(e) {
     var btn = e.target.closest('.sg-preview-assessment-btn');
     if (!btn) { return; }
-    var aid     = btn.getAttribute('data-id');
-    var sesskey = btn.getAttribute('data-sesskey');  // always present from template
-
+    var aid = btn.getAttribute('data-id');
+    var sesskey = btn.getAttribute('data-sesskey');
+    _lastSesskey = sesskey || '';
     document.getElementById('sg-preview-modal-body').innerHTML =
-      '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div>' +
-      '<p class="mt-2 text-muted small">Loading preview...</p></div>';
+      '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted small">Loading preview...</p></div>';
     document.getElementById('sg-preview-modal-footer').innerHTML =
       '<button type="button" class="btn btn-secondary" data-dismiss="modal" data-bs-dismiss="modal">Close</button>';
-
-    var previewModalEl = document.getElementById('sg-assessment-preview-modal');
-if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-  bootstrap.Modal.getOrCreateInstance(previewModalEl).show();
-} else {
-  previewModalEl.classList.add('show');
-  previewModalEl.style.display = 'block';
-  previewModalEl.removeAttribute('aria-hidden');
-  document.body.classList.add('modal-open');
-  var bd = document.createElement('div');
-  bd.className = 'modal-backdrop fade show';
-  bd.id = 'sg-preview-backdrop';
-  document.body.appendChild(bd);
-}
-
+    var el = document.getElementById('sg-assessment-preview-modal');
+    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) { bootstrap.Modal.getOrCreateInstance(el).show(); }
+    else {
+      el.classList.add('show'); el.style.display = 'block'; el.removeAttribute('aria-hidden');
+      document.body.classList.add('modal-open');
+      var bd = document.createElement('div'); bd.className = 'modal-backdrop fade show'; bd.id = 'sg-preview-backdrop'; document.body.appendChild(bd);
+    }
     fetch(wwwroot + '/local/skillgap/admin/ajax_helper.php?action=preview_assessment&assessmentid=' + aid + '&sesskey=' + sesskey)
-      .then(function(r) { return r.json(); })
+      .then(function(r){ return r.json(); })
       .then(function(data) {
-        if (!data || data.status !== 'ok') {
-          document.getElementById('sg-preview-modal-body').innerHTML =
-            '<div class="alert alert-danger">Failed to load preview.</div>';
-          return;
-        }
-        var html = '<div class="mb-3"><h5 style="color:#033252;">' + esc(data.title) + '</h5>' +
+        if (!data || data.status !== 'ok') { document.getElementById('sg-preview-modal-body').innerHTML = '<div class="alert alert-danger">Failed to load preview.</div>'; return; }
+        var html = '<div class="mb-3"><h5 style="color:#0A1F3D;">' + esc(data.title) + '</h5>' +
           '<span class="badge badge-info mr-1">Total: ' + data.total_q + ' questions</span>' +
           '<span class="badge badge-secondary mr-1">' + data.comp_blocks.length + ' competencies</span>' +
-          (data.is_published
-            ? '<span class="badge badge-success"><i class="fa fa-check-circle mr-1"></i>Published</span>'
-            : '<span class="badge badge-warning"><i class="fa fa-pencil mr-1"></i>Draft</span>') +
-          '</div>';
-
-        // Validation errors block.
+          (data.is_published ? '<span class="badge badge-success"><i class="fa fa-check-circle mr-1"></i>Published</span>' : '<span class="badge badge-warning"><i class="fa fa-pencil mr-1"></i>Draft</span>') + '</div>';
         if (data.has_errors && data.errors && data.errors.length) {
           html += '<div class="alert alert-warning py-2"><strong><i class="fa fa-exclamation-triangle mr-1"></i>Validation Issues:</strong><ul class="mb-0 mt-1 pl-3">';
-          data.errors.forEach(function(err) { html += '<li class="small">' + esc(err) + '</li>'; });
+          data.errors.forEach(function(err){ html += '<li class="small">' + esc(err) + '</li>'; });
           html += '</ul></div>';
         }
-
-        html += '<table class="table table-sm table-bordered mb-4"><thead class="thead-light">' +
-          '<tr><th>Competency</th><th class="text-center" style="width:80px;">Level</th><th class="text-center" style="width:100px;">Questions</th><th class="text-center" style="width:90px;">Status</th></tr></thead><tbody>';
+        html += '<table class="table table-sm table-bordered mb-4"><thead class="thead-light"><tr><th>Competency</th><th class="text-center" style="width:80px;">Level</th><th class="text-center" style="width:100px;">Questions</th><th class="text-center" style="width:90px;">Status</th></tr></thead><tbody>';
         data.comp_blocks.forEach(function(cb) {
-          var levelColor = {Main:'#033252', Sub:'#eb980d', 'Sub-Sub':'#ffc107'}[cb.level] || '#333';
-          html += '<tr><td class="font-weight-medium">' + esc(cb.name) + '</td>' +
-            '<td class="text-center"><span class="badge badge-light border small" style="color:' + levelColor + ';">' + esc(cb.level || 'Main') + '</span></td>' +
+          var levelColor = {Main:'#0A1F3D', Sub:'#F5A623', 'Sub-Sub':'#ffc107'}[cb.level] || '#333';
+          html += '<tr><td class="font-weight-medium">' + esc(cb.name) + '</td><td class="text-center"><span class="badge badge-light border small" style="color:' + levelColor + ';">' + esc(cb.level || 'Main') + '</span></td>' +
             '<td class="text-center"><span class="badge badge-' + (cb.ready ? 'success' : 'warning') + '">' + cb.q_count + '/5</span></td>' +
-            '<td class="text-center">' + (cb.ready
-              ? '<small class="text-success"><i class="fa fa-check-circle mr-1"></i>Ready</small>'
-              : '<small class="text-warning"><i class="fa fa-exclamation-triangle mr-1"></i>Need ' + (5 - cb.q_count) + ' more</small>') +
-            '</td></tr>';
+            '<td class="text-center">' + (cb.ready ? '<small class="text-success"><i class="fa fa-check-circle mr-1"></i>Ready</small>' : '<small class="text-warning"><i class="fa fa-exclamation-triangle mr-1"></i>Need ' + (5 - cb.q_count) + ' more</small>') + '</td></tr>';
         });
         html += '</tbody></table>';
         var letters = ['A','B','C','D'];
         data.comp_blocks.forEach(function(cb) {
-          html += '<div class="mb-4"><h6 class="font-weight-bold mb-2 px-3 py-2 rounded" style="background:#033252;color:#fff;">' +
-            '<i class="fa fa-list mr-2" style="color:#eb980d;"></i>' + esc(cb.name) +
-            ' <small>(' + cb.q_count + '/5)</small></h6>';
-          if (!cb.questions || cb.questions.length === 0) {
-            html += '<p class="text-muted small px-2">No questions added yet.</p>';
-          } else {
+          html += '<div class="mb-4"><h6 class="font-weight-bold mb-2 px-3 py-2 rounded" style="background:#0A1F3D;color:#fff;"><i class="fa fa-list mr-2" style="color:#F5A623;"></i>' + esc(cb.name) + ' <small>(' + cb.q_count + '/5)</small></h6>';
+          if (!cb.questions || cb.questions.length === 0) { html += '<p class="text-muted small px-2">No questions added yet.</p>'; }
+          else {
             cb.questions.forEach(function(q) {
-              html += '<div class="mb-3 px-2" style="border-left:3px solid #eb980d;">' +
-                '<p class="mb-1 small"><span class="badge badge-secondary mr-1">Q' + q.num + '</span><strong>' + esc(q.text) + '</strong></p>' +
-                '<div class="row ml-1">';
+              html += '<div class="mb-3 px-2" style="border-left:3px solid #F5A623;"><p class="mb-1 small"><span class="badge badge-secondary mr-1">Q' + q.num + '</span><strong>' + esc(q.text) + '</strong></p><div class="row ml-1">';
               q.options.forEach(function(o, i) {
-                html += '<div class="col-6 mb-1 small"><span class="badge ' +
-                  (o.iscorrect ? 'badge-success' : 'badge-light border') + ' mr-1">' + letters[i] + '</span>' +
-                  (o.iscorrect ? '<strong>' + esc(o.text) + '</strong>' : '<span class="text-muted">' + esc(o.text) + '</span>') +
-                  '</div>';
+                html += '<div class="col-6 mb-1 small"><span class="badge ' + (o.iscorrect ? 'badge-success' : 'badge-light border') + ' mr-1">' + letters[i] + '</span>' + (o.iscorrect ? '<strong>' + esc(o.text) + '</strong>' : '<span class="text-muted">' + esc(o.text) + '</span>') + '</div>';
               });
               html += '</div></div>';
             });
@@ -373,30 +592,14 @@ if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
           html += '</div>';
         });
         document.getElementById('sg-preview-modal-body').innerHTML = html;
-        var allReady = data.comp_blocks.length > 0 && data.comp_blocks.every(function(cb) { return cb.ready; });
+        var allReady = data.comp_blocks.length > 0 && data.comp_blocks.every(function(cb){ return cb.ready; });
         var footer = '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>';
-        if (!data.is_published && allReady) {
-          footer += ' <button type="button" class="btn btn-success sg-publish-from-preview" data-aid="' + aid + '">' +
-            '<i class="fa fa-check-circle mr-1"></i>Publish Assessment</button>';
-        } else if (!data.is_published) {
-          footer += ' <span class="text-warning small ml-2"><i class="fa fa-exclamation-triangle mr-1"></i>Complete all questions before publishing.</span>';
-        } else {
-          footer += ' <span class="text-success small ml-2"><i class="fa fa-check-circle mr-1"></i>This assessment is published.</span>';
-        }
+        if (!data.is_published && allReady) { footer += ' <button type="button" class="btn btn-success sg-publish-from-preview" data-aid="' + aid + '"><i class="fa fa-check-circle mr-1"></i>Publish Assessment</button>'; }
+        else if (!data.is_published) { footer += ' <span class="text-warning small ml-2"><i class="fa fa-exclamation-triangle mr-1"></i>Complete all questions before publishing.</span>'; }
+        else { footer += ' <span class="text-success small ml-2"><i class="fa fa-check-circle mr-1"></i>This assessment is published.</span>'; }
         document.getElementById('sg-preview-modal-footer').innerHTML = footer;
       })
-      .catch(function() {
-        document.getElementById('sg-preview-modal-body').innerHTML =
-          '<div class="alert alert-danger">Request failed. Please try again.</div>';
-      });
-  });
-
-  // Store sesskey globally within this IIFE for the publish action.
-  var _lastSesskey = '';
-
-  document.addEventListener('click', function(e) {
-    var btn = e.target.closest('.sg-preview-assessment-btn');
-    if (btn) { _lastSesskey = btn.getAttribute('data-sesskey') || ''; }
+      .catch(function(){ document.getElementById('sg-preview-modal-body').innerHTML = '<div class="alert alert-danger">Request failed. Please try again.</div>'; });
   });
 
   document.addEventListener('click', function(e) {
@@ -405,45 +608,25 @@ if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
     if (!confirm('Publish this assessment? Users with matching department/designation will see it.')) { return; }
     var aid = btn.getAttribute('data-aid');
     var form = document.createElement('form');
-    form.method = 'post';
-    form.action = wwwroot + '/local/skillgap/admin/assessments.php';
-    form.innerHTML = '<input type="hidden" name="action" value="publish">' +
-      '<input type="hidden" name="id" value="' + aid + '">' +
-      '<input type="hidden" name="sesskey" value="' + _lastSesskey + '">';
-    document.body.appendChild(form);
-    form.submit();
+    form.method = 'post'; form.action = wwwroot + '/local/skillgap/admin/assessments.php';
+    form.innerHTML = '<input type="hidden" name="action" value="publish"><input type="hidden" name="id" value="' + aid + '"><input type="hidden" name="sesskey" value="' + _lastSesskey + '">';
+    document.body.appendChild(form); form.submit();
   });
-// ── Close preview modal — all triggers ──────────────────────────────────
-document.addEventListener('click', function(e) {
-  if (e.target.closest('[data-dismiss="modal"]') || e.target === document.getElementById('sg-assessment-preview-modal')) {
-    var previewModalEl = document.getElementById('sg-assessment-preview-modal');
-    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-      bootstrap.Modal.getOrCreateInstance(previewModalEl).hide();
-    } else {
-      previewModalEl.classList.remove('show');
-      previewModalEl.style.display = 'none';
-      previewModalEl.setAttribute('aria-hidden', 'true');
-      document.body.classList.remove('modal-open');
-      var bd = document.getElementById('sg-preview-backdrop');
-      if (bd) { bd.remove(); }
-    }
-  }
-});
-  function esc(str) {
-    var d = document.createElement('div');
-    d.appendChild(document.createTextNode(str || ''));
-    return d.innerHTML;
-  }
 
-  // Edit Assessment is handled by AMD module (amd/src/skillgap.js bindEditAssessment).
-  // Cancel edit button calls AMD's sgResetEditForm via global.
- document.addEventListener('click', function(e) {
-    if (e.target.closest('#sg-cancel-edit-btn')) {
-        if (typeof window.sgResetEditForm === 'function') {
-            window.sgResetEditForm();
-        }
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('[data-dismiss="modal"]') || e.target === document.getElementById('sg-assessment-preview-modal')) {
+      var el = document.getElementById('sg-assessment-preview-modal');
+      if (typeof bootstrap !== 'undefined' && bootstrap.Modal) { bootstrap.Modal.getOrCreateInstance(el).hide(); }
+      else {
+        el.classList.remove('show'); el.style.display = 'none'; el.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('modal-open');
+        var bd = document.getElementById('sg-preview-backdrop'); if (bd) { bd.remove(); }
+      }
     }
-});
+  });
 
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('#sg-cancel-edit-btn')) { if (typeof window.sgResetEditForm === 'function') { window.sgResetEditForm(); } }
+  });
 })();
 </script>

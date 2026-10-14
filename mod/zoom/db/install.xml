@@ -47,6 +47,8 @@
         <FIELD NAME="show_media" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Show Media heading in activity page"/>
         <FIELD NAME="option_auto_recording" TYPE="char" LENGTH="5" NOTNULL="false" SEQUENCE="false" COMMENT="Auto record meeting."/>
         <FIELD NAME="registration" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="2" SEQUENCE="false" COMMENT="Force participants to register for the meeting/webinar"/>
+        <!-- added by omkar -->
+        <FIELD NAME="instructors" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Comma separated user ids of the instructors selected for this session"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

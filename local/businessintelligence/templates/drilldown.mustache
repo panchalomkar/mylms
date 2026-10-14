@@ -1,0 +1,74 @@
+
+<div class="lbi is-loading" data-region="lbi-drilldown" id="lbi-{{uniqid}}">
+    {{#filters}}{{> local_businessintelligence/filters}}{{/filters}}
+
+    <div class="lbi-body">
+        <div class="lbi-ddtop lbi-noprint">
+            <a class="lbi-backlink" href="{{backurl}}" data-region="backlink">{{{iconback}}}<span>{{#str}}backtodashboard, local_businessintelligence{{/str}}</span></a>
+            <label class="lbi-select lbi-select-report">
+                <span class="sr-only">{{#str}}switchreport, local_businessintelligence{{/str}}</span>
+                <select data-region="reportswitch">
+                    {{#reports}}<option value="{{key}}"{{#selected}} selected{{/selected}}>{{label}}</option>{{/reports}}
+                </select>
+                <span class="lbi-select-chevron">{{{iconselect}}}</span>
+            </label>
+        </div>
+
+        {{#report}}
+        <div class="lbi-card lbi-report lbi-ddhead" data-report="{{key}}">
+            <div class="lbi-report-head">
+                <div class="lbi-report-titlewrap">
+                    <span class="lbi-iconbox lbi-iconbox-lg">{{{icon}}}</span>
+                    <div>
+                        <p class="lbi-eyebrow">{{#str}}drilldown, local_businessintelligence{{/str}}</p>
+                        <h2 class="lbi-report-title lbi-report-title-lg">{{title}}</h2>
+                        <p class="lbi-report-desc">{{desc}}</p>
+                    </div>
+                </div>
+                {{> local_businessintelligence/info}}
+            </div>
+            <div class="lbi-statgrid">
+                {{#stats}}
+                <div class="lbi-stat">
+                    <span class="lbi-stat-icon">{{{icon}}}</span>
+                    <div class="lbi-stat-text">
+                        <p class="lbi-stat-label">{{label}}</p>
+                        <p class="lbi-stat-value" data-stat="{{key}}"><span class="lbi-skel lbi-skel-stat"></span></p>
+                    </div>
+                </div>
+                {{/stats}}
+            </div>
+        </div>
+        {{/report}}
+
+        <div class="lbi-alert" data-region="error" hidden>{{#str}}loaderror, local_businessintelligence{{/str}}</div>
+
+        <div class="lbi-card lbi-ddtable-card">
+            <div class="lbi-ddtoolbar">
+                <nav class="lbi-crumbs" aria-label="{{#str}}drilldown, local_businessintelligence{{/str}}" data-region="crumbs">
+                    <span class="lbi-crumb is-current">{{{iconorg}}}{{#str}}level_org, local_businessintelligence{{/str}}</span>
+                </nav>
+                <div class="lbi-ddtools lbi-noprint">
+                    <label class="lbi-search" data-region="searchwrap" hidden>
+                        {{{iconsearch}}}
+                        <span class="sr-only">{{#str}}searchlearners, local_businessintelligence{{/str}}</span>
+                        <input type="search" data-region="search" placeholder="{{#str}}searchlearners, local_businessintelligence{{/str}}">
+                    </label>
+                    <button type="button" class="lbi-btn lbi-btn-outline" data-action="csv">{{{icondownload}}}<span>{{#str}}exportcsv, local_businessintelligence{{/str}}</span></button>
+                </div>
+            </div>
+            <div class="lbi-tablewrap">
+                <table class="lbi-table" data-region="table">
+                    <thead data-region="thead"></thead>
+                    <tbody data-region="tbody">
+                        <tr><td><span class="lbi-skel lbi-skel-row"></span></td></tr>
+                        <tr><td><span class="lbi-skel lbi-skel-row"></span></td></tr>
+                        <tr><td><span class="lbi-skel lbi-skel-row"></span></td></tr>
+                        <tr><td><span class="lbi-skel lbi-skel-row"></span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="lbi-note" data-region="note" hidden></p>
+        </div>
+    </div>
+</div>

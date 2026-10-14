@@ -1,98 +1,310 @@
-{{!
-  @template local_skillgap/clusters
-  Competency clustering management and score overview.
-}}
-<div class="local-skillgap">
-  <h3 class="mb-4"><i class="fa fa-object-group mr-2 text-primary"></i>{{#str}} clusters, local_skillgap {{/str}}</h3>
+{{! @template local_skillgap/clusters - competency clusters (Figma UI) }}
+<style>
+  .local-skillgap-cl{
+    --sg-navy-1:#0A1F3D;
+    --sg-navy-2:#0D2647;
+    --sg-orange:#F5A623;
+    --sg-orange-light:#FDF1DC;
+    --sg-blue:#2F6FED;
+    --sg-blue-light:#EAF0FE;
+    --sg-green:#1E9E58;
+    --sg-green-light:#E7F8EE;
+    --sg-amber:#B45309;
+    --sg-amber-light:#FEF3DC;
+    --sg-red:#E5484D;
+    --sg-red-light:#FDEAEA;
+    --sg-gray-light:#EEF1F5;
+    --sg-gray-bg:#F5F7FA;
+    --sg-border:#E7EBF1;
+    --sg-text-muted:#8A93A3;
+    --sg-text-dark:#1B2A41;
+    font-family:inherit;color:var(--sg-text-dark);background:var(--sg-gray-bg);
+    padding:24px;border-radius:14px;
+  }
+  .local-skillgap-cl *{box-sizing:border-box;}
+  #page-local-skillgap-admin-clusters div[role="main"] {
+    filter: none;
+    padding: 0px !important;
+    box-shadow: none !important;
+    background: #f6f8fc;
+}
+   .local-skillgap-cl input[type="checkbox"]:not(.custom-control-input,.form-switch .form-check-input):not(:checked):after {display:none !important; }
+
+  /* ── Header ── */
+  .sg-page-head{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+  .sg-head-icon{width:44px;height:44px;border-radius:12px;background:var(--sg-orange-light);color:var(--sg-orange);
+    display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+  .sg-page-head h2{margin:0;font-weight:800;font-size:24px;color:var(--sg-text-dark);}
+  .sg-page-head .sg-sub{color:var(--sg-text-muted);font-size:13px;margin-top:2px;}
+
+  /* ── Cards ── */
+  .sg-card{background:#fff;border:1px solid var(--sg-border);border-radius:14px;}
+  .sg-card-pad{padding:18px 20px;}
+  .sg-card-head{padding:16px 20px;border-bottom:1px solid var(--sg-border);font-weight:800;font-size:16px;color:var(--sg-text-dark);}
+
+  /* ── Form ── */
+  .sg-form-title{font-weight:700;font-size:15px;color:var(--sg-text-dark);margin-bottom:16px;}
+  .sg-form-body label{font-size:12.5px;font-weight:700;color:var(--sg-text-dark);display:block;margin-bottom:6px;}
+  .sg-input,.sg-textarea{width:100%;border:1px solid var(--sg-border);border-radius:10px;padding:10px 14px;font-size:13.5px;background:#fff;color:var(--sg-text-dark);}
+  .sg-textarea{resize:vertical;min-height:90px;}
+  .sg-search-wrap{position:relative;}
+  .sg-search-wrap > i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--sg-text-muted);font-size:12px;pointer-events:none;}
+  .sg-search-input{width:100%;border:1px solid var(--sg-border);border-radius:10px;padding:10px 14px 10px 34px;font-size:13.5px;background:var(--sg-gray-bg);color:var(--sg-text-dark);}
+
+  /* selected pills */
+  .sg-sel-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;}
+  .sg-sel-pill{display:inline-flex;align-items:center;gap:6px;background:var(--sg-orange);color:#fff;border-radius:8px;
+    font-size:12px;font-weight:700;padding:5px 10px;}
+  .sg-sel-pill button{background:none;border:none;color:#fff;font-size:13px;line-height:1;cursor:pointer;padding:0;}
+  .sg-sel-empty{color:var(--sg-text-muted);font-size:12.5px;}
+
+  /* circular checkbox list */
+  .sg-comp-list{border:1px solid var(--sg-border);border-radius:12px;padding:4px;max-height:240px;overflow-y:auto;background:#fff;margin-top:8px;}
+  .sg-comp-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid var(--sg-gray-light);cursor:pointer;font-size:13.5px;}
+  .sg-comp-item:last-child{border-bottom:none;}
+  .local-skillgap-cl .sg-comp-item input[type="checkbox"]{
+    -webkit-appearance:none !important;-moz-appearance:none !important;appearance:none !important;
+    width:20px !important;height:20px !important;min-width:20px !important;
+    border:1.5px solid var(--sg-border) !important;border-radius:50% !important;
+    background:#fff !important;background-image:none !important;box-shadow:none !important;
+    cursor:pointer;position:relative;margin:0 !important;flex-shrink:0;
+        top: 5px;
+    margin-right: 5px !important;
+  }
+  .local-skillgap-cl .sg-comp-item input[type="checkbox"]:checked{
+    background:var(--sg-navy-1) !important;border-color:var(--sg-navy-1) !important;background-image:none !important;
+  }
+  .local-skillgap-cl .sg-comp-item input[type="checkbox"]::before,
+  .local-skillgap-cl .sg-comp-item input[type="checkbox"]::after{display:none;}
+  .local-skillgap-cl .sg-comp-item input[type="checkbox"]:checked::after{
+    content:"";display:block;position:absolute;left:6px;top:2px;width:5px;height:10px;
+    border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);
+  }
+
+  .sg-btn-navy{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--sg-navy-1);border:1px solid var(--sg-navy-1);
+    border-radius:10px;padding:12px 18px;font-size:13.5px;font-weight:600;color:#fff;width:100%;margin-top:16px;}
+  .sg-btn-navy:hover{background:var(--sg-navy-2);color:#fff;}
+
+  /* ── Table ── */
+  .local-skillgap-cl table thead th{padding:12px 16px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;
+    color:var(--sg-text-muted);font-weight:700;border-top:none;border-bottom:1px solid var(--sg-border);background:#F8FAFC;}
+  .local-skillgap-cl table td{vertical-align:middle;border-color:var(--sg-border);font-size:13.5px;padding:14px 16px;}
+  .sg-cl-name{font-weight:700;color:var(--sg-text-dark);}
+  .sg-cl-desc{font-size:12px;color:var(--sg-text-muted);margin-top:2px;max-width:260px;}
+  .sg-comp-pill{display:inline-block;background:var(--sg-blue-light);color:var(--sg-blue);border-radius:20px;font-size:11.5px;font-weight:700;padding:4px 12px;}
+  .sg-progress-track{background:var(--sg-gray-light);border-radius:6px;height:7px;overflow:hidden;max-width:130px;flex:1 1 auto;min-width:70px;}
+  .sg-progress-fill{height:100%;border-radius:6px;}
+  .sg-fill-success{background:var(--sg-green);}
+  .sg-fill-warning{background:var(--sg-orange);}
+  .sg-fill-danger{background:var(--sg-red);}
+  .sg-score-val{font-weight:800;font-size:13px;color:var(--sg-text-dark);min-width:40px;}
+  .sg-status-badge{display:inline-flex;align-items:center;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;white-space:nowrap;}
+  .sg-status-success{background:var(--sg-green-light);color:var(--sg-green);}
+  .sg-status-warning{background:var(--sg-amber-light);color:var(--sg-amber);}
+  .sg-status-danger{background:var(--sg-red-light);color:var(--sg-red);}
+  .sg-act-icon{background:none;border:none;color:var(--sg-text-muted);font-size:14px;padding:4px 6px;cursor:pointer;text-decoration:none;}
+  .sg-act-icon:hover{color:var(--sg-navy-1);}
+  .sg-act-icon.sg-del:hover{color:var(--sg-red);}
+
+  /* ── Pagination ── */
+  .sg-pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid var(--sg-border);
+    font-size:12.5px;color:var(--sg-text-muted);flex-wrap:wrap;gap:8px;}
+  .sg-page-btn{background:#fff;border:1px solid var(--sg-border);border-radius:16px;padding:5px 14px;font-size:12.5px;font-weight:600;color:var(--sg-text-dark);}
+  .sg-page-btn:disabled{opacity:.4;}
+  .sg-empty{text-align:center;color:var(--sg-text-muted);padding:40px 16px;}
+</style>
+
+<div class="local-skillgap-cl">
+
+  {{! ── Header ── }}
+  <div class="sg-page-head">
+    <div class="sg-head-icon"><i class="fa fa-cubes"></i></div>
+    <div>
+      <h2>{{#str}} clusters, local_skillgap {{/str}}</h2>
+      <div class="sg-sub">Create competency groups and review their combined readiness.</div>
+    </div>
+  </div>
+
   <div class="row">
-    <div class="col-md-4 mb-4">
-      <div class="card">
-        <div class="card-header bg-white"><h6 class="mb-0"><i class="fa fa-plus-circle mr-1 text-primary"></i>{{#str}} add_cluster, local_skillgap {{/str}}</h6></div>
-        <div class="card-body">
-          <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/clusters.php" id="sg-cluster-form">
-            <input type="hidden" name="action"  value="save">
-            <input type="hidden" name="sesskey" value="{{sesskey}}">
-            <div class="form-group">
-              <label class="font-weight-bold">{{#str}} cluster_name, local_skillgap {{/str}} <span class="text-danger">*</span></label>
-              <input type="text" name="name" class="form-control" required placeholder="e.g. Core Engineering">
+    {{! ── Create cluster ── }}
+    <div class="col-12 col-md-4 mb-4">
+      <div class="sg-card sg-card-pad">
+        <div class="sg-form-title">Create Cluster</div>
+        <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/clusters.php" id="sg-cluster-form" class="sg-form-body">
+          <input type="hidden" name="action"  value="save">
+          <input type="hidden" name="sesskey" value="{{sesskey}}">
+          <input type="hidden" name="compids" id="sg-cluster-compids">
+
+          <div class="mb-3">
+            <label>{{#str}} cluster_name, local_skillgap {{/str}} <span style="color:var(--sg-red);">*</span></label>
+            <input type="text" name="name" class="sg-input" required placeholder="Enter cluster name">
+          </div>
+          <div class="mb-3">
+            <label>{{#str}} description, local_skillgap {{/str}}</label>
+            <textarea name="description" class="sg-textarea" placeholder="Describe this competency cluster"></textarea>
+          </div>
+
+          {{! Selected competencies (built by JS) }}
+          <div class="mb-2">
+            <label>Selected Competencies</label>
+            <div class="sg-sel-pills" id="sg-sel-pills"><span class="sg-sel-empty">None selected yet.</span></div>
+          </div>
+
+          {{! Search + circular checklist }}
+          <div class="mb-2">
+            <label>{{#str}} select_competencies, local_skillgap {{/str}} <span style="color:var(--sg-red);">*</span></label>
+            <div class="sg-search-wrap">
+              <i class="fa fa-search"></i>
+              <input type="text" id="sg-comp-search" class="sg-search-input" placeholder="Search competencies" autocomplete="off">
             </div>
-            <div class="form-group">
-              <label class="font-weight-bold">{{#str}} description, local_skillgap {{/str}}</label>
-              <textarea name="description" class="form-control" rows="2" placeholder="Cluster description..."></textarea>
+            <div class="sg-comp-list" id="sg-comp-list">
+              {{#comp_checkboxes}}
+              <label class="sg-comp-item" for="cc_{{id}}" data-name="{{name}}">
+                <input type="checkbox" class="sg-cluster-comp-cb" value="{{id}}" id="cc_{{id}}" data-name="{{name}}">
+                <span>{{name}}</span>
+              </label>
+              {{/comp_checkboxes}}
+              {{^comp_checkboxes}}
+              <p class="text-muted small mb-0 p-2">No competencies found. Add competencies first.</p>
+              {{/comp_checkboxes}}
             </div>
-            <div class="form-group">
-              <label class="font-weight-bold">{{#str}} select_competencies, local_skillgap {{/str}} <span class="text-danger">*</span></label>
-              <div class="border rounded p-2" style="max-height:200px;overflow-y:auto;">
-                {{#comp_checkboxes}}
-                <div class="form-check">
-                  <input type="checkbox" class="form-check-input sg-cluster-comp-cb" value="{{id}}" id="cc_{{id}}">
-                  <label class="form-check-label" for="cc_{{id}}">{{name}}</label>
-                </div>
-                {{/comp_checkboxes}}
-                {{^comp_checkboxes}}
-                <p class="text-muted small mb-0">No competencies found. Add competencies first.</p>
-                {{/comp_checkboxes}}
-              </div>
-              <input type="hidden" name="compids" id="sg-cluster-compids">
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">
-              <i class="fa fa-save mr-1"></i>{{#str}} save, local_skillgap {{/str}}
-            </button>
-          </form>
-        </div>
+          </div>
+
+          <button type="submit" class="sg-btn-navy"><i class="fa fa-check-circle"></i>{{#str}} save, local_skillgap {{/str}} Cluster</button>
+        </form>
       </div>
     </div>
 
-    <div class="col-md-8 mb-4">
-      <div class="card">
-        <div class="card-header bg-white"><h6 class="mb-0">Cluster Scores</h6></div>
-        <div class="card-body p-0">
-          <div class="table-responsive">
-            <table class="table table-hover mb-0">
-              <thead class="thead-light">
-                <tr>
-                  <th>{{#str}} cluster_name, local_skillgap {{/str}}</th>
-                  <th>Competencies</th>
-                  <th>Avg Score</th>
-                  <th>Status</th>
-                  <th>{{#str}} action, local_skillgap {{/str}}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {{#clusters}}
-                <tr>
-                  <td>
-                    <strong>{{name}}</strong>
-                    {{#description}}<br><small class="text-muted">{{description}}</small>{{/description}}
-                  </td>
-                  <td>
-                    <span class="badge badge-info mr-1">{{comp_count}}</span>
-                    <small class="text-muted">{{comp_names}}</small>
-                  </td>
-                  <td>
-                    <div class="progress mb-1" style="height:6px;min-width:60px;">
-                      <div class="progress-bar bg-{{cluster_badge}}" style="width:{{cluster_score}}%;"></div>
-                    </div>
-                    <span class="small font-weight-bold">{{cluster_score}}%</span>
-                  </td>
-                  <td><span class="badge badge-{{cluster_badge}}">{{cluster_status}}</span></td>
-                  <td>
-                    <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/clusters.php" class="d-inline"
-                          onsubmit="return confirm('Delete cluster?');">
-                      <input type="hidden" name="action"  value="delete">
-                      <input type="hidden" name="id"      value="{{id}}">
-                      <input type="hidden" name="sesskey" value="{{sesskey}}">
-                      <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa fa-trash"></i></button>
-                    </form>
-                  </td>
-                </tr>
-                {{/clusters}}
-                {{^clusters}}<tr><td colspan="5" class="text-center text-muted py-3">{{#str}} no_clusters, local_skillgap {{/str}}</td></tr>{{/clusters}}
-              </tbody>
-            </table>
-          </div>
+    {{! ── Cluster scores ── }}
+    <div class="col-12 col-md-8 mb-4">
+      <div class="sg-card sg-clusters-card">
+        <div class="sg-card-head">Cluster Scores</div>
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>{{#str}} cluster_name, local_skillgap {{/str}}</th>
+                <th>Competencies</th>
+                <th style="min-width:150px;">Average Score</th>
+                <th style="width:130px;">Status</th>
+                <th class="text-center" style="width:120px;">{{#str}} action, local_skillgap {{/str}}</th>
+              </tr>
+            </thead>
+            <tbody class="sg-cl-body">
+              {{#clusters}}
+              <tr class="sg-cl-row" data-name="{{name}}">
+                <td>
+                  <div class="sg-cl-name">{{name}}</div>
+                  {{#description}}<div class="sg-cl-desc">{{description}}</div>{{/description}}
+                </td>
+                <td><span class="sg-comp-pill">{{comp_count}} competencies</span></td>
+                <td>
+                  <div class="d-flex align-items-center" style="gap:10px;">
+                    <div class="sg-progress-track"><div class="sg-progress-fill sg-fill-{{cluster_badge}}" style="width:{{cluster_score}}%;"></div></div>
+                    <span class="sg-score-val">{{cluster_score}}%</span>
+                  </div>
+                </td>
+                <td><span class="sg-status-badge sg-status-{{cluster_badge}}">{{cluster_status}}</span></td>
+                <td class="text-center">
+                  <a href="{{{wwwroot}}}/local/skillgap/admin/clusters.php?action=view&id={{id}}" class="sg-act-icon" title="View"><i class="fa fa-eye"></i></a>
+                  <a href="{{{wwwroot}}}/local/skillgap/admin/clusters.php?action=edit&id={{id}}" class="sg-act-icon" title="Edit"><i class="fa fa-pencil"></i></a>
+                  <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/clusters.php" class="d-inline"
+                        onsubmit="return confirm('Delete cluster?');">
+                    <input type="hidden" name="action"  value="delete">
+                    <input type="hidden" name="id"      value="{{id}}">
+                    <input type="hidden" name="sesskey" value="{{sesskey}}">
+                    <button type="submit" class="sg-act-icon sg-del" title="Delete"><i class="fa fa-trash"></i></button>
+                  </form>
+                </td>
+              </tr>
+              {{/clusters}}
+              {{^clusters}}
+              <tr><td colspan="5" class="sg-empty"><i class="fa fa-cubes fa-2x mb-2 d-block"></i>{{#str}} no_clusters, local_skillgap {{/str}}</td></tr>
+              {{/clusters}}
+            </tbody>
+          </table>
+        </div>
+               <div class="sg-pagination">
+          <span class="sg-page-info"></span>
+          <span>
+            <button type="button" class="sg-page-btn sg-page-prev">Previous</button>
+            <button type="button" class="sg-page-btn sg-page-next">Next</button>
+          </span>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+(function() {
+  var root = document.querySelector('.local-skillgap-cl');
+  if (!root) { return; }
+
+  /* ── Selected competencies pills + hidden compids ── */
+  var list      = document.getElementById('sg-comp-list');
+  var pills     = document.getElementById('sg-sel-pills');
+  var hidden    = document.getElementById('sg-cluster-compids');
+  var search    = document.getElementById('sg-comp-search');
+
+  function esc(s){ return String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function refresh() {
+    var checked = list ? list.querySelectorAll('.sg-cluster-comp-cb:checked') : [];
+    var ids = [], html = '';
+    checked.forEach(function(cb) {
+      ids.push(cb.value);
+      html += '<span class="sg-sel-pill" data-id="' + cb.value + '">' + esc(cb.getAttribute('data-name') || '') +
+        ' <button type="button" data-remove="' + cb.value + '">&times;</button></span>';
+    });
+    if (hidden) { hidden.value = ids.join(','); }
+    if (pills) { pills.innerHTML = html || '<span class="sg-sel-empty">None selected yet.</span>'; }
+  }
+
+  if (list) {
+    list.querySelectorAll('.sg-cluster-comp-cb').forEach(function(cb) { cb.addEventListener('change', refresh); });
+  }
+  if (pills) {
+    pills.addEventListener('click', function(e) {
+      var btn = e.target.closest('[data-remove]');
+      if (!btn) { return; }
+      var cb = document.getElementById('cc_' + btn.getAttribute('data-remove'));
+      if (cb) { cb.checked = false; }
+      refresh();
+    });
+  }
+  if (search && list) {
+    search.addEventListener('input', function() {
+      var q = this.value.toLowerCase();
+      list.querySelectorAll('.sg-comp-item').forEach(function(item) {
+        item.style.display = (!q || (item.getAttribute('data-name') || '').toLowerCase().indexOf(q) !== -1) ? '' : 'none';
+      });
+    });
+  }
+  refresh();
+
+  /* ── Cluster Scores pagination (6/page) ── */
+  var card = root.querySelector('.sg-clusters-card');
+  if (card) {
+    var rows    = Array.prototype.slice.call(card.querySelectorAll('.sg-cl-row'));
+    var info    = card.querySelector('.sg-page-info');
+    var prevBtn = card.querySelector('.sg-page-prev');
+    var nextBtn = card.querySelector('.sg-page-next');
+    if (rows.length) {
+      var PAGE_SIZE = 6, page = 1;
+      var totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+      var render = function() {
+        page = Math.min(Math.max(1, page), totalPages);
+        var start = (page - 1) * PAGE_SIZE;
+        rows.forEach(function(r, i) { r.style.display = (i >= start && i < start + PAGE_SIZE) ? '' : 'none'; });
+        if (info) { info.textContent = 'Showing ' + (start + 1) + '-' + Math.min(start + PAGE_SIZE, rows.length) + ' of ' + rows.length; }
+        if (prevBtn) { prevBtn.disabled = (page <= 1); }
+        if (nextBtn) { nextBtn.disabled = (page >= totalPages); }
+      };
+      if (prevBtn) { prevBtn.addEventListener('click', function() { page--; render(); }); }
+      if (nextBtn) { nextBtn.addEventListener('click', function() { page++; render(); }); }
+      render();
+    }
+  }
+})();
+</script>

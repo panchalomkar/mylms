@@ -28,6 +28,7 @@
         <FIELD NAME="minutesbefore" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="When the notification should be send."/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Timestamp of when the instance was last modified."/>
         <FIELD NAME="eventid" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="Google Calendar Event ID"/>
+        <FIELD NAME="instructors" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Comma separated user ids of the instructors selected for this session"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

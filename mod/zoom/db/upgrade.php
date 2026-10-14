@@ -1023,6 +1023,14 @@ function xmldb_zoom_upgrade($oldversion) {
         // Zoom savepoint reached.
         upgrade_mod_savepoint(true, 2025050900, 'zoom');
     }
-
+    // added by omkar
+    if ($oldversion < 2025101601) {
+        $table = new xmldb_table('zoom');
+        $field = new xmldb_field('instructors', XMLDB_TYPE_TEXT, null, null, null, null, null, 'registration');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2025101601, 'zoom');
+    }
     return true;
 }

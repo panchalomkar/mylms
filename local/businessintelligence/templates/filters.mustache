@@ -1,0 +1,23 @@
+
+<div class="lbi-filterbar" data-region="lbi-filters">
+    <div class="lbi-filterlabel">
+        {{{iconfilter}}}
+        
+        <span class="lbi-badge{{^count}} is-zero{{/count}}" data-region="filtercount" aria-live="polite">{{count}}</span>
+    </div>
+    <div class="lbi-filterfields">
+        {{#selects}}
+        <label class="lbi-select{{#active}} is-active{{/active}}" data-select="{{name}}">
+            <span class="sr-only">{{label}}</span>
+            <select name="{{name}}" data-filter="{{name}}" title="{{label}}">
+                {{^noall}}<option value="">{{alllabel}}</option>{{/noall}}
+                {{#options}}<option value="{{value}}"{{#selected}} selected{{/selected}}>{{label}}</option>{{/options}}
+            </select>
+            <span class="lbi-select-chevron">{{{iconchevron}}}</span>
+        </label>
+        {{/selects}}
+        <button type="button" class="lbi-btn lbi-btn-outline lbi-reset" data-action="reset">
+            {{{iconreset}}}<span>{{#str}}resetfilters, local_businessintelligence{{/str}}</span>
+        </button>
+    </div>
+</div>

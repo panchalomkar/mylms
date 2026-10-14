@@ -1,196 +1,288 @@
 {{!
   @template local_skillgap/admin_dashboard
-  Admin overview dashboard. Renders inside Moodle standard layout.
-  Uses Bootstrap only — no custom sidebar or layout override.
+  Admin overview dashboard — Figma-matched UI.
+  Bootstrap only; scoped styles under .local-skillgap-admin.
 }}
+<style>
+  .local-skillgap-admin{
+    --sg-navy-1:#0A1F3D;
+    --sg-navy-2:#0D2647;
+    --sg-orange:#F5A623;
+    --sg-orange-light:#FDF1DC;
+    --sg-blue:#2F6FED;
+    --sg-blue-light:#EAF0FE;
+    --sg-green:#1E9E58;
+    --sg-green-light:#E7F8EE;
+    --sg-amber:#B45309;
+    --sg-amber-light:#FEF3DC;
+    --sg-red:#E5484D;
+    --sg-red-light:#FDEAEA;
+    --sg-gray:#6B7280;
+    --sg-gray-light:#EEF1F5;
+    --sg-gray-bg:#F5F7FA;
+    --sg-border:#E7EBF1;
+    --sg-text-muted:#8A93A3;
+    --sg-text-dark:#1B2A41;
+    font-family:inherit;
+    color:var(--sg-text-dark);
+    background:var(--sg-gray-bg);
+    padding:20px;
+    border-radius:14px;
+  }
+  #page-local-skillgap-admin-index #page-header{display:none;}
 
-<div class="local-skillgap container-fluid px-0">
+#page-local-skillgap-admin-index div[role="main"] {
+    background: #f5f7fa !important;
+    box-shadow: unset !important;}
 
-  {{! Page header }}
-  <div class="d-flex align-items-center justify-content-between flex-wrap mb-4">
+
+  .sg-card { box-shadow: 0 13px 37px rgb(92 107 121 / .1);}
+  .local-skillgap-admin *{box-sizing:border-box;}
+
+  /* ── Page header ── */
+  .sg-page-head{display:flex;align-items:center;gap:14px;margin-bottom:22px;}
+  .sg-head-icon{width:46px;height:46px;border-radius:12px;background:var(--sg-orange-light);color:var(--sg-orange);
+    display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+  .sg-page-head h3{margin:0;font-weight:800;font-size:24px;color:var(--sg-text-dark);}
+  .sg-page-head .sg-sub{color:var(--sg-text-muted);font-size:13.5px;margin-top:2px;}
+
+  /* ── Metric cards ── */
+  .sg-metric-card{background:#fff;border:1px solid var(--sg-border);border-radius:14px;padding:18px 20px;height:100%;
+    position:relative;border-top:4px solid var(--sg-navy-1);}
+  .sg-metric-card.sg-mt-navy{border-top-color:var(--sg-navy-1);}
+  .sg-metric-card.sg-mt-orange{border-top-color:var(--sg-orange);}
+  .sg-metric-card.sg-mt-green{border-top-color:var(--sg-green);}
+  .sg-metric-card.sg-mt-red{border-top-color:var(--sg-red);}
+  .sg-metric-label{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--sg-text-muted);font-weight:700;margin-bottom:8px;}
+  .sg-metric-value{font-size:34px;font-weight:800;color:var(--sg-text-dark);line-height:1;}
+  .sg-metric-desc{font-size:12.5px;color:var(--sg-text-muted);margin-top:10px;}
+  .sg-metric-icon{position:absolute;top:16px;right:16px;width:38px;height:38px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:15px;}
+  .sg-icon-blue{background:var(--sg-blue-light);color:var(--sg-blue);}
+  .sg-icon-orange{background:var(--sg-orange-light);color:var(--sg-orange);}
+  .sg-icon-green{background:var(--sg-green-light);color:var(--sg-green);}
+  .sg-icon-red{background:var(--sg-red-light);color:var(--sg-red);}
+
+  /* ── Card + section headers ── */
+  .sg-card{background:#fff;border:1px solid var(--sg-border);border-radius:14px;overflow:hidden;}
+  .sg-section-header{background:var(--sg-navy-1);color:#fff;padding:14px 20px;display:flex;align-items:center;
+    justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  .sg-section-header h5{color:#fff;margin:0;font-weight:700;font-size:15.5px;display:flex;align-items:center;gap:10px;}
+  .sg-section-header h5 i{color:var(--sg-orange);}
+  .sg-count-badge{background:rgba(255,255,255,.16);color:#fff;font-size:12px;font-weight:700;border-radius:20px;padding:4px 12px;}
+  .sg-viewall{background:#fff;color:var(--sg-navy-1);border:none;border-radius:20px;font-weight:600;font-size:12.5px;
+    padding:6px 16px;text-decoration:none;display:inline-block;}
+  .sg-viewall:hover{color:var(--sg-navy-1);background:#f1f3f7;text-decoration:none;}
+
+  /* ── Quick navigation ── */
+  .sg-qn-body{padding:16px 20px;display:flex;flex-wrap:wrap;gap:10px;}
+  .sg-pill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--sg-border);background:#fff;
+    color:var(--sg-text-dark);border-radius:24px;padding:8px 16px;font-size:13px;font-weight:600;text-decoration:none;}
+  .sg-pill:hover{border-color:var(--sg-navy-1);color:var(--sg-text-dark);text-decoration:none;}
+  .sg-pill i{color:var(--sg-text-muted);}
+  .sg-pill-primary{background:var(--sg-orange);border-color:var(--sg-orange);color:#fff;box-shadow:0 4px 10px rgba(245,166,35,.35);}
+  .sg-pill-primary:hover{background:#e0940e;border-color:#e0940e;color:#fff;}
+  .sg-pill-primary i{color:#fff;}
+
+  /* ── Competency performance ── */
+  .sg-perf-row{display:flex;align-items:center;gap:14px;padding:12px 20px;}
+  .sg-perf-avatar{width:32px;height:32px;border-radius:50%;background:var(--sg-blue-light);color:var(--sg-blue);
+    display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;flex-shrink:0;}
+  .sg-perf-main{flex:1 1 auto;min-width:0;}
+  .sg-perf-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;}
+  .sg-perf-name{font-size:13.5px;font-weight:600;color:var(--sg-text-dark);}
+  .sg-perf-pct{font-size:13.5px;font-weight:800;color:var(--sg-text-dark);}
+  .sg-progress-track{background:var(--sg-gray-light);border-radius:10px;height:8px;overflow:hidden;}
+  .sg-progress-fill{height:100%;border-radius:10px;}
+  .sg-fill-success{background:var(--sg-green);}
+  .sg-fill-warning{background:var(--sg-orange);}
+  .sg-fill-danger{background:var(--sg-red);}
+
+  /* ── Tables ── */
+  .local-skillgap-admin table thead th{padding:12px 16px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;
+    color:var(--sg-text-muted);font-weight:700;border-top:none;border-bottom:1px solid var(--sg-border);background:#F8FAFC;}
+  .local-skillgap-admin table td{vertical-align:middle;border-color:var(--sg-border);font-size:13.5px;padding:12px 16px;}
+  .sg-status-badge{border-radius:20px;font-size:11.5px;font-weight:600;padding:4px 12px;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
+  .sg-status-success{background:var(--sg-green-light);color:var(--sg-green);}
+  .sg-status-warning{background:var(--sg-amber-light);color:var(--sg-amber);}
+  .sg-status-info{background:var(--sg-blue-light);color:var(--sg-blue);}
+  .sg-status-danger{background:var(--sg-red-light);color:var(--sg-red);}
+  .sg-status-secondary{background:var(--sg-gray-light);color:var(--sg-gray);}
+  .sg-to-text{font-weight:700;color:var(--sg-text-dark);}
+  .sg-from-text{color:var(--sg-text-muted);}
+
+  .sg-btn-promote{background:var(--sg-green);color:#fff;border:none;border-radius:20px;font-size:12.5px;font-weight:600;padding:6px 16px;}
+  .sg-btn-promote:hover{background:#178a4c;color:#fff;}
+
+  /* ── Pagination footer ── */
+  .sg-pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid var(--sg-border);
+    font-size:12.5px;color:var(--sg-text-muted);flex-wrap:wrap;gap:8px;}
+  .sg-page-btn{background:#fff;border:1px solid var(--sg-border);border-radius:16px;padding:5px 14px;font-size:12.5px;
+    font-weight:600;color:var(--sg-text-dark);}
+  .sg-page-btn:disabled{opacity:.4;}
+
+  .sg-empty{text-align:center;color:var(--sg-text-muted);padding:32px 16px;}
+</style>
+
+<div class="local-skillgap-admin container-fluid px-0">
+
+  {{! ── Page header ── }}
+  <div class="sg-page-head">
+    <div class="sg-head-icon"><i class="fa fa-bar-chart"></i></div>
     <div>
-      <h3 class="mb-0" style="color:#033252;">
-        <i class="fa fa-tachometer mr-2" style="color:#eb980d;"></i>
-        {{#str}} admin_dashboard, local_skillgap {{/str}}
-      </h3>
-      <p class="text-muted small mb-0 mt-1">{{#str}} pluginname, local_skillgap {{/str}} &mdash; Overview</p>
+      <h3>{{#str}} admin_dashboard, local_skillgap {{/str}}</h3>
+      <div class="sg-sub">{{#str}} pluginname, local_skillgap {{/str}} &mdash; Overview</div>
     </div>
-
   </div>
 
   {{! ── Metric cards ── }}
   <div class="row mb-4">
     <div class="col-6 col-md-3 mb-3">
-      <div class="card h-100" style="border-top:4px solid #033252;">
-        <div class="card-body text-center py-3">
-          <i class="fa fa-users fa-2x mb-2" style="color:#033252;"></i>
-          <div class="h2 font-weight-bold mb-1" style="color:#033252;">{{total_users}}</div>
-          <div class="small text-muted text-uppercase" style="letter-spacing:.5px;">
-            {{#str}} total_users, local_skillgap {{/str}}
-          </div>
-        </div>
+      <div class="sg-metric-card sg-mt-navy">
+        <div class="sg-metric-icon sg-icon-blue"><i class="fa fa-users"></i></div>
+        <div class="sg-metric-label">{{#str}} total_users, local_skillgap {{/str}}</div>
+        <div class="sg-metric-value">{{total_users}}</div>
+        <div class="sg-metric-desc">People in skill analysis</div>
       </div>
     </div>
     <div class="col-6 col-md-3 mb-3">
-      <div class="card h-100" style="border-top:4px solid #eb980d;">
-        <div class="card-body text-center py-3">
-          <i class="fa fa-star fa-2x mb-2" style="color:#eb980d;"></i>
-          <div class="h2 font-weight-bold mb-1" style="color:#854F0B;">{{total_competencies}}</div>
-          <div class="small text-muted text-uppercase" style="letter-spacing:.5px;">
-            {{#str}} total_competencies, local_skillgap {{/str}}
-          </div>
-        </div>
+      <div class="sg-metric-card sg-mt-orange">
+        <div class="sg-metric-icon sg-icon-orange"><i class="fa fa-star"></i></div>
+        <div class="sg-metric-label">{{#str}} total_competencies, local_skillgap {{/str}}</div>
+        <div class="sg-metric-value">{{total_competencies}}</div>
+        <div class="sg-metric-desc">Skills currently mapped</div>
       </div>
     </div>
     <div class="col-6 col-md-3 mb-3">
-      <div class="card h-100" style="border-top:4px solid #28a745;">
-        <div class="card-body text-center py-3">
-          <i class="fa fa-check-circle fa-2x mb-2 text-success"></i>
-          <div class="h2 font-weight-bold text-success mb-1">{{active_assessments}}</div>
-          <div class="small text-muted text-uppercase" style="letter-spacing:.5px;">
-            {{#str}} active_assessments, local_skillgap {{/str}}
-          </div>
-        </div>
+      <div class="sg-metric-card sg-mt-green">
+        <div class="sg-metric-icon sg-icon-green"><i class="fa fa-check-circle"></i></div>
+        <div class="sg-metric-label">{{#str}} active_assessments, local_skillgap {{/str}}</div>
+        <div class="sg-metric-value">{{active_assessments}}</div>
+        <div class="sg-metric-desc">Assessments in progress</div>
       </div>
     </div>
     <div class="col-6 col-md-3 mb-3">
-      <div class="card h-100" style="border-top:4px solid #dc3545;">
-        <div class="card-body text-center py-3">
-          <i class="fa fa-exclamation-circle fa-2x mb-2 text-danger"></i>
-          <div class="h2 font-weight-bold text-danger mb-1">{{needs_improvement_count}}</div>
-          <div class="small text-muted text-uppercase" style="letter-spacing:.5px;">
-            {{#str}} needs_improvement_count, local_skillgap {{/str}}
-          </div>
-        </div>
+      <div class="sg-metric-card sg-mt-red">
+        <div class="sg-metric-icon sg-icon-red"><i class="fa fa-exclamation-circle"></i></div>
+        <div class="sg-metric-label">{{#str}} needs_improvement_count, local_skillgap {{/str}}</div>
+        <div class="sg-metric-value">{{needs_improvement_count}}</div>
+        <div class="sg-metric-desc">Users requiring attention</div>
       </div>
     </div>
   </div>
 
   {{! ── Quick navigation ── }}
-  <div class="card mb-4">
-    <div class="card-header py-2" style="background:#033252;color:#fff;">
-      <small class="font-weight-bold text-uppercase" style="letter-spacing:1px;">Quick Navigation</small>
-    </div>
-    <div class="card-body py-2">
-      <div class="d-flex flex-wrap" style="gap:8px;">
-        <a href="{{{wwwroot}}}/local/skillgap/admin/analytics.php"     class="btn btn-sm font-weight-bold" style="background:#eb980d;color:#fff;"><i class="fa fa-bar-chart mr-1"></i>Analytics</a>
-        <a href="{{{wwwroot}}}/local/skillgap/admin/departments.php"   class="btn btn-outline-secondary btn-sm"><i class="fa fa-building mr-1"></i>{{#str}} departments, local_skillgap {{/str}}</a>
-        <a href="{{{wwwroot}}}/local/skillgap/admin/designations.php"  class="btn btn-outline-secondary btn-sm"><i class="fa fa-sitemap mr-1"></i>{{#str}} designations, local_skillgap {{/str}}</a>
-        <a href="{{{wwwroot}}}/local/skillgap/admin/competencies.php"  class="btn btn-outline-secondary btn-sm"><i class="fa fa-star mr-1"></i>{{#str}} competencies, local_skillgap {{/str}}</a>
-        <a href="{{{wwwroot}}}/local/skillgap/admin/questions.php"     class="btn btn-outline-secondary btn-sm"><i class="fa fa-question-circle mr-1"></i>{{#str}} questions, local_skillgap {{/str}}</a>
-        <a href="{{{wwwroot}}}/local/skillgap/admin/assessments.php"   class="btn btn-outline-secondary btn-sm"><i class="fa fa-check-square-o mr-1"></i>{{#str}} assessments, local_skillgap {{/str}}</a>
-        <a href="{{{wwwroot}}}/local/skillgap/admin/clusters.php"      class="btn btn-outline-secondary btn-sm"><i class="fa fa-object-group mr-1"></i>{{#str}} clusters, local_skillgap {{/str}}</a>
-        <a href="{{{wwwroot}}}/local/skillgap/admin/promotion.php"     class="btn btn-outline-secondary btn-sm"><i class="fa fa-arrow-up mr-1"></i>{{#str}} promotion, local_skillgap {{/str}}</a>
-        <a href="{{{wwwroot}}}/local/skillgap/admin/weakzones.php"     class="btn btn-outline-secondary btn-sm"><i class="fa fa-exclamation-triangle mr-1"></i>{{#str}} weakzones, local_skillgap {{/str}}</a>
-        <a href="{{{wwwroot}}}/local/skillgap/manager/dashboard.php"   class="btn btn-outline-secondary btn-sm"><i class="fa fa-users mr-1"></i>{{#str}} manager_dashboard, local_skillgap {{/str}}</a>
-        <a href="{{{wwwroot}}}/local/skillgap/user/dashboard.php"      class="btn btn-outline-secondary btn-sm"><i class="fa fa-user mr-1"></i>{{#str}} user_dashboard, local_skillgap {{/str}}</a>
-      </div>
+  <div class="sg-card mb-4">
+    <div class="sg-section-header"><h5>Quick Navigation</h5></div>
+    <div class="sg-qn-body">
+      <a href="{{{wwwroot}}}/local/skillgap/admin/analytics.php"    class="sg-pill sg-pill-primary"><i class="fa fa-bar-chart"></i>Analysis</a>
+      <a href="{{{wwwroot}}}/local/skillgap/admin/departments.php"  class="sg-pill"><i class="fa fa-building"></i>Departments</a>
+      <a href="{{{wwwroot}}}/local/skillgap/admin/designations.php" class="sg-pill"><i class="fa fa-sitemap"></i>Designations</a>
+      <a href="{{{wwwroot}}}/local/skillgap/admin/competencies.php" class="sg-pill"><i class="fa fa-star"></i>Competencies</a>
+      <a href="{{{wwwroot}}}/local/skillgap/admin/questions.php"    class="sg-pill"><i class="fa fa-question-circle"></i>Questions</a>
+      <a href="{{{wwwroot}}}/local/skillgap/admin/assessments.php"  class="sg-pill"><i class="fa fa-check-square-o"></i>Assessments</a>
+      <a href="{{{wwwroot}}}/local/skillgap/admin/clusters.php"     class="sg-pill"><i class="fa fa-object-group"></i>Competency Clusters</a>
+      <a href="{{{wwwroot}}}/local/skillgap/admin/promotion.php"    class="sg-pill"><i class="fa fa-line-chart"></i>Promotion Panel</a>
+      <a href="{{{wwwroot}}}/local/skillgap/admin/weakzones.php"    class="sg-pill"><i class="fa fa-exclamation-triangle"></i>Weak Zone Analysis</a>
     </div>
   </div>
 
   <div class="row mb-4">
-    {{! ── Competency performance bars ── }}
+    {{! ── Competency performance ── }}
     <div class="col-12 col-md-6 mb-4">
-      <div class="card h-100">
-        <div class="card-header" style="background:#033252;color:#fff;">
-          <h5 class="mb-0"><i class="fa fa-bar-chart mr-2" style="color:#eb980d;"></i>{{#str}} competency_performance, local_skillgap {{/str}}</h5>
-        </div>
-        <div class="card-body">
+      <div class="sg-card h-100 sg-pg sg-perf-card" data-page-size="6">
+        <div class="sg-section-header"><h5><i class="fa fa-bar-chart"></i>{{#str}} competency_performance, local_skillgap {{/str}}</h5></div>
+        <div class="card-body p-0 sg-pg-list">
           {{#comp_bars}}
-          <div class="mb-3">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-              <span class="small font-weight-medium">{{name}}</span>
-              <span class="small font-weight-bold">{{pct}}%</span>
-            </div>
-            <div class="progress" style="height:10px;">
-              <div class="progress-bar {{bar_class}}" role="progressbar"
-                   style="width:{{pct}}%;" aria-valuenow="{{pct}}" aria-valuemin="0" aria-valuemax="100"></div>
+          <div class="sg-perf-row sg-pg-row">
+            <div class="sg-perf-avatar" data-name="{{name}}">--</div>
+            <div class="sg-perf-main">
+              <div class="sg-perf-top">
+                <span class="sg-perf-name">{{name}}</span>
+                <span class="sg-perf-pct">{{pct}}%</span>
+              </div>
+              <div class="sg-progress-track">
+                <div class="sg-progress-fill sg-fill-{{status}}" style="width:{{pct}}%;"></div>
+              </div>
             </div>
           </div>
           {{/comp_bars}}
           {{^comp_bars}}
-          <div class="text-center text-muted py-4">
-            <i class="fa fa-bar-chart fa-2x mb-2 d-block"></i>
-            {{#str}} no_data, local_skillgap {{/str}}
-          </div>
+          <div class="sg-empty"><i class="fa fa-bar-chart fa-2x mb-2 d-block"></i>{{#str}} no_data, local_skillgap {{/str}}</div>
           {{/comp_bars}}
         </div>
+               <div class="sg-pagination"><span class="sg-page-info"></span>
+          <span><button type="button" class="sg-page-btn sg-page-prev">Previous</button>
+          <button type="button" class="sg-page-btn sg-page-next">Next</button></span></div>
       </div>
     </div>
 
     {{! ── Recent assessments ── }}
     <div class="col-12 col-md-6 mb-4">
-      <div class="card h-100">
-        <div class="card-header d-flex justify-content-between align-items-center" style="background:#033252;color:#fff;">
-          <h5 class="mb-0"><i class="fa fa-list-alt mr-2" style="color:#eb980d;"></i>{{#str}} recent_assessments, local_skillgap {{/str}}</h5>
-          <a href="{{{wwwroot}}}/local/skillgap/admin/assessments.php" class="btn btn-sm btn-outline-light">{{#str}} view_all, local_skillgap {{/str}}</a>
+      <div class="sg-card h-100 sg-pg" data-page-size="6">
+        <div class="sg-section-header">
+          <h5><i class="fa fa-list-alt"></i>{{#str}} recent_assessments, local_skillgap {{/str}}</h5>
+          <a href="{{{wwwroot}}}/local/skillgap/admin/assessments.php" class="sg-viewall">{{#str}} view_all, local_skillgap {{/str}}</a>
         </div>
         <div class="card-body p-0">
           <div class="table-responsive">
-            <table class="table table-sm table-hover mb-0">
-              <thead class="thead-light">
-                <tr>
-                  <th>{{#str}} assessment_title, local_skillgap {{/str}}</th>
-                  <th>{{#str}} department, local_skillgap {{/str}}</th>
-                  <th>{{#str}} frequency, local_skillgap {{/str}}</th>
-                  <th>{{#str}} status, local_skillgap {{/str}}</th>
-                </tr>
-              </thead>
-              <tbody>
+            <table class="table table-hover mb-0">
+              <thead><tr>
+                <th>{{#str}} assessment_title, local_skillgap {{/str}}</th>
+                <th>{{#str}} department, local_skillgap {{/str}}</th>
+                <th>{{#str}} frequency, local_skillgap {{/str}}</th>
+                <th>{{#str}} status, local_skillgap {{/str}}</th>
+              </tr></thead>
+              <tbody class="sg-pg-list">
                 {{#recent_assessments}}
-                <tr>
-                  <td>{{title}}</td>
-                  <td>{{dept_name}}</td>
-                  <td>{{frequency}}</td>
-                  <td><span class="badge badge-{{status_class}}">{{status_label}}</span></td>
+                <tr class="sg-pg-row">
+                  <td class="font-weight-medium">{{title}}</td>
+                  <td class="text-muted">{{dept_name}}</td>
+                  <td class="text-muted">{{frequency}}</td>
+                  <td><span class="sg-status-badge sg-status-{{status_class}}">{{status_label}}</span></td>
                 </tr>
                 {{/recent_assessments}}
                 {{^recent_assessments}}
-                <tr>
-                  <td colspan="4" class="text-center text-muted py-3">
-                    {{#str}} no_assessments, local_skillgap {{/str}}
-                  </td>
-                </tr>
+                <tr><td colspan="4" class="sg-empty">{{#str}} no_assessments, local_skillgap {{/str}}</td></tr>
                 {{/recent_assessments}}
               </tbody>
             </table>
           </div>
         </div>
+               <div class="sg-pagination"><span class="sg-page-info"></span>
+          <span><button type="button" class="sg-page-btn sg-page-prev">Previous</button>
+          <button type="button" class="sg-page-btn sg-page-next">Next</button></span></div>
       </div>
     </div>
   </div>
 
   {{! ── Promotion panel ── }}
-  <div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center" style="background:#033252;color:#fff;">
-      <h5 class="mb-0"><i class="fa fa-arrow-up mr-2" style="color:#eb980d;"></i>{{#str}} promotion, local_skillgap {{/str}}</h5>
-      <a href="{{{wwwroot}}}/local/skillgap/admin/promotion.php" class="btn btn-sm btn-outline-light">{{#str}} view_all, local_skillgap {{/str}}</a>
+  <div class="sg-card mb-4 sg-pg" data-page-size="6">
+    <div class="sg-section-header">
+      <h5><i class="fa fa-line-chart"></i>{{#str}} promotion, local_skillgap {{/str}}</h5>
+      <a href="{{{wwwroot}}}/local/skillgap/admin/promotion.php" class="sg-viewall">{{#str}} view_all, local_skillgap {{/str}}</a>
     </div>
     <div class="card-body p-0">
       <div class="table-responsive">
-        <table class="table table-sm table-hover mb-0">
-          <thead class="thead-light">
-            <tr>
-              <th>{{#str}} user_name, local_skillgap {{/str}}</th>
-              <th>{{#str}} department, local_skillgap {{/str}}</th>
-              <th>Current &rarr; Next Designation</th>
-              <th>{{#str}} readiness, local_skillgap {{/str}}</th>
-              <th>{{#str}} action, local_skillgap {{/str}}</th>
-            </tr>
-          </thead>
-          <tbody>
+        <table class="table table-hover mb-0">
+          <thead><tr>
+            <th>{{#str}} user_name, local_skillgap {{/str}}</th>
+            <th>{{#str}} department, local_skillgap {{/str}}</th>
+            <th>Current &rarr; Next Designation</th>
+            <th>{{#str}} readiness, local_skillgap {{/str}}</th>
+            <th>{{#str}} action, local_skillgap {{/str}}</th>
+          </tr></thead>
+          <tbody class="sg-pg-list">
             {{#promotion_users}}
-            <tr>
+            <tr class="sg-pg-row">
               <td class="font-weight-medium">{{fullname}}</td>
-              <td>{{department}}</td>
+              <td class="text-muted">{{department}}</td>
               <td>
-                <span class="text-muted">{{current_desig}}</span>
-                {{#has_next_desig}}<i class="fa fa-long-arrow-right mx-1" style="color:#eb980d;"></i>
-                <span class="font-weight-bold" style="color:#033252;">{{next_desig}}</span>{{/has_next_desig}}
+                <span class="sg-from-text">{{current_desig}}</span>
+                {{#has_next_desig}}<i class="fa fa-long-arrow-right mx-1" style="color:var(--sg-orange);"></i>
+                <span class="sg-to-text">{{next_desig}}</span>{{/has_next_desig}}
               </td>
-              <td>
-                <span class="badge badge-{{badge_class}}">{{readiness_label}}</span>
-              </td>
+              <td><span class="sg-status-badge sg-status-{{badge_class}}">{{readiness_label}}</span></td>
               <td>
                 {{#can_promote}}
                 <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/promotion.php" class="d-inline"
@@ -198,69 +290,101 @@
                   <input type="hidden" name="action"  value="promote">
                   <input type="hidden" name="userid"  value="{{userid}}">
                   <input type="hidden" name="sesskey" value="{{sesskey}}">
-                  <button type="submit" class="btn btn-sm btn-success">
-                    <i class="fa fa-arrow-up mr-1"></i>{{#str}} promote, local_skillgap {{/str}}
-                  </button>
+                  <button type="submit" class="sg-btn-promote"><i class="fa fa-arrow-up mr-1"></i>{{#str}} promote, local_skillgap {{/str}}</button>
                 </form>
                 {{/can_promote}}
-                {{#already_promoted}}<span class="badge badge-success"><i class="fa fa-check mr-1"></i>Promoted</span>{{/already_promoted}}
+                {{#already_promoted}}<span class="sg-status-badge sg-status-success"><i class="fa fa-check"></i>Promoted</span>{{/already_promoted}}
                 {{^can_promote}}{{^already_promoted}}<span class="text-muted small">{{#str}} not_ready_yet, local_skillgap {{/str}}</span>{{/already_promoted}}{{/can_promote}}
               </td>
             </tr>
             {{/promotion_users}}
             {{^promotion_users}}
-            <tr>
-              <td colspan="4" class="text-center text-muted py-3">
-                {{#str}} no_promotions, local_skillgap {{/str}}
-              </td>
-            </tr>
+            <tr><td colspan="5" class="sg-empty">{{#str}} no_promotions, local_skillgap {{/str}}</td></tr>
             {{/promotion_users}}
           </tbody>
         </table>
       </div>
     </div>
+       <div class="sg-pagination"><span class="sg-page-info"></span>
+      <span><button type="button" class="sg-page-btn sg-page-prev">Previous</button>
+      <button type="button" class="sg-page-btn sg-page-next">Next</button></span></div>
   </div>
 
-  {{! ── Promotion History ──────────────────────────────────────────────────── }}
+  {{! ── Promotion history ── }}
   {{#has_promo_history}}
-  <div class="card mb-4">
-    <div class="card-header d-flex align-items-center justify-content-between" style="background:#033252;color:#fff;">
-      <h5 class="mb-0">
-        <i class="fa fa-history mr-2" style="color:#eb980d;"></i>Promotion History
-      </h5>
-      <span class="badge badge-light" style="color:#033252;">Last 10</span>
+  <div class="sg-card mb-4 sg-pg" data-page-size="6">
+    <div class="sg-section-header">
+      <h5><i class="fa fa-history"></i>Promotion History</h5>
+      <span class="sg-count-badge">Last 10</span>
     </div>
     <div class="card-body p-0">
       <div class="table-responsive">
-        <table class="table table-sm table-hover mb-0">
-          <thead class="thead-light">
-            <tr>
-              <th>User</th>
-              <th>Department</th>
-              <th>From</th>
-              <th></th>
-              <th>To</th>
-              <th>Promoted By</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
+        <table class="table table-hover mb-0">
+          <thead><tr>
+            <th>User</th><th>Department</th><th>From</th><th></th><th>To</th><th>Promoted By</th><th>Date</th>
+          </tr></thead>
+          <tbody class="sg-pg-list">
             {{#promo_history}}
-            <tr>
+            <tr class="sg-pg-row">
               <td class="font-weight-medium">{{fullname}}</td>
-              <td>{{department}}</td>
-              <td><span class="text-muted">{{from_desig}}</span></td>
-              <td class="text-center"><i class="fa fa-long-arrow-right" style="color:#eb980d;"></i></td>
-              <td><span class="font-weight-bold" style="color:#033252;">{{to_desig}}</span></td>
+              <td class="text-muted">{{department}}</td>
+              <td><span class="sg-from-text">{{from_desig}}</span></td>
+              <td class="text-center"><i class="fa fa-long-arrow-right" style="color:var(--sg-orange);"></i></td>
+              <td><span class="sg-to-text">{{to_desig}}</span></td>
               <td><small class="text-muted">{{promoted_by}}</small></td>
-              <td><small>{{date}}</small></td>
+              <td><small class="text-muted">{{date}}</small></td>
             </tr>
             {{/promo_history}}
           </tbody>
         </table>
       </div>
     </div>
+    <div class="sg-pagination"><span class="sg-page-info"></span>
+      <span><button type="button" class="sg-page-btn sg-page-prev">Previous</button>
+      <button type="button" class="sg-page-btn sg-page-next">Next</button></span></div>
   </div>
   {{/has_promo_history}}
 
 </div>
+
+{{#js}}
+require(['jquery'], function($) {
+  var root = document.querySelector('.local-skillgap-admin');
+  if (!root) { return; }
+
+  /* Avatar initials for competency performance (e.g. "Customer Support" → "CS"). */
+  root.querySelectorAll('.sg-perf-avatar').forEach(function(av) {
+    var words = (av.dataset.name || '').trim().split(/\s+/).filter(Boolean);
+    var initials = words.length >= 2
+      ? (words[0][0] + words[1][0])
+      : (words[0] ? words[0][0] : '?');
+    av.textContent = initials.toUpperCase();
+  });
+
+  /* Generic 6-per-page paginator for every .sg-pg block. */
+  root.querySelectorAll('.sg-pg').forEach(function(block) {
+    var size    = parseInt(block.dataset.pageSize, 10) || 6;
+    var rows    = Array.prototype.slice.call(block.querySelectorAll('.sg-pg-row'));
+    var info    = block.querySelector('.sg-page-info');
+    var prevBtn = block.querySelector('.sg-page-prev');
+    var nextBtn = block.querySelector('.sg-page-next');
+    if (!rows.length) { return; }
+    var page = 1;
+    var totalPages = Math.max(1, Math.ceil(rows.length / size));
+
+    function render() {
+      page = Math.min(Math.max(1, page), totalPages);
+      var start = (page - 1) * size;
+      rows.forEach(function(r, i) { r.style.display = (i >= start && i < start + size) ? '' : 'none'; });
+      if (info) {
+        info.textContent = 'Showing ' + (start + 1) + '-' + Math.min(start + size, rows.length) + ' of ' + rows.length;
+      }
+      if (prevBtn) { prevBtn.disabled = (page <= 1); }
+      if (nextBtn) { nextBtn.disabled = (page >= totalPages); }
+    }
+    if (prevBtn) { prevBtn.addEventListener('click', function() { page--; render(); }); }
+    if (nextBtn) { nextBtn.addEventListener('click', function() { page++; render(); }); }
+    render();
+  });
+});
+{{/js}}

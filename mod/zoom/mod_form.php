@@ -177,7 +177,17 @@ class mod_zoom_mod_form extends moodleform_mod {
 
         // Add description 'intro' and 'introformat'.
         $this->standard_intro_elements();
-
+        // added by omkar
+        $instructoroptions = zoom_get_instructor_options((int)$this->_course->id,
+            zoom_instructor_ids_from_string($this->current->instructors ?? ''));
+        $mform->addElement('autocomplete', 'instructors_picker', get_string('instructors', 'mod_zoom'), $instructoroptions, [
+            'multiple' => true,
+            'noselectionstring' => get_string('instructors_none', 'mod_zoom'),
+            'placeholder' => get_string('instructors_search', 'mod_zoom'),
+        ]);
+        // end 
+        $mform->setType('instructors_picker', PARAM_INT);
+        $mform->addHelpButton('instructors_picker', 'instructors', 'mod_zoom');
         // Adding the "schedule" fieldset, where all settings relating to date and time are shown.
         $mform->addElement('header', 'schedule', get_string('schedule', 'mod_zoom'));
         $mform->setExpanded('schedule');
@@ -900,7 +910,8 @@ class mod_zoom_mod_form extends moodleform_mod {
         global $DB;
 
         parent::data_postprocessing($data);
-
+        // added by omkar
+        $data->instructors = implode(',', array_map('intval', (array)($data->instructors_picker ?? [])));
         // Get config.
         $config = get_config('zoom');
 
@@ -994,7 +1005,8 @@ class mod_zoom_mod_form extends moodleform_mod {
         global $DB;
 
         parent::data_preprocessing($defaultvalues);
-
+        // added by omkar
+        $defaultvalues['instructors_picker'] = zoom_instructor_ids_from_string($defaultvalues['instructors'] ?? '');
         // Get config.
         $config = get_config('zoom');
 

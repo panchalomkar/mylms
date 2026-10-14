@@ -1,72 +1,206 @@
 {{!
   @template local_skillgap/departments
-  Departments list and sync from Moodle user profiles.
+  Departments list and sync — Figma-matched UI.
+  Scoped styles under .local-skillgap-depts.
 }}
-<div class="local-skillgap container-fluid px-0">
-  <div class="d-flex align-items-center justify-content-between flex-wrap mb-4">
-    <h3 class="mb-0" style="color:#033252;">
-      <i class="fa fa-building mr-2" style="color:#eb980d;"></i>
-      {{#str}} departments, local_skillgap {{/str}}
-    </h3>
+<style>
+  .local-skillgap-depts{
+    --sg-navy-1:#0A1F3D;
+    --sg-navy-2:#0D2647;
+    --sg-orange:#F5A623;
+    --sg-orange-light:#FDF1DC;
+    --sg-blue:#2F6FED;
+    --sg-blue-light:#EAF0FE;
+    --sg-red:#E5484D;
+    --sg-red-light:#FDEAEA;
+    --sg-gray-light:#EEF1F5;
+    --sg-gray-bg:#F5F7FA;
+    --sg-border:#E7EBF1;
+    --sg-text-muted:#8A93A3;
+    --sg-text-dark:#1B2A41;
+    font-family:inherit;color:var(--sg-text-dark);background:var(--sg-gray-bg);
+    padding:24px;border-radius:14px;
+  }
+  .local-skillgap-depts *{box-sizing:border-box;}
+ #page-local-skillgap-admin-departments div[role="main"] {
+    filter: none;
+    padding: 0px !important;
+    box-shadow: none !important;
+    background: #f6f8fc;
+}
+  /* ── Page header ── */
+  .sg-page-head{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:18px;}
+  .sg-head-left{display:flex;align-items:center;gap:14px;}
+  .sg-head-icon{width:46px;height:46px;border-radius:12px;background:var(--sg-orange-light);color:var(--sg-orange);
+    display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+  .sg-page-head h2{margin:0;font-weight:800;font-size:26px;color:var(--sg-text-dark);}
+  .sg-page-head .sg-sub{color:var(--sg-text-muted);font-size:13.5px;margin-top:2px;}
+  .sg-sync-btn{display:inline-flex;align-items:center;gap:8px;background:var(--sg-navy-1);border:none;
+    border-radius:24px;padding:10px 20px;font-size:13.5px;font-weight:600;color:#fff;}
+  .sg-sync-btn:hover{background:var(--sg-navy-2);color:#fff;}
+
+  /* ── Info banner ── */
+  .sg-info-banner{background:var(--sg-blue-light);border:1px solid #D7E3FB;border-radius:12px;
+    padding:12px 18px;font-size:13.5px;color:#2B4B8A;display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+  .sg-info-banner i{color:var(--sg-blue);font-size:15px;}
+
+  /* ── Card + navy header ── */
+  .sg-card{background:#fff;border:1px solid var(--sg-border);border-radius:14px;overflow:hidden;}
+  .sg-section-header{background:var(--sg-navy-1);color:#fff;padding:14px 20px;display:flex;align-items:center;
+    justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .sg-section-header h5{color:#fff;margin:0;font-weight:700;font-size:15.5px;display:flex;align-items:center;gap:10px;}
+  .sg-section-header h5 i{color:var(--sg-orange);}
+  .sg-search-wrap{position:relative;}
+  .sg-search-wrap i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--sg-text-muted);font-size:12px;}
+  .sg-search-input{border:none;border-radius:24px;padding:9px 16px 9px 34px;font-size:13px;background:#fff;
+    width:260px;max-width:100%;color:var(--sg-text-dark);}
+
+  /* ── Table ── */
+  .local-skillgap-depts table thead th{padding:12px 20px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;
+    color:var(--sg-text-muted);font-weight:700;border-top:none;border-bottom:1px solid var(--sg-border);background:#F8FAFC;}
+  .local-skillgap-depts table td{vertical-align:middle;border-color:var(--sg-border);font-size:14px;padding: 5px 15px;}
+  .sg-row-num{color:var(--sg-text-muted);font-size:14px;}
+  .sg-dept-name{font-weight:600;color:var(--sg-text-dark);}
+  .sg-user-pill{display:inline-flex;align-items:center;justify-content:center;background:var(--sg-navy-1);color:#fff;
+    border-radius:20px;font-size:12.5px;font-weight:700;padding:5px 14px;min-width:44px;}
+  .sg-del-btn{width:38px;height:38px;border-radius:50%;background:#fff;border:1px solid var(--sg-red-light);
+    color:var(--sg-red);display:inline-flex;align-items:center;justify-content:center;font-size:14px;}
+  .sg-del-btn:hover{background:var(--sg-red-light);color:var(--sg-red);}
+
+  /* ── Pagination ── */
+  .sg-pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid var(--sg-border);
+    font-size:12.5px;color:var(--sg-text-muted);flex-wrap:wrap;gap:8px;}
+  .sg-page-btn{background:#fff;border:1px solid var(--sg-border);border-radius:16px;padding:5px 14px;font-size:12.5px;
+    font-weight:600;color:var(--sg-text-dark);}
+  .sg-page-btn:disabled{opacity:.4;}
+  .sg-empty{text-align:center;color:var(--sg-text-muted);padding:36px 16px;}
+</style>
+
+<div class="local-skillgap-depts">
+
+  {{! ── Page header ── }}
+  <div class="sg-page-head">
+    <div class="sg-head-left">
+      <div class="sg-head-icon"><i class="fa fa-building"></i></div>
+      <div>
+        <h2>{{#str}} departments, local_skillgap {{/str}}</h2>
+        <div class="sg-sub">Manage departments sourced from user profiles.</div>
+      </div>
+    </div>
     <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/departments.php" class="d-inline">
       <input type="hidden" name="action"  value="sync">
       <input type="hidden" name="sesskey" value="{{sesskey}}">
-      <button type="submit" class="btn" style="background:#033252;color:#fff;">
-        <i class="fa fa-refresh mr-1"></i>{{#str}} sync_departments, local_skillgap {{/str}}
+      <button type="submit" class="sg-sync-btn">
+        <i class="fa fa-refresh"></i>{{#str}} sync_departments, local_skillgap {{/str}}
       </button>
     </form>
   </div>
 
-  <div class="alert alert-info small py-2">
-    <i class="fa fa-info-circle mr-1"></i>
-    {{#str}} dept_sync_info, local_skillgap {{/str}}
+  {{! ── Info banner ── }}
+  <div class="sg-info-banner">
+    <i class="fa fa-info-circle"></i>
+    <span>{{#str}} dept_sync_info, local_skillgap {{/str}}</span>
   </div>
 
-  <div class="card">
-    <div class="card-header" style="background:#033252;color:#fff;">
-      <h5 class="mb-0"><i class="fa fa-list mr-2" style="color:#eb980d;"></i>All Departments</h5>
+  {{! ── Departments table ── }}
+  <div class="sg-card sg-depts-card">
+    <div class="sg-section-header">
+      <h5><i class="fa fa-building"></i>All Departments</h5>
+      <div class="sg-search-wrap">
+        <i class="fa fa-search"></i>
+        <input type="text" class="sg-search-input sg-dept-search" placeholder="Search departments">
+      </div>
     </div>
     <div class="card-body p-0">
       <div class="table-responsive">
         <table class="table table-hover mb-0">
-          <thead class="thead-light">
+          <thead>
             <tr>
-              <th>#</th>
+              <th style="width:80px;">#</th>
               <th>{{#str}} name, local_skillgap {{/str}}</th>
-              <th>{{#str}} users, local_skillgap {{/str}}</th>
-              <th>{{#str}} action, local_skillgap {{/str}}</th>
+              <th class="text-center" style="width:140px;">{{#str}} users, local_skillgap {{/str}}</th>
+              <th class="text-center" style="width:120px;">{{#str}} action, local_skillgap {{/str}}</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="sg-dept-body">
             {{#departments}}
-            <tr>
-              <td class="text-muted small">{{id}}</td>
-              <td class="font-weight-medium">{{name}}</td>
-              <td><span class="badge badge-info">{{user_count}}</span></td>
-              <td>
+            <tr class="sg-dept-row" data-name="{{name}}">
+              <td class="sg-row-num sg-dept-index"></td>
+              <td><span class="sg-dept-name">{{name}}</span></td>
+              <td class="text-center"><span class="sg-user-pill">{{user_count}}</span></td>
+              <td class="text-center">
                 <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/departments.php"
                       class="d-inline" onsubmit="return confirm('Delete department?');">
                   <input type="hidden" name="action"  value="delete">
                   <input type="hidden" name="id"      value="{{id}}">
                   <input type="hidden" name="sesskey" value="{{sesskey}}">
-                  <button type="submit" class="btn btn-sm btn-outline-danger">
-                    <i class="fa fa-trash"></i>
-                  </button>
+                  <button type="submit" class="sg-del-btn" title="Delete"><i class="fa fa-trash"></i></button>
                 </form>
               </td>
             </tr>
             {{/departments}}
             {{^departments}}
-            <tr>
-              <td colspan="4" class="text-center text-muted py-4">
-                <i class="fa fa-building fa-2x mb-2 d-block"></i>
-                {{#str}} no_departments, local_skillgap {{/str}}
-              </td>
-            </tr>
+            <tr><td colspan="4" class="sg-empty">
+              <i class="fa fa-building fa-2x mb-2 d-block"></i>{{#str}} no_departments, local_skillgap {{/str}}
+            </td></tr>
             {{/departments}}
           </tbody>
         </table>
       </div>
     </div>
+       <div class="sg-pagination">
+      <span class="sg-page-info"></span>
+      <span>
+        <button type="button" class="sg-page-btn sg-page-prev">Previous</button>
+        <button type="button" class="sg-page-btn sg-page-next">Next</button>
+      </span>
+    </div>
   </div>
+
 </div>
+
+<script>
+(function() {
+  var card = document.querySelector('.local-skillgap-depts .sg-depts-card');
+  if (!card) { return; }
+
+  var searchBox = card.querySelector('.sg-dept-search');
+  var rows      = Array.prototype.slice.call(card.querySelectorAll('.sg-dept-row'));
+  var info      = card.querySelector('.sg-page-info');
+  var prevBtn   = card.querySelector('.sg-page-prev');
+  var nextBtn   = card.querySelector('.sg-page-next');
+  var PAGE_SIZE = 6;
+  var page = 1;
+
+  function matches(row) {
+    var q = searchBox ? searchBox.value.toLowerCase() : '';
+    return !q || (row.getAttribute('data-name') || '').toLowerCase().indexOf(q) !== -1;
+  }
+
+  function render() {
+    var visible = rows.filter(matches);
+    var totalPages = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
+    page = Math.min(Math.max(1, page), totalPages);
+    var start = (page - 1) * PAGE_SIZE;
+
+    rows.forEach(function(r) { r.style.display = 'none'; });
+    visible.slice(start, start + PAGE_SIZE).forEach(function(r, i) {
+      r.style.display = '';
+      var idx = r.querySelector('.sg-dept-index');
+      if (idx) { idx.textContent = start + i + 1; } // sequential row number
+    });
+
+    if (info) {
+      var from = visible.length ? start + 1 : 0;
+      info.textContent = 'Showing ' + from + '-' + Math.min(start + PAGE_SIZE, visible.length) + ' of ' + visible.length;
+    }
+    if (prevBtn) { prevBtn.disabled = (page <= 1); }
+    if (nextBtn) { nextBtn.disabled = (page >= totalPages); }
+  }
+
+  if (searchBox) { searchBox.addEventListener('input', function() { page = 1; render(); }); }
+  if (prevBtn)   { prevBtn.addEventListener('click', function() { page--; render(); }); }
+  if (nextBtn)   { nextBtn.addEventListener('click', function() { page++; render(); }); }
+  render();
+})();
+</script>

@@ -1,0 +1,110 @@
+<style>
+.lbi [data-report="ojt"],.lbi [data-report="trainer"],.lbi [data-report="skillgap"],.lbi [data-report="roleplay"]
+,.lbi [data-report="outcome"] {
+    display: none;
+}
+
+
+</style>
+<div class="lbi is-loading" data-region="lbi-dashboard" id="lbi-{{uniqid}}">
+    {{#filters}}{{> local_businessintelligence/filters}}{{/filters}}
+
+    <div class="lbi-body">
+        <header class="lbi-pagehead">
+            <div class="lbi-pagehead-text">
+                <p class="lbi-eyebrow">{{#str}}eyebrow, local_businessintelligence{{/str}}</p>
+                <h2 class="lbi-h1">{{#str}}heading, local_businessintelligence{{/str}}</h2>
+                <p class="lbi-intro">{{#str}}intro, local_businessintelligence, {{company}}{{/str}}</p>
+            </div>
+            <div class="lbi-pagehead-actions lbi-noprint">
+                <button type="button" class="lbi-btn lbi-btn-outline" data-action="csv">{{{icondownload}}}<span>{{#str}}exportcsv, local_businessintelligence{{/str}}</span></button>
+                <button type="button" class="lbi-btn lbi-btn-outline" data-action="pdf">{{{iconpdf}}}<span>{{#str}}exportpdf, local_businessintelligence{{/str}}</span></button>
+            </div>
+        </header>
+
+        <div class="lbi-alert" data-region="error" hidden>{{#str}}loaderror, local_businessintelligence{{/str}}</div>
+
+        <section class="lbi-section" aria-labelledby="lbi-kpi-title-{{uniqid}}">
+            <div class="lbi-section-head">
+                <h3 class="lbi-section-title" id="lbi-kpi-title-{{uniqid}}">{{#str}}kpiribbon, local_businessintelligence{{/str}}</h3>
+                <span class="lbi-info">
+                    <button type="button" class="lbi-info-btn" aria-label="{{#str}}moreinfo, local_businessintelligence{{/str}}" aria-describedby="lbi-tip-{{uniqid}}-kpis">{{{iconinfo}}}</button>
+                    <span class="lbi-tip lbi-tip-start" role="tooltip" id="lbi-tip-{{uniqid}}-kpis">{{#str}}kpiribbon_info, local_businessintelligence{{/str}}</span>
+                </span>
+            </div>
+            <div class="lbi-kpigrid">
+                {{#kpis}}
+                <div class="lbi-card lbi-kpi" data-kpi="{{key}}">
+                    <div class="lbi-kpi-top">
+                        <span class="lbi-iconbox">{{{icon}}}</span>
+                        {{> local_businessintelligence/info}}
+                    </div>
+                    <div class="lbi-kpi-main">
+                        <p class="lbi-kpi-label">{{label}}</p>
+                        <div class="lbi-kpi-valrow">
+                            <span class="lbi-kpi-value" data-field="value"><span class="lbi-skel lbi-skel-val"></span></span>
+                            <span class="lbi-trend" data-field="trend"></span>
+                        </div>
+                    </div>
+                    <div class="lbi-spark" data-field="spark"><span class="lbi-skel lbi-skel-spark"></span></div>
+                </div>
+                {{/kpis}}
+            </div>
+        </section>
+
+        <section class="lbi-section" aria-labelledby="lbi-rep-title-{{uniqid}}">
+            <div class="lbi-section-head lbi-section-head-col">
+                <div class="lbi-section-titlerow">
+                    <h3 class="lbi-section-title" id="lbi-rep-title-{{uniqid}}">{{#str}}bireports, local_businessintelligence{{/str}}</h3>
+                    <span class="lbi-info">
+                        <button type="button" class="lbi-info-btn" aria-label="{{#str}}moreinfo, local_businessintelligence{{/str}}" aria-describedby="lbi-tip-{{uniqid}}-reports">{{{iconinfo}}}</button>
+                        <span class="lbi-tip" role="tooltip" id="lbi-tip-{{uniqid}}-reports">{{#str}}bireports_info, local_businessintelligence{{/str}}</span>
+                    </span>
+                </div>
+                <p class="lbi-section-desc">{{#str}}bireports_desc, local_businessintelligence{{/str}}</p>
+            </div>
+            <div class="lbi-reportgrid " style="gap: 8px;">
+                {{#reports}}
+                <article class="lbi-card lbi-report p-2" data-report="{{key}}">
+                    <div class="lbi-report-head">
+                        <div class="lbi-report-titlewrap">
+                            <span class="lbi-iconbox lbi-iconbox-lg">{{{icon}}}</span>
+                            <div>
+                                <h4 class="lbi-report-title">{{title}}</h4>
+                                <p class="lbi-report-desc">{{desc}}</p>
+                            </div>
+                        </div>
+                        {{> local_businessintelligence/info}}
+                    </div>
+                    <div class="lbi-statgrid">
+                        {{#stats}}
+                        <div class="lbi-stat">
+                            <span class="lbi-stat-icon">{{{icon}}}</span>
+                            <div class="lbi-stat-text">
+                                <p class="lbi-stat-label">{{label}}</p>
+                                <p class="lbi-stat-value" data-stat="{{key}}"><span class="lbi-skel lbi-skel-stat"></span></p>
+                            </div>
+                        </div>
+                        {{/stats}}
+                    </div>
+                    <div class="lbi-report-body {{grid}}">
+                        {{#charts}}
+                        <div class="lbi-chartcol {{col}}">
+                            {{#title}}<p class="lbi-chart-title">{{title}}</p>{{/title}}
+                            <div class="lbi-chart lbi-chart-{{type}}" data-chart="{{key}}" data-type="{{type}}"{{#hasheight}} style="height: {{height}}px"{{/hasheight}}>
+                                <div class="lbi-skel lbi-skel-block"></div>
+                            </div>
+                        </div>
+                        {{/charts}}
+                    </div>
+                    <div class="lbi-report-foot">
+                        <span class="lbi-drill">{{{icontrend}}}{{#str}}drilldownenabled, local_businessintelligence{{/str}}</span>
+                        <a class="lbi-btn lbi-btn-primary lbi-noprint " href="{{url}}" data-region="viewanalysis">{{#str}}viewanalysis, local_businessintelligence{{/str}}{{{iconarrow}}}</a>
+                    </div>
+                </article>
+                {{/reports}}
+            </div>
+        </section>
+        <p class="lbi-updated" data-region="updated"></p>
+    </div>
+</div>

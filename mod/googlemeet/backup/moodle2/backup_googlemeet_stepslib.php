@@ -56,7 +56,8 @@ class backup_googlemeet_activity_structure_step extends backup_activity_structur
             'eventenddate',
             'notify',
             'minutesbefore',
-            'timemodified'
+            'timemodified',
+            'instructors'
         ]);
 
         $events = new backup_nested_element('events');

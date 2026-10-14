@@ -1,115 +1,164 @@
-{{!
-  @template local_skillgap/analytics_report
-  Per-competency user list report — Image 2 design.
-}}
-<div class="local-skillgap sg-analytics-wrap" style="background:#f5f7fa;min-height:100vh;padding:24px;">
+{{! @template local_skillgap/analytics_report - per-competency learner report (Figma UI) }}
+<style>
+  .local-skillgap-report{
+    --sg-navy-1:#0A1F3D;
+    --sg-navy-2:#0D2647;
+    --sg-orange:#F5A623;
+    --sg-blue:#2F6FED;
+    --sg-blue-light:#EAF0FE;
+    --sg-green:#1E9E58;
+    --sg-green-light:#E7F8EE;
+    --sg-amber:#B45309;
+    --sg-amber-light:#FEF3DC;
+    --sg-red:#E5484D;
+    --sg-red-light:#FDEAEA;
+    --sg-gray-light:#EEF1F5;
+    --sg-gray-bg:#F5F7FA;
+    --sg-border:#E7EBF1;
+    --sg-text-muted:#8A93A3;
+    --sg-text-dark:#1B2A41;
+    font-family:inherit;color:var(--sg-text-dark);background:var(--sg-gray-bg);
+    min-height:100vh;padding:24px;
+  }
+  .local-skillgap-report *{box-sizing:border-box;}
+#page-local-skillgap-admin-analytics_report div[role="main"] {
+    filter: none;
+    padding: 0px !important;
+    box-shadow: none !important;
+    background: #f6f8fc;
+}
+  /* ── Header ── */
+  .sg-topbar{display:flex;justify-content:flex-end;margin-bottom:6px;}
+  .sg-page-head{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:22px;}
+  .sg-page-head h2{margin:0;font-weight:800;font-size:26px;color:var(--sg-text-dark);}
+  .sg-page-head .sg-sub{color:var(--sg-text-muted);font-size:13.5px;margin-top:2px;}
+  .sg-btn-outline{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--sg-border);
+    border-radius:24px;padding:8px 16px;font-size:13px;font-weight:600;color:var(--sg-text-dark);text-decoration:none;}
+  .sg-btn-outline:hover{border-color:var(--sg-navy-1);color:var(--sg-text-dark);text-decoration:none;}
+  .sg-btn-outline i{color:var(--sg-text-muted);}
+  .sg-btn-navy{display:inline-flex;align-items:center;gap:7px;background:var(--sg-navy-1);border:1px solid var(--sg-navy-1);
+    border-radius:24px;padding:8px 18px;font-size:13px;font-weight:600;color:#fff;text-decoration:none;}
+  .sg-btn-navy:hover{background:var(--sg-navy-2);color:#fff;text-decoration:none;}
 
-  {{! Breadcrumb & header }}
-  <div class="d-flex align-items-start justify-content-between flex-wrap mb-4">
+  /* ── Stat cards ── */
+  .sg-stat-card{background:#fff;border:1px solid var(--sg-border);border-radius:14px;padding:18px 20px;height:100%;position:relative;}
+  .sg-stat-label{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--sg-text-muted);font-weight:700;}
+  .sg-stat-value{font-size:34px;font-weight:800;color:var(--sg-text-dark);line-height:1;margin-top:14px;}
+  .sg-stat-icon{position:absolute;top:16px;right:16px;width:38px;height:38px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:15px;background:#E7ECF3;color:var(--sg-navy-1);}
+
+  /* ── Card ── */
+  .sg-card{background:#fff;border:1px solid var(--sg-border);border-radius:14px;overflow:hidden;}
+  .sg-card-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    padding:16px 20px;border-bottom:1px solid var(--sg-border);}
+  .sg-card-head .sg-title{font-weight:800;font-size:16px;color:var(--sg-text-dark);}
+  .sg-card-head .sg-desc{font-size:12.5px;color:var(--sg-text-muted);margin-top:2px;}
+  .sg-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .sg-search-wrap{position:relative;}
+  .sg-search-wrap i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--sg-text-muted);font-size:12px;}
+  .sg-search-input{border:1px solid var(--sg-border);border-radius:24px;padding:8px 14px 8px 32px;font-size:13px;
+    background:var(--sg-gray-bg);width:220px;max-width:100%;}
+  .sg-filter-select{border:1px solid var(--sg-border);border-radius:24px;background:var(--sg-gray-bg);font-size:13px;
+    padding:8px 30px 8px 14px;color:var(--sg-text-dark);}
+
+  /* ── Table ── */
+  .local-skillgap-report table thead th{padding:12px 20px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;
+    color:var(--sg-text-muted);font-weight:700;border-top:none;border-bottom:1px solid var(--sg-border);background:#F8FAFC;}
+  .local-skillgap-report table td{vertical-align:middle;border-color:var(--sg-border);font-size:13.5px;padding:14px 20px;}
+  .sg-avatar{width:38px;height:38px;min-width:38px;border-radius:50%;background:var(--sg-navy-1);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;}
+  .sg-user-name{font-weight:700;color:var(--sg-text-dark);}
+  .sg-user-email{font-size:12px;color:var(--sg-text-muted);}
+  .sg-progress-track{background:var(--sg-gray-light);border-radius:6px;height:8px;overflow:hidden;max-width:220px;flex:1 1 auto;min-width:80px;}
+  .sg-progress-fill{height:100%;border-radius:6px;}
+  .sg-fill-success{background:var(--sg-green);}
+  .sg-fill-warning{background:var(--sg-orange);}
+  .sg-fill-danger{background:var(--sg-red);}
+  .sg-pct{font-weight:800;font-size:13.5px;min-width:42px;}
+  .sg-pct-success{color:var(--sg-green);}
+  .sg-pct-warning{color:var(--sg-orange);}
+  .sg-pct-danger{color:var(--sg-red);}
+  .sg-status-badge{display:inline-flex;align-items:center;gap:6px;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;white-space:nowrap;}
+  .sg-status-success{background:var(--sg-green-light);color:var(--sg-green);}
+  .sg-status-warning{background:var(--sg-amber-light);color:var(--sg-amber);}
+  .sg-status-danger{background:var(--sg-red-light);color:var(--sg-red);}
+  .sg-view-btn{display:inline-flex;align-items:center;gap:5px;background:#fff;border:1px solid var(--sg-border);
+    border-radius:8px;padding: 6px 5px;font-size:12.5px;font-weight:600;color:var(--sg-text-dark);text-decoration:none;}
+  .sg-view-btn:hover{border-color:var(--sg-navy-1);color:var(--sg-text-dark);text-decoration:none;}
+
+  /* ── Pagination ── */
+  .sg-pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid var(--sg-border);
+    font-size:12.5px;color:var(--sg-text-muted);flex-wrap:wrap;gap:8px;}
+  .sg-page-btn{background:#fff;border:1px solid var(--sg-border);border-radius:16px;padding:5px 14px;font-size:12.5px;
+    font-weight:600;color:var(--sg-text-dark);}
+  .sg-page-btn:disabled{opacity:.4;}
+  .sg-empty{text-align:center;color:var(--sg-text-muted);padding:40px 16px;}
+</style>
+
+<div class="local-skillgap-report">
+
+  {{! ── Back to dashboard (top-right) ── }}
+  <div class="sg-topbar">
+    <a href="{{{wwwroot}}}/local/skillgap/admin/index.php" class="sg-btn-outline"><i class="fa fa-arrow-left"></i>Back to Dashboard</a>
+  </div>
+
+  {{! ── Header ── }}
+  <div class="sg-page-head">
     <div>
-      <h2 class="mb-1 font-weight-bold" style="color:#1a2b4a;">
-        {{comp_name}} {{#str}} report_title_suffix, local_skillgap {{/str}}
-      </h2>
-      <p class="text-muted mb-0" style="font-size:14px;">
-        {{#str}} learner_performance_breakdown, local_skillgap {{/str}}
-      </p>
+      <h2>{{comp_name}} {{#str}} report_title_suffix, local_skillgap {{/str}}</h2>
+      <div class="sg-sub">{{#str}} learner_performance_breakdown, local_skillgap {{/str}}</div>
     </div>
-    <div class="d-flex mt-2 mt-md-0" style="gap:8px;">
-      <a href="{{{wwwroot}}}/local/skillgap/admin/analytics.php"
-         class="btn btn-sm btn-outline-secondary" style="border-radius:8px;">
-        <i class="fa fa-arrow-left mr-1"></i>{{#str}} back, local_skillgap {{/str}}
-      </a>
-      <a href="{{{wwwroot}}}/local/skillgap/admin/analytics_report.php?compid={{compid}}&export=csv"
-         class="btn btn-sm text-white font-weight-bold"
-         style="border-radius:8px;background:#4a78f5;border:none;">
-        <i class="fa fa-download mr-1"></i>{{#str}} export_report, local_skillgap {{/str}}
-      </a>
+    <div class="d-flex" style="gap:8px;">
+      <a href="{{{wwwroot}}}/local/skillgap/admin/analytics.php" class="sg-btn-outline"><i class="fa fa-arrow-left"></i>{{#str}} back, local_skillgap {{/str}}</a>
+      <a href="{{{wwwroot}}}/local/skillgap/admin/analytics_report.php?compid={{compid}}&export=csv" class="sg-btn-navy"><i class="fa fa-download"></i>{{#str}} export_report, local_skillgap {{/str}}</a>
     </div>
   </div>
 
-  {{! Stat cards }}
+  {{! ── Stat cards ── }}
   <div class="row mb-4">
     <div class="col-6 col-md-3 mb-3">
-      <div class="bg-white rounded p-3" style="box-shadow:0 1px 4px rgba(0,0,0,.08);">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-          <span class="small text-uppercase font-weight-bold" style="color:#8492a6;letter-spacing:.6px;font-size:11px;">
-            {{#str}} total_users, local_skillgap {{/str}}
-          </span>
-          <span class="rounded-circle d-flex align-items-center justify-content-center"
-                style="width:36px;height:36px;background:#eaf0ff;">
-            <i class="fa fa-users" style="color:#4a78f5;font-size:15px;"></i>
-          </span>
-        </div>
-        <div class="font-weight-bold mb-0" style="font-size:28px;color:#1a2b4a;">{{total_users}}</div>
+      <div class="sg-stat-card">
+        <div class="sg-stat-icon"><i class="fa fa-users"></i></div>
+        <div class="sg-stat-label">{{#str}} total_users, local_skillgap {{/str}}</div>
+        <div class="sg-stat-value">{{total_users}}</div>
       </div>
     </div>
     <div class="col-6 col-md-3 mb-3">
-      <div class="bg-white rounded p-3" style="box-shadow:0 1px 4px rgba(0,0,0,.08);">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-          <span class="small text-uppercase font-weight-bold" style="color:#8492a6;letter-spacing:.6px;font-size:11px;">
-            {{#str}} average_score, local_skillgap {{/str}}
-          </span>
-          <span class="rounded-circle d-flex align-items-center justify-content-center"
-                style="width:36px;height:36px;background:#fff0f5;">
-            <i class="fa fa-line-chart" style="color:#f06292;font-size:15px;"></i>
-          </span>
-        </div>
-        <div class="font-weight-bold mb-0" style="font-size:28px;color:#1a2b4a;">{{avg_pct}}%</div>
+      <div class="sg-stat-card">
+        <div class="sg-stat-icon"><i class="fa fa-line-chart"></i></div>
+        <div class="sg-stat-label">{{#str}} average_score, local_skillgap {{/str}}</div>
+        <div class="sg-stat-value">{{avg_pct}}%</div>
       </div>
     </div>
     <div class="col-6 col-md-3 mb-3">
-      <div class="bg-white rounded p-3" style="box-shadow:0 1px 4px rgba(0,0,0,.08);">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-          <span class="small text-uppercase font-weight-bold" style="color:#8492a6;letter-spacing:.6px;font-size:11px;">
-            {{#str}} competent_users, local_skillgap {{/str}}
-          </span>
-          <span class="rounded-circle d-flex align-items-center justify-content-center"
-                style="width:36px;height:36px;background:#e6f9f0;">
-            <i class="fa fa-user-plus" style="color:#34c97a;font-size:15px;"></i>
-          </span>
-        </div>
-        <div class="font-weight-bold mb-0" style="font-size:28px;color:#1a2b4a;">{{competent_count}}</div>
+      <div class="sg-stat-card">
+        <div class="sg-stat-icon"><i class="fa fa-user-plus"></i></div>
+        <div class="sg-stat-label">{{#str}} competent_users, local_skillgap {{/str}}</div>
+        <div class="sg-stat-value">{{competent_count}}</div>
       </div>
     </div>
     <div class="col-6 col-md-3 mb-3">
-      <div class="bg-white rounded p-3" style="box-shadow:0 1px 4px rgba(0,0,0,.08);">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-          <span class="small text-uppercase font-weight-bold" style="color:#8492a6;letter-spacing:.6px;font-size:11px;">
-            {{#str}} needs_improvement_count, local_skillgap {{/str}}
-          </span>
-          <span class="rounded-circle d-flex align-items-center justify-content-center"
-                style="width:36px;height:36px;background:#fff0f0;">
-            <i class="fa fa-exclamation-triangle" style="color:#e94e4e;font-size:15px;"></i>
-          </span>
-        </div>
-        <div class="font-weight-bold mb-0" style="font-size:28px;color:#1a2b4a;">{{needs_imp_count}}</div>
+      <div class="sg-stat-card">
+        <div class="sg-stat-icon"><i class="fa fa-exclamation-triangle"></i></div>
+        <div class="sg-stat-label">{{#str}} needs_improvement_count, local_skillgap {{/str}}</div>
+        <div class="sg-stat-value">{{needs_imp_count}}</div>
       </div>
     </div>
   </div>
 
-  {{! Learners table }}
-  <div class="bg-white rounded" style="box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden;">
-    <div class="d-flex align-items-center justify-content-between flex-wrap px-4 py-3"
-         style="border-bottom:1px solid #f0f0f0;">
+  {{! ── Learners table ── }}
+  <div class="sg-card sg-report-card">
+    <div class="sg-card-head">
       <div>
-        <div class="font-weight-bold" style="color:#1a2b4a;font-size:15px;">
-          {{#str}} learners, local_skillgap {{/str}}
-        </div>
-        <div class="small text-muted">{{total_users}} {{#str}} of_users, local_skillgap {{/str}} {{total_users}} {{#str}} users, local_skillgap {{/str}}</div>
+        <div class="sg-title">{{#str}} learners, local_skillgap {{/str}}</div>
+        <div class="sg-desc">{{total_users}} {{#str}} users, local_skillgap {{/str}}</div>
       </div>
-      <div class="d-flex mt-2 mt-md-0" style="gap:8px;">
-        <div class="input-group input-group-sm" style="width:200px;">
-          <div class="input-group-prepend">
-            <span class="input-group-text" style="background:#f5f7fa;border-right:0;">
-              <i class="fa fa-search" style="color:#8492a6;font-size:12px;"></i>
-            </span>
-          </div>
-          <input type="text" id="sg-user-search" class="form-control form-control-sm"
-                 placeholder="{{#str}} search_users, local_skillgap {{/str}}"
-                 style="border-left:0;background:#f5f7fa;">
+      <div class="sg-tools">
+        <div class="sg-search-wrap">
+          <i class="fa fa-search"></i>
+          <input type="text" id="sg-user-search" class="sg-search-input" placeholder="{{#str}} search_users, local_skillgap {{/str}}">
         </div>
-        <select id="sg-user-status-filter" class="form-control form-control-sm"
-                style="width:140px;background:#f5f7fa;">
+        <select id="sg-user-status-filter" class="sg-filter-select">
           <option value="">{{#str}} all_statuses, local_skillgap {{/str}}</option>
           <option value="Competent">{{#str}} status_competent, local_skillgap {{/str}}</option>
           <option value="Moderate">{{#str}} status_moderate, local_skillgap {{/str}}</option>
@@ -119,77 +168,59 @@
     </div>
 
     {{#has_users}}
-    <table class="table table-hover mb-0" id="sg-report-table" style="font-size:14px;">
-      <thead>
-        <tr style="border-bottom:1px solid #f0f0f0;">
-          <th class="px-4 py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;">
-            {{#str}} user_name, local_skillgap {{/str}}
-          </th>
-          <th class="py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;min-width:220px;">
-            {{#str}} overall_score, local_skillgap {{/str}}
-          </th>
-          <th class="py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;width:160px;">
-            {{#str}} status, local_skillgap {{/str}}
-          </th>
-          <th class="text-right px-4 py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;width:140px;">
-            {{#str}} action, local_skillgap {{/str}}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#user_rows}}
-        <tr class="sg-user-row" data-name="{{fullname}}" data-status="{{status_label}}"
-            style="border-bottom:1px solid #f8f9fb;">
-          <td class="px-4 py-3 align-middle">
-            <div class="d-flex align-items-center">
-              <div class="rounded-circle d-flex align-items-center justify-content-center mr-3 font-weight-bold text-white"
-                   style="width:38px;height:38px;min-width:38px;background:#4a78f5;font-size:13px;">
-                {{initials}}
+    <div class="table-responsive">
+      <table class="table table-hover mb-0" id="sg-report-table">
+        <thead>
+          <tr>
+            <th>{{#str}} user_name, local_skillgap {{/str}}</th>
+            <th style="min-width:220px;">{{#str}} overall_score, local_skillgap {{/str}}</th>
+            <th style="width:170px;">{{#str}} status, local_skillgap {{/str}}</th>
+            <th class="text-right" style="width:150px;">{{#str}} action, local_skillgap {{/str}}</th>
+          </tr>
+        </thead>
+        <tbody class="sg-user-body">
+          {{#user_rows}}
+          <tr class="sg-user-row" data-name="{{fullname}}" data-status="{{status_label}}">
+            <td>
+              <div class="d-flex align-items-center" style="gap:12px;">
+                <div class="sg-avatar">{{initials}}</div>
+                <div>
+                  <div class="sg-user-name">{{fullname}}</div>
+                  <div class="sg-user-email">{{email}}</div>
+                </div>
               </div>
-              <div>
-                <div class="font-weight-bold" style="color:#1a2b4a;">{{fullname}}</div>
-                <div class="small text-muted">{{email}}</div>
+            </td>
+            <td>
+              <div class="d-flex align-items-center" style="gap:12px;">
+                <div class="sg-progress-track">
+                  <div class="sg-progress-fill {{#score_green_u}}sg-fill-success{{/score_green_u}}{{#score_yellow_u}}sg-fill-warning{{/score_yellow_u}}{{#score_red_u}}sg-fill-danger{{/score_red_u}}" style="width:{{score_pct}}%;"></div>
+                </div>
+                <span class="sg-pct {{#score_green_u}}sg-pct-success{{/score_green_u}}{{#score_yellow_u}}sg-pct-warning{{/score_yellow_u}}{{#score_red_u}}sg-pct-danger{{/score_red_u}}">{{score_pct}}%</span>
               </div>
-            </div>
-          </td>
-          <td class="align-middle py-3">
-            <div class="d-flex align-items-center">
-              <div class="progress flex-grow-1 mr-3" style="height:8px;border-radius:4px;background:#eef0f5;max-width:220px;">
-                <div class="progress-bar" style="width:{{score_pct}}%;background:{{#score_green_u}}#34c97a{{/score_green_u}}{{#score_yellow_u}}#f0a500{{/score_yellow_u}}{{#score_red_u}}#e94e4e{{/score_red_u}};border-radius:4px;"></div>
-              </div>
-              <span class="font-weight-bold" style="font-size:14px;color:{{#score_green_u}}#34c97a{{/score_green_u}}{{#score_yellow_u}}#f0a500{{/score_yellow_u}}{{#score_red_u}}#e94e4e{{/score_red_u}};">
-                {{score_pct}}%
-              </span>
-            </div>
-          </td>
-          <td class="align-middle py-3">
-            <span style="display:inline-flex;align-items:center;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;
-              {{#score_green_u}}background:#e6f9f0;color:#1a9e5c;{{/score_green_u}}
-              {{#score_yellow_u}}background:#fff8e6;color:#d48a00;{{/score_yellow_u}}
-              {{#score_red_u}}background:#fff0f0;color:#e94e4e;{{/score_red_u}}">
-              <span style="width:7px;height:7px;border-radius:50%;margin-right:5px;
-                {{#score_green_u}}background:#1a9e5c;{{/score_green_u}}
-                {{#score_yellow_u}}background:#d48a00;{{/score_yellow_u}}
-                {{#score_red_u}}background:#e94e4e;{{/score_red_u}}"></span>
-              {{status_label}}
-            </span>
-          </td>
-          <td class="text-right px-4 align-middle py-3">
-            <a href="{{{wwwroot}}}/local/skillgap/admin/analytics_user_detail.php?compid={{compid}}&userid={{userid}}"
-               class="btn btn-sm btn-outline-secondary" style="border-radius:6px;font-size:12px;">
-              {{#str}} view_details, local_skillgap {{/str}} <i class="fa fa-external-link ml-1" style="font-size:10px;"></i>
-            </a>
-          </td>
-        </tr>
-        {{/user_rows}}
-      </tbody>
-    </table>
+            </td>
+            <td>
+              <span class="sg-status-badge {{#score_green_u}}sg-status-success{{/score_green_u}}{{#score_yellow_u}}sg-status-warning{{/score_yellow_u}}{{#score_red_u}}sg-status-danger{{/score_red_u}}">{{status_label}}</span>
+            </td>
+            <td class="text-right">
+              <a href="{{{wwwroot}}}/local/skillgap/admin/analytics_user_detail.php?compid={{compid}}&userid={{userid}}" class="sg-view-btn">
+                {{#str}} view_details, local_skillgap {{/str}}<i class="fa fa-external-link" style="font-size:10px;"></i>
+              </a>
+            </td>
+          </tr>
+          {{/user_rows}}
+        </tbody>
+      </table>
+    </div>
+    <div class="sg-pagination">
+      <span class="sg-page-info"></span>
+      <span>
+        <button type="button" class="sg-page-btn sg-page-prev">Previous</button>
+        <button type="button" class="sg-page-btn sg-page-next">Next</button>
+      </span>
+    </div>
     {{/has_users}}
     {{^has_users}}
-    <div class="text-center py-5 text-muted">
-      <i class="fa fa-users fa-2x mb-2 d-block"></i>
-      {{#str}} no_data, local_skillgap {{/str}}
-    </div>
+    <div class="sg-empty"><i class="fa fa-users fa-2x mb-2 d-block"></i>{{#str}} no_data, local_skillgap {{/str}}</div>
     {{/has_users}}
   </div>
 
@@ -197,19 +228,44 @@
 
 <script>
 (function() {
+  var card = document.querySelector('.local-skillgap-report .sg-report-card');
+  if (!card) { return; }
   var search  = document.getElementById('sg-user-search');
   var filter  = document.getElementById('sg-user-status-filter');
-  function filterUsers() {
+  var rows    = Array.prototype.slice.call(card.querySelectorAll('.sg-user-row'));
+  var info    = card.querySelector('.sg-page-info');
+  var prevBtn = card.querySelector('.sg-page-prev');
+  var nextBtn = card.querySelector('.sg-page-next');
+  var PAGE_SIZE = 8;
+  var page = 1;
+
+  function matches(row) {
     var q  = search ? search.value.toLowerCase() : '';
     var st = filter ? filter.value.toLowerCase() : '';
-    document.querySelectorAll('.sg-user-row').forEach(function(row) {
-      var name   = (row.getAttribute('data-name')   || '').toLowerCase();
-      var status = (row.getAttribute('data-status') || '').toLowerCase();
-      var show   = (!q || name.includes(q)) && (!st || status.includes(st));
-      row.style.display = show ? '' : 'none';
-    });
+    var name   = (row.getAttribute('data-name')   || '').toLowerCase();
+    var status = (row.getAttribute('data-status') || '').toLowerCase();
+    return (!q || name.indexOf(q) !== -1) && (!st || status.indexOf(st) !== -1);
   }
-  if (search) { search.addEventListener('input',  filterUsers); }
-  if (filter) { filter.addEventListener('change', filterUsers); }
+
+  function render() {
+    var visible = rows.filter(matches);
+    var totalPages = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
+    page = Math.min(Math.max(1, page), totalPages);
+    var start = (page - 1) * PAGE_SIZE;
+    rows.forEach(function(r) { r.style.display = 'none'; });
+    visible.slice(start, start + PAGE_SIZE).forEach(function(r) { r.style.display = ''; });
+    if (info) {
+      var from = visible.length ? start + 1 : 0;
+      info.textContent = 'Showing ' + from + '-' + Math.min(start + PAGE_SIZE, visible.length) + ' of ' + visible.length;
+    }
+    if (prevBtn) { prevBtn.disabled = (page <= 1); }
+    if (nextBtn) { nextBtn.disabled = (page >= totalPages); }
+  }
+
+  if (search) { search.addEventListener('input',  function() { page = 1; render(); }); }
+  if (filter) { filter.addEventListener('change', function() { page = 1; render(); }); }
+  if (prevBtn) { prevBtn.addEventListener('click', function() { page--; render(); }); }
+  if (nextBtn) { nextBtn.addEventListener('click', function() { page++; render(); }); }
+  render();
 })();
 </script>

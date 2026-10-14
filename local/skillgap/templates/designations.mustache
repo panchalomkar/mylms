@@ -1,175 +1,261 @@
-{{!
-  @template local_skillgap/designations
-  Designation hierarchy manager.
-  Hierarchy is determined entirely by sort_order (position 1 = highest rank).
-  Use Move Up / Move Down to define the promotion ladder.
-  No parent-child relationships.
-}}
-<div class="local-skillgap container-fluid px-0">
 
-  <div class="d-flex align-items-center justify-content-between flex-wrap mb-4">
-    <div>
-      <h3 class="mb-0" style="color:#033252;">
-        <i class="fa fa-sitemap mr-2" style="color:#eb980d;"></i>
-        {{#str}} designations, local_skillgap {{/str}}
-      </h3>
-      <p class="text-muted small mb-0 mt-1">Designation names are sourced from Moodle user profile field <code>designation</code></p>
+<style>
+  .local-skillgap-desig{
+    --sg-navy-1:#0A1F3D;
+    --sg-navy-2:#0D2647;
+    --sg-orange:#F5A623;
+    --sg-orange-light:#FDF1DC;
+    --sg-blue:#ec9707;
+    --sg-blue-light:#EAF0FE;
+    --sg-green:#1E9E58;
+    --sg-green-light:#E7F8EE;
+    --sg-red:#E5484D;
+    --sg-red-light:#FDEAEA;
+    --sg-gray-light:#EEF1F5;
+    --sg-gray-bg:#F5F7FA;
+    --sg-border:#E7EBF1;
+    --sg-text-muted:#8A93A3;
+    --sg-text-dark:#1B2A41;
+    font-family:inherit;color:var(--sg-text-dark);background:var(--sg-gray-bg);
+    padding:24px;border-radius:14px;
+  }
+  .local-skillgap-desig *{box-sizing:border-box;}
+ #page-local-skillgap-admin-designations div[role="main"] {
+    filter: none;
+    padding: 0px !important;
+    box-shadow: none !important;
+    background: #f6f8fc;
+}
+  /* ── Page header ── */
+  .sg-page-head{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:18px;}
+  .sg-head-left{display:flex;align-items:center;gap:14px;}
+  .sg-head-icon{width:46px;height:46px;border-radius:12px;background:var(--sg-orange-light);color:var(--sg-orange);
+    display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+  .sg-page-head h2{margin:0;font-weight:800;font-size:26px;color:var(--sg-text-dark);}
+  .sg-page-head .sg-sub{color:var(--sg-text-muted);font-size:13.5px;margin-top:2px;}
+  .sg-pill-orange{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1.5px solid var(--sg-orange);
+    border-radius:24px;padding:8px 16px;font-size:13px;font-weight:600;color:var(--sg-text-dark);text-decoration:none;}
+  .sg-pill-orange:hover{background:var(--sg-orange-light);color:var(--sg-text-dark);text-decoration:none;}
+  .sg-pill-orange i{color:var(--sg-orange);}
+
+  /* ── Info banner ── */
+  .sg-info-banner{background:var(--sg-blue-light);border:1px solid #D7E3FB;border-radius:12px;
+    padding:14px 18px;font-size:13.5px;color:#2B4B8A;display:flex;align-items:flex-start;gap:10px;margin-bottom:18px;line-height:1.5;}
+  .sg-info-banner i{color:var(--sg-blue);font-size:15px;margin-top:2px;}
+
+  /* ── Cards ── */
+  .sg-card{background:#fff;border:1px solid var(--sg-border);border-radius:14px;overflow:hidden;}
+  .sg-section-header{background:var(--sg-navy-1);color:#fff;padding:14px 20px;display:flex;align-items:center;
+    justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  .sg-section-header h5{color:#fff;margin:0;font-weight:700;font-size:15.5px;display:flex;align-items:center;gap:10px;}
+  .sg-section-header h5 i{color:var(--sg-orange);}
+  .sg-section-header .sg-note{color:rgba(255,255,255,.6);font-size:12px;}
+
+  /* ── Department selector ── */
+  .sg-selector{padding:18px 20px;}
+  .sg-selector label{font-size:12.5px;font-weight:700;color:var(--sg-text-muted);text-transform:uppercase;
+    letter-spacing:.4px;display:block;margin-bottom:8px;}
+  .sg-select{width:100%;border:1px solid var(--sg-border);border-radius:10px;padding:11px 14px;font-size:14px;
+    background:#fff;color:var(--sg-text-dark);}
+  .sg-btn-navy{display:inline-flex;align-items:center;gap:7px;background:var(--sg-navy-1);border:1px solid var(--sg-navy-1);
+    border-radius:10px;padding:11px 20px;font-size:13.5px;font-weight:600;color:#fff;}
+  .sg-btn-navy:hover{background:var(--sg-navy-2);color:#fff;}
+  .sg-btn-outline{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--sg-border);
+    border-radius:10px;padding:11px 18px;font-size:13.5px;font-weight:600;color:var(--sg-text-dark);}
+  .sg-btn-outline:hover{border-color:var(--sg-navy-1);color:var(--sg-text-dark);}
+  .sg-btn-outline i{color:var(--sg-text-muted);}
+
+  /* ── Summary cards ── */
+  .sg-summary{background:#fff;border:1px solid var(--sg-border);border-radius:14px;padding:18px 20px;height:100%;}
+  .sg-summary.sg-summary-green{background:var(--sg-green-light);border-color:#CDEEDB;}
+  .sg-summary h6{font-weight:700;font-size:14.5px;margin:0 0 12px;color:var(--sg-text-dark);display:flex;align-items:center;gap:8px;}
+  .sg-summary-green h6{color:var(--sg-green);}
+  .sg-summary-green h6 i{color:var(--sg-green);}
+  .sg-summary h6 i{color:var(--sg-navy-1);}
+  .sg-tag{display:inline-block;background:var(--sg-gray-light);color:var(--sg-text-dark);border-radius:20px;
+    font-size:12px;font-weight:600;padding:5px 12px;margin:0 6px 6px 0;}
+  .sg-tag-warn{background:var(--sg-orange-light);color:var(--sg-amber,#B45309);}
+  .sg-synced-msg{color:var(--sg-green);font-size:13px;}
+
+  /* ── Ladder table ── */
+  .local-skillgap-desig table thead th{padding:12px 16px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;
+    color:var(--sg-text-muted);font-weight:700;border-top:none;border-bottom:1px solid var(--sg-border);background:#F8FAFC;}
+  .local-skillgap-desig table td{vertical-align:middle;border-color:var(--sg-border);font-size:14px;padding:14px 16px;}
+  .sg-rank-num{font-weight:700;color:var(--sg-text-muted);}
+  .sg-rank-top{color:var(--sg-blue);font-weight:800;}
+  .sg-desig-name{font-weight:600;color:var(--sg-text-dark);}
+  .sg-highest-pill{display:inline-block;background:var(--sg-orange);color:#fff;border-radius:20px;
+    font-size:11px;font-weight:700;padding:3px 10px;margin-left:8px;vertical-align:middle;}
+  .sg-circle-btn{width:36px;height:36px;border-radius:50%;background:#fff;border:1px solid var(--sg-border);
+    color:var(--sg-text-dark);display:inline-flex;align-items:center;justify-content:center;font-size:13px;}
+  .sg-circle-btn:hover{border-color:var(--sg-navy-1);color:var(--sg-navy-1);}
+  .sg-circle-btn.sg-disabled{opacity:.4;cursor:not-allowed;pointer-events:none;}
+  .sg-circle-del{width:36px;height:36px;border-radius:50%;background:#fff;border:1px solid var(--sg-red-light);
+    color:var(--sg-red);display:inline-flex;align-items:center;justify-content:center;font-size:13px;}
+  .sg-circle-del:hover{background:var(--sg-red-light);color:var(--sg-red);}
+
+  /* ── Visual ladder ── */
+  .sg-ladder{list-style:none;margin:0;padding:8px 6px;position:relative;}
+  .sg-ladder-item{display:flex;align-items:flex-start;gap:14px;padding:8px 12px;position:relative;}
+  .sg-ladder-num{width:30px;height:30px;border-radius:50%;background:var(--sg-navy-1);color:#fff;font-size:12.5px;
+    font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1;}
+   .sg-ladder-num{position:relative;}
+  .sg-ladder-item:not(:last-child) .sg-ladder-num::after{content:"";position:absolute;left:50%;top:30px;
+    transform:translateX(-50%);height:calc(100% + 16px);width:2px;background:var(--sg-border);z-index:0;}
+  .sg-ladder-body{padding-top:4px;}
+  .sg-ladder-name{font-weight:700;font-size:14px;color:var(--sg-text-dark);}
+  .sg-ladder-hint{color:var(--sg-text-muted);font-size:12px;padding:12px;display:flex;align-items:center;gap:6px;}
+
+  /* ── Pagination ── */
+  .sg-pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid var(--sg-border);
+    font-size:12.5px;color:var(--sg-text-muted);flex-wrap:wrap;gap:8px;}
+  .sg-page-btn{background:#fff;border:1px solid var(--sg-border);border-radius:16px;padding:5px 14px;font-size:12.5px;
+    font-weight:600;color:var(--sg-text-dark);}
+  .sg-page-btn:disabled{opacity:.4;}
+
+  .sg-alert-warn{background:var(--sg-orange-light);border:1px solid #F3D89A;border-radius:12px;padding:14px 18px;
+    font-size:13.5px;color:#8a5a00;display:flex;align-items:flex-start;gap:10px;}
+  .sg-alert-warn i{color:var(--sg-orange);margin-top:2px;}
+</style>
+
+<div class="local-skillgap-desig">
+
+  {{! ── Page header ── }}
+  <div class="sg-page-head">
+    <div class="sg-head-left">
+      <div class="sg-head-icon"><i class="fa fa-sitemap"></i></div>
+      <div>
+        <h2>{{#str}} designations, local_skillgap {{/str}}</h2>
+        <div class="sg-sub">Designation names are sourced from user profile field designation.</div>
+      </div>
     </div>
-    <a href="{{{wwwroot}}}/local/skillgap/admin/analytics_visibility.php"
-       class="btn btn-sm font-weight-bold mt-2 mt-md-0" style="background:#eb980d;color:#fff;">
-      <i class="fa fa-eye mr-1"></i>Team Analytics Visibility Mapping
+    <a href="{{{wwwroot}}}/local/skillgap/admin/analytics_visibility.php" class="sg-pill-orange">
+      <i class="fa fa-eye"></i>Team Analytics Visibility Mapping
     </a>
   </div>
 
-  <div class="alert py-2" style="background:#e8f1f8;border:1px solid #b5d4f4;border-radius:6px;">
-    <i class="fa fa-info-circle mr-2" style="color:#033252;"></i>
-    <strong>How it works:</strong>
-    Select a department, then click <strong>Sync Designations</strong> to import designation names from user profiles.
-    Use <strong>Move Up / Move Down</strong> to define the promotion ladder —
-    <strong>position 1 (top) = highest rank</strong> (e.g. HOD / Director).
-    Promotion automatically moves a user one step up the ladder.
+  {{! ── Info banner ── }}
+  <div class="sg-info-banner">
+    <i class="fa fa-info-circle"></i>
+    <span><strong>How it works:</strong> Select a department, then click <strong>Sync Designations</strong> to import
+      designation names from user profiles. Use <strong>Move Up / Move Down</strong> to define the promotion ladder —
+      <strong>position 1 (top) = highest rank</strong>.</span>
   </div>
 
-  {{! Department selector }}
-  <div class="card mb-4">
-    <div class="card-body py-2">
-      <form method="get" action="{{{wwwroot}}}/local/skillgap/admin/designations.php" class="form-inline flex-wrap" style="gap:10px;">
-        <label class="font-weight-bold">{{#str}} department, local_skillgap {{/str}}:</label>
-        <select name="deptid" class="form-control mr-2" onchange="this.form.submit()">
-          {{#dept_options}}<option value="{{id}}" {{#selected}}selected{{/selected}}>{{name}}</option>{{/dept_options}}
-        </select>
-        <button type="submit" class="btn" style="background:#033252;color:#fff;">
-          <i class="fa fa-search mr-1"></i>{{#str}} load, local_skillgap {{/str}}
-        </button>
-      </form>
+  {{! ── Department selector ── }}
+  <div class="sg-card mb-4">
+    <div class="sg-selector">
+      <label>{{#str}} department, local_skillgap {{/str}}</label>
+      <div class="d-flex flex-wrap align-items-center" style="gap:10px;width: max-content;">
+        <form method="get" action="{{{wwwroot}}}/local/skillgap/admin/designations.php"
+              class="d-flex flex-grow-1" style="gap:10px;min-width:220px;">
+          <select name="deptid" class="sg-select" onchange="this.form.submit()">
+            {{#dept_options}}<option value="{{id}}" {{#selected}}selected{{/selected}}>{{name}}</option>{{/dept_options}}
+          </select>
+          <button type="submit" class="sg-btn-navy"><i class="fa fa-search"></i>{{#str}} load, local_skillgap {{/str}}</button>
+        </form>
+        {{#has_dept}}{{#has_unsynced}}
+        <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/designations.php?deptid={{selected_deptid}}">
+          <input type="hidden" name="action"  value="sync">
+          <input type="hidden" name="sesskey" value="{{sesskey}}">
+          <button type="submit" class="sg-btn-outline"><i class="fa fa-refresh"></i>Sync Designations</button>
+        </form>
+        {{/has_unsynced}}{{/has_dept}}
+      </div>
     </div>
   </div>
 
   {{#has_dept}}
 
-  {{! Sync + profile summary }}
-  <div class="row mb-3">
+  {{! ── Summary cards ── }}
+  <div class="row mb-4">
     <div class="col-12 col-md-6 mb-3">
-      <div class="card h-100" style="border-left:4px solid #033252;">
-        <div class="card-body py-3">
-          <h6 class="font-weight-bold" style="color:#033252;">
-            <i class="fa fa-users mr-2"></i>Designations found in user profiles: <strong>{{profile_count}}</strong>
-          </h6>
-          {{#profile_names}}
-          <span class="badge badge-secondary mr-1 mb-1">{{name}}</span>
-          {{/profile_names}}
-          {{^profile_names}}
-          <p class="text-muted small mb-0">
-            No users found with a <code>designation</code> profile field value in department <strong>{{dept_name}}</strong>.
-          </p>
-          {{/profile_names}}
-        </div>
+      <div class="sg-summary">
+        <h6><i class="fa fa-users"></i>Designations found in user profiles: {{profile_count}}</h6>
+        {{#profile_names}}<span class="sg-tag">{{name}}</span>{{/profile_names}}
+        {{^profile_names}}<p class="text-muted small mb-0">No users with a <code>designation</code> value in <strong>{{dept_name}}</strong>.</p>{{/profile_names}}
       </div>
     </div>
     <div class="col-12 col-md-6 mb-3">
-      <div class="card h-100" style="border-left:4px solid #eb980d;">
-        <div class="card-body py-3">
-          <h6 class="font-weight-bold" style="color:#854F0B;">
-            <i class="fa fa-refresh mr-2"></i>Not yet synced to hierarchy: <strong>{{unsynced_count}}</strong>
-          </h6>
-          {{#available_names}}
-          <span class="badge badge-warning mr-1 mb-1">{{name}}</span>
-          {{/available_names}}
-          {{^has_unsynced}}
-          <p class="text-success small mb-0"><i class="fa fa-check mr-1"></i>All profile designations are synced.</p>
-          {{/has_unsynced}}
-          {{#has_unsynced}}
-          <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/designations.php?deptid={{selected_deptid}}" class="mt-2">
-            <input type="hidden" name="action"  value="sync">
-            <input type="hidden" name="sesskey" value="{{sesskey}}">
-            <button type="submit" class="btn btn-sm" style="background:#eb980d;color:#fff;">
-              <i class="fa fa-refresh mr-1"></i>Sync {{unsynced_count}} Designation(s)
-            </button>
-          </form>
-          {{/has_unsynced}}
-        </div>
+      {{^has_unsynced}}
+      <div class="sg-summary sg-summary-green">
+        <h6><i class="fa fa-check-circle"></i>Not Yet Synced to Hierarchy: 0</h6>
+        <div class="sg-synced-msg">All profile designations are synced.</div>
       </div>
+      {{/has_unsynced}}
+      {{#has_unsynced}}
+      <div class="sg-summary">
+        <h6><i class="fa fa-refresh"></i>Not Yet Synced to Hierarchy: {{unsynced_count}}</h6>
+        {{#available_names}}<span class="sg-tag sg-tag-warn">{{name}}</span>{{/available_names}}
+        <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/designations.php?deptid={{selected_deptid}}" class="mt-2">
+          <input type="hidden" name="action"  value="sync">
+          <input type="hidden" name="sesskey" value="{{sesskey}}">
+          <button type="submit" class="sg-btn-outline"><i class="fa fa-refresh"></i>Sync {{unsynced_count}} Designation(s)</button>
+        </form>
+      </div>
+      {{/has_unsynced}}
     </div>
   </div>
 
   {{#has_rows}}
   <div class="row">
 
-    {{! Left: Sortable ladder table }}
+    {{! ── Left: sortable ladder table ── }}
     <div class="col-12 col-lg-7 mb-4">
-      <div class="card">
-        <div class="card-header d-flex align-items-center justify-content-between" style="background:#033252;color:#fff;">
-          <h5 class="mb-0"><i class="fa fa-sort mr-2" style="color:#eb980d;"></i>Promotion Ladder &amp; Order</h5>
-          <small style="color:rgba(255,255,255,0.65);">Position 1 = highest rank &nbsp;|&nbsp; Move Up/Down to reorder</small>
+      <div class="sg-card sg-ladder-card">
+        <div class="sg-section-header">
+          <h5><i class="fa fa-sort"></i>Promotion Ladder &amp; Order</h5>
+          <span class="sg-note">Position 1 = highest rank</span>
         </div>
         <div class="card-body p-0">
           <div class="table-responsive">
-            <table class="table table-sm table-hover mb-0" id="sg-desig-table">
-              <thead class="thead-light">
+            <table class="table table-hover mb-0">
+              <thead>
                 <tr>
-                  <th style="width:50px;"># Rank</th>
+                  <th style="width:70px;">Rank</th>
                   <th>Designation</th>
-                  <th style="width:130px;">Move</th>
-                  <th style="width:70px;">Delete</th>
+                  <th class="text-center" style="width:90px;">Move Up</th>
+                  <th class="text-center" style="width:100px;">Move Down</th>
+                  <th class="text-center" style="width:80px;">Delete</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody class="sg-ladder-body-rows">
                 {{#hierarchy_rows}}
-                <tr data-id="{{id}}">
-                  <td class="align-middle text-center">
-                    {{#is_top}}
-                    <span class="badge" style="background:#eb980d;color:#fff;">1 ★</span>
-                    {{/is_top}}
-                    {{^is_top}}
-                    <span class="text-muted">{{position}}</span>
-                    {{/is_top}}
+                <tr class="sg-ladder-row" data-name="{{designation_name}}">
+                  <td>{{#can_move_up}}<span class="sg-rank-num">{{position}}</span>{{/can_move_up}}{{^can_move_up}}<span class="sg-rank-top">{{position}}</span>{{/can_move_up}}</td>
+                  <td>
+                    <span class="sg-desig-name">{{designation_name}}</span>
+                    {{^can_move_up}}<span class="sg-highest-pill">Highest Rank</span>{{/can_move_up}}
                   </td>
-                  <td class="align-middle font-weight-medium">
-                    {{#is_top}}
-                    <span style="color:#033252;">{{designation_name}}</span>
-                    <span class="badge badge-primary ml-1" style="font-size:10px;background:#033252;">Top</span>
-                    {{/is_top}}
-                    {{^is_top}}
-                    {{designation_name}}
-                    {{/is_top}}
-                  </td>
-                  <td class="align-middle">
+                  <td class="text-center">
                     {{#can_move_up}}
-                    <form method="post"
-                          action="{{{wwwroot}}}/local/skillgap/admin/designations.php?deptid={{deptid}}"
-                          class="d-inline">
+                    <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/designations.php?deptid={{deptid}}" class="d-inline">
                       <input type="hidden" name="action"  value="move_up">
                       <input type="hidden" name="hid"     value="{{id}}">
                       <input type="hidden" name="sesskey" value="{{sesskey}}">
-                      <button type="submit" class="btn btn-sm btn-outline-secondary" title="Move Up (higher rank)">
-                        <i class="fa fa-arrow-up"></i>
-                      </button>
+                      <button type="submit" class="sg-circle-btn" title="Move Up"><i class="fa fa-arrow-up"></i></button>
                     </form>
                     {{/can_move_up}}
-                    {{^can_move_up}}<span class="btn btn-sm btn-light disabled"><i class="fa fa-arrow-up"></i></span>{{/can_move_up}}
+                    {{^can_move_up}}<span class="sg-circle-btn sg-disabled"><i class="fa fa-arrow-up"></i></span>{{/can_move_up}}
+                  </td>
+                  <td class="text-center">
                     {{#can_move_down}}
-                    <form method="post"
-                          action="{{{wwwroot}}}/local/skillgap/admin/designations.php?deptid={{deptid}}"
-                          class="d-inline">
+                    <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/designations.php?deptid={{deptid}}" class="d-inline">
                       <input type="hidden" name="action"  value="move_down">
                       <input type="hidden" name="hid"     value="{{id}}">
                       <input type="hidden" name="sesskey" value="{{sesskey}}">
-                      <button type="submit" class="btn btn-sm btn-outline-secondary" title="Move Down (lower rank)">
-                        <i class="fa fa-arrow-down"></i>
-                      </button>
+                      <button type="submit" class="sg-circle-btn" title="Move Down"><i class="fa fa-arrow-down"></i></button>
                     </form>
                     {{/can_move_down}}
-                    {{^can_move_down}}<span class="btn btn-sm btn-light disabled"><i class="fa fa-arrow-down"></i></span>{{/can_move_down}}
+                    {{^can_move_down}}<span class="sg-circle-btn sg-disabled"><i class="fa fa-arrow-down"></i></span>{{/can_move_down}}
                   </td>
-                  <td class="align-middle">
+                  <td class="text-center">
                     <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/designations.php?deptid={{deptid}}"
-                          onsubmit="return confirm('Delete &quot;{{designation_name}}&quot;? This cannot be undone.');">
+                          class="d-inline" onsubmit="return confirm('Delete &quot;{{designation_name}}&quot;? This cannot be undone.');">
                       <input type="hidden" name="action"  value="delete_designation">
                       <input type="hidden" name="hid"     value="{{id}}">
                       <input type="hidden" name="sesskey" value="{{sesskey}}">
-                      <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
-                        <i class="fa fa-trash"></i>
-                      </button>
+                      <button type="submit" class="sg-circle-del" title="Delete"><i class="fa fa-trash"></i></button>
                     </form>
                   </td>
                 </tr>
@@ -178,36 +264,33 @@
             </table>
           </div>
         </div>
+        <div class="sg-pagination">
+          <span class="sg-page-info"></span>
+          <span>
+            <button type="button" class="sg-page-btn sg-page-prev">Previous</button>
+            <button type="button" class="sg-page-btn sg-page-next">Next</button>
+          </span>
+        </div>
       </div>
     </div>
 
-    {{! Right: Visual ladder }}
+    {{! ── Right: visual ladder ── }}
     <div class="col-12 col-lg-5 mb-4">
-      <div class="card h-100">
-        <div class="card-header" style="background:#033252;color:#fff;">
-          <h5 class="mb-0"><i class="fa fa-arrow-up mr-2" style="color:#eb980d;"></i>Promotion Ladder (Top → Bottom)</h5>
-        </div>
+      <div class="sg-card h-100">
+        <div class="sg-section-header"><h5><i class="fa fa-arrow-up"></i>Promotion Ladder (Top &rarr; Bottom)</h5></div>
         <div class="card-body p-2">
-          <ul class="list-unstyled mb-0">
+          <ul class="sg-ladder">
             {{#hierarchy_rows}}
-            <li class="d-flex align-items-center py-2" style="border-bottom:1px solid #f0f0f0;">
-              {{#is_top}}
-              <span class="mr-2" style="color:#eb980d;font-size:16px;">&#9733;</span>
-              <span class="font-weight-bold" style="color:#033252;">{{designation_name}}</span>
-              <span class="badge ml-2" style="background:#033252;color:#fff;font-size:10px;">Highest Rank</span>
-              {{/is_top}}
-              {{^is_top}}
-              <span class="mr-2 text-muted" style="font-size:11px;">{{position}}.</span>
-              <i class="fa fa-long-arrow-right mr-2 text-muted" style="font-size:11px;"></i>
-              <span style="color:#444;">{{designation_name}}</span>
-              {{/is_top}}
+            <li class="sg-ladder-item">
+              <span class="sg-ladder-num">{{position}}</span>
+              <div class="sg-ladder-body">
+                <div class="sg-ladder-name">{{designation_name}}</div>
+                {{^can_move_up}}<span class="sg-highest-pill" style="margin-left:0;margin-top:4px;display:inline-block;">Highest Rank</span>{{/can_move_up}}
+              </div>
             </li>
             {{/hierarchy_rows}}
           </ul>
-          <p class="text-muted small mt-3 mb-0">
-            <i class="fa fa-info-circle mr-1"></i>
-            Promotion moves a user one step up this ladder (lower position number = higher rank).
-          </p>
+          <div class="sg-ladder-hint"><i class="fa fa-info-circle"></i>Promotion moves a user one step up this ladder.</div>
         </div>
       </div>
     </div>
@@ -216,19 +299,46 @@
   {{/has_rows}}
 
   {{^has_rows}}
-  <div class="alert alert-warning">
-    <i class="fa fa-exclamation-triangle mr-2"></i>
-    No designations found for <strong>{{dept_name}}</strong>.
-    {{#has_unsynced}}Click <strong>Sync Designations</strong> above to import from user profiles.{{/has_unsynced}}
-    {{^has_unsynced}}Ensure users in this department have the <code>designation</code> profile field populated.{{/has_unsynced}}
+  <div class="sg-alert-warn">
+    <i class="fa fa-exclamation-triangle"></i>
+    <span>No designations found for <strong>{{dept_name}}</strong>.
+      {{#has_unsynced}}Click <strong>Sync Designations</strong> above to import from user profiles.{{/has_unsynced}}
+      {{^has_unsynced}}Ensure users in this department have the <code>designation</code> profile field populated.{{/has_unsynced}}</span>
   </div>
   {{/has_rows}}
 
   {{/has_dept}}
   {{^has_dept}}
-  <div class="alert alert-warning">
-    <i class="fa fa-arrow-up mr-1"></i>{{#str}} select_dept_first, local_skillgap {{/str}}
+  <div class="sg-alert-warn">
+    <i class="fa fa-arrow-up"></i><span>{{#str}} select_dept_first, local_skillgap {{/str}}</span>
   </div>
   {{/has_dept}}
 
 </div>
+
+<script>
+(function() {
+  var card = document.querySelector('.local-skillgap-desig .sg-ladder-card');
+  if (!card) { return; }
+  var rows    = Array.prototype.slice.call(card.querySelectorAll('.sg-ladder-row'));
+  var info    = card.querySelector('.sg-page-info');
+  var prevBtn = card.querySelector('.sg-page-prev');
+  var nextBtn = card.querySelector('.sg-page-next');
+  if (!rows.length) { return; }
+  var PAGE_SIZE = 6;
+  var page = 1;
+  var totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+
+  function render() {
+    page = Math.min(Math.max(1, page), totalPages);
+    var start = (page - 1) * PAGE_SIZE;
+    rows.forEach(function(r, i) { r.style.display = (i >= start && i < start + PAGE_SIZE) ? '' : 'none'; });
+    if (info) { info.textContent = 'Showing ' + (start + 1) + '-' + Math.min(start + PAGE_SIZE, rows.length) + ' of ' + rows.length; }
+    if (prevBtn) { prevBtn.disabled = (page <= 1); }
+    if (nextBtn) { nextBtn.disabled = (page >= totalPages); }
+  }
+  if (prevBtn) { prevBtn.addEventListener('click', function() { page--; render(); }); }
+  if (nextBtn) { nextBtn.addEventListener('click', function() { page++; render(); }); }
+  render();
+})();
+</script>

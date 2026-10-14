@@ -17,14 +17,19 @@ class helper {
         $total_users       = $DB->count_records('user', ['deleted' => 0, 'suspended' => 0]) - 1;
         $total_comps       = $DB->count_records('local_skillgap_comp');
         $active_assessments= $DB->count_records('local_skillgap_assessment', ['status' => 'active']);
-        $needs_improvement = $DB->count_records('local_skillgap_score', ['status' => 'needs_improvement']);
+        $needs_improvement = (int)$DB->count_records_sql(
+            "SELECT COUNT(*) FROM {local_skillgap_score}
+              WHERE status = 'needs_improvement'
+                AND userid IN (SELECT id FROM {user} WHERE deleted = 0 AND suspended = 0)");
 
         // Competency average scores.
         $comps = $DB->get_records('local_skillgap_comp', null, 'name ASC', 'id,name', 0, 8);
         $comp_bars = [];
         foreach ($comps as $c) {
             $avg = (float)($DB->get_field_sql(
-                "SELECT AVG(score) FROM {local_skillgap_score} WHERE compid = ?", [$c->id]
+                "SELECT AVG(score) FROM {local_skillgap_score}
+                  WHERE compid = ?
+                    AND userid IN (SELECT id FROM {user} WHERE deleted = 0 AND suspended = 0)", [$c->id]
             ) ?? 0);
             $pct    = $avg > 0 ? min(100, round(($avg / 5) * 100)) : 0;
             $status = $pct >= 80 ? 'success' : ($pct >= 60 ? 'warning' : 'danger');
@@ -68,6 +73,7 @@ class helper {
                     hf.designation_name AS from_desig,
                     ht.designation_name AS to_desig
                FROM {local_skillgap_promotion} p
+               JOIN {user} u ON u.id = p.userid AND u.deleted = 0 AND u.suspended = 0
                LEFT JOIN {local_skillgap_desig_hierarchy} hf ON hf.id = p.from_desigid
                LEFT JOIN {local_skillgap_desig_hierarchy} ht ON ht.id = p.to_desigid
               WHERE p.status = 'promoted'
@@ -753,6 +759,7 @@ class helper {
                             AVG(s.score) AS avg_score
                        FROM {local_skillgap_comp} c
                        JOIN {local_skillgap_score} s ON s.compid = c.id
+                       JOIN {user} mu ON mu.id = s.userid AND mu.deleted = 0 AND mu.suspended = 0
                       WHERE s.userid $in_sql
                         AND s.timecreated = (
                             SELECT MAX(s2.timecreated)
@@ -788,6 +795,7 @@ class helper {
                                   FROM {local_skillgap_score} s
                                   JOIN {user} u ON u.id = s.userid
                                  WHERE s.compid = :cid AND s.userid $in2
+                                   AND u.deleted = 0 AND u.suspended = 0
                                    AND s.timecreated = (
                                        SELECT MAX(s3.timecreated) FROM {local_skillgap_score} s3
                                         WHERE s3.userid = s.userid AND s3.compid = s.compid
@@ -1593,19 +1601,22 @@ class helper {
             $assess_count = (int)$DB->count_records('local_skillgap_assess_comp', ['compid' => $c->id]);
 
             // Unique users who attempted assessments with this competency.
-            $user_count = (int)$DB->count_records_sql(
-                "SELECT COUNT(DISTINCT att.userid)
-                   FROM {local_skillgap_attempt} att
-                   JOIN {local_skillgap_assessment} a ON a.id = att.assessmentid
-                   JOIN {local_skillgap_assess_comp} ac ON ac.assessmentid = a.id
-                  WHERE ac.compid = :cid AND att.status = 'completed'",
-                ['cid' => $c->id]
-            );
+                   $user_count = (int)$DB->count_records_sql(
+            "SELECT COUNT(DISTINCT att.userid)
+               FROM {local_skillgap_attempt} att
+               JOIN {local_skillgap_assessment} a ON a.id = att.assessmentid
+               JOIN {local_skillgap_assess_comp} ac ON ac.assessmentid = a.id
+               JOIN {user} u ON u.id = att.userid AND u.deleted = 0 AND u.suspended = 0
+              WHERE ac.compid = :cid AND att.status = 'completed'",
+            ['cid' => $c->id]
+        );
 
-            // Average score for this competency.
-            $avg_score = (float)($DB->get_field_sql(
-                "SELECT AVG(score) FROM {local_skillgap_score} WHERE compid = ?", [$c->id]
-            ) ?? 0);
+        // Average score for this competency.
+        $avg_score = (float)($DB->get_field_sql(
+            "SELECT AVG(score) FROM {local_skillgap_score}
+              WHERE compid = ?
+                AND userid IN (SELECT id FROM {user} WHERE deleted = 0 AND suspended = 0)", [$c->id]
+        ) ?? 0);
             $avg_pct    = $avg_score > 0 ? min(100, round(($avg_score / 5) * 100)) : 0;
             $score_class = $avg_pct >= 80 ? 'success' : ($avg_pct >= 60 ? 'warning' : 'danger');
 
@@ -1641,14 +1652,15 @@ class helper {
                 $q_sub   = (int)$DB->count_records_select('local_skillgap_question',
                     'compid = :cid AND subcompid IS NOT NULL AND subcompid > 0', ['cid' => $compid]);
                 $assess_count = (int)$DB->count_records('local_skillgap_assess_comp', ['compid' => $compid]);
-                $user_count   = (int)$DB->count_records_sql(
-                    "SELECT COUNT(DISTINCT att.userid)
-                       FROM {local_skillgap_attempt} att
-                       JOIN {local_skillgap_assessment} a ON a.id = att.assessmentid
-                       JOIN {local_skillgap_assess_comp} ac ON ac.assessmentid = a.id
-                      WHERE ac.compid = :cid AND att.status = 'completed'",
-                    ['cid' => $compid]
-                );
+                           $user_count   = (int)$DB->count_records_sql(
+                "SELECT COUNT(DISTINCT att.userid)
+                   FROM {local_skillgap_attempt} att
+                   JOIN {local_skillgap_assessment} a ON a.id = att.assessmentid
+                   JOIN {local_skillgap_assess_comp} ac ON ac.assessmentid = a.id
+                   JOIN {user} u ON u.id = att.userid AND u.deleted = 0 AND u.suspended = 0
+                  WHERE ac.compid = :cid AND att.status = 'completed'",
+                ['cid' => $compid]
+            );
                 $completion_pct = $user_count > 0
                     ? round(($user_count / max(1, $DB->count_records('user', ['deleted' => 0, 'suspended' => 0]) - 1)) * 100)
                     : 0;
@@ -1678,12 +1690,12 @@ class helper {
                     "SELECT DISTINCT att.userid, u.firstname, u.lastname, u.email,
                             COUNT(att.id) AS attempt_count,
                             MAX(CASE WHEN att.status = 'completed' THEN 1 ELSE 0 END) AS has_completed
-                       FROM {local_skillgap_attempt} att
-                       JOIN {user} u ON u.id = att.userid
-                       JOIN {local_skillgap_assessment} a ON a.id = att.assessmentid
-                       JOIN {local_skillgap_assess_comp} ac ON ac.assessmentid = a.id
-                      WHERE ac.compid = :cid
-                      GROUP BY att.userid, u.firstname, u.lastname, u.email
+                                         FROM {local_skillgap_attempt} att
+                   JOIN {user} u ON u.id = att.userid AND u.deleted = 0 AND u.suspended = 0
+                   JOIN {local_skillgap_assessment} a ON a.id = att.assessmentid
+                   JOIN {local_skillgap_assess_comp} ac ON ac.assessmentid = a.id
+                  WHERE ac.compid = :cid
+                  GROUP BY att.userid, u.firstname, u.lastname, u.email
                       ORDER BY u.lastname ASC, u.firstname ASC
                       LIMIT 50",
                     ['cid' => $compid]
@@ -1716,9 +1728,10 @@ class helper {
         // ── Summary stat cards (new UI) ────────────────────────────────
         $total_comps_count = count($comp_rows);
         $ready_count = count(array_filter($comp_rows, fn($r) => $r['status'] === 'Ready'));
-        $active_users_count = (int)$DB->count_records_sql(
-            "SELECT COUNT(DISTINCT userid) FROM {local_skillgap_score}"
-        );
+           $active_users_count = (int)$DB->count_records_sql(
+        "SELECT COUNT(DISTINCT userid) FROM {local_skillgap_score}
+          WHERE userid IN (SELECT id FROM {user} WHERE deleted = 0 AND suspended = 0)"
+    );
         $all_avg = 0;
         $all_avg_cnt = 0;
         foreach ($comp_rows as $cr) {
@@ -1760,8 +1773,10 @@ class helper {
             $comp_names = [];
             foreach ($comp_ids as $cid) {
                 $comp_names[] = $DB->get_field('local_skillgap_comp', 'name', ['id' => $cid]);
-                $avg_cid = (float)($DB->get_field_sql(
-                    "SELECT AVG(score) FROM {local_skillgap_score} WHERE compid = ?", [$cid]
+                             $avg_cid = (float)($DB->get_field_sql(
+                    "SELECT AVG(score) FROM {local_skillgap_score}
+                      WHERE compid = ?
+                        AND userid IN (SELECT id FROM {user} WHERE deleted = 0 AND suspended = 0)", [$cid]
                 ) ?? 0);
                 if ($avg_cid > 0) {
                     $score_sum += ($avg_cid / 5) * 100;
@@ -1956,13 +1971,14 @@ class helper {
         $comp = $DB->get_record('local_skillgap_comp', ['id' => $compid], '*', MUST_EXIST);
 
         // Summary stats.
-        $scores = $DB->get_records_sql(
-            "SELECT s.userid, MAX(s.score) AS score, MAX(s.status) AS status
-               FROM {local_skillgap_score} s
-              WHERE s.compid = :cid
-              GROUP BY s.userid",
-            ['cid' => $compid]
-        );
+           $scores = $DB->get_records_sql(
+        "SELECT s.userid, MAX(s.score) AS score, MAX(s.status) AS status
+           FROM {local_skillgap_score} s
+           JOIN {user} u ON u.id = s.userid AND u.deleted = 0 AND u.suspended = 0
+          WHERE s.compid = :cid
+          GROUP BY s.userid",
+        ['cid' => $compid]
+    );
 
         $total_users       = count($scores);
         $score_sum         = 0;
@@ -2257,6 +2273,7 @@ class helper {
             // Get all latest scores for this competency.
             $sql = "SELECT s.userid, s.score, s.status
                       FROM {local_skillgap_score} s
+                      JOIN {user} u ON u.id = s.userid AND u.deleted = 0 AND u.suspended = 0
                      WHERE s.compid = :cid
                        AND s.timecreated = (
                            SELECT MAX(s2.timecreated) FROM {local_skillgap_score} s2

@@ -175,13 +175,26 @@ switch ($action) {
     case 'downloadselected':
         $selected   = required_param('selected', PARAM_RAW);
         $selectedfiles = json_decode($selected);
-        if (!count($selectedfiles)) {
+        if (empty($selectedfiles)) {
             $filepath = required_param('filepath', PARAM_PATH);
             $selectedfiles = [(object)[
                 'filename' => '',
                 'filepath' => $filepath
             ]];
         }
+
+        // Drop anything that doesn't exist (e.g. root '.' of an empty draft area in tree view).
+        $fs = get_file_storage();
+        $selectedfiles = array_values(array_filter($selectedfiles, function($f) use ($fs, $usercontext, $draftid) {
+            $fname = !empty($f->filename) ? clean_param($f->filename, PARAM_FILE) : '.';
+            $fpath = file_correct_filepath(clean_param($f->filepath ?? '/', PARAM_PATH));
+            return $fs->file_exists($usercontext->id, 'user', 'draft', $draftid, $fpath, $fname);
+        }));
+
+        if (empty($selectedfiles)) {
+            die(json_encode((object)['error' => get_string('draftareanofiles', 'repository')]));
+        }
+
         $return = repository_download_selected_files($usercontext, 'user', 'draft', $draftid, $selectedfiles);
         echo (json_encode($return));
         die;
@@ -193,6 +206,12 @@ switch ($action) {
             'filename' => '',
             'filepath' => $filepath
         ];
+
+        $fs = get_file_storage();
+               if (!$fs->file_exists($usercontext->id, 'user', 'draft', $draftid, file_correct_filepath($filepath), '.')) {
+            die(json_encode((object)['error' => get_string('draftareanofiles', 'repository')]));
+        }
+
         $return = repository_download_selected_files($usercontext, 'user', 'draft', $draftid, [$selectedfile]);
         echo json_encode($return);
         die;

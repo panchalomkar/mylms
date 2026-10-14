@@ -1,61 +1,331 @@
-{{!
-  @template local_skillgap/weakzones
-  Competency Insight Engine — flags weak zones by organisation/dept/designation level.
-}}
-<div class="local-skillgap">
-  <h3 class="mb-4"><i class="fa fa-exclamation-triangle mr-2 text-warning"></i>{{#str}} weakzones, local_skillgap {{/str}}</h3>
-  <div class="alert alert-warning small">
-    <i class="fa fa-info-circle mr-1"></i>
-    A competency is flagged when: <strong>average score &lt; 90%</strong> OR <strong>&gt;50% of users are in Needs Improvement</strong>.
+{{! @template local_skillgap/weakzones - weak zone analysis (Figma UI) }}
+<style>
+  .local-skillgap-wz{
+    --sg-navy-1:#0A1F3D;
+    --sg-navy-2:#0D2647;
+    --sg-orange:#F5A623;
+    --sg-orange-light:#FDF1DC;
+    --sg-blue:#2F6FED;
+    --sg-blue-light:#EAF0FE;
+    --sg-green:#1E9E58;
+    --sg-green-light:#E7F8EE;
+    --sg-amber:#B45309;
+    --sg-amber-light:#FEF3DC;
+    --sg-red:#E5484D;
+    --sg-red-light:#FDEAEA;
+    --sg-gray-light:#EEF1F5;
+    --sg-gray-bg:#F5F7FA;
+    --sg-border:#E7EBF1;
+    --sg-text-muted:#8A93A3;
+    --sg-text-dark:#1B2A41;
+    font-family:inherit;color:var(--sg-text-dark);background:var(--sg-gray-bg);
+    padding:24px;border-radius:14px;
+  }
+  .local-skillgap-wz *{box-sizing:border-box;}
+#page-local-skillgap-admin-weakzones div[role="main"] {
+    filter: none;
+    padding: 0px !important;
+    box-shadow: none !important;
+    background: #f6f8fc;
+}
+  /* ── Header ── */
+  .sg-page-head{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;}
+  .sg-head-left{display:flex;align-items:center;gap:14px;}
+  .sg-head-icon{width:46px;height:46px;border-radius:12px;background:var(--sg-orange-light);color:var(--sg-orange);
+    display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+  .sg-page-head h2{margin:0;font-weight:800;font-size:25px;color:var(--sg-text-dark);}
+  .sg-page-head .sg-sub{color:var(--sg-text-muted);font-size:13px;margin-top:2px;}
+  .sg-btn-outline{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--sg-border);
+    border-radius:24px;padding:8px 16px;font-size:13px;font-weight:600;color:var(--sg-text-dark);text-decoration:none;}
+  .sg-btn-outline:hover{border-color:var(--sg-navy-1);color:var(--sg-text-dark);text-decoration:none;}
+  .sg-btn-outline i{color:var(--sg-text-muted);}
+
+  /* ── Banners ── */
+  .sg-banner-warn{background:var(--sg-amber-light);border:1px solid #F3D89A;border-radius:12px;padding:14px 18px;
+    font-size:13px;color:#8a5a00;display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;}
+  .sg-banner-warn i{color:var(--sg-amber);font-size:15px;margin-top:1px;}
+  .sg-banner-danger{background:var(--sg-red-light);border:1px solid #F6C7C9;border-radius:12px;padding:16px 18px;
+    display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+  .sg-banner-danger i{color:var(--sg-red);font-size:22px;}
+  .sg-banner-danger .sg-bd-title{font-weight:800;font-size:17px;color:var(--sg-red);}
+  .sg-banner-danger .sg-bd-sub{font-size:12.5px;color:#b05658;}
+
+  /* ── Card + filters ── */
+  .sg-card{background:#fff;border:1px solid var(--sg-border);border-radius:14px;}
+  .sg-filters{display:flex;flex-wrap:wrap;gap:12px;padding:16px 20px;border-bottom:1px solid var(--sg-border);}
+  .sg-search-wrap{position:relative;flex:1 1 240px;min-width:200px;}
+  .sg-search-wrap > i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--sg-text-muted);font-size:12px;pointer-events:none;}
+  .sg-search-input{width:100%;border:1px solid var(--sg-border);border-radius:10px;padding:11px 14px 11px 34px;font-size:13.5px;background:#fff;color:var(--sg-text-dark);}
+
+  /* custom dropdown */
+  .sg-dd{position:relative;flex:1 1 200px;min-width:170px;}
+  .sg-dd-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid var(--sg-border);
+    border-radius:10px;padding:11px 14px;font-size:13.5px;background:#fff;color:var(--sg-text-dark);cursor:pointer;}
+  .sg-dd-btn i{color:var(--sg-text-muted);font-size:11px;}
+  .sg-dd-panel{position:absolute;left:0;right:0;top:calc(100% + 4px);background:#fff;border:1px solid var(--sg-border);
+    border-radius:10px;box-shadow:0 10px 30px rgba(10,31,61,.14);z-index:60;display:none;overflow:hidden;}
+  .sg-dd.open .sg-dd-panel{display:block;}
+  .sg-dd-search{padding:8px;border-bottom:1px solid var(--sg-gray-light);}
+  .sg-dd-search input{width:100%;border:1px solid var(--sg-border);border-radius:8px;padding:7px 10px;font-size:13px;background:var(--sg-gray-bg);}
+  .sg-dd-list{max-height:220px;overflow-y:auto;}
+  .sg-dd-opt{padding:10px 14px;font-size:13.5px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .sg-dd-opt:hover{background:var(--sg-gray-bg);}
+  .sg-dd-opt.sel{background:var(--sg-orange);color:#fff;font-weight:600;}
+  .sg-dd-opt.sel i{color:#fff;}
+  .sg-dd-opt i{color:transparent;font-size:12px;}
+
+  /* ── Table ── */
+  .local-skillgap-wz table thead th{padding:12px 14px;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;
+    color:var(--sg-text-muted);font-weight:700;border-top:none;border-bottom:1px solid var(--sg-border);background:#F8FAFC;white-space:nowrap;}
+  .local-skillgap-wz table td{vertical-align:middle;border-color:var(--sg-border);font-size:13px;padding:14px;}
+  .sg-comp-name{font-weight:700;color:var(--sg-text-dark);display:flex;align-items:center;gap:8px;}
+  .sg-comp-name i{color:var(--sg-orange);}
+  .sg-level-pill{display:inline-block;background:var(--sg-gray-light);color:var(--sg-text-dark);border-radius:16px;font-size:11.5px;font-weight:600;padding:4px 12px;}
+  .sg-dept-pill{display:inline-block;background:var(--sg-blue-light);color:var(--sg-blue);border-radius:16px;font-size:11.5px;font-weight:600;padding:4px 12px;}
+  .sg-entity{color:var(--sg-text-muted);}
+  .sg-progress-track{background:var(--sg-gray-light);border-radius:6px;height:7px;overflow:hidden;max-width:110px;flex:1 1 auto;min-width:60px;}
+  .sg-progress-fill{height:100%;border-radius:6px;}
+  .sg-fill-success{background:var(--sg-green);}
+  .sg-fill-warning{background:var(--sg-orange);}
+  .sg-fill-danger{background:var(--sg-red);}
+  .sg-score-val{font-weight:800;font-size:13px;color:var(--sg-text-dark);min-width:38px;}
+  .sg-red-pill{display:inline-block;background:var(--sg-red-light);color:var(--sg-red);border-radius:16px;font-size:11.5px;font-weight:700;padding:4px 10px;}
+  .sg-red-circle{width:30px;height:30px;border-radius:50%;background:var(--sg-red);color:#fff;font-size:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;}
+  .sg-sev{display:inline-block;border-radius:16px;font-size:11.5px;font-weight:600;padding:4px 12px;}
+  .sg-sev.monitor{background:var(--sg-blue-light);color:var(--sg-blue);}
+  .sg-sev.warning{background:var(--sg-amber-light);color:var(--sg-amber);}
+  .sg-sev.critical{background:var(--sg-red-light);color:var(--sg-red);}
+
+  /* ── Pagination ── */
+  .sg-pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid var(--sg-border);
+    font-size:12.5px;color:var(--sg-text-muted);flex-wrap:wrap;gap:8px;}
+  .sg-page-btn{background:#fff;border:1px solid var(--sg-border);border-radius:16px;padding:5px 14px;font-size:12.5px;font-weight:600;color:var(--sg-text-dark);}
+  .sg-page-btn:disabled{opacity:.4;}
+  .sg-empty{text-align:center;color:var(--sg-green);padding:40px 16px;}
+</style>
+
+<div class="local-skillgap-wz">
+
+  {{! ── Header ── }}
+  <div class="sg-page-head">
+    <div class="sg-head-left">
+      <div class="sg-head-icon"><i class="fa fa-shield"></i></div>
+      <div>
+        <h2>{{#str}} weakzones, local_skillgap {{/str}}</h2>
+        <div class="sg-sub">Review competencies requiring focused intervention.</div>
+      </div>
+    </div>
+    <a href="{{{wwwroot}}}/local/skillgap/admin/index.php" class="sg-btn-outline"><i class="fa fa-arrow-left"></i>Back to Dashboard</a>
   </div>
 
+  {{! ── Info banner ── }}
+  <div class="sg-banner-warn">
+    <i class="fa fa-info-circle"></i>
+    <span>A competency is flagged when average score is below the defined threshold or when users fall into the Needs Improvement category.</span>
+  </div>
+
+  {{! ── Detected banner ── }}
   {{#has_zones}}
-  <div class="alert alert-danger">
-    <i class="fa fa-exclamation-circle mr-1"></i>
-    <strong>{{zone_count}} weak zone(s) detected</strong> — immediate intervention recommended.
+  <div class="sg-banner-danger">
+    <i class="fa fa-exclamation-circle"></i>
+    <div>
+      <div class="sg-bd-title">{{zone_count}} Weak Zones Detected</div>
+      <div class="sg-bd-sub">Immediate Intervention Recommended</div>
+    </div>
   </div>
   {{/has_zones}}
 
-  <div class="card">
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover mb-0">
-          <thead class="thead-light">
-            <tr>
-              <th>{{#str}} competency, local_skillgap {{/str}}</th>
-              <th>{{#str}} level, local_skillgap {{/str}}</th>
-              <th>Department</th>
-              <th>{{#str}} entity, local_skillgap {{/str}}</th>
-              <th>{{#str}} avg_score, local_skillgap {{/str}}</th>
-              <th>{{#str}} red_percent, local_skillgap {{/str}}</th>
-              <th>{{#str}} users_in_red, local_skillgap {{/str}}</th>
-              <th>Severity</th>
-            </tr>
-          </thead>
-          <tbody>
-            {{#weak_zones}}
-            <tr class="{{#is_critical}}table-danger{{/is_critical}}{{^is_critical}}table-warning{{/is_critical}}">
-              <td class="font-weight-medium">{{compname}}</td>
-              <td><span class="badge badge-secondary">{{level}}</span></td>
-              <td class="small text-muted">{{#has_dept}}{{dept_name}}{{/has_dept}}{{^has_dept}}—{{/has_dept}}</td>
-              <td>{{entity}}</td>
-              <td><strong>{{avg_score}}</strong></td>
-              <td class="font-weight-bold">{{red_pct}}</td>
-              <td>{{users_red}}</td>
-              <td><span class="badge badge-{{badge_class}}">{{#is_critical}}Critical{{/is_critical}}{{^is_critical}}Warning{{/is_critical}}</span></td>
-            </tr>
-            {{/weak_zones}}
-            {{^has_zones}}
-            <tr>
-              <td colspan="8" class="text-center text-success py-4">
-                <i class="fa fa-check-circle mr-2"></i>
-                No weak zones detected. All competency scores are within acceptable thresholds.
-              </td>
-            </tr>
-            {{/has_zones}}
-          </tbody>
-        </table>
+  <div class="sg-card sg-wz-card">
+    {{! ── Filters ── }}
+    <div class="sg-filters">
+      <div class="sg-search-wrap">
+        <i class="fa fa-search"></i>
+        <input type="text" id="sg-wz-search" class="sg-search-input" placeholder="Search competency" autocomplete="off">
+      </div>
+      <div class="sg-dd" id="sg-dd-dept" data-filter="dept">
+        <button type="button" class="sg-dd-btn"><span class="sg-dd-label">All Departments</span><i class="fa fa-chevron-down"></i></button>
+        <div class="sg-dd-panel">
+          <div class="sg-dd-search"><input type="text" placeholder="Search department..." autocomplete="off"></div>
+          <div class="sg-dd-list"></div>
+        </div>
+      </div>
+      <div class="sg-dd" id="sg-dd-level" data-filter="level">
+        <button type="button" class="sg-dd-btn"><span class="sg-dd-label">All Levels</span><i class="fa fa-chevron-down"></i></button>
+        <div class="sg-dd-panel"><div class="sg-dd-list"></div></div>
+      </div>
+      <div class="sg-dd" id="sg-dd-sev" data-filter="sev">
+        <button type="button" class="sg-dd-btn"><span class="sg-dd-label">All Severities</span><i class="fa fa-chevron-down"></i></button>
+        <div class="sg-dd-panel"><div class="sg-dd-list"></div></div>
       </div>
     </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>{{#str}} competency, local_skillgap {{/str}}</th>
+            <th>{{#str}} level, local_skillgap {{/str}}</th>
+            <th>Department</th>
+            <th>{{#str}} entity, local_skillgap {{/str}}</th>
+            <th style="min-width:130px;">{{#str}} avg_score, local_skillgap {{/str}}</th>
+            <th>Red %</th>
+            <th>Users in Red</th>
+            <th>Severity</th>
+          </tr>
+        </thead>
+        <tbody class="sg-wz-body">
+          {{#weak_zones}}
+          <tr class="sg-wz-row"
+              data-comp="{{compname}}"
+              data-dept="{{#has_dept}}{{dept_name}}{{/has_dept}}"
+              data-level="{{level}}"
+              data-avg="{{avg_score}}"
+              data-red="{{red_pct}}"
+              data-critical="{{#is_critical}}1{{/is_critical}}{{^is_critical}}0{{/is_critical}}">
+            <td><span class="sg-comp-name"><i class="fa fa-book"></i>{{compname}}</span></td>
+            <td><span class="sg-level-pill">{{level}}</span></td>
+            <td>{{#has_dept}}<span class="sg-dept-pill">{{dept_name}}</span>{{/has_dept}}{{^has_dept}}<span class="text-muted">—</span>{{/has_dept}}</td>
+            <td class="sg-entity">{{entity}}</td>
+            <td>
+              <div class="d-flex align-items-center" style="gap:10px;">
+                <div class="sg-progress-track"><div class="sg-progress-fill sg-wz-bar"></div></div>
+                <span class="sg-score-val">{{avg_score}}</span>
+              </div>
+            </td>
+            <td><span class="sg-red-pill">{{red_pct}}</span></td>
+            <td><span class="sg-red-circle">{{users_red}}</span></td>
+            <td><span class="sg-sev"></span></td>
+          </tr>
+          {{/weak_zones}}
+          {{^has_zones}}
+          <tr><td colspan="8" class="sg-empty"><i class="fa fa-check-circle fa-2x mb-2 d-block"></i>No weak zones detected. All competency scores are within acceptable thresholds.</td></tr>
+          {{/has_zones}}
+        </tbody>
+      </table>
+    </div>
+
+    {{#has_zones}}
+    <div class="sg-pagination">
+      <span class="sg-page-info"></span>
+      <span>
+        <button type="button" class="sg-page-btn sg-page-prev">Previous</button>
+        <button type="button" class="sg-page-btn sg-page-next">Next</button>
+      </span>
+    </div>
+    {{/has_zones}}
   </div>
 </div>
+
+<script>
+(function() {
+  var root = document.querySelector('.local-skillgap-wz');
+  if (!root) { return; }
+  var card = root.querySelector('.sg-wz-card');
+  if (!card) { return; }
+  var rows = Array.prototype.slice.call(card.querySelectorAll('.sg-wz-row'));
+
+  function num(v){ var m = String(v || '').match(/-?\d+(\.\d+)?/); return m ? parseFloat(m[0]) : 0; }
+
+  /* ── Per-row: bar width+color + severity tier ── */
+  rows.forEach(function(r) {
+    var avg = num(r.getAttribute('data-avg'));
+    var bar = r.querySelector('.sg-wz-bar');
+    if (bar) {
+      bar.style.width = Math.max(0, Math.min(100, avg)) + '%';
+      bar.classList.add(avg >= 80 ? 'sg-fill-success' : (avg >= 60 ? 'sg-fill-warning' : 'sg-fill-danger'));
+    }
+    // Severity: Critical if flagged-critical or avg<50; Warning if avg<72; else Monitor.
+    var critical = r.getAttribute('data-critical') === '1';
+    var sev, label;
+    if (critical || avg < 50) { sev = 'critical'; label = 'Critical'; }
+    else if (avg < 72)        { sev = 'warning';  label = 'Warning';  }
+    else                      { sev = 'monitor';  label = 'Monitor';  }
+    r.setAttribute('data-sev', sev);
+    var pill = r.querySelector('.sg-sev');
+    if (pill) { pill.classList.add(sev); pill.textContent = label; }
+  });
+
+  /* ── Build custom dropdowns ── */
+  var state = { dept: '', level: '', sev: '' };
+  function uniq(attr) {
+    var set = {};
+    rows.forEach(function(r){ var v = (r.getAttribute(attr) || '').trim(); if (v) { set[v] = true; } });
+    return Object.keys(set).sort();
+  }
+  function buildDD(id, allLabel, options) {
+    var dd = document.getElementById(id);
+    if (!dd) { return; }
+    var filter = dd.getAttribute('data-filter');
+    var list = dd.querySelector('.sg-dd-list');
+    var label = dd.querySelector('.sg-dd-label');
+    var btn = dd.querySelector('.sg-dd-btn');
+    function render(q) {
+      q = (q || '').toLowerCase();
+      var html = '<div class="sg-dd-opt' + (state[filter] === '' ? ' sel' : '') + '" data-val="">' + allLabel + '<i class="fa fa-check"></i></div>';
+      options.forEach(function(o) {
+        if (!q || o.toLowerCase().indexOf(q) !== -1) {
+          html += '<div class="sg-dd-opt' + (state[filter] === o ? ' sel' : '') + '" data-val="' + o.replace(/"/g,'&quot;') + '">' +
+            o.replace(/</g,'&lt;') + '<i class="fa fa-check"></i></div>';
+        }
+      });
+      list.innerHTML = html;
+    }
+    render('');
+    btn.addEventListener('click', function(e){ e.stopPropagation(); closeAll(dd); dd.classList.toggle('open'); });
+    var srch = dd.querySelector('.sg-dd-search input');
+    if (srch) { srch.addEventListener('input', function(){ render(this.value); }); srch.addEventListener('click', function(e){ e.stopPropagation(); }); }
+    list.addEventListener('click', function(e) {
+      var opt = e.target.closest('.sg-dd-opt'); if (!opt) { return; }
+      state[filter] = opt.getAttribute('data-val');
+      label.textContent = state[filter] || allLabel;
+      dd.classList.remove('open');
+      render(srch ? srch.value : '');
+      applyFilters();
+    });
+  }
+  function closeAll(except) {
+    root.querySelectorAll('.sg-dd').forEach(function(d){ if (d !== except) { d.classList.remove('open'); } });
+  }
+  document.addEventListener('click', function(){ closeAll(null); });
+
+  buildDD('sg-dd-dept',  'All Departments', uniq('data-dept'));
+  buildDD('sg-dd-level', 'All Levels',      uniq('data-level'));
+  buildDD('sg-dd-sev',   'All Severities',  ['Monitor','Warning','Critical']);
+
+  /* ── Search + filter + pagination ── */
+  var search = document.getElementById('sg-wz-search');
+  var info = card.querySelector('.sg-page-info');
+  var prevBtn = card.querySelector('.sg-page-prev');
+  var nextBtn = card.querySelector('.sg-page-next');
+  var PAGE_SIZE = 7, page = 1;
+
+  function matches(r) {
+    var q = search ? search.value.toLowerCase() : '';
+    var sevMap = { monitor:'Monitor', warning:'Warning', critical:'Critical' };
+    var rowSevLabel = sevMap[r.getAttribute('data-sev')] || '';
+    return (!q || (r.getAttribute('data-comp') || '').toLowerCase().indexOf(q) !== -1)
+      && (!state.dept  || r.getAttribute('data-dept')  === state.dept)
+      && (!state.level || r.getAttribute('data-level') === state.level)
+      && (!state.sev   || rowSevLabel === state.sev);
+  }
+  function applyFilters() { page = 1; render(); }
+  function render() {
+    var visible = rows.filter(matches);
+    var totalPages = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
+    page = Math.min(Math.max(1, page), totalPages);
+    var start = (page - 1) * PAGE_SIZE;
+    rows.forEach(function(r){ r.style.display = 'none'; });
+    visible.slice(start, start + PAGE_SIZE).forEach(function(r){ r.style.display = ''; });
+    if (info) {
+      var from = visible.length ? start + 1 : 0;
+      info.textContent = 'Showing ' + from + '-' + Math.min(start + PAGE_SIZE, visible.length) + ' of ' + visible.length;
+    }
+    if (prevBtn) { prevBtn.disabled = (page <= 1); }
+    if (nextBtn) { nextBtn.disabled = (page >= totalPages); }
+  }
+  if (search) { search.addEventListener('input', applyFilters); }
+  if (prevBtn) { prevBtn.addEventListener('click', function(){ page--; render(); }); }
+  if (nextBtn) { nextBtn.addEventListener('click', function(){ page++; render(); }); }
+  if (rows.length) { render(); }
+})();
+</script>

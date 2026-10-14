@@ -19,22 +19,11 @@
     <div class="card-body py-2">
       <form method="get" action="{{{wwwroot}}}/local/skillgap/manager/dashboard.php" class="form-inline flex-wrap" style="gap:8px;">
         <div class="form-group mb-2 mr-2">
-          <label class="mr-2 small font-weight-bold">{{#str}} department, local_skillgap {{/str}}</label>
-          <select name="deptid" class="form-control form-control-sm">
-            {{#departments}}<option value="{{id}}" {{#selected}}selected{{/selected}}>{{name}}</option>{{/departments}}
-          </select>
-        </div>
-        <div class="form-group mb-2 mr-2">
           <label class="mr-2 small font-weight-bold">{{#str}} competency, local_skillgap {{/str}}</label>
-          <select name="compid" class="form-control form-control-sm">
+          <select name="compid" class="form-control form-control-sm" onchange="this.form.submit()">
             {{#competencies}}<option value="{{id}}" {{#selected}}selected{{/selected}}>{{name}}</option>{{/competencies}}
           </select>
         </div>
-        <button type="submit" class="btn btn-sm mb-2" style="background:#033252;color:#fff;">
-          <i class="fa fa-filter mr-1"></i>{{#str}} apply_filter, local_skillgap {{/str}}
-        </button>
-        <a href="{{{wwwroot}}}/local/skillgap/manager/dashboard.php"
-           class="btn btn-outline-secondary btn-sm mb-2">{{#str}} reset, local_skillgap {{/str}}</a>
       </form>
     </div>
   </div>
@@ -225,26 +214,198 @@
 </div>
 
 {{! ── Drilldown Modal ─────────────────────────────────────────────────────── }}
-<div class="modal fade" id="sg-drilldown-modal" tabindex="-1" role="dialog"
-     aria-labelledby="sg-drilldown-title" aria-hidden="true"
-     data-bs-backdrop="true" data-bs-keyboard="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header p-2" style="background:#033252;color:#fff;">
-        <h5 class="modal-title text-light" id="sg-drilldown-title">
-          <i class="fa fa-users mr-2" style="color:#eb980d;"></i>
-          <span id="sg-drilldown-heading">Users</span>
-        </h5>
-<button type="button" class="close" data-dismiss="modal" data-bs-dismiss="modal"
-        aria-label="Close" style="color:#fff;">
-  <span aria-hidden="true">&times;</span>
-</button>
-      </div>
-      <div class="modal-body p-0" id="sg-drilldown-body">
-      </div>
+<div class="modal fade"
+     id="sg-drilldown-modal"
+     tabindex="-1"
+     role="dialog"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+
+        <div class="modal-content sg-modal">
+
+            <div class="modal-header p-2 sg-header">
+
+                <h4 class="modal-title text-light d-flex align-items-center">
+
+                    <span class="sg-icon">
+                        <i class="fa fa-users"></i>
+                    </span>
+
+                    <span id="sg-drilldown-heading"></span>
+
+                </h4>
+
+                <button class="close text-white"
+                        data-dismiss="modal"
+                        data-bs-dismiss="modal">
+
+                    <span>&times;</span>
+
+                </button>
+
+            </div>
+
+            <div class="px-3 py-3 bg-white border-bottom d-none">
+
+                <input
+                    type="text"
+                    id="sg-search-user"
+                    class="form-control"
+                    placeholder="Search employee...">
+
+            </div>
+
+            <div
+                class="modal-body p-0 "style="    margin: 10px;
+    border-radius: 10px;"
+                id="sg-drilldown-body">
+
+            </div>
+
+            <div class="modal-footer mt-3 p-2" style="    justify-content: space-between;">
+
+                <div class="text-muted">
+
+                    Showing
+
+                    <strong id="sg-total-users">
+                        0
+                    </strong>
+
+                    Team Members
+
+                </div>
+
+                <button
+                    class="btn sg-btn"
+                    data-dismiss="modal"
+                    data-bs-dismiss="modal">
+
+                    Close
+
+                </button>
+
+            </div>
+
+        </div>
+
     </div>
-  </div>
+
 </div>
+<style>
+.sg-modal{
+    border:none;
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,.25);
+}
+
+.sg-header{
+    background:#003152;
+    color:#fff;
+    padding:18px 25px;
+}
+
+.sg-icon{
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    background:#eb980d;
+    color:#003152;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-right:15px;
+    font-size:20px;
+    font-weight:bold;
+}
+
+.sg-header .close{
+    color:#fff;
+    opacity:1;
+    text-shadow:none;
+    font-size:30px;
+}
+
+.sg-header .close:hover{
+    transform:rotate(90deg);
+    transition:.25s;
+}
+
+#sg-search-user{
+    border-radius:25px;
+    height:42px;
+}
+
+#sg-drilldown-body{
+    max-height:550px;
+    overflow:auto;
+}
+
+#sg-drilldown-body table{
+    margin:0;
+}
+
+#sg-drilldown-body thead{
+    position:sticky;
+    top:0;
+    z-index:10;
+}
+
+#sg-drilldown-body thead th{
+  background: #ec9707;
+    color: #fff;
+    border: none;
+    padding: 6px;
+    font-size: 14px;
+}
+
+#sg-drilldown-body tbody td{
+    padding:6px;
+    vertical-align:middle;
+}
+
+#sg-drilldown-body tbody tr:nth-child(even){
+    background:#fafafa;
+}
+
+#sg-drilldown-body tbody tr:hover{
+    background:#eef5ff;
+}
+
+.sg-score{
+    font-weight:700;
+    color:#003152;
+}
+
+.sg-footer{
+    background:#fff;
+}
+
+.sg-btn{
+    background:#003152;
+    color:#fff;
+    border-radius:30px;
+    padding:8px 24px;
+}
+
+.sg-btn:hover{
+    background:#00203a;
+    color:#fff;
+}
+
+.sg-badge{
+    min-width:120px;
+    display:inline-block;
+    text-align:center;
+    border-radius:25px;
+    padding:7px 14px;
+    color:#fff;
+    font-weight:600;
+    font-size:11px
+}
+</style>
 
  <script>
 (function() {
@@ -296,31 +457,132 @@
     document.getElementById('sg-drilldown-heading').textContent =
       compname + ' \u2014 ' + typeLabel + ' (' + users.length + ')';
 
-    var body = document.getElementById('sg-drilldown-body');
-    if (!users.length) {
-      body.innerHTML = '<p class="text-center text-muted py-4 mb-0">No users in this group.</p>';
-    } else {
-      var rows = users.map(function(u) {
-        var badgeColor = u.badge_class === 'success' ? '#28a745'
-                       : u.badge_class === 'warning' ? '#ffc107'
-                       : u.badge_class === 'danger'  ? '#dc3545' : '#6c757d';
-        return '<tr>' +
-          '<td class="font-weight-medium">' + u.fullname + '</td>' +
-          '<td class="text-center">' + u.score + '</td>' +
-          '<td><span class="badge" style="background:' + badgeColor + ';color:#fff;">' +
-            u.status_label + '</span></td>' +
-          '</tr>';
-      }).join('');
-      body.innerHTML =
-        '<div class="table-responsive">' +
-        '<table class="table table-sm table-hover mb-0">' +
-        '<thead class="thead-light"><tr>' +
-        '<th>Name</th><th class="text-center">Score</th><th>Status</th>' +
-        '</tr></thead><tbody>' + rows + '</tbody></table></div>';
-    }
+var body=document.getElementById("sg-drilldown-body");
 
-    var modalEl = document.getElementById('sg-drilldown-modal');
-    showModal(modalEl);
+if(users.length===0){
+
+body.innerHTML='<div class="text-center py-5">'+
+'<i class="fa fa-users fa-3x text-muted mb-3"></i>'+
+'<h5>No Users Found</h5>'+
+'</div>';
+
+}else{
+
+let rows="";
+
+users.forEach(function(u,index){
+
+let color="#6c757d";
+
+if(u.badge_class==="success")
+color="#28a745";
+
+if(u.badge_class==="warning")
+color="#ffc107";
+
+if(u.badge_class==="danger")
+color="#dc3545";
+
+rows+=`
+
+<tr>
+
+<td class="text-center">
+${index+1}
+</td>
+
+<td>
+<strong>${u.fullname}</strong>
+</td>
+
+<td class="text-center">
+<span class="sg-score">
+${u.score}%
+</span>
+</td>
+
+<td class="text-center">
+
+<span
+class="sg-badge"
+style="background:${color};">
+
+${u.status_label}
+
+</span>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+body.innerHTML=`
+
+<div class="table-responsive">
+
+<table
+class="table table-hover align-middle mb-0">
+
+<thead>
+
+<tr>
+
+<th width="70">
+#
+</th>
+
+<th>
+Employee Name
+</th>
+
+<th width="120" class="text-center">
+Score
+</th>
+
+<th width="170" class="text-center">
+Status
+</th>
+
+</tr>
+
+</thead>
+
+<tbody id="sg-user-table" class="mt-2">
+
+${rows}
+
+</tbody>
+
+</table>
+
+</div>
+
+`;
+
+}
+
+document.getElementById("sg-total-users").innerHTML=users.length;
+
+document.getElementById("sg-search-user").value="";
+
+document.getElementById("sg-search-user").onkeyup=function(){
+
+let value=this.value.toLowerCase();
+
+document.querySelectorAll("#sg-user-table tr").forEach(function(row){
+
+row.style.display=row.innerText.toLowerCase().includes(value)
+? ""
+: "none";
+
+});
+
+};
+
+showModal(document.getElementById("sg-drilldown-modal"));
   });
 
   // ── Close modal — close button ───────────────────────────────────────────

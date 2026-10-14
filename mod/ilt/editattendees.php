@@ -61,7 +61,20 @@ require_capability('mod/ilt:viewattendees', $context);
 $errors = array();
 $added = array();        // Signed up + email sent (or email suppressed).
 $addednomail = array();  // Signed up, but the confirmation email could not be sent.
+$removed = array();      // Successfully cancelled (for the result popup).
 
+// Default role for users enrolled via ILT: the course's manual-enrol default role,
+// falling back to the first 'student' archetype role.
+$studentroleid = 0;
+if ($manual = $DB->get_record('enrol', array('courseid' => $course->id, 'enrol' => 'manual'), 'id, roleid', IGNORE_MULTIPLE)) {
+    $studentroleid = (int)$manual->roleid;
+}
+if (!$studentroleid) {
+    $archetyperoles = get_archetype_roles('student');
+    if ($archetyperoles) {
+        $studentroleid = (int)reset($archetyperoles)->id;
+    }
+}
 /* ---------------------------------------------------------------------------
  * REMOVE selected attendees (same logic as before, ids read from checkboxes).
  * ------------------------------------------------------------------------- */
@@ -73,6 +86,10 @@ if ($doremove && confirm_sesskey()) {
             continue;
         }
         if (ilt_user_cancel($session, $removeuser, true, $cancelerr)) {
+            // Record the name for the result popup.
+            if ($removeduserobj = $DB->get_record('user', array('id' => $removeuser), '*')) {
+                $removed[] = fullname($removeduserobj);
+            }
             $timenow = time();
             if (!$suppressemail && !ilt_has_session_started($session, $timenow)) {
                 ilt_send_cancellation_notice($ilt, $session, $removeuser);
@@ -95,13 +112,18 @@ if ($doadd && confirm_sesskey()) {
             continue;
         }
 
-        // Make sure the user is enrolled in the course.
+        // Make sure the user is enrolled in the course AND has a role.
         if (!has_capability('moodle/course:view', $context, $adduser)) {
             $user = $DB->get_record('user', array('id' => $adduser));
-            if ($user && !is_enrolled($context, $user)) {
-                if (!enrol_try_internal_enrol($course->id, $user->id)) {
-                    $errors[] = get_string('error:enrolmentfailed', 'ilt', fullname($user));
-                    continue;
+            if ($user) {
+                if (!is_enrolled($context, $user)) {
+                    if (!enrol_try_internal_enrol($course->id, $user->id, $studentroleid)) {
+                        $errors[] = get_string('error:enrolmentfailed', 'ilt', fullname($user));
+                        continue;
+                    }
+                } else if ($studentroleid && !get_user_roles($context, $user->id, false)) {
+                    // Enrolled earlier without any role (old bug), so assign student now.
+                    role_assign($studentroleid, $user->id, $context->id);
                 }
             }
         }
@@ -221,11 +243,46 @@ $renderrow = function($u, $name) use ($OUTPUT) {
     return $row;
 };
 
+// Initials from a full-name string (used in the result popup).
+$initialsof = function($name) {
+    $parts = preg_split('/\s+/', trim($name), -1, PREG_SPLIT_NO_EMPTY);
+    if (!$parts) {
+        return '?';
+    }
+    $i = mb_substr($parts[0], 0, 1);
+    if (count($parts) > 1) {
+        $i .= mb_substr(end($parts), 0, 1);
+    }
+    return mb_strtoupper($i);
+};
+
+// Renders one popup row.
+$renderresultrow = function($name, $tag = '') use ($initialsof) {
+    $row  = html_writer::start_div('ilt-rm-row');
+    $row .= html_writer::div(s($initialsof($name)), 'ilt-ea-ava');
+    $row .= html_writer::div(s($name), 'ilt-rm-name');
+    if ($tag !== '') {
+        $row .= html_writer::span(s($tag), 'ilt-rm-tag');
+    }
+    $row .= html_writer::end_div();
+    return $row;
+};
+
+$totaladded = count($added) + count($addednomail);
+$showresult = ($totaladded > 0 || !empty($removed));
+if ($totaladded && !empty($removed)) {
+    $resulttitle = 'Attendees updated';
+} else if ($totaladded) {
+    $resulttitle = 'Attendees added';
+} else {
+    $resulttitle = 'Attendees removed';
+}
+
 echo $OUTPUT->header();
 ?>
 <style>
-.ilt-ea{--nv:#0e2340;--or:#f5a623;--bd:#e9edf2;--mut:#6b7a8d;--ink:#1f2d3d;}
-.ilt-ea *{box-sizing:border-box;}
+.ilt-ea,.ilt-ea-layer{--nv:#0e2340;--or:#f5a623;--bd:#e9edf2;--mut:#6b7a8d;--ink:#1f2d3d;}
+.ilt-ea *,.ilt-ea-layer *{box-sizing:border-box;}
 
 /* stat cards */
 .ilt-ea-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:0 0 18px;}
@@ -289,7 +346,14 @@ echo $OUTPUT->header();
 .ilt-ea .errbox{background:#fbe9e9;color:#b3261e;border:1px solid #f3c9c5;border-radius:12px;padding:12px 16px;margin-bottom:16px;}
 .ilt-ea .okbox{background:#e4f5ea;color:#1c7a48;border:1px solid #bfe6ce;border-radius:12px;padding:12px 16px;margin-bottom:12px;font-weight:500;}
 .ilt-ea .warnbox{background:#fdf1dd;color:#9a6a12;border:1px solid #f3d9a6;border-radius:12px;padding:12px 16px;margin-bottom:12px;font-weight:500;}
-
+#page-mod-ilt-editattendees #page-wrapper #page {
+    padding-left: 8em !important;
+    padding-right: 0em !important;
+}
+#page-mod-ilt-editattendees #page-wrapper #page.show-drawer-left {
+    padding-left: 2em !important;
+    padding-right: 0em !important;
+}
 /* search options */
 .ilt-ea-opts{border:1px dashed #f0c98a;border-radius:12px;padding:12px 14px;margin-top:12px;}
 .ilt-ea-opts .ttl{display:flex;align-items:center;gap:8px;color:var(--or);font-weight:600;font-size:13px;margin-bottom:8px;}
@@ -304,21 +368,65 @@ echo $OUTPUT->header();
 /* suppress bell */
 .ilt-ea-foot .bell{width:16px;height:16px;stroke:var(--or);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 @media (max-width:900px){.ilt-ea-stats{grid-template-columns:1fr;}.ilt-ea-body{grid-template-columns:1fr;}.ilt-ea-mid{flex-direction:row;}}
+
+/* ---------- Loader (blur overlay + steps) ---------- */
+.ilt-ld{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;
+  background:rgba(14,35,64,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+.ilt-ld.show{display:flex;}
+.ilt-ld-card{background:#fff;border-radius:18px;padding:28px 30px;width:340px;max-width:calc(100% - 32px);
+  box-shadow:0 20px 50px rgba(14,35,64,.25);text-align:center;}
+.ilt-ld-spin{width:52px;height:52px;margin:0 auto 16px;border-radius:50%;border:4px solid #eef1f5;border-top-color:var(--or);
+  animation:ilt-spin .8s linear infinite;}
+@keyframes ilt-spin{to{transform:rotate(360deg);}}
+.ilt-ld-title{font-size:16px;font-weight:700;color:var(--nv);margin-bottom:16px;}
+.ilt-ld-steps{list-style:none;margin:0;padding:0;text-align:left;}
+.ilt-ld-steps li{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:14px;color:var(--mut);font-weight:500;}
+.ilt-ld-steps .dot{width:24px;height:24px;border-radius:50%;flex:0 0 24px;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;background:#eef1f5;color:var(--mut);}
+.ilt-ld-steps li.active{color:var(--ink);font-weight:600;}
+.ilt-ld-steps li.active .dot{background:var(--or);color:var(--nv);animation:ilt-pulse 1s ease-in-out infinite;}
+.ilt-ld-steps li.done{color:var(--ink);}
+.ilt-ld-steps li.done .dot{background:var(--nv);color:#fff;}
+@keyframes ilt-pulse{50%{box-shadow:0 0 0 5px rgba(245,166,35,.25);}}
+
+/* ---------- Result popup ---------- */
+.ilt-rm{position:fixed;inset:0;z-index:10001;display:none;align-items:center;justify-content:center;
+  background:rgba(14,35,64,.35);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
+.ilt-rm.show{display:flex;}
+.ilt-rm-card{background:#fff;border-radius:18px;width:440px;max-width:calc(100% - 32px);max-height:calc(100vh - 64px);
+  display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 50px rgba(14,35,64,.25);}
+.ilt-rm-head{display:flex;align-items:center;gap:12px;background:var(--nv);color:#fff;padding:16px 20px;}
+.ilt-rm-head .ic{width:34px;height:34px;border-radius:50%;background:var(--or);display:flex;align-items:center;justify-content:center;flex:0 0 34px;}
+.ilt-rm-head .ic svg{width:18px;height:18px;stroke:var(--nv);fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
+.ilt-rm-head h3{flex:1;margin:0;font-size:17px;font-weight:700;color:#fff;}
+.ilt-rm-x{background:transparent;border:0;color:#fff;font-size:24px;line-height:1;cursor:pointer;opacity:.8;padding:0 4px;}
+.ilt-rm-x:hover{opacity:1;}
+.ilt-rm-body{padding:16px 20px;overflow-y:auto;}
+.ilt-rm-sec + .ilt-rm-sec{margin-top:16px;}
+.ilt-rm-sec h4{display:flex;align-items:center;justify-content:space-between;margin:0 0 8px;font-size:12px;font-weight:700;
+  letter-spacing:.05em;text-transform:uppercase;color:var(--nv);}
+.ilt-rm-sec h4 .cnt{background:var(--or);color:var(--nv);border-radius:999px;padding:2px 10px;letter-spacing:0;}
+.ilt-rm-sec.rem h4 .cnt{background:#fbe9e9;color:#b3261e;}
+.ilt-rm-list{border:1px solid var(--bd);border-radius:12px;}
+.ilt-rm-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid #f1f4f7;}
+.ilt-rm-row:last-child{border-bottom:0;}
+.ilt-rm-sec.rem .ilt-ea-ava{background:#b3261e;}
+.ilt-rm-name{flex:1;font-weight:600;color:var(--ink);font-size:14px;}
+.ilt-rm-tag{font-size:11px;font-weight:600;color:#9a6a12;background:#fdf1dd;border:1px solid #f3d9a6;border-radius:999px;padding:2px 8px;white-space:nowrap;}
+.ilt-rm-foot{display:flex;justify-content:flex-end;padding:14px 20px;border-top:1px solid var(--bd);}
+.ilt-rm-ok{background:var(--nv);color:#fff;border:0;border-radius:10px;font-weight:600;padding:10px 26px;cursor:pointer;}
 </style>
 
 <?php echo html_writer::start_div('ilt-ea'); ?>
 
 <?php
-if (!empty($added)) {
-    echo html_writer::div('Added successfully: ' . s(implode(', ', $added)), 'okbox');
-}
 if (!empty($addednomail)) {
-    echo html_writer::div('Added successfully, but the confirmation email could not be sent (check the site email configuration): ' . s(implode(', ', $addednomail)), 'warnbox');
+    // echo html_writer::div('Added successfully, but the confirmation email could not be sent (check the site email configuration): ' . s(implode(', ', $addednomail)), 'warnbox');
 }
 if (!empty($errors)) {
-    echo html_writer::start_div('errbox');
-    foreach ($errors as $e) { echo html_writer::div($e); }
-    echo html_writer::end_div();
+    // echo html_writer::start_div('errbox');
+    // foreach ($errors as $e) { echo html_writer::div($e); }
+    // echo html_writer::end_div();
 } ?>
 
   <!-- Stat cards -->
@@ -423,6 +531,54 @@ if (!empty($errors)) {
   </form>
 <?php echo html_writer::end_div(); ?>
 
+<!-- Loader: blurred overlay with step progress -->
+<div class="ilt-ea-layer">
+  <div class="ilt-ld" id="ilt-ld" role="alert" aria-live="assertive" aria-busy="true">
+    <div class="ilt-ld-card">
+      <div class="ilt-ld-spin"></div>
+      <div class="ilt-ld-title" id="ilt-ld-title">Please wait&hellip;</div>
+      <ul class="ilt-ld-steps" id="ilt-ld-steps"></ul>
+    </div>
+  </div>
+
+<?php if ($showresult) { ?>
+  <!-- Result popup -->
+  <div class="ilt-rm" id="ilt-rm" role="dialog" aria-modal="true" aria-labelledby="ilt-rm-title">
+    <div class="ilt-rm-card">
+      <div class="ilt-rm-head">
+        <span class="ic"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <h3 id="ilt-rm-title"><?php echo s($resulttitle); ?></h3>
+        <button type="button" class="ilt-rm-x" data-rm-close aria-label="Close">&times;</button>
+      </div>
+      <div class="ilt-rm-body">
+        <?php if ($totaladded) { ?>
+          <div class="ilt-rm-sec add">
+            <h4><span>Added successfully</span><span class="cnt"><?php echo $totaladded; ?></span></h4>
+            <div class="ilt-rm-list">
+              <?php
+              foreach ($added as $n) { echo $renderresultrow($n); }
+              foreach ($addednomail as $n) { echo $renderresultrow($n, 'Email not sent'); }
+              ?>
+            </div>
+          </div>
+        <?php } ?>
+        <?php if (!empty($removed)) { ?>
+          <div class="ilt-rm-sec rem">
+            <h4><span>Removed successfully</span><span class="cnt"><?php echo count($removed); ?></span></h4>
+            <div class="ilt-rm-list">
+              <?php foreach ($removed as $n) { echo $renderresultrow($n); } ?>
+            </div>
+          </div>
+        <?php } ?>
+      </div>
+      <div class="ilt-rm-foot">
+        <button type="button" class="ilt-rm-ok" data-rm-close>OK</button>
+      </div>
+    </div>
+  </div>
+<?php } ?>
+</div>
+
 <script>
 (function(){
   var root = document.querySelector('.ilt-ea');
@@ -488,6 +644,77 @@ if (!empty($errors)) {
     });
   });
   refresh();
+
+  // --- Loader: shown only for Add / Remove / Save submits (filter changes use
+  //     form.submit(), which does not fire the submit event, so no loader there). ---
+  var form  = document.getElementById('assignform');
+  var ld    = document.getElementById('ilt-ld');
+  var ldTtl = document.getElementById('ilt-ld-title');
+  var ldUl  = document.getElementById('ilt-ld-steps');
+  var timer = null;
+  var FLOWS = {
+    add:    { title: 'Adding attendees',   steps: ['Validating selected users', 'Enrolling & signing up', 'Sending notifications'] },
+    remove: { title: 'Removing attendees', steps: ['Validating selected users', 'Cancelling signups', 'Sending cancellation notices'] },
+    save:   { title: 'Saving attendees',   steps: ['Removing selected attendees', 'Adding selected users', 'Updating session'] }
+  };
+  var lastClicked = null;
+  form.querySelectorAll('button[type="submit"]').forEach(function(b){
+    b.addEventListener('click', function(){ lastClicked = b; });
+  });
+
+  function showLoader(action){
+    var flow = FLOWS[action] || FLOWS.save;
+    ldTtl.textContent = flow.title + '\u2026';
+    ldUl.innerHTML = '';
+    flow.steps.forEach(function(txt, i){
+      var li = document.createElement('li');
+      li.innerHTML = '<span class="dot">' + (i + 1) + '</span><span></span>';
+      li.lastChild.textContent = txt;
+      ldUl.appendChild(li);
+    });
+    var items = ldUl.children, cur = 0;
+    function paint(){
+      for (var i = 0; i < items.length; i++){
+        items[i].className = i < cur ? 'done' : (i === cur ? 'active' : '');
+        items[i].firstChild.innerHTML = i < cur ? '&#10003;' : String(i + 1);
+      }
+    }
+    paint();
+    clearInterval(timer);
+    // Advance through the steps while the server works; stay on the last one.
+    timer = setInterval(function(){
+      if (cur < items.length - 1){ cur++; paint(); } else { clearInterval(timer); }
+    }, 1200);
+    ld.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  form.addEventListener('submit', function(e){
+    var btn = e.submitter || lastClicked;
+    if (!btn || !btn.name) return; // not an add/remove/save submit
+    showLoader(btn.name);
+    // Buttons are NOT disabled (that would drop their name from the POST);
+    // the overlay blocks further clicks instead.
+  });
+
+  // Hide loader if the page is restored from the back/forward cache.
+  window.addEventListener('pageshow', function(){
+    clearInterval(timer);
+    ld.classList.remove('show');
+    document.body.style.overflow = '';
+  });
+
+  // --- Result popup (added / removed users) ---
+  var rm = document.getElementById('ilt-rm');
+  if (rm){
+    function closeRm(){ rm.classList.remove('show'); document.body.style.overflow = ''; }
+    rm.querySelectorAll('[data-rm-close]').forEach(function(b){ b.addEventListener('click', closeRm); });
+    rm.addEventListener('click', function(e){ if (e.target === rm) closeRm(); });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && rm.classList.contains('show')) closeRm(); });
+    rm.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    var ok = rm.querySelector('.ilt-rm-ok'); if (ok) ok.focus();
+  }
 })();
 </script>
 <?php

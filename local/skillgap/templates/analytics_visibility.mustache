@@ -1,131 +1,253 @@
-{{!
-  @template local_skillgap/analytics_visibility
-  Team Analytics Visibility Mapping — multi-select target designations.
-}}
-<div class="local-skillgap">
+{{! @template local_skillgap/analytics_visibility - team analytics visibility mapping (Figma UI) }}
+<style>
+  .local-skillgap-vis{
+    --sg-navy-1:#0A1F3D;
+    --sg-navy-2:#0D2647;
+    --sg-orange:#F5A623;
+    --sg-orange-light:#FDF1DC;
+    --sg-blue:#2F6FED;
+    --sg-blue-light:#EAF0FE;
+    --sg-green:#1E9E58;
+    --sg-red:#E5484D;
+    --sg-red-light:#FDEAEA;
+    --sg-gray-light:#EEF1F5;
+    --sg-gray-bg:#F5F7FA;
+    --sg-border:#E7EBF1;
+    --sg-text-muted:#8A93A3;
+    --sg-text-dark:#1B2A41;
+    font-family:inherit;color:var(--sg-text-dark);background:var(--sg-gray-bg);
+    padding:24px;border-radius:14px;
+  }
+  .local-skillgap-vis *{box-sizing:border-box;}
+#page-local-skillgap-admin-analytics_visibility div[role="main"] {
+    filter: none;
+    padding: 0px !important;
+    box-shadow: none !important;
+    background: #f6f8fc;
+}
+  /* ── Header ── */
+  .sg-topbar{display:flex;justify-content:flex-end;margin-bottom:6px;}
+  .sg-page-head{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:18px;}
+  .sg-head-left{display:flex;align-items:center;gap:14px;}
+  .sg-head-icon{width:44px;height:44px;border-radius:12px;background:var(--sg-orange-light);color:var(--sg-orange);
+    display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+  .sg-page-head h2{margin:0;font-weight:800;font-size:23px;color:var(--sg-text-dark);}
+  .sg-page-head .sg-sub{color:var(--sg-text-muted);font-size:13px;margin-top:2px;}
+  .sg-btn-outline{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--sg-border);
+    border-radius:24px;padding:8px 16px;font-size:13px;font-weight:600;color:var(--sg-text-dark);text-decoration:none;}
+  .sg-btn-outline:hover{border-color:var(--sg-navy-1);color:var(--sg-text-dark);text-decoration:none;}
+  .sg-btn-outline i{color:var(--sg-text-muted);}
 
-  <div class="d-flex align-items-center justify-content-between flex-wrap mb-4">
-    <div>
-      <h3 class="mb-0" style="color:#033252;">
-        <i class="fa fa-eye mr-2" style="color:#eb980d;"></i>Team Analytics Visibility Mapping
-      </h3>
-      <p class="text-muted small mt-1 mb-0">Configure which designation can view team analytics of one or more other designations.</p>
-    </div>
-    <a href="{{{wwwroot}}}/local/skillgap/admin/designations.php"
-       class="btn btn-sm btn-outline-secondary mt-2 mt-md-0">
-      <i class="fa fa-arrow-left mr-1"></i>Back to Designations
-    </a>
+  /* ── Info banner ── */
+  .sg-info-banner{background:var(--sg-blue-light);border:1px solid #D7E3FB;border-radius:12px;padding:14px 18px;
+    font-size:13px;color:#2B4B8A;display:flex;align-items:flex-start;gap:10px;line-height:1.5;margin-bottom:18px;}
+  .sg-info-banner i{color:var(--sg-blue);font-size:15px;margin-top:2px;}
+
+  /* ── Cards ── */
+  .sg-card{background:#fff;border:1px solid var(--sg-border);border-radius:14px;overflow:visible;}
+  .sg-section-header{background:var(--sg-navy-1);color:#fff;padding:14px 20px;display:flex;align-items:center;
+    justify-content:space-between;flex-wrap:wrap;gap:10px;border-radius:14px 14px 0 0;}
+  .sg-section-header h5{color:#fff;margin:0;font-weight:700;font-size:15px;display:flex;align-items:center;gap:10px;}
+  .sg-section-header h5 i{color:var(--sg-orange);}
+
+  /* ── Form ── */
+  .sg-form-body{padding:18px 20px;}
+  .sg-form-body label{font-size:13px;font-weight:700;color:var(--sg-text-dark);display:flex;align-items:center;gap:6px;margin-bottom:2px;}
+  .sg-form-body label i{color:var(--sg-orange);}
+  .sg-hint{font-size:12px;color:var(--sg-text-muted);margin-bottom:8px;display:block;}
+  .sg-search-input{width:100%;border:1px solid var(--sg-border);border-radius:10px;padding:11px 14px 11px 34px;font-size:13.5px;background:var(--sg-gray-bg);color:var(--sg-text-dark);}
+  .sg-search-wrap{position:relative;margin-bottom:8px;}
+  .sg-search-wrap > i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--sg-text-muted);font-size:12px;pointer-events:none;}
+  .sg-chosen{margin-top:8px;font-size:12.5px;color:var(--sg-green);font-weight:600;display:none;align-items:center;gap:6px;}
+  .sg-count-pill{background:var(--sg-orange-light);color:#8a5a00;border-radius:20px;font-size:11px;font-weight:700;padding:3px 10px;}
+
+  /* ── Custom searchable viewer dropdown ── */
+  .sg-combo{position:relative;}
+  .sg-combo-input{width:100%;border:1px solid var(--sg-border);border-radius:10px;padding:11px 34px 11px 14px;font-size:14px;background:#fff;color:var(--sg-text-dark);cursor:pointer;}
+  .sg-combo-input::placeholder{color:var(--sg-text-muted);}
+  .sg-combo-caret{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--sg-text-muted);font-size:12px;pointer-events:none;}
+  .sg-combo-panel{position:absolute;left:0;right:0;top:calc(100% + 4px);background:#fff;border:1px solid var(--sg-border);
+    border-radius:10px;box-shadow:0 8px 24px rgba(10,31,61,.12);max-height:260px;overflow-y:auto;z-index:50;display:none;}
+  .sg-combo.open .sg-combo-panel{display:block;}
+  .sg-combo-opt{padding:10px 14px;font-size:13.5px;cursor:pointer;border-bottom:1px solid var(--sg-gray-light);}
+  .sg-combo-opt:last-child{border-bottom:none;}
+  .sg-combo-opt:hover,.sg-combo-opt.active{background:var(--sg-blue-light);color:var(--sg-navy-1);}
+  .sg-combo-empty{padding:12px 14px;color:var(--sg-text-muted);font-size:13px;}
+
+  /* ── Target list ── */
+  .sg-target-tools{display:flex;gap:8px;margin-bottom:8px;justify-content:flex-end;}
+  .sg-mini-btn{background:#fff;border:1px solid var(--sg-border);border-radius:8px;padding:4px 12px;font-size:11.5px;font-weight:600;color:var(--sg-text-dark);}
+  .sg-mini-btn:hover{border-color:var(--sg-navy-1);}
+  .sg-target-list{border:1px solid var(--sg-border);border-radius:12px;padding:6px;max-height:240px;overflow-y:auto;background:var(--sg-gray-bg);}
+  .sg-target-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-bottom:1px solid var(--sg-border);cursor:pointer;font-size:13px;}
+  .sg-target-item:last-child{border-bottom:none;}
+
+  /* Force square checkboxes — Moodle theme paints a background image (the shield); kill it hard */
+  .local-skillgap-vis .sg-target-item input[type="checkbox"]{
+    -webkit-appearance:none !important;-moz-appearance:none !important;appearance:none !important;
+    width:18px !important;height:18px !important;min-width:18px !important;
+    border:1.5px solid var(--sg-border) !important;    border-radius: 50% !important;
+    background:#fff !important;background-image:none !important;background-color:#fff !important;
+    box-shadow:none !important;cursor:pointer;position:relative;margin:0 !important;flex-shrink:0;
+  }
+   .local-skillgap-vis input[type="checkbox"]:not(.custom-control-input,.form-switch .form-check-input):not(:checked):after {display:none !important; }
+  .local-skillgap-vis .sg-target-item input[type="checkbox"]:checked{
+    background:var(--sg-navy-1) !important;background-color:var(--sg-navy-1) !important;
+    background-image:none !important;border-color:var(--sg-navy-1) !important;
+  }
+  .local-skillgap-vis .sg-target-item input[type="checkbox"]::before,
+  .local-skillgap-vis .sg-target-item input[type="checkbox"]::after{display:none;}
+  .local-skillgap-vis .sg-target-item input[type="checkbox"]:checked::after{
+    content:"";display:block;position:absolute;left:5px;top:1px;width:5px;height:10px;
+    border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);
+  }
+
+  .sg-btn-navy{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--sg-navy-1);border:1px solid var(--sg-navy-1);
+    border-radius:10px;padding:12px 18px;font-size:13.5px;font-weight:600;color:#fff;width:100%;margin-top:14px;}
+  .sg-btn-navy:hover{background:var(--sg-navy-2);color:#fff;}
+  .sg-btn-navy:disabled{opacity:.5;}
+
+  /* ── Table ── */
+  .local-skillgap-vis table thead th{padding:12px 16px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;
+    color:var(--sg-text-muted);font-weight:700;border-top:none;border-bottom:1px solid var(--sg-border);background:#F8FAFC;}
+  .local-skillgap-vis table td{vertical-align:middle;border-color:var(--sg-border);font-size:13px;padding:12px 16px;}
+  .sg-dept-text{color:var(--sg-text-muted);}
+  .sg-pill-orange{display:inline-block;background:var(--sg-orange-light);color:#8a5a00;border-radius:20px;font-size:11.5px;font-weight:700;padding:4px 12px;}
+  .sg-pill-navy{display:inline-block;background:var(--sg-blue-light);color:var(--sg-navy-1);border-radius:20px;font-size:11.5px;font-weight:700;padding:4px 12px;}
+  .sg-eye{color:var(--sg-text-muted);}
+  .sg-del-btn{width:34px;height:34px;border-radius:50%;background:#fff;border:1px solid var(--sg-red-light);color:var(--sg-red);
+    display:inline-flex;align-items:center;justify-content:center;font-size:12.5px;}
+  .sg-del-btn:hover{background:var(--sg-red-light);color:var(--sg-red);}
+
+  /* ── Pagination ── */
+  .sg-pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid var(--sg-border);
+    font-size:12.5px;color:var(--sg-text-muted);flex-wrap:wrap;gap:8px;}
+  .sg-page-btn{background:#fff;border:1px solid var(--sg-border);border-radius:16px;padding:5px 14px;font-size:12.5px;font-weight:600;color:var(--sg-text-dark);}
+  .sg-page-btn:disabled{opacity:.4;}
+  .sg-empty{text-align:center;color:var(--sg-text-muted);padding:36px 16px;}
+
+  /* ── Example card ── */
+  .sg-example{border:1px solid var(--sg-border);border-radius:14px;padding:16px 18px;background:#fff;margin-top:16px;font-size:13px;}
+  .sg-example .sg-ex-title{font-weight:700;color:var(--sg-text-dark);display:flex;align-items:center;gap:6px;margin-bottom:8px;}
+  .sg-example .sg-ex-title i{color:var(--sg-orange);}
+  .sg-example p{color:var(--sg-text-muted);margin-bottom:6px;}
+  .sg-example strong{color:var(--sg-text-dark);}
+</style>
+
+<div class="local-skillgap-vis">
+
+  {{! ── Back to dashboard ── }}
+  <div class="sg-topbar">
+    <a href="{{{wwwroot}}}/local/skillgap/admin/index.php" class="sg-btn-outline"><i class="fa fa-arrow-left"></i>Back to Dashboard</a>
   </div>
 
-  <div class="alert alert-info small mb-4">
-    <i class="fa fa-info-circle mr-1"></i>
-    <strong>How it works:</strong> Select a <em>Viewer</em> designation (who can see analytics) and one or
-    more <em>Target</em> designations (whose analytics become visible). All users with the viewer designation
-    will automatically see reports for all users with the target designation(s).
+  {{! ── Header ── }}
+  <div class="sg-page-head">
+    <div class="sg-head-left">
+      <div class="sg-head-icon"><i class="fa fa-eye"></i></div>
+      <div>
+        <h2>Team Analytics Visibility Mapping</h2>
+        <div class="sg-sub">Configure which designation can view team analytics of one or more other designations.</div>
+      </div>
+    </div>
+    <a href="{{{wwwroot}}}/local/skillgap/admin/designations.php" class="sg-btn-outline"><i class="fa fa-arrow-left"></i>Back to Designations</a>
+  </div>
+
+  {{! ── Info banner ── }}
+  <div class="sg-info-banner">
+    <i class="fa fa-info-circle"></i>
+    <span><strong>How it works:</strong> Select a <em>Viewer</em> designation (who can see analytics) and one or more
+      <em>Target</em> designations (whose analytics become visible). All users with the viewer designation will
+      automatically see reports for all users with the target designation(s).</span>
   </div>
 
   <div class="row">
 
-    {{! ── Add Mapping Form ── }}
-    <div class="col-md-5 mb-4">
-      <div class="card">
-        <div class="card-header" style="background:#033252;color:#fff;">
-          <h6 class="mb-0"><i class="fa fa-plus-circle mr-2" style="color:#eb980d;"></i>Add Visibility Mapping</h6>
-        </div>
-        <div class="card-body">
-          <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/analytics_visibility.php"
-                id="sg-vis-form">
+    {{! ── Add mapping ── }}
+    <div class="col-12 col-lg-5 mb-4">
+      <div class="sg-card">
+        <div class="sg-section-header"><h5><i class="fa fa-plus-circle"></i>Add Visibility Mapping</h5></div>
+        <div class="sg-form-body">
+          <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/analytics_visibility.php" id="sg-vis-form">
             <input type="hidden" name="action"       value="add_mapping">
             <input type="hidden" name="sesskey"      value="{{sesskey}}">
             <input type="hidden" name="viewer_desig" id="sg-viewer-desig-val">
             <input type="hidden" name="viewer_dept"  id="sg-viewer-dept-val">
             <input type="hidden" name="targets_json" id="sg-targets-json-val">
+            {{! Real value the combo drives — mirrors the old select's value ("desig||dept") }}
+            <input type="hidden" id="sg-viewer-value">
 
-            {{! Viewer designation }}
-            <div class="form-group">
-              <label class="font-weight-bold small">
-                <i class="fa fa-user mr-1" style="color:#eb980d;"></i>
-                Viewer Designation <span class="text-danger">*</span>
+            {{! Viewer designation — custom searchable dropdown }}
+            <div class="mb-3">
+              <label><i class="fa fa-user"></i>Viewer Designation <span style="color:var(--sg-red);">*</span></label>
+              <span class="sg-hint">This designation CAN VIEW analytics of targets. Type to search.</span>
+              <div class="sg-combo" id="sg-viewer-combo">
+                <input type="text" class="sg-combo-input" id="sg-viewer-input"
+                       placeholder="Search &amp; select viewer designation..." autocomplete="off" readonly>
+                <i class="fa fa-chevron-down sg-combo-caret"></i>
+                <div class="sg-combo-panel" id="sg-viewer-panel"></div>
+              </div>
+              <div id="sg-viewer-chosen" class="sg-chosen"><i class="fa fa-check-circle"></i><span id="sg-viewer-chosen-label"></span></div>
+            </div>
+
+            {{! Target designations }}
+            <div class="mb-2">
+              <label style="justify-content:flex-start;"><i class="fa fa-users" style="color:var(--sg-navy-1);"></i>Target Designation(s) <span style="color:var(--sg-red);">*</span>
+                <span class="sg-count-pill ml-1" id="sg-target-count">0 selected</span>
               </label>
-              <small class="text-muted d-block mb-1">This designation CAN VIEW analytics of targets.</small>
-              <select id="sg-viewer-sel" class="form-control form-control-sm" required>
-                <option value="">-- Select Viewer Designation --</option>
-                {{#desig_opts}}
-                <option value="{{value}}">{{label}}</option>
-                {{/desig_opts}}
-              </select>
-              <div id="sg-viewer-chosen" class="mt-1 small text-success" style="display:none;">
-                <i class="fa fa-check-circle mr-1"></i><span id="sg-viewer-chosen-label"></span>
+              <span class="sg-hint">Analytics of these designation(s) will be visible to the viewer.</span>
+              <div class="sg-search-wrap">
+                <i class="fa fa-search"></i>
+                <input type="text" id="sg-target-search" class="sg-search-input" placeholder="Search target designations..." autocomplete="off">
+              </div>
+              <div class="sg-target-tools">
+                <button type="button" class="sg-mini-btn" id="sg-sel-all">Select All</button>
+                <button type="button" class="sg-mini-btn" id="sg-clr-all">Clear All</button>
+              </div>
+              <div id="sg-target-list" class="sg-target-list">
+                <p class="text-muted small mb-0 p-2">Select a Viewer Designation first to load targets.</p>
               </div>
             </div>
 
-            {{! Target designations — multi-select checklist }}
-            <div class="form-group">
-              <label class="font-weight-bold small">
-                <i class="fa fa-users mr-1" style="color:#033252;"></i>
-                Target Designation(s) <span class="text-danger">*</span>
-                <span class="badge badge-secondary ml-1" id="sg-target-count">0 selected</span>
-              </label>
-              <small class="text-muted d-block mb-1">Analytics of these designation(s) will be visible to the viewer.</small>
-              <div id="sg-target-list"
-                   class="border rounded p-2"
-                   style="max-height:220px;overflow-y:auto;background:#f8f9fa;">
-                <p class="text-muted small mb-0 p-1">Select a Viewer Designation first to load targets.</p>
-              </div>
-            </div>
-
-            <button type="button" class="btn btn-block" style="background:#033252;color:#fff;"
-                    id="sg-vis-submit-btn" disabled>
-              <i class="fa fa-save mr-1"></i>Add Mapping(s)
-            </button>
+            <button type="button" class="sg-btn-navy" id="sg-vis-submit-btn" disabled><i class="fa fa-save"></i>Add Mapping(s)</button>
           </form>
         </div>
       </div>
     </div>
 
-    {{! ── Existing Mappings ── }}
-    <div class="col-md-7 mb-4">
-      <div class="card">
-        <div class="card-header bg-white d-flex align-items-center justify-content-between">
-          <h6 class="mb-0 font-weight-bold" style="color:#033252;">
-            <i class="fa fa-list mr-1" style="color:#eb980d;"></i>Configured Mappings
-          </h6>
-        </div>
+    {{! ── Configured mappings ── }}
+    <div class="col-12 col-lg-7 mb-4">
+      <div class="sg-card sg-mappings-card">
+        <div class="sg-section-header"><h5><i class="fa fa-list"></i>Configured Mappings</h5></div>
         <div class="card-body p-0">
           {{#has_mappings}}
           <div class="table-responsive">
-            <table class="table table-sm table-hover mb-0">
-              <thead class="thead-light">
+            <table class="table table-hover mb-0">
+              <thead>
                 <tr>
                   <th>Viewer Dept</th>
                   <th>Viewer Designation</th>
                   <th class="text-center" style="width:30px;"></th>
                   <th>Target Dept</th>
                   <th>Target Designation</th>
-                  <th style="width:60px;">Remove</th>
+                  <th class="text-center" style="width:70px;">Remove</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody class="sg-map-body">
                 {{#mapping_rows}}
-                <tr>
-                  <td class="small text-muted align-middle">{{viewer_dept}}</td>
-                  <td class="align-middle">
-                    <span class="badge badge-light border" style="color:#eb980d;">{{viewer_desig}}</span>
-                  </td>
-                  <td class="text-center align-middle text-muted small"><i class="fa fa-eye"></i></td>
-                  <td class="small text-muted align-middle">{{target_dept}}</td>
-                  <td class="align-middle">
-                    <span class="badge badge-light border" style="color:#033252;">{{target_desig}}</span>
-                  </td>
-                  <td class="align-middle">
+                <tr class="sg-map-row">
+                  <td class="sg-dept-text">{{viewer_dept}}</td>
+                  <td><span class="sg-pill-orange">{{viewer_desig}}</span></td>
+                  <td class="text-center"><i class="fa fa-eye sg-eye"></i></td>
+                  <td class="sg-dept-text">{{target_dept}}</td>
+                  <td><span class="sg-pill-navy">{{target_desig}}</span></td>
+                  <td class="text-center">
                     <form method="post" action="{{{wwwroot}}}/local/skillgap/admin/analytics_visibility.php"
                           onsubmit="return confirm('Remove this mapping?');">
                       <input type="hidden" name="action"  value="delete_mapping">
                       <input type="hidden" name="id"      value="{{id}}">
                       <input type="hidden" name="sesskey" value="{{sesskey}}">
-                      <button type="submit" class="btn btn-sm btn-outline-danger">
-                        <i class="fa fa-trash"></i>
-                      </button>
+                      <button type="submit" class="sg-del-btn"><i class="fa fa-trash"></i></button>
                     </form>
                   </td>
                 </tr>
@@ -133,31 +255,25 @@
               </tbody>
             </table>
           </div>
+          <div class="sg-pagination">
+            <span class="sg-page-info"></span>
+            <span>
+              <button type="button" class="sg-page-btn sg-page-prev">Previous</button>
+              <button type="button" class="sg-page-btn sg-page-next">Next</button>
+            </span>
+          </div>
           {{/has_mappings}}
           {{^has_mappings}}
-          <div class="p-4 text-center text-muted">
-            <i class="fa fa-eye-slash fa-2x mb-2 d-block"></i>
-            No visibility mappings configured yet.
-          </div>
+          <div class="sg-empty"><i class="fa fa-eye-slash fa-2x mb-2 d-block"></i>No visibility mappings configured yet.</div>
           {{/has_mappings}}
         </div>
       </div>
 
-      {{! How-to card }}
-      <div class="card mt-3">
-        <div class="card-body small py-3">
-          <p class="font-weight-bold mb-2" style="color:#033252;">
-            <i class="fa fa-question-circle mr-1" style="color:#eb980d;"></i>Example
-          </p>
-          <p class="mb-1 text-muted">
-            <strong>HOD</strong> <i class="fa fa-eye mx-1"></i> can view analytics of:
-            Senior Manager, Manager, Assistant Manager, Assistant
-          </p>
-          <p class="mb-0 text-muted">
-            <strong>Senior Manager</strong> <i class="fa fa-eye mx-1"></i> can view:
-            Manager, Assistant Manager, Assistant
-          </p>
-        </div>
+      {{! Example }}
+      <div class="sg-example">
+        <div class="sg-ex-title"><i class="fa fa-info-circle"></i>Example</div>
+        <p><strong>HOD</strong> <i class="fa fa-eye sg-eye mx-1"></i> can view analytics of: Senior Manager, Manager, Assistant Manager, Assistant</p>
+        <p class="mb-0"><strong>Senior Manager</strong> <i class="fa fa-eye sg-eye mx-1"></i> can view: Manager, Assistant Manager, Assistant</p>
       </div>
     </div>
   </div>
@@ -165,83 +281,133 @@
 
 <script>
 (function() {
-  // All designation options from PHP — used to populate the target checklist.
+  var root = document.querySelector('.local-skillgap-vis');
+  if (!root) { return; }
+
   var allOpts = [
-    {{#desig_opts}}
-    { value: '{{value}}', label: '{{label}}' },
+    {{#desig_opts}}{ value: '{{value}}', label: '{{label}}' },
     {{/desig_opts}}
   ];
 
-  var viewerSel      = document.getElementById('sg-viewer-sel');
-  var viewerDesize   = document.getElementById('sg-viewer-desig-val');
-  var viewerDept     = document.getElementById('sg-viewer-dept-val');
-  var targetsJson    = document.getElementById('sg-targets-json-val');
-  var targetList     = document.getElementById('sg-target-list');
-  var targetCount    = document.getElementById('sg-target-count');
-  var submitBtn      = document.getElementById('sg-vis-submit-btn');
-  var viewerChosen   = document.getElementById('sg-viewer-chosen');
-  var viewerChosenLbl= document.getElementById('sg-viewer-chosen-label');
-  var form           = document.getElementById('sg-vis-form');
+  var viewerValue   = document.getElementById('sg-viewer-value');   // holds "desig||dept"
+  var viewerInput   = document.getElementById('sg-viewer-input');   // visible text box
+  var viewerCombo   = document.getElementById('sg-viewer-combo');
+  var viewerPanel   = document.getElementById('sg-viewer-panel');
+  var viewerDesig   = document.getElementById('sg-viewer-desig-val');
+  var viewerDept    = document.getElementById('sg-viewer-dept-val');
+  var targetsJson   = document.getElementById('sg-targets-json-val');
+  var targetList    = document.getElementById('sg-target-list');
+  var targetCount   = document.getElementById('sg-target-count');
+  var targetSearch  = document.getElementById('sg-target-search');
+  var submitBtn     = document.getElementById('sg-vis-submit-btn');
+  var viewerChosen  = document.getElementById('sg-viewer-chosen');
+  var viewerChosenL = document.getElementById('sg-viewer-chosen-label');
+  var form          = document.getElementById('sg-vis-form');
+
+  function esc(s){ return String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  /* ── Custom searchable viewer dropdown ── */
+  function renderViewerPanel(filter) {
+    var q = (filter || '').toLowerCase();
+    var html = '';
+    allOpts.forEach(function(o) {
+      if (!q || o.label.toLowerCase().indexOf(q) !== -1) {
+        html += '<div class="sg-combo-opt" data-val="' + o.value.replace(/"/g,'&quot;') + '">' + esc(o.label) + '</div>';
+      }
+    });
+    viewerPanel.innerHTML = html || '<div class="sg-combo-empty">No matching designations.</div>';
+  }
+
+  function openViewer() {
+    viewerCombo.classList.add('open');
+    viewerInput.removeAttribute('readonly');
+    viewerInput.value = '';
+    renderViewerPanel('');
+    viewerInput.focus();
+  }
+  function closeViewer() {
+    viewerCombo.classList.remove('open');
+    viewerInput.setAttribute('readonly', 'readonly');
+    // restore chosen label into the input
+    if (viewerValue.value) {
+      var found = allOpts.filter(function(o){ return o.value === viewerValue.value; })[0];
+      viewerInput.value = found ? found.label : '';
+    } else {
+      viewerInput.value = '';
+    }
+  }
+
+  viewerInput.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (viewerCombo.classList.contains('open')) { closeViewer(); } else { openViewer(); }
+  });
+  viewerInput.addEventListener('input', function() {
+    if (viewerCombo.classList.contains('open')) { renderViewerPanel(this.value); }
+  });
+  viewerPanel.addEventListener('click', function(e) {
+    var opt = e.target.closest('.sg-combo-opt');
+    if (!opt) { return; }
+    selectViewer(opt.getAttribute('data-val'));
+  });
+  document.addEventListener('click', function(e) {
+    if (!viewerCombo.contains(e.target)) { closeViewer(); }
+  });
+
+  function selectViewer(val) {
+    viewerValue.value = val;
+    var parts = val.split('||');
+    viewerDesig.value = parts[0] || '';
+    viewerDept.value  = parts[1] || '';
+    var found = allOpts.filter(function(o){ return o.value === val; })[0];
+    var label = found ? found.label : '';
+    viewerInput.value = label;
+    viewerChosenL.textContent = label;
+    viewerChosen.style.display = 'flex';
+    viewerCombo.classList.remove('open');
+    viewerInput.setAttribute('readonly', 'readonly');
+    buildTargets(val);
+  }
+
+  /* ── Target checklist ── */
+  function buildTargets(viewerVal) {
+    var html = '';
+    allOpts.forEach(function(o) {
+      if (o.value === viewerVal) { return; }
+      var safeVal = o.value.replace(/"/g,'&quot;');
+      var id = 'tgt_' + btoa(unescape(encodeURIComponent(o.value))).replace(/[^a-zA-Z0-9]/g,'');
+      html += '<label class="sg-target-item" for="' + id + '">' +
+        '<input type="checkbox" class="sg-target-cb" value="' + safeVal + '" id="' + id + '">' +
+        '<span>' + esc(o.label) + '</span></label>';
+    });
+    targetList.innerHTML = html || '<p class="text-muted small p-2">No other designations available.</p>';
+    targetList.querySelectorAll('.sg-target-cb').forEach(function(cb) { cb.addEventListener('change', updateTargetCount); });
+    if (targetSearch) { targetSearch.value = ''; }
+    updateTargetCount();
+  }
 
   function updateTargetCount() {
-    var checked = targetList.querySelectorAll('input[type="checkbox"]:checked').length;
-    targetCount.textContent = checked + ' selected';
-    submitBtn.disabled = checked === 0 || !viewerSel.value;
-    // Build JSON for hidden input.
+    var boxes = targetList.querySelectorAll('input[type="checkbox"]:checked');
+    targetCount.textContent = boxes.length + ' selected';
+    submitBtn.disabled = boxes.length === 0 || !viewerValue.value;
     var selected = [];
-    targetList.querySelectorAll('input[type="checkbox"]:checked').forEach(function(cb) {
-      selected.push(cb.value);
-    });
+    boxes.forEach(function(cb) { selected.push(cb.value); });
     targetsJson.value = JSON.stringify(selected);
   }
 
-  viewerSel.addEventListener('change', function() {
-    var val = this.value;
-    if (!val) {
-      targetList.innerHTML = '<p class="text-muted small mb-0 p-1">Select a Viewer Designation first.</p>';
-      viewerChosen.style.display = 'none';
-      viewerDesize.value = '';
-      viewerDept.value   = '';
-      submitBtn.disabled = true;
-      return;
-    }
-    var parts = val.split('||');
-    viewerDesize.value       = parts[0] || '';
-    viewerDept.value         = parts[1] || '';
-    viewerChosenLbl.textContent = this.options[this.selectedIndex].text;
-    viewerChosen.style.display  = 'block';
-
-    // Render target checkboxes excluding the selected viewer.
-    var html = '';
-    allOpts.forEach(function(opt) {
-      if (opt.value === val) { return; } // don't allow self-mapping
-      var safeLabel = opt.label.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-      var safeVal   = opt.value.replace(/"/g, '&quot;');
-      html += '<div class="form-check py-1 border-bottom">' +
-        '<input type="checkbox" class="form-check-input sg-target-cb" ' +
-        'value="' + safeVal + '" id="tgt_' + btoa(unescape(encodeURIComponent(opt.value))).replace(/[^a-zA-Z0-9]/g,'') + '">' +
-        '<label class="form-check-label small ml-1" ' +
-        'for="tgt_' + btoa(unescape(encodeURIComponent(opt.value))).replace(/[^a-zA-Z0-9]/g,'') + '">' +
-        safeLabel + '</label></div>';
+  /* ── Target search ── */
+  if (targetSearch) {
+    targetSearch.addEventListener('input', function() {
+      var q = this.value.toLowerCase();
+      targetList.querySelectorAll('.sg-target-item').forEach(function(item) {
+        item.style.display = (!q || item.textContent.toLowerCase().indexOf(q) !== -1) ? '' : 'none';
+      });
     });
-    targetList.innerHTML = html || '<p class="text-muted small p-1">No other designations available.</p>';
-
-    targetList.querySelectorAll('.sg-target-cb').forEach(function(cb) {
-      cb.addEventListener('change', updateTargetCount);
-    });
-    updateTargetCount();
-  });
-
-  // Add "Select All" / "Clear All" helpers
-  var helperDiv = document.createElement('div');
-  helperDiv.className = 'mb-1 d-flex gap-2';
-  helperDiv.innerHTML =
-    '<button type="button" class="btn btn-xs btn-outline-secondary" style="font-size:11px;padding:1px 8px;" id="sg-sel-all">Select All</button>' +
-    '<button type="button" class="btn btn-xs btn-outline-secondary" style="font-size:11px;padding:1px 8px;" id="sg-clr-all">Clear All</button>';
-  targetList.parentNode.insertBefore(helperDiv, targetList);
+  }
 
   document.getElementById('sg-sel-all').addEventListener('click', function() {
-    targetList.querySelectorAll('.sg-target-cb').forEach(function(cb) { cb.checked = true; });
+    targetList.querySelectorAll('.sg-target-item').forEach(function(item) {
+      if (item.style.display !== 'none') { var cb = item.querySelector('.sg-target-cb'); if (cb) { cb.checked = true; } }
+    });
     updateTargetCount();
   });
   document.getElementById('sg-clr-all').addEventListener('click', function() {
@@ -250,16 +416,33 @@
   });
 
   submitBtn.addEventListener('click', function() {
-    if (!viewerSel.value) {
-      alert('Please select a Viewer Designation.');
-      return;
-    }
-    var checked = targetList.querySelectorAll('input[type="checkbox"]:checked').length;
-    if (!checked) {
-      alert('Please select at least one Target Designation.');
-      return;
-    }
+    if (!viewerValue.value) { alert('Please select a Viewer Designation.'); return; }
+    if (!targetList.querySelectorAll('input[type="checkbox"]:checked').length) { alert('Please select at least one Target Designation.'); return; }
     form.submit();
   });
+
+  /* ── Pagination for Configured Mappings (6/page) ── */
+  var mapCard = root.querySelector('.sg-mappings-card');
+  if (mapCard) {
+    var rows    = Array.prototype.slice.call(mapCard.querySelectorAll('.sg-map-row'));
+    var info    = mapCard.querySelector('.sg-page-info');
+    var prevBtn = mapCard.querySelector('.sg-page-prev');
+    var nextBtn = mapCard.querySelector('.sg-page-next');
+    if (rows.length) {
+      var PAGE_SIZE = 6, page = 1;
+      var totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+      var renderMap = function() {
+        page = Math.min(Math.max(1, page), totalPages);
+        var start = (page - 1) * PAGE_SIZE;
+        rows.forEach(function(r, i) { r.style.display = (i >= start && i < start + PAGE_SIZE) ? '' : 'none'; });
+        if (info) { info.textContent = 'Showing ' + (start + 1) + '-' + Math.min(start + PAGE_SIZE, rows.length) + ' of ' + rows.length; }
+        if (prevBtn) { prevBtn.disabled = (page <= 1); }
+        if (nextBtn) { nextBtn.disabled = (page >= totalPages); }
+      };
+      if (prevBtn) { prevBtn.addEventListener('click', function() { page--; renderMap(); }); }
+      if (nextBtn) { nextBtn.addEventListener('click', function() { page++; renderMap(); }); }
+      renderMap();
+    }
+  }
 })();
 </script>

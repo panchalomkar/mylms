@@ -1,159 +1,210 @@
-{{!
-  @template local_skillgap/analytics_user_detail
-  User Detail Report — sub-competency breakdown (Image 3 design).
-}}
-<div class="local-skillgap sg-analytics-wrap" style="background:#f5f7fa;min-height:100vh;padding:24px;">
+{{! @template local_skillgap/analytics_user_detail - per-user sub-competency breakdown (themed UI) }}
+<style>
+  .local-skillgap-udetail{
+    --sg-navy-1:#0A1F3D;
+    --sg-navy-2:#0D2647;
+    --sg-orange:#F5A623;
+    --sg-blue:#2F6FED;
+    --sg-blue-light:#EAF0FE;
+    --sg-green:#1E9E58;
+    --sg-green-light:#E7F8EE;
+    --sg-amber:#B45309;
+    --sg-amber-light:#FEF3DC;
+    --sg-red:#E5484D;
+    --sg-red-light:#FDEAEA;
+    --sg-gray-light:#EEF1F5;
+    --sg-gray-bg:#F5F7FA;
+    --sg-border:#E7EBF1;
+    --sg-text-muted:#8A93A3;
+    --sg-text-dark:#1B2A41;
+    font-family:inherit;color:var(--sg-text-dark);background:var(--sg-gray-bg);
+    min-height:100vh;padding:24px;
+  }
+  .local-skillgap-udetail *{box-sizing:border-box;}
+#page-local-skillgap-admin-analytics_user_detail div[role="main"] {
+    filter: none;
+    padding: 0px !important;
+    box-shadow: none !important;
+    background: #f6f8fc;
+}
+  /* ── Header ── */
+  .sg-topbar{display:flex;justify-content:flex-end;margin-bottom:6px;}
+  .sg-page-head{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:22px;}
+  .sg-head-left{display:flex;align-items:center;gap:16px;}
+  .sg-avatar-lg{width:56px;height:56px;min-width:56px;border-radius:50%;background:var(--sg-navy-1);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;}
+  .sg-page-head h2{margin:0;font-weight:800;font-size:24px;color:var(--sg-text-dark);}
+  .sg-page-head .sg-sub{color:var(--sg-text-muted);font-size:13px;margin-top:4px;}
+  .sg-btn-outline{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--sg-border);
+    border-radius:24px;padding:8px 16px;font-size:13px;font-weight:600;color:var(--sg-text-dark);text-decoration:none;}
+  .sg-btn-outline:hover{border-color:var(--sg-navy-1);color:var(--sg-text-dark);text-decoration:none;}
+  .sg-btn-outline i{color:var(--sg-text-muted);}
 
-  {{! Header }}
-  <div class="d-flex align-items-start justify-content-between flex-wrap mb-4">
-    <div class="d-flex align-items-center">
-      <div class="rounded-circle d-flex align-items-center justify-content-center mr-3 font-weight-bold text-white"
-           style="width:56px;height:56px;min-width:56px;background:#4a78f5;font-size:18px;">
-        {{initials}}
-      </div>
+  /* ── Stat cards ── */
+  .sg-stat-card{background:#fff;border:1px solid var(--sg-border);border-radius:14px;padding:18px 20px;height:100%;position:relative;}
+  .sg-stat-label{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--sg-text-muted);font-weight:700;}
+  .sg-stat-value{font-size:32px;font-weight:800;color:var(--sg-text-dark);line-height:1;margin-top:14px;}
+  .sg-stat-value.sg-sm{font-size:22px;}
+  .sg-stat-icon{position:absolute;top:16px;right:16px;width:38px;height:38px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:15px;background:#E7ECF3;color:var(--sg-navy-1);}
+
+  /* ── Card ── */
+  .sg-card{background:#fff;border:1px solid var(--sg-border);border-radius:14px;overflow:hidden;}
+  .sg-card-head{padding:16px 20px;border-bottom:1px solid var(--sg-border);}
+  .sg-card-head .sg-title{font-weight:800;font-size:16px;color:var(--sg-text-dark);}
+  .sg-card-head .sg-desc{font-size:12.5px;color:var(--sg-text-muted);margin-top:2px;}
+
+  /* ── Table ── */
+  .local-skillgap-udetail table thead th{padding:12px 20px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;
+    color:var(--sg-text-muted);font-weight:700;border-top:none;border-bottom:1px solid var(--sg-border);background:#F8FAFC;}
+  .local-skillgap-udetail table td{vertical-align:middle;border-color:var(--sg-border);font-size:13.5px;padding:14px 20px;}
+  .sg-sub-name{font-weight:700;color:var(--sg-text-dark);}
+  .sg-subsub-row td{background:#FBFCFE;}
+  .sg-subsub-name{color:#4A5568;font-weight:500;padding-left:40px !important;}
+  .sg-na-row td{background:#FBFBFD;}
+
+  .sg-progress-track{background:var(--sg-gray-light);border-radius:6px;height:8px;overflow:hidden;max-width:260px;flex:1 1 auto;min-width:90px;}
+  .sg-progress-track.sg-sm{height:6px;}
+  .sg-progress-fill{height:100%;border-radius:6px;}
+  .sg-fill-success{background:var(--sg-green);}
+  .sg-fill-warning{background:var(--sg-orange);}
+  .sg-fill-danger{background:var(--sg-red);}
+  .sg-fill-secondary{background:#C7CCD6;}
+  .sg-pct{font-weight:800;font-size:13.5px;min-width:42px;}
+  .sg-pct-success{color:var(--sg-green);}
+  .sg-pct-warning{color:var(--sg-orange);}
+  .sg-pct-danger{color:var(--sg-red);}
+  .sg-pct-muted{color:var(--sg-text-muted);}
+
+  .sg-status-badge{display:inline-flex;align-items:center;gap:6px;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;white-space:nowrap;}
+  .sg-status-success{background:var(--sg-green-light);color:var(--sg-green);}
+  .sg-status-warning{background:var(--sg-amber-light);color:var(--sg-amber);}
+  .sg-status-danger{background:var(--sg-red-light);color:var(--sg-red);}
+  .sg-status-secondary{background:var(--sg-gray-light);color:var(--sg-text-muted);}
+  .sg-empty{text-align:center;color:var(--sg-text-muted);padding:40px 16px;}
+</style>
+
+<div class="local-skillgap-udetail">
+
+  {{! ── Back to dashboard (top-right) ── }}
+  <div class="sg-topbar">
+    <a href="{{{wwwroot}}}/local/skillgap/admin/index.php" class="sg-btn-outline"><i class="fa fa-arrow-left"></i>Back to Dashboard</a>
+  </div>
+
+  {{! ── Header ── }}
+  <div class="sg-page-head">
+    <div class="sg-head-left">
+      <div class="sg-avatar-lg">{{initials}}</div>
       <div>
-        <h2 class="mb-0 font-weight-bold" style="color:#1a2b4a;font-size:24px;">
-          {{fullname}} &mdash; {{comp_name}}
-        </h2>
-        <div class="small text-muted mt-1">
-          <i class="fa fa-envelope mr-1"></i>{{email}}
-        </div>
+        <h2>{{fullname}} &mdash; {{comp_name}}</h2>
+        <div class="sg-sub"><i class="fa fa-envelope mr-1"></i>{{email}}</div>
       </div>
     </div>
-    <a href="{{{wwwroot}}}/local/skillgap/admin/analytics_report.php?compid={{compid}}"
-       class="btn btn-sm btn-outline-secondary mt-2 mt-md-0" style="border-radius:8px;">
-      <i class="fa fa-arrow-left mr-1"></i>{{#str}} back_to_report, local_skillgap {{/str}}
+    <a href="{{{wwwroot}}}/local/skillgap/admin/analytics_report.php?compid={{compid}}" class="sg-btn-outline">
+      <i class="fa fa-arrow-left"></i>{{#str}} back_to_report, local_skillgap {{/str}}
     </a>
   </div>
 
-  {{! Stat cards }}
+  {{! ── Stat cards ── }}
   <div class="row mb-4">
     <div class="col-6 col-md-3 mb-3">
-      <div class="bg-white rounded p-3" style="box-shadow:0 1px 4px rgba(0,0,0,.08);">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-          <span class="small text-uppercase font-weight-bold" style="color:#8492a6;letter-spacing:.6px;font-size:11px;">
-            {{#str}} overall_score, local_skillgap {{/str}}
-          </span>
-          <span class="rounded-circle d-flex align-items-center justify-content-center"
-                style="width:36px;height:36px;background:#eaf0ff;">
-            <i class="fa fa-trophy" style="color:#4a78f5;font-size:15px;"></i>
-          </span>
-        </div>
-        <div class="font-weight-bold mb-0" style="font-size:28px;color:#1a2b4a;">{{overall_pct}}%</div>
+      <div class="sg-stat-card">
+        <div class="sg-stat-icon"><i class="fa fa-trophy"></i></div>
+        <div class="sg-stat-label">{{#str}} overall_score, local_skillgap {{/str}}</div>
+        <div class="sg-stat-value">{{overall_pct}}%</div>
       </div>
     </div>
     <div class="col-6 col-md-3 mb-3">
-      <div class="bg-white rounded p-3" style="box-shadow:0 1px 4px rgba(0,0,0,.08);">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-          <span class="small text-uppercase font-weight-bold" style="color:#8492a6;letter-spacing:.6px;font-size:11px;">
-            {{#str}} competency_status, local_skillgap {{/str}}
-          </span>
-          <span class="rounded-circle d-flex align-items-center justify-content-center"
-                style="width:36px;height:36px;background:#fff8e6;">
-            <i class="fa fa-check-circle" style="color:#f0a500;font-size:15px;"></i>
-          </span>
-        </div>
-        <div class="font-weight-bold mb-0" style="font-size:22px;color:#1a2b4a;">{{status_label}}</div>
+      <div class="sg-stat-card">
+        <div class="sg-stat-icon"><i class="fa fa-check-circle"></i></div>
+        <div class="sg-stat-label">{{#str}} competency_status, local_skillgap {{/str}}</div>
+        <div class="sg-stat-value sg-sm">{{status_label}}</div>
       </div>
     </div>
     <div class="col-6 col-md-3 mb-3">
-      <div class="bg-white rounded p-3" style="box-shadow:0 1px 4px rgba(0,0,0,.08);">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-          <span class="small text-uppercase font-weight-bold" style="color:#8492a6;letter-spacing:.6px;font-size:11px;">
-            {{#str}} sub_competencies, local_skillgap {{/str}}
-          </span>
-          <span class="rounded-circle d-flex align-items-center justify-content-center"
-                style="width:36px;height:36px;background:#f0f2ff;">
-            <i class="fa fa-sitemap" style="color:#7c6cf5;font-size:15px;"></i>
-          </span>
-        </div>
-        <div class="font-weight-bold mb-0" style="font-size:28px;color:#1a2b4a;">{{sub_count}}</div>
+      <div class="sg-stat-card">
+        <div class="sg-stat-icon"><i class="fa fa-sitemap"></i></div>
+        <div class="sg-stat-label">{{#str}} sub_competencies, local_skillgap {{/str}}</div>
+        <div class="sg-stat-value">{{sub_count}}</div>
       </div>
     </div>
     <div class="col-6 col-md-3 mb-3">
-      <div class="bg-white rounded p-3" style="box-shadow:0 1px 4px rgba(0,0,0,.08);">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-          <span class="small text-uppercase font-weight-bold" style="color:#8492a6;letter-spacing:.6px;font-size:11px;">
-            {{#str}} completion, local_skillgap {{/str}}
-          </span>
-          <span class="rounded-circle d-flex align-items-center justify-content-center"
-                style="width:36px;height:36px;background:#e6f9f0;">
-            <i class="fa fa-percent" style="color:#34c97a;font-size:15px;"></i>
-          </span>
-        </div>
-        <div class="font-weight-bold mb-0" style="font-size:28px;color:#1a2b4a;">{{completion_pct}}%</div>
+      <div class="sg-stat-card">
+        <div class="sg-stat-icon"><i class="fa fa-percent"></i></div>
+        <div class="sg-stat-label">{{#str}} completion, local_skillgap {{/str}}</div>
+        <div class="sg-stat-value">{{completion_pct}}%</div>
       </div>
     </div>
   </div>
 
-  {{! Sub-Competency Breakdown table }}
-  <div class="bg-white rounded" style="box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden;">
-    <div class="px-4 py-3" style="border-bottom:1px solid #f0f0f0;">
-      <div class="font-weight-bold" style="color:#1a2b4a;font-size:15px;">
-        {{#str}} sub_comp_breakdown, local_skillgap {{/str}}
-      </div>
-      <div class="small text-muted">
-        {{#str}} sub_comp_breakdown_desc, local_skillgap {{/str}}
-      </div>
+  {{! ── Sub-competency breakdown ── }}
+  <div class="sg-card">
+    <div class="sg-card-head">
+      <div class="sg-title">{{#str}} sub_comp_breakdown, local_skillgap {{/str}}</div>
+      <div class="sg-desc">{{#str}} sub_comp_breakdown_desc, local_skillgap {{/str}}</div>
     </div>
 
     {{#has_subs}}
-    <table class="table table-hover mb-0" style="font-size:14px;">
-      <thead>
-        <tr style="border-bottom:1px solid #f0f0f0;">
-          <th class="px-4 py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;">
-            {{#str}} sub_competency, local_skillgap {{/str}}
-          </th>
-          <th class="py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;min-width:260px;">
-            {{#str}} score, local_skillgap {{/str}}
-          </th>
-          <th class="py-3" style="color:#8492a6;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;width:180px;">
-            {{#str}} status, local_skillgap {{/str}}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#sub_rows}}
-        <tr style="border-bottom:1px solid #f8f9fb;">
-          <td class="px-4 py-3 font-weight-bold align-middle" style="color:#1a2b4a;">{{name}}</td>
-          <td class="align-middle py-3">
-            <div class="d-flex align-items-center">
-              <div class="progress flex-grow-1 mr-3" style="height:8px;border-radius:4px;background:#eef0f5;max-width:300px;">
-                <div class="progress-bar" style="width:{{score_pct}}%;border-radius:4px;
-                  {{#score_green}}background:#34c97a;{{/score_green}}
-                  {{#score_yellow}}background:#f0a500;{{/score_yellow}}
-                  {{#score_red}}background:#e94e4e;{{/score_red}}"></div>
-              </div>
-              <span class="font-weight-bold" style="font-size:14px;min-width:40px;
-                {{#score_green}}color:#34c97a;{{/score_green}}
-                {{#score_yellow}}color:#f0a500;{{/score_yellow}}
-                {{#score_red}}color:#e94e4e;{{/score_red}}">
-                {{score_pct}}%
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>{{#str}} sub_competency, local_skillgap {{/str}}</th>
+            <th style="min-width:260px;">{{#str}} score, local_skillgap {{/str}}</th>
+            <th style="width:180px;">{{#str}} status, local_skillgap {{/str}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#sub_rows}}
+          <tr class="{{^is_assigned}}sg-na-row{{/is_assigned}}">
+            <td>
+              <span class="sg-sub-name">
+                {{#has_subsubs}}<i class="fa fa-caret-down mr-1 text-muted" style="font-size:11px;"></i>{{/has_subsubs}}{{name}}
               </span>
-            </div>
-          </td>
-          <td class="align-middle py-3">
-            <span style="display:inline-flex;align-items:center;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;
-              {{#score_green}}background:#e6f9f0;color:#1a9e5c;{{/score_green}}
-              {{#score_yellow}}background:#fff8e6;color:#d48a00;{{/score_yellow}}
-              {{#score_red}}background:#fff0f0;color:#e94e4e;{{/score_red}}">
-              <span style="width:7px;height:7px;border-radius:50%;margin-right:5px;
-                {{#score_green}}background:#1a9e5c;{{/score_green}}
-                {{#score_yellow}}background:#d48a00;{{/score_yellow}}
-                {{#score_red}}background:#e94e4e;{{/score_red}}"></span>
-              {{status_label}}
-            </span>
-          </td>
-        </tr>
-        {{/sub_rows}}
-      </tbody>
-    </table>
+            </td>
+            {{#is_assigned}}
+            <td>
+              <div class="d-flex align-items-center" style="gap:12px;">
+                <div class="sg-progress-track">
+                  <div class="sg-progress-fill {{#score_green}}sg-fill-success{{/score_green}}{{#score_yellow}}sg-fill-warning{{/score_yellow}}{{#score_red}}sg-fill-danger{{/score_red}}{{#not_attempted}}sg-fill-secondary{{/not_attempted}}" style="width:{{score_pct}}%;"></div>
+                </div>
+                <span class="sg-pct {{#score_green}}sg-pct-success{{/score_green}}{{#score_yellow}}sg-pct-warning{{/score_yellow}}{{#score_red}}sg-pct-danger{{/score_red}}{{#not_attempted}}sg-pct-muted{{/not_attempted}}">{{score_pct}}%</span>
+              </div>
+            </td>
+            <td>
+              <span class="sg-status-badge {{#score_green}}sg-status-success{{/score_green}}{{#score_yellow}}sg-status-warning{{/score_yellow}}{{#score_red}}sg-status-danger{{/score_red}}{{#not_attempted}}sg-status-secondary{{/not_attempted}}">{{status_label}}</span>
+            </td>
+            {{/is_assigned}}
+            {{^is_assigned}}
+            <td colspan="2"><span class="text-muted small font-italic">{{status_label}}</span></td>
+            {{/is_assigned}}
+          </tr>
+
+          {{#has_subsubs}}
+          {{#subsub_rows}}
+          <tr class="sg-subsub-row">
+            <td><span class="sg-subsub-name"><i class="fa fa-level-up fa-rotate-90 mr-2" style="color:#C3CAD6;font-size:11px;"></i>{{name}}</span></td>
+            <td>
+              <div class="d-flex align-items-center" style="gap:12px;">
+                <div class="sg-progress-track sg-sm">
+                  <div class="sg-progress-fill {{#score_green}}sg-fill-success{{/score_green}}{{#score_yellow}}sg-fill-warning{{/score_yellow}}{{#score_red}}sg-fill-danger{{/score_red}}{{#not_attempted}}sg-fill-secondary{{/not_attempted}}" style="width:{{score_pct}}%;"></div>
+                </div>
+                <span class="sg-pct {{#score_green}}sg-pct-success{{/score_green}}{{#score_yellow}}sg-pct-warning{{/score_yellow}}{{#score_red}}sg-pct-danger{{/score_red}}{{#not_attempted}}sg-pct-muted{{/not_attempted}}" style="font-size:13px;">{{score_pct}}%</span>
+              </div>
+            </td>
+            <td>
+              <span class="sg-status-badge {{#score_green}}sg-status-success{{/score_green}}{{#score_yellow}}sg-status-warning{{/score_yellow}}{{#score_red}}sg-status-danger{{/score_red}}{{#not_attempted}}sg-status-secondary{{/not_attempted}}" style="font-size:11px;">{{status_label}}</span>
+            </td>
+          </tr>
+          {{/subsub_rows}}
+          {{/has_subsubs}}
+          {{/sub_rows}}
+        </tbody>
+      </table>
+    </div>
     {{/has_subs}}
     {{^has_subs}}
-    <div class="text-center py-5 text-muted">
-      <i class="fa fa-sitemap fa-2x mb-2 d-block"></i>
-      {{#str}} no_sub_competencies, local_skillgap {{/str}}
-    </div>
+    <div class="sg-empty"><i class="fa fa-sitemap fa-2x mb-2 d-block"></i>{{#str}} no_sub_competencies, local_skillgap {{/str}}</div>
     {{/has_subs}}
   </div>
 
