@@ -675,8 +675,8 @@ define([], function() {
                 series.map(function(s) {
                     return s.values.map(Number);
                 })));
-            var sc = niceScale(maxcol, 4);
-            var labelw = Math.min(130, Math.max(80, w * 0.27));
+            var sc = opts.max ? {max: opts.max, step: opts.max / 4} : niceScale(maxcol, 4);
+            var labelw = Math.min(opts.labelw || 130, Math.max(80, w * 0.27));
             var m = {l: labelw, r: 12, t: 4, b: 22};
             var iw = Math.max(10, w - m.l - m.r), ih = Math.max(10, h - m.t - m.b);
             var band = ih / cats.length, bh = Math.min(26, band * 0.62);
@@ -689,7 +689,7 @@ define([], function() {
                 var xv = x(sc.step * t);
                 svgEl('line', {x1: xv, x2: xv, y1: m.t, y2: m.t + ih, stroke: grid, 'stroke-dasharray': t ? '3 3' : ''}, svg);
                 var tl = svgEl('text', {x: xv, y: m.t + ih + 15, 'text-anchor': 'middle', 'font-size': 11.5, fill: muted}, svg);
-                tl.textContent = fmt(sc.step * t);
+                tl.textContent = fmt(sc.step * t) + (opts.ticksuffix || '');
             }
             var tip = tooltip(box);
             cats.forEach(function(cat, i) {
@@ -1026,6 +1026,17 @@ define([], function() {
         }
         var low = opts.low === undefined ? 40 : opts.low;
         var goal = opts.goal === undefined ? 70 : opts.goal;
+        // Optional display scale: value 0-100 shown as e.g. 0-5 ("4.1 / 5").
+        var scaled = function(v) {
+            if (!opts.scale) {
+                return (Math.round(v * 10) / 10) + '%';
+            }
+            var d = opts.decimals === undefined ? 1 : opts.decimals;
+            return (v * opts.scale / 100).toFixed(d) + (opts.suffix || '');
+        };
+        var zonelabel = function(v) {
+            return opts.scale ? scaled(v) : v + '%';
+        };
         mount(box, function(w) {
             var small = w < 560;
             var h = (box.clientHeight || 200) - (small ? 92 : 64);
@@ -1080,13 +1091,14 @@ define([], function() {
                     zones);
 
                 // Value bar in the colour of its zone (animated) + value.
+                var nodata = r.value === null || r.value === undefined;
                 var v = Math.max(0, Math.min(100, Number(r.value) || 0));
                 var bw = x(v) - m.l;
                 var fill = zone(v);
                 var bar = svgEl('rect', {x: m.l, y: ty, width: 0, height: th, rx: rad, fill: fill}, g);
                 var label = svgEl('text', {y: cy + 0.5, 'dominant-baseline': 'central',
                     'font-size': Math.min(small ? 12 : 15, th * 0.55), 'font-weight': 700}, g);
-                var vtxt = (Math.round(v * 10) / 10) + '%';
+                var vtxt = nodata ? (opts.nodatalabel || '—') : scaled(v);
                 label.textContent = vtxt;
                 var inside = bw > vtxt.length * 9 + 22;
                 var place = function(cur) {
@@ -1141,16 +1153,16 @@ define([], function() {
                 var anchor = t === 0 ? 'start' : (t === 100 ? 'end' : 'middle');
                 var tx = svgEl('text', {x: x(t), y: h - 8, 'text-anchor': anchor, 'font-size': small ? 11 : 13,
                     'font-weight': 600, fill: primary, 'fill-opacity': 0.75}, svg);
-                tx.textContent = t + '%';
+                tx.textContent = opts.scale ? scaled(t) : t + '%';
             });
             svg.classList.add('lbi-fade-in');
 
             // Boxed zone legend.
             var lg = document.createElement('div');
             lg.className = 'lbi-zonelegend';
-            [['< ' + low + '%', red, strings.chart_alarming || 'Alarming'],
-                [low + '% – ' + goal + '%', yellow, strings.chart_moderate || 'Moderate'],
-                ['≥ ' + goal + '%', green, strings.chart_ontarget || 'On Target']].forEach(function(z) {
+            [['< ' + zonelabel(low), red, strings.chart_alarming || 'Alarming'],
+                [zonelabel(low) + ' – ' + zonelabel(goal), yellow, strings.chart_moderate || 'Moderate'],
+                ['≥ ' + zonelabel(goal), green, strings.chart_ontarget || 'On Target']].forEach(function(z) {
                 var it = document.createElement('span');
                 it.className = 'lbi-zonelegend-item';
                 var rg = document.createElement('span');

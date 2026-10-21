@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_businessintelligence';
-$plugin->version   = 2026101301;
+$plugin->version   = 2026101910;
 $plugin->requires  = 2023042400; // Moodle 4.2+ (core_external namespace).
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.5.1';
+$plugin->release   = '1.7.0';

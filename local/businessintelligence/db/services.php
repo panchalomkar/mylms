@@ -60,4 +60,18 @@ $functions = [
         'ajax'         => true,
         'capabilities' => 'local/businessintelligence:view',
     ],
+    'local_businessintelligence_get_sg_page' => [
+        'classname'    => 'local_businessintelligence\\external\\get_sg_page',
+        'description'  => 'Skill Gap Analytics page: overview, drill-down levels, competency popups and learner detail.',
+        'type'         => 'read',
+        'ajax'         => true,
+        'capabilities' => 'local/businessintelligence:view',
+    ],
+    'local_businessintelligence_get_analysis' => [
+        'classname'    => 'local_businessintelligence\\external\\get_analysis',
+        'description'  => 'Analysis pages: Trainer, AI Role-Play, Learning & Performance Intelligence and Competency Assessment.',
+        'type'         => 'read',
+        'ajax'         => true,
+        'capabilities' => 'local/businessintelligence:view',
+    ],
 ];

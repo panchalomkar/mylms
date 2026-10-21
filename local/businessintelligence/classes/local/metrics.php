@@ -221,6 +221,9 @@ class metrics {
         // Training outcome.
         $reports['outcome'] = $this->outcome_report($scur);
 
+        // Cards whose "View Analysis" page has its own data sources: show the same numbers as that page.
+        $this->analysis_cards($reports);
+
         return [
             'kpis' => $kpis,
             'reports' => $reports,
@@ -228,6 +231,69 @@ class metrics {
             'filtercount' => $this->f->active_count(),
             'generated' => userdate(time(), get_string('strftimedatetimeshort', 'core_langconfig')),
         ];
+    }
+
+    /**
+     * Align the Trainer, Competency and Learning & Performance cards with their analysis pages.
+     *
+     * @param array $reports
+     */
+    protected function analysis_cards(array &$reports): void {
+        if (!($this instanceof analysis)) {
+            try {
+                $tp = new trainerpage($this->f);
+                $t = $tp->overview()['kpis'];
+                [$rin, $rex] = $tp->typeratings();
+                if (isset($reports['trainer']['charts']['ratings'][1])) {
+                    $reports['trainer']['charts']['ratings'][0]['value'] = $rin;
+                    $reports['trainer']['charts']['ratings'][1]['value'] = $rex;
+                }
+                $reports['trainer']['stats']['inhouse'] = $t['internal']['display'];
+                $reports['trainer']['stats']['guest'] = $t['external']['display'];
+                $reports['trainer']['stats']['sessions'] = $t['sessions']['display'];
+                $reports['trainer']['stats']['hours'] = $t['hours']['display'];
+            } catch (\Throwable $e) {
+                debugging($e->getMessage(), DEBUG_DEVELOPER);
+            }
+            try {
+                $ojt = new ojtpage($this->f);
+                if ($ojt->data()['mains']) {
+                    $o = $ojt->overview();
+                    $chart = $o['charts'][0]['data'];
+                    foreach ($chart['series'] as $i => $ser) {
+                        $chart['series'][$i]['values'] = array_slice($ser['values'], 0, 7);
+                    }
+                    $chart['categories'] = array_slice($chart['categories'], 0, 7);
+                    $chart['series'][1]['color'] = 'warning';
+                    $reports['ojt'] = [
+                        'stats' => [
+                            'total' => $o['kpis']['total']['display'],
+                            'learners' => $o['kpis']['users']['display'],
+                            'assessed' => $o['kpis']['assessed']['display'],
+                            'competent' => $o['kpis']['competent']['display'],
+                        ],
+                        'charts' => ['bars' => $chart],
+                    ];
+                }
+            } catch (\Throwable $e) {
+                debugging($e->getMessage(), DEBUG_DEVELOPER);
+            }
+            try {
+                $o = (new outcomepage($this->f))->overview();
+                $reports['outcome']['stats'] = [
+                    'trained' => $o['kpis']['trained']['display'],
+                    'withdata' => $o['kpis']['withdata']['display'],
+                    'avgchange' => $o['kpis']['change']['display'],
+                    'positive' => $o['kpis']['positive']['display'],
+                ];
+                $stages = $o['charts'][0]['data']['stages'] ?? [];
+                if ($stages) {
+                    $reports['outcome']['charts']['funnel'] = ['stages' => $stages];
+                }
+            } catch (\Throwable $e) {
+                debugging($e->getMessage(), DEBUG_DEVELOPER);
+            }
+        }
     }
 
     // ---------------------------------------------------------------------------------------------------------------

@@ -75,6 +75,32 @@ if ($report === 'learningpaths') {
     die;
 }
 
+if (isset(\local_businessintelligence\local\analysis::PROVIDERS[$report])) {
+    // Trainer, AI Role-Play, Learning & Performance Intelligence and Competency Assessment pages.
+    $path = json_decode(optional_param('path', '[]', PARAM_RAW), true);
+    $path = is_array($path) ? array_values(array_map(function($v) {
+        return clean_param((string)$v, PARAM_TEXT);
+    }, array_slice($path, 0, 5))) : [];
+    $PAGE->add_body_class('lbi-page-learning');
+    $PAGE->requires->js_call_amd('local_businessintelligence/analysis', 'init', [$report, $filters->to_array(), $path]);
+    echo $OUTPUT->header();
+    echo $output->render_from_template('local_businessintelligence/analysis',
+        (new \local_businessintelligence\output\analysis_page($filters, $report))->export_for_template($output));
+    echo $OUTPUT->footer();
+    die;
+}
+
+if ($report === 'skillgap') {
+    // Skill Gap Analytics has its own page.
+    $PAGE->add_body_class('lbi-page-learning');
+    $PAGE->requires->js_call_amd('local_businessintelligence/sgpage', 'init', [$filters->to_array(), $start]);
+    echo $OUTPUT->header();
+    echo $output->render_from_template('local_businessintelligence/sgpage',
+        (new \local_businessintelligence\output\sg_page($filters))->export_for_template($output));
+    echo $OUTPUT->footer();
+    die;
+}
+
 if ($report === 'sessions') {
     // Training Sessions Analytics has its own page.
     $PAGE->add_body_class('lbi-page-learning');

@@ -33,4 +33,12 @@ $capabilities = [
             'manager' => CAP_ALLOW,
         ],
     ],
+    'local/businessintelligence:managedata' => [
+        'riskbitmask'  => RISK_PERSONAL | RISK_DATALOSS,
+        'captype'      => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes'   => [
+            'manager' => CAP_ALLOW,
+        ],
+    ],
 ];

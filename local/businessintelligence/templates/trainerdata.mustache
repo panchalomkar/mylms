@@ -1,0 +1,250 @@
+{{!
+    @template local_businessintelligence/trainerdata
+
+    Trainer & business data page: external trainers, training feedback and business KPI values, each with an
+    iconised form (where applicable) and a validated CSV bulk upload.
+
+    Example context (json):
+    {
+        "tabs": [{"key": "trainers", "label": "External Trainers", "desc": "Desc", "icon": "<svg></svg>", "active": true, "url": "#"}],
+        "sesskey": "abc", "action": "#", "backurl": "#", "backlabel": "Back", "tab": "trainers", "istrainers": true,
+        "columns": [{"name": "fullname", "required": true}], "csvhelp": "Help", "samplefile": "#"
+    }
+}}
+<div class="lbi lbi-td" data-region="lbi-trainerdata">
+    <div class="lbi-body">
+        <header class="lbi-pagehead">
+            <div class="lbi-pagehead-text">
+                <p class="lbi-eyebrow">{{#str}}eyebrow, local_businessintelligence{{/str}}</p>
+                <div class="lbi-titlerow">
+                    <h2 class="lbi-h1">{{#str}}td_title, local_businessintelligence{{/str}}</h2>
+                </div>
+                <p class="lbi-intro">{{#str}}td_intro, local_businessintelligence{{/str}}</p>
+            </div>
+            <div class="lbi-pagehead-actions">
+                <a class="lbi-btn lbi-btn-outline" href="{{backurl}}">{{{iconback}}}<span>{{backlabel}}</span></a>
+            </div>
+        </header>
+
+        <nav class="lbi-td-tabs" aria-label="{{#str}}td_title, local_businessintelligence{{/str}}">
+            {{#tabs}}
+            <a class="lbi-td-tab{{#active}} is-active{{/active}}" href="{{url}}" {{#active}}aria-current="page"{{/active}}>
+                <span class="lbi-td-tabicon">{{{icon}}}</span>
+                <span class="lbi-td-tabtext"><span class="lbi-td-tablabel">{{label}}</span><span class="lbi-td-tabdesc">{{desc}}</span></span>
+            </a>
+            {{/tabs}}
+        </nav>
+
+        {{#haserrors}}
+        <div class="lbi-td-alert is-error" role="alert">{{{iconalert}}}<span>{{#str}}td_fixerrors, local_businessintelligence{{/str}}</span></div>
+        {{/haserrors}}
+
+        {{#result}}
+        <div class="lbi-card lbi-td-result {{#fatal}}is-error{{/fatal}}{{^fatal}}{{#success}}is-success{{/success}}{{^success}}is-error{{/success}}{{/fatal}}" role="status">
+            {{#fatal}}<div class="lbi-td-resulthead">{{{iconalert}}}<span>{{fatal}}</span></div>{{/fatal}}
+            {{^fatal}}
+            <div class="lbi-td-resulthead">{{#success}}{{{iconcheck}}}{{/success}}{{^success}}{{{iconalert}}}{{/success}}
+                <span>{{#str}}td_importresult, local_businessintelligence, { "imported": {{imported}}, "total": {{total}} }{{/str}}</span>
+            </div>
+            {{#haserrors}}
+            <p class="lbi-td-resultsub">{{#str}}td_importerrors, local_businessintelligence, {{errorcount}}{{/str}}</p>
+            <div class="lbi-modal-tablewrap lbi-td-errtable">
+                <table class="lbi-modal-table">
+                    <thead><tr><th>{{#str}}td_row, local_businessintelligence{{/str}}</th><th>{{#str}}td_problem, local_businessintelligence{{/str}}</th></tr></thead>
+                    <tbody>{{#errors}}<tr><td>{{row}}</td><td>{{message}}</td></tr>{{/errors}}</tbody>
+                </table>
+            </div>
+            {{/haserrors}}
+            {{/fatal}}
+        </div>
+        {{/result}}
+
+        <div class="lbi-td-grid{{^form}} is-single{{/form}}">
+            {{#form}}
+            <form class="lbi-card lbi-td-form" method="post" action="{{action}}" novalidate data-region="tdform">
+                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                <input type="hidden" name="action" value="{{actionname}}">
+                {{#id}}<input type="hidden" name="id" value="{{id}}">{{/id}}
+                <div class="lbi-td-formhead">
+                    <h3 class="lbi-td-formtitle">{{title}}</h3>
+                    <p class="lbi-td-req"><span class="lbi-td-star">*</span> {{#str}}td_requiredfields, local_businessintelligence{{/str}}</p>
+                </div>
+                {{#notrainers}}<div class="lbi-td-alert is-warn">{{{iconalert}}}<span>{{#str}}td_notrainers, local_businessintelligence{{/str}}</span></div>{{/notrainers}}
+                {{#sections}}
+                <fieldset class="lbi-td-section">
+                    <legend class="lbi-td-legend"><span class="lbi-td-legendicon">{{{icon}}}</span>{{title}}</legend>
+                    <div class="lbi-td-fields">
+                        {{#fields}}
+                        <div class="lbi-td-field{{#wide}} is-wide{{/wide}}{{#haserror}} has-error{{/haserror}}">
+                            <label class="lbi-td-label" for="{{id}}">{{label}}{{#required}} <span class="lbi-td-star" aria-hidden="true">*</span>{{/required}}</label>
+                            <div class="lbi-td-control{{#istextarea}} is-textarea{{/istextarea}}">
+                                <span class="lbi-td-icon" aria-hidden="true">{{{icon}}}</span>
+                                {{#isinput}}
+                                <input class="lbi-td-input" type="{{type}}" id="{{id}}" name="{{name}}" value="{{value}}"
+                                    {{#placeholder}}placeholder="{{placeholder}}"{{/placeholder}} {{#required}}required aria-required="true"{{/required}}
+                                    {{#min}}min="{{min}}"{{/min}} {{#max}}max="{{max}}"{{/max}} {{#step}}step="{{step}}"{{/step}}
+                                    {{#pattern}}pattern="{{pattern}}"{{/pattern}} {{#maxlength}}maxlength="{{maxlength}}"{{/maxlength}}
+                                    {{#haserror}}aria-invalid="true"{{/haserror}} aria-describedby="{{id}}-msg">
+                                {{/isinput}}
+                                {{#istextarea}}
+                                <textarea class="lbi-td-input" id="{{id}}" name="{{name}}" rows="3" {{#placeholder}}placeholder="{{placeholder}}"{{/placeholder}}
+                                    {{#maxlength}}maxlength="{{maxlength}}"{{/maxlength}} aria-describedby="{{id}}-msg">{{value}}</textarea>
+                                {{/istextarea}}
+                                {{#isselect}}
+                                <select class="lbi-td-input" id="{{id}}" name="{{name}}" {{#required}}required aria-required="true"{{/required}} aria-describedby="{{id}}-msg">
+                                    {{#options}}<option value="{{value}}" {{#selected}}selected{{/selected}}>{{label}}</option>{{/options}}
+                                </select>
+                                {{/isselect}}
+                                {{#isgroupselect}}
+                                <select class="lbi-td-input" id="{{id}}" name="{{name}}" {{#required}}required aria-required="true"{{/required}} aria-describedby="{{id}}-msg">
+                                    <option value="">{{#str}}td_choosetrainer, local_businessintelligence{{/str}}</option>
+                                    {{#groups}}<optgroup label="{{label}}">{{#options}}<option value="{{value}}" {{#selected}}selected{{/selected}}>{{label}}</option>{{/options}}</optgroup>{{/groups}}
+                                </select>
+                                {{/isgroupselect}}
+                            </div>
+                            <p class="lbi-td-msg" id="{{id}}-msg">{{#haserror}}<span class="lbi-td-err">{{error}}</span>{{/haserror}}{{^haserror}}{{help}}{{/haserror}}</p>
+                        </div>
+                        {{/fields}}
+                    </div>
+                </fieldset>
+                {{/sections}}
+                <div class="lbi-td-actions">
+                    {{#editing}}<a class="lbi-btn lbi-btn-outline" href="{{cancelurl}}">{{#str}}cancel{{/str}}</a>{{/editing}}
+                    <button type="submit" class="lbi-btn lbi-btn-primary lbi-td-submit">{{{iconsave}}}<span>{{submit}}</span></button>
+                </div>
+            </form>
+            {{/form}}
+
+            <form class="lbi-card lbi-td-upload" method="post" action="{{action}}" enctype="multipart/form-data" data-region="tdupload">
+                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                <input type="hidden" name="action" value="upload">
+                <div class="lbi-td-formhead">
+                    <h3 class="lbi-td-formtitle">{{#str}}td_bulkupload, local_businessintelligence{{/str}}</h3>
+                </div>
+                <p class="lbi-td-uploadhelp">{{csvhelp}}</p>
+                <label class="lbi-td-drop" data-region="drop">
+                    <span class="lbi-td-dropicon">{{{iconsheet}}}</span>
+                    <span class="lbi-td-droptitle" data-region="dropname">{{#str}}td_dropfile, local_businessintelligence{{/str}}</span>
+                    <span class="lbi-td-dropsub">{{#str}}td_dropsub, local_businessintelligence{{/str}}</span>
+                    <input type="file" name="csvfile" accept=".csv,text/csv" required class="lbi-td-file" data-region="file">
+                </label>
+                <p class="lbi-td-msg" data-region="filemsg"></p>
+                <div class="lbi-td-cols">
+                    <p class="lbi-td-colstitle">{{#str}}td_columns, local_businessintelligence{{/str}}</p>
+                    <div class="lbi-td-chips">
+                        {{#columns}}<code class="lbi-td-col{{#required}} is-required{{/required}}">{{name}}{{#required}} *{{/required}}</code>{{/columns}}
+                    </div>
+                </div>
+                <div class="lbi-td-actions">
+                    <a class="lbi-btn lbi-btn-outline" href="{{samplefile}}">{{{icondownload}}}<span>{{#str}}td_sample, local_businessintelligence{{/str}}</span></a>
+                    <button type="submit" class="lbi-btn lbi-btn-primary">{{{iconupload}}}<span>{{#str}}td_upload, local_businessintelligence{{/str}}</span></button>
+                </div>
+            </form>
+        </div>
+
+        {{#istrainers}}
+        <div class="lbi-card lbi-td-list">
+            <div class="lbi-td-formhead"><h3 class="lbi-td-formtitle">{{#str}}td_trainerlist, local_businessintelligence{{/str}}</h3></div>
+            {{#hastrainers}}
+            <div class="lbi-modal-tablewrap">
+                <table class="lbi-modal-table">
+                    <thead><tr>
+                        <th>{{#str}}td_f_fullname, local_businessintelligence{{/str}}</th>
+                        <th>{{#str}}td_f_organisation, local_businessintelligence{{/str}}</th>
+                        <th>{{#str}}td_f_designation, local_businessintelligence{{/str}}</th>
+                        <th>{{#str}}td_f_expertise, local_businessintelligence{{/str}}</th>
+                        <th>{{#str}}an_trainer_sessions, local_businessintelligence{{/str}}</th>
+                        <th class="is-action">{{#str}}lp_col_action, local_businessintelligence{{/str}}</th>
+                    </tr></thead>
+                    <tbody>
+                    {{#trainers}}
+                    <tr>
+                        <td><span class="lbi-td-person"><span class="lbi-avatar lbi-avatar-sm">{{initials}}</span><span><b>{{name}}</b><br><small>{{email}}</small></span></span></td>
+                        <td>{{organisation}}</td><td>{{designation}}</td><td>{{expertise}}</td><td>{{sessions}}</td>
+                        <td class="is-action">
+                            <a class="lbi-btn lbi-btn-outline lbi-btn-sm" href="{{editurl}}">{{#str}}edit{{/str}}</a>
+                            <form method="post" action="{{action}}" class="lbi-td-inline" data-confirm="{{#str}}td_confirmdeltrainer, local_businessintelligence{{/str}}">
+                                <input type="hidden" name="sesskey" value="{{sesskey}}"><input type="hidden" name="action" value="deltrainer"><input type="hidden" name="id" value="{{id}}">
+                                <button type="submit" class="lbi-btn lbi-btn-danger lbi-btn-sm">{{#str}}delete{{/str}}</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {{/trainers}}
+                    </tbody>
+                </table>
+            </div>
+            {{/hastrainers}}
+            {{^hastrainers}}<p class="lbi-td-empty">{{#str}}td_notrainersyet, local_businessintelligence{{/str}}</p>{{/hastrainers}}
+        </div>
+        {{/istrainers}}
+
+        {{#isfeedback}}
+        <div class="lbi-card lbi-td-list">
+            <div class="lbi-td-formhead"><h3 class="lbi-td-formtitle">{{#str}}td_feedbacklist, local_businessintelligence{{/str}}</h3></div>
+            {{#hasfeedbacks}}
+            <div class="lbi-modal-tablewrap">
+                <table class="lbi-modal-table">
+                    <thead><tr>
+                        <th>{{#str}}td_f_training_name, local_businessintelligence{{/str}}</th>
+                        <th>{{#str}}td_f_trainer, local_businessintelligence{{/str}}</th>
+                        <th>{{#str}}td_f_mode, local_businessintelligence{{/str}}</th>
+                        <th>{{#str}}td_f_training_date, local_businessintelligence{{/str}}</th>
+                        <th>{{#str}}an_trainer_col_hours, local_businessintelligence{{/str}}</th>
+                        <th>{{#str}}td_f_attendees, local_businessintelligence{{/str}}</th>
+                        <th>{{#str}}td_f_rating, local_businessintelligence{{/str}}</th>
+                        <th class="is-action">{{#str}}lp_col_action, local_businessintelligence{{/str}}</th>
+                    </tr></thead>
+                    <tbody>
+                    {{#feedbacks}}
+                    <tr>
+                        <td><b>{{training}}</b></td><td>{{trainer}} <span class="lbi-badge-status is-{{typekey}}">{{type}}</span></td>
+                        <td>{{mode}}</td><td>{{date}}</td><td>{{duration}}</td><td>{{attendees}}</td><td>{{rating}}</td>
+                        <td class="is-action">
+                            <form method="post" action="{{action}}" class="lbi-td-inline" data-confirm="{{#str}}td_confirmdelfeedback, local_businessintelligence{{/str}}">
+                                <input type="hidden" name="sesskey" value="{{sesskey}}"><input type="hidden" name="action" value="delfeedback"><input type="hidden" name="id" value="{{id}}">
+                                <button type="submit" class="lbi-btn lbi-btn-danger lbi-btn-sm">{{#str}}delete{{/str}}</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {{/feedbacks}}
+                    </tbody>
+                </table>
+            </div>
+            {{/hasfeedbacks}}
+            {{^hasfeedbacks}}<p class="lbi-td-empty">{{#str}}td_nofeedbackyet, local_businessintelligence{{/str}}</p>{{/hasfeedbacks}}
+        </div>
+        {{/isfeedback}}
+
+        {{#iskpi}}
+        <div class="lbi-card lbi-td-list">
+            <div class="lbi-td-formhead"><h3 class="lbi-td-formtitle">{{#str}}td_kpilist, local_businessintelligence{{/str}}</h3></div>
+            {{#haskpis}}
+            <div class="lbi-modal-tablewrap">
+                <table class="lbi-modal-table">
+                    <thead><tr>
+                        <th>{{#str}}an_outcome_kpi, local_businessintelligence{{/str}}</th><th>{{#str}}an_outcome_unit, local_businessintelligence{{/str}}</th>
+                        <th>{{#str}}td_direction, local_businessintelligence{{/str}}</th><th>{{#str}}an_outcome_source, local_businessintelligence{{/str}}</th>
+                        <th>{{#str}}td_records, local_businessintelligence{{/str}}</th><th>{{#str}}td_employees, local_businessintelligence{{/str}}</th>
+                        <th>{{#str}}td_periods, local_businessintelligence{{/str}}</th><th class="is-action">{{#str}}lp_col_action, local_businessintelligence{{/str}}</th>
+                    </tr></thead>
+                    <tbody>
+                    {{#kpis}}
+                    <tr>
+                        <td><b>{{kpi}}</b></td><td>{{unit}}</td><td>{{direction}}</td><td>{{source}}</td><td>{{rows}}</td><td>{{users}}</td><td>{{range}}</td>
+                        <td class="is-action">
+                            <form method="post" action="{{action}}" class="lbi-td-inline" data-confirm="{{#str}}td_confirmdelkpi, local_businessintelligence{{/str}}">
+                                <input type="hidden" name="sesskey" value="{{sesskey}}"><input type="hidden" name="action" value="delkpi"><input type="hidden" name="kpi" value="{{raw}}">
+                                <button type="submit" class="lbi-btn lbi-btn-danger lbi-btn-sm">{{#str}}delete{{/str}}</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {{/kpis}}
+                    </tbody>
+                </table>
+            </div>
+            {{/haskpis}}
+            {{^haskpis}}<p class="lbi-td-empty">{{#str}}td_nokpiyet, local_businessintelligence{{/str}}</p>{{/haskpis}}
+        </div>
+        {{/iskpi}}
+    </div>
+</div>

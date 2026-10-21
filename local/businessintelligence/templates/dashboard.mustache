@@ -1,11 +1,11 @@
 <style>
-.lbi [data-report="ojt"],.lbi [data-report="trainer"],.lbi [data-report="skillgap"],.lbi [data-report="roleplay"]
-,.lbi [data-report="outcome"] {
+.lbi [data-report="ojt"],.lbi [data-report="roleplay"]
+,.lbi [data-report="outcome"]{
     display: none;
 }
-
-
+[data-report="trainer"] [data-region="viewanalysis"]{display: none;}
 </style>
+
 <div class="lbi is-loading" data-region="lbi-dashboard" id="lbi-{{uniqid}}">
     {{#filters}}{{> local_businessintelligence/filters}}{{/filters}}
 

@@ -42,5 +42,14 @@ function xmldb_local_businessintelligence_upgrade($oldversion) {
         }
         upgrade_plugin_savepoint(true, 2026100602, 'local', 'businessintelligence');
     }
+    if ($oldversion < 2026101910) {
+        // External trainers, uploaded training feedback and external business KPI values.
+        foreach (['local_bi_ext_trainer', 'local_bi_feedback', 'local_bi_kpi_value'] as $name) {
+            if (!$dbman->table_exists($name)) {
+                $dbman->install_one_table_from_xmldb_file(__DIR__ . '/install.xml', $name);
+            }
+        }
+        upgrade_plugin_savepoint(true, 2026101910, 'local', 'businessintelligence');
+    }
     return true;
 }

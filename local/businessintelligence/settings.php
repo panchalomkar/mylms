@@ -73,5 +73,22 @@ if ($hassiteconfig) {
         $settings->add(new admin_setting_configtext("$p/greenthreshold", get_string('set_greenthreshold', $p), '', 80, PARAM_INT));
         $settings->add(new admin_setting_configduration("$p/cachettl", get_string('set_cachettl', $p),
             get_string('set_cachettl_desc', $p), 600, 60));
+
+        $settings->add(new admin_setting_heading("$p/ojthdr", get_string('set_ojtheading', $p), ''));
+        $settings->add(new admin_setting_configtext("$p/ojtgreen", get_string('set_ojtgreen', $p),
+            get_string('set_ojtgreen_desc', $p), '3', PARAM_FLOAT));
+        $settings->add(new admin_setting_configtext("$p/ojtyellow", get_string('set_ojtyellow', $p),
+            get_string('set_ojtyellow_desc', $p), '2', PARAM_FLOAT));
+        $settings->add(new admin_setting_configtext("$p/ojtmax", get_string('set_ojtmax', $p),
+            get_string('set_ojtmax_desc', $p), '4', PARAM_FLOAT));
+        $settings->add(new admin_setting_configtext("$p/landdfield", get_string('set_landdfield', $p),
+            get_string('set_landdfield_desc', $p), 'landdmanager', PARAM_ALPHANUMEXT));
+
+        $settings->add(new admin_setting_heading("$p/outcomehdr", get_string('set_outcomeheading', $p), ''));
+        $settings->add(new admin_setting_configtext("$p/lsweights", get_string('set_lsweights', $p),
+            get_string('set_lsweights_desc', $p), 'assessment:40,assignment:20,roleplay:20,scorm:0,ojt:20,skillgap:0',
+            PARAM_TEXT));
+        $settings->add(new admin_setting_configtext("$p/kpimonths", get_string('set_kpimonths', $p),
+            get_string('set_kpimonths_desc', $p), '2', PARAM_INT));
     }
 }

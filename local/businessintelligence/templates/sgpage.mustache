@@ -1,0 +1,146 @@
+
+<div class="lbi lbi-lp is-loading" data-region="lbi-sgpage" id="lbi-{{uniqid}}">
+    {{#filters}}{{> local_businessintelligence/filters}}{{/filters}}
+
+    <div class="lbi-body">
+        <header class="lbi-pagehead">
+            <div class="lbi-pagehead-text">
+                <p class="lbi-eyebrow">{{#str}}eyebrow, local_businessintelligence{{/str}}</p>
+                <div class="lbi-titlerow">
+                    <h2 class="lbi-h1">{{#str}}report_skillgap, local_businessintelligence{{/str}}</h2>
+                    <span class="lbi-info">
+                        <button type="button" class="lbi-info-btn" aria-label="{{#str}}moreinfo, local_businessintelligence{{/str}}">{{{iconinfo}}}</button>
+                        <span class="lbi-tip lbi-tip-start" role="tooltip">{{#str}}report_skillgap_info, local_businessintelligence{{/str}}</span>
+                    </span>
+                </div>
+                <p class="lbi-intro">{{#str}}sga_intro, local_businessintelligence{{/str}}</p>
+            </div>
+            <div class="lbi-pagehead-actions lbi-noprint">
+                <span class="lbi-refreshed">{{{iconrefresh}}}<span>{{#str}}lp_lastrefreshed, local_businessintelligence{{/str}} <span data-region="refreshed">…</span></span></span>
+                <button type="button" class="lbi-btn lbi-btn-outline" data-action="pagecsv">{{{icondownload}}}<span>{{#str}}exportcsv, local_businessintelligence{{/str}}</span></button>
+                <button type="button" class="lbi-btn lbi-btn-outline" data-action="pdf">{{{iconpdf}}}<span>{{#str}}exportpdf, local_businessintelligence{{/str}}</span></button>
+            </div>
+        </header>
+
+        <div class="lbi-alert" data-region="error" hidden>{{#str}}loaderror, local_businessintelligence{{/str}}</div>
+
+               <div data-region="overview">
+        <div class="lbi-kpigrid lbi-lp-kpis lbi-lpa-kpis">
+            {{#kpis}}
+            <div class="lbi-card lbi-kpi" data-kpi="{{key}}">
+                <div class="lbi-kpi-top">
+                    <span class="lbi-iconbox">{{{icon}}}</span>
+                    {{> local_businessintelligence/info}}
+                </div>
+                <div class="lbi-kpi-main">
+                    <p class="lbi-kpi-label">{{label}}</p>
+                    <div class="lbi-kpi-valrow">
+                        <span class="lbi-kpi-value" data-field="value"><span class="lbi-skel lbi-skel-val"></span></span>
+                        <span class="lbi-trend" data-field="trend"></span>
+                    </div>
+                </div>
+                <div class="lbi-spark" data-field="spark"><span class="lbi-skel lbi-skel-spark"></span></div>
+            </div>
+            {{/kpis}}
+        </div>
+
+        <div class="lbi-lp-grid1">
+            {{#row1}}
+            <div class="lbi-card lbi-lp-card">
+                <div class="lbi-lp-cardhead">
+                    <h3 class="lbi-lp-cardtitle">{{title}}</h3>
+                    {{> local_businessintelligence/info}}
+                </div>
+                <div class="lbi-chart" data-chart="{{key}}" style="height: {{height}}px"><div class="lbi-skel lbi-skel-block"></div></div>
+            </div>
+            {{/row1}}
+        </div>
+        </div>
+
+        <nav class="lbi-lp-crumbs lbi-noprint  " data-region="crumbs" aria-label="{{#str}}drilldown, local_businessintelligence{{/str}}"></nav>
+
+        <div class="lbi-card lbi-lp-card ">
+            <div class="lbi-lp-cardhead">
+                <h3 class="lbi-lp-cardtitle" data-region="charttitle"></h3>
+                <span class="lbi-info">
+                    <button type="button" class="lbi-info-btn" aria-label="{{#str}}moreinfo, local_businessintelligence{{/str}}">{{{iconinfo}}}</button>
+                    <span class="lbi-tip lbi-tip-start" role="tooltip" data-region="charttip"></span>
+                </span>
+            </div>
+            <div class="lbi-chart" data-region="levelchart" style="height: 300px"><div class="lbi-skel lbi-skel-block"></div></div>
+        </div>
+
+        <div class="lbi-card lbi-lp-tablecard ">
+            <div class="lbi-lp-tablehead">
+                <div class="lbi-lp-cardhead">
+                    <h3 class="lbi-lp-cardtitle lbi-lp-tabletitle" data-region="tabletitle"></h3>
+                    <span class="lbi-info">
+                        <button type="button" class="lbi-info-btn" aria-label="{{#str}}moreinfo, local_businessintelligence{{/str}}">{{{iconinfo}}}</button>
+                        <span class="lbi-tip lbi-tip-start" role="tooltip" data-region="tabletip"></span>
+                    </span>
+                </div>
+                <div class="lbi-lp-tools lbi-noprint">
+                    <label class="lbi-select lbi-select-sm" data-region="branchwrap" hidden>
+                        <select data-region="branchfilter"></select>
+                        <span class="lbi-select-chevron">{{{iconchevron}}}</span>
+                    </label>
+                    <label class="lbi-select lbi-select-sm" data-region="managerwrap" hidden>
+                        <select data-region="managerfilter"></select>
+                        <span class="lbi-select-chevron">{{{iconchevron}}}</span>
+                    </label>
+                    <label class="lbi-search">
+                        {{{iconsearch}}}
+                        <span class="sr-only">{{#str}}search{{/str}}</span>
+                        <input type="search" data-region="search" placeholder="{{#str}}search{{/str}}">
+                    </label>
+                    <button type="button" class="lbi-btn lbi-btn-outline" data-action="csv">{{{icondownload}}}<span>{{#str}}exportcsv, local_businessintelligence{{/str}}</span></button>
+                    <button type="button" class="lbi-btn lbi-btn-outline" data-action="pdf">{{{iconpdf}}}<span>{{#str}}exportpdf, local_businessintelligence{{/str}}</span></button>
+                </div>
+            </div>
+            <div class="lbi-tablewrap lbi-lp-tablewrap">
+                <table class="lbi-table lbi-lp-table" data-region="table">
+                    <thead data-region="thead"></thead>
+                    <tbody data-region="tbody">
+                        <tr><td><span class="lbi-skel lbi-skel-row"></span></td></tr>
+                        <tr><td><span class="lbi-skel lbi-skel-row"></span></td></tr>
+                        <tr><td><span class="lbi-skel lbi-skel-row"></span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="lbi-lp-tablefoot lbi-noprint">
+                <span class="lbi-lp-showing" data-region="showing"></span>
+                <div class="lbi-lp-pager">
+                    <label class="lbi-select lbi-select-xs">
+                        <select data-region="perpage">
+                            <option value="10">10 / page</option>
+                            <option value="25">25 / page</option>
+                            <option value="50">50 / page</option>
+                            <option value="100">100 / page</option>
+                        </select>
+                        <span class="lbi-select-chevron">{{{iconchevron}}}</span>
+                    </label>
+                    <button type="button" class="lbi-pagebtn" data-action="prev" aria-label="{{#str}}previous{{/str}}">{{{iconprev}}}</button>
+                    <span class="lbi-pageinfo" data-region="pageinfo">1 / 1</span>
+                    <button type="button" class="lbi-pagebtn" data-action="next" aria-label="{{#str}}next{{/str}}">{{{iconnext}}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="lbi-modal" data-region="modal" hidden>
+        <div class="lbi-modal-backdrop" data-action="closemodal"></div>
+        <div class="lbi-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="lbi-modal-title-{{uniqid}}">
+            <button type="button" class="lbi-modal-close" data-action="closemodal" aria-label="{{#str}}closebuttontitle{{/str}}">{{{iconclose}}}</button>
+            <div class="lbi-modal-body" data-region="modalbody" id="lbi-modal-title-{{uniqid}}"></div>
+        </div>
+    </div>
+
+    <div hidden data-region="icons">
+        <span data-icon="sort">{{{iconsort}}}</span>
+        <span data-icon="info">{{{iconinfo}}}</span>
+        <span data-icon="home">{{{iconhome}}}</span>
+        <span data-icon="back">{{{iconback}}}</span>
+        <span data-icon="next">{{{iconnext}}}</span>
+        {{#staticons}}<span data-icon="{{key}}">{{{svg}}}</span>{{/staticons}}
+    </div>
+</div>
